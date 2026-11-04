@@ -1,19 +1,17 @@
 // ========================================================
-// ZÌDÒNG CORE - CYBER ENGINE & SFX CONTROLLER
+// ZÌDÒNG CORE - HUB CONTROLLER & SPECIALTY ROUTING
 // ========================================================
 
 const BLOCK_SIZE = 5;
 
-let currentCategory = 'todos';
-let currentLevel = 1;
-let currentMode = 'flashcards';
+let currentSpecialty = 'plc';
+let currentMode = 'lobby';
 
 let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
-let comboCount = 0;
 
-// MOTOR DE AUDIO SFX SINTETIZADO (WEB AUDIO API)
+// MOTOR DE AUDIO SFX SINTETIZADO
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -37,19 +35,16 @@ function playSound(type) {
         osc.stop(now + 0.04);
     } 
     else if (type === 'correct') {
-        // Tono ascendente neón (Arpegio Cyber)
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, now); // D5
-        osc.frequency.setValueAtTime(739.99, now + 0.06); // F#5
-        osc.frequency.setValueAtTime(880.00, now + 0.12); // A5
-        osc.frequency.setValueAtTime(1174.66, now + 0.18); // D6
-        gain.gain.setValueAtTime(0.22, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.32);
+        osc.frequency.setValueAtTime(587.33, now);
+        osc.frequency.setValueAtTime(739.99, now + 0.06);
+        osc.frequency.setValueAtTime(880.00, now + 0.12);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
         osc.start(now);
-        osc.stop(now + 0.32);
+        osc.stop(now + 0.28);
     } 
     else if (type === 'wrong') {
-        // Buzzer grave analógico
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(160, now);
         osc.frequency.linearRampToValueAtTime(80, now + 0.25);
@@ -60,86 +55,24 @@ function playSound(type) {
     }
 }
 
-// EFECTO VISUAL: SHAKE DE ERROR
 function triggerErrorShake(elementId) {
     const el = document.getElementById(elementId);
     if (el) {
         el.classList.remove('screen-shake');
-        void el.offsetWidth; // Forzar reflow
+        void el.offsetWidth;
         el.classList.add('screen-shake');
         setTimeout(() => el.classList.remove('screen-shake'), 400);
     }
 }
 
-// EFECTO VISUAL: OVERDRIVE
-function updateOverdriveVisual(active) {
-    const chassisList = ['fc-chassis', 'quiz-chassis', 'builder-chassis', 'scanner-chassis'];
-    chassisList.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (active) el.classList.add('overdrive-active');
-            else el.classList.remove('overdrive-active');
-        }
-    });
-}
-
-// TABLA DE RANGOS DE INGENIERÍA
-const RANKS = [
-    { title: "Practicante", minXP: 0, nextXP: 150, access: "N1 · OBSERVADOR" },
-    { title: "Técnico", minXP: 150, nextXP: 400, access: "N2 · MANTENIMIENTO BÁSICO" },
-    { title: "Especialista", minXP: 400, nextXP: 800, access: "N3 · DIAGNÓSTICO I/O" },
-    { title: "Ingeniero Jr", minXP: 800, nextXP: 1500, access: "N4 · EDICIÓN DE RECETAS" },
-    { title: "Ingeniero Full", minXP: 1500, nextXP: 2500, access: "N5 · MODIFICACIÓN PLC/HMI" },
-    { title: "Ingeniero Sr", minXP: 2500, nextXP: 4000, access: "N6 · CALIBRACIÓN ROBÓTICA" },
-    { title: "Superintendente", minXP: 4000, nextXP: 6000, access: "N7 · GESTIÓN DE CELDA" },
-    { title: "Gerente", minXP: 6000, nextXP: 99999, access: "N8 · CONTROL MAESTRO DE PLANTA" }
-];
-
-function getCurrentRank(xp) {
-    for (let i = RANKS.length - 1; i >= 0; i--) {
-        if (xp >= RANKS[i].minXP) {
-            return RANKS[i];
-        }
-    }
-    return RANKS[0];
-}
-
-// PRONUNCIACIÓN DE MANDARÍN (TTS NATIVO)
-function playVoice(text) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-    }
-}
-
-// PERSISTENCIA Y PERFIL
+// PERSISTENCIA Y USUARIO
 function loadUserData() {
     let streak = parseInt(localStorage.getItem('zidong_streak') || '1');
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
     let username = localStorage.getItem('zidong_username') || 'Raymundo';
-    let lastDate = localStorage.getItem('zidong_last_date');
-
-    const today = new Date().toISOString().slice(0, 10);
-
-    if (lastDate && lastDate !== today) {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yestStr = yesterday.toISOString().slice(0, 10);
-
-        if (lastDate !== yestStr) {
-            streak = 1;
-            localStorage.setItem('zidong_streak', streak);
-        }
-    }
-
-    const rank = getCurrentRank(xp);
 
     document.getElementById('hud-username').innerText = username;
     document.getElementById('hud-avatar').innerText = username.charAt(0).toUpperCase();
-    document.getElementById('hud-userrank').innerText = rank.title;
     document.getElementById('hud-streak-count').innerText = streak;
     document.getElementById('hud-xp-count').innerText = `${xp} XP`;
 }
@@ -153,64 +86,35 @@ function saveUserName(newName) {
 
 function openProfileModal() {
     playSound('click');
-    const xp = parseInt(localStorage.getItem('zidong_xp') || '0');
-    const streak = parseInt(localStorage.getItem('zidong_streak') || '1');
-    const username = localStorage.getItem('zidong_username') || 'Raymundo';
-    const rank = getCurrentRank(xp);
-
-    document.getElementById('modal-avatar').innerText = username.charAt(0).toUpperCase();
-    document.getElementById('modal-name-input').value = username;
-    document.getElementById('modal-rank-name').innerText = rank.title;
-    document.getElementById('modal-access-level').innerText = `NIVEL ACCESO: ${rank.access}`;
-    document.getElementById('modal-streak-val').innerText = streak;
-    document.getElementById('modal-total-xp').innerText = xp;
-
-    if (rank.nextXP >= 99999) {
-        document.getElementById('modal-rank-progress').style.width = '100%';
-        document.getElementById('modal-xp-details').innerText = 'Rango Máximo Alcanzado';
-    } else {
-        const xpInCurrentRank = xp - rank.minXP;
-        const totalNeededInRank = rank.nextXP - rank.minXP;
-        const pct = Math.min(100, Math.max(0, Math.round((xpInCurrentRank / totalNeededInRank) * 100)));
-        document.getElementById('modal-rank-progress').style.width = `${pct}%`;
-        document.getElementById('modal-xp-details').innerText = `${xp} / ${rank.nextXP} XP (${pct}%) para siguiente ascenso`;
-    }
-
     document.getElementById('profile-modal').classList.add('active');
 }
-
 function closeProfileModal(e) {
     if (e.target.id === 'profile-modal') {
         playSound('click');
         document.getElementById('profile-modal').classList.remove('active');
     }
 }
-
 function closeProfileModalDirect() {
     playSound('click');
     document.getElementById('profile-modal').classList.remove('active');
 }
 
-function addXP(amount) {
-    let xp = parseInt(localStorage.getItem('zidong_xp') || '0') + amount;
-    localStorage.setItem('zidong_xp', xp);
-    loadUserData();
+// SISTEMA DE NAVEGACIÓN Y LOBBY
+function enterLobby() {
+    playSound('click');
+    currentMode = 'lobby';
+    document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
+    document.getElementById('mode-lobby').classList.add('active');
 }
 
-function registerDailyActivity() {
-    const today = new Date().toISOString().slice(0, 10);
-    const lastDate = localStorage.getItem('zidong_last_date');
-
-    if (lastDate !== today) {
-        let streak = parseInt(localStorage.getItem('zidong_streak') || '1');
-        if (lastDate) streak++;
-        localStorage.setItem('zidong_streak', streak);
-        localStorage.setItem('zidong_last_date', today);
-        document.getElementById('hud-streak-count').innerText = streak;
-    }
+function selectSpecialty(topic) {
+    playSound('click');
+    currentSpecialty = topic;
+    refreshSessionPool();
+    switchMode('flashcards');
 }
 
-// POOL Y SESIONES
 function shuffleArray(array) {
     let arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -221,89 +125,32 @@ function shuffleArray(array) {
 }
 
 function refreshSessionPool() {
-    const fullPool = vocabulary.filter(item => {
-        const matchesLevel = item.level === currentLevel;
-        const matchesTopic = (currentCategory === 'todos' || item.topic === currentCategory);
-        return matchesLevel && matchesTopic;
-    });
-
-    activeSessionPool = shuffleArray(fullPool).slice(0, BLOCK_SIZE);
-    updateProgressBar(0);
-}
-
-function updateProgressBar(stepIndex) {
-    const percentage = Math.min(100, Math.round(((stepIndex + 1) / BLOCK_SIZE) * 100));
-    document.getElementById('progress-bar-fill').style.width = `${percentage}%`;
-}
-
-function changeCategory(cat) {
-    playSound('click');
-    currentCategory = cat;
-    refreshSessionPool();
-    if (currentMode === 'flashcards') {
-        currentFC = 0;
-        updateFlashcard();
-    } else if (currentMode === 'quiz') {
-        initQuiz();
-    } else if (currentMode === 'builder') {
-        initBuilder();
-    } else if (currentMode === 'scanner') {
-        initScanner();
-    }
-}
-
-function setLevel(lvl) {
-    playSound('click');
-    currentLevel = lvl;
-    document.querySelectorAll('.level-pill').forEach((btn, idx) => {
-        btn.classList.toggle('active', (idx + 1) === lvl);
-    });
-
-    refreshSessionPool();
-    if (currentMode === 'flashcards') {
-        currentFC = 0;
-        updateFlashcard();
-    } else if (currentMode === 'quiz') {
-        initQuiz();
-    } else if (currentMode === 'builder') {
-        initBuilder();
-    }
+    const pool = vocabulary.filter(v => v.topic === currentSpecialty);
+    activeSessionPool = shuffleArray(pool).slice(0, BLOCK_SIZE);
 }
 
 function switchMode(mode) {
     playSound('click');
     currentMode = mode;
-    comboCount = 0;
-    updateOverdriveVisual(false);
-
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
-
-    const levelContainer = document.getElementById('level-container');
 
     if (mode === 'flashcards') {
         document.querySelectorAll('.dock-item')[0].classList.add('active');
         document.getElementById('mode-flashcards').classList.add('active');
-        levelContainer.style.display = 'grid';
         currentFC = 0;
         updateFlashcard();
     } else if (mode === 'quiz') {
         document.querySelectorAll('.dock-item')[1].classList.add('active');
         document.getElementById('mode-quiz').classList.add('active');
-        levelContainer.style.display = 'grid';
         initQuiz();
     } else if (mode === 'builder') {
         document.querySelectorAll('.dock-item')[2].classList.add('active');
         document.getElementById('mode-builder').classList.add('active');
-        currentLevel = 2;
-        document.querySelectorAll('.level-pill').forEach((b, idx) => b.classList.toggle('active', idx === 1));
-        refreshSessionPool();
-        levelContainer.style.display = 'grid';
         initBuilder();
     } else if (mode === 'scanner') {
         document.querySelectorAll('.dock-item')[3].classList.add('active');
         document.getElementById('mode-scanner').classList.add('active');
-        levelContainer.style.display = 'none';
         initScanner();
     }
 }
@@ -311,22 +158,25 @@ function switchMode(mode) {
 function finishSession() {
     playSound('correct');
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
-    document.getElementById('level-container').style.display = 'none';
 
     const percentage = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 100;
     document.getElementById('summary-percentage').innerText = `${percentage}%`;
-    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} diagnósticos en este bloque.`;
+    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} reactivos de ${currentSpecialty.toUpperCase()}.`;
     document.getElementById('mode-summary').classList.add('active');
 
-    registerDailyActivity();
-    addXP(sessionCorrect * 25);
+    let xp = parseInt(localStorage.getItem('zidong_xp') || '0') + (sessionCorrect * 25);
+    localStorage.setItem('zidong_xp', xp);
+    loadUserData();
 }
 
-function restartSession() {
-    playSound('click');
-    document.getElementById('mode-summary').classList.remove('active');
-    refreshSessionPool();
-    switchMode(currentMode);
+function playVoice(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
 }
 
 // --------------------------------------------------------
@@ -348,14 +198,13 @@ function renderFlashcardContent() {
     }
 
     const item = activeSessionPool[currentFC];
-    updateProgressBar(currentFC);
 
     if (!isFlipped) {
         hanziElem.className = "hanzi-character";
         hanziElem.innerText = item.hanzi;
         pinyinElem.innerHTML = `
             ${item.pinyin} 
-            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);" title="Escuchar">🔊</button>
+            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);">🔊</button>
         `;
         body.innerHTML = `<span class="inspect-badge">&gt; TOCAR PARA DECODIFICAR &lt;</span>`;
     } else {
@@ -363,7 +212,7 @@ function renderFlashcardContent() {
         hanziElem.innerText = item.meaning;
         pinyinElem.innerHTML = `
             ${item.hanzi} [${item.pinyin}] 
-            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);" title="Escuchar">🔊</button>
+            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);">🔊</button>
         `;
 
         let chips = item.parts.map(p => 
@@ -415,8 +264,6 @@ function initQuiz() {
     quizIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
-    comboCount = 0;
-    updateOverdriveVisual(false);
     loadQuizQuestion();
 }
 
@@ -426,9 +273,7 @@ function loadQuizQuestion() {
         return;
     }
 
-    updateProgressBar(quizIndex);
     const item = activeSessionPool[quizIndex];
-
     document.getElementById('quiz-next-btn').style.display = 'none';
     document.getElementById('quiz-breakdown').style.display = 'none';
 
@@ -463,14 +308,10 @@ function checkQuiz(btn, selected, item) {
         playSound('correct');
         btn.classList.add('correct');
         sessionCorrect++;
-        comboCount++;
-        if (comboCount >= 3) updateOverdriveVisual(true);
     } else {
         playSound('wrong');
         btn.classList.add('incorrect');
         triggerErrorShake('quiz-chassis');
-        comboCount = 0;
-        updateOverdriveVisual(false);
         all.forEach(b => { if (b.innerText === item.meaning) b.classList.add('correct'); });
     }
 
@@ -499,8 +340,6 @@ function initBuilder() {
     builderIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
-    comboCount = 0;
-    updateOverdriveVisual(false);
     loadBuilderQuestion();
 }
 
@@ -510,7 +349,6 @@ function loadBuilderQuestion() {
         return;
     }
 
-    updateProgressBar(builderIndex);
     selectedBuilderChars = [];
     builderMistake = false;
     const item = activeSessionPool[builderIndex];
@@ -594,11 +432,7 @@ function validateAssembly() {
     if (word === item.hanzi) {
         playSound('correct');
         slots.forEach(s => s.style.borderColor = 'var(--cyber-green)');
-        if (!builderMistake) {
-            sessionCorrect++;
-            comboCount++;
-            if (comboCount >= 3) updateOverdriveVisual(true);
-        }
+        if (!builderMistake) sessionCorrect++;
 
         playVoice(item.hanzi);
 
@@ -611,8 +445,6 @@ function validateAssembly() {
     } else {
         playSound('wrong');
         triggerErrorShake('builder-chassis');
-        comboCount = 0;
-        updateOverdriveVisual(false);
         builderMistake = true;
         slots.forEach(s => s.style.borderColor = 'var(--cyber-red)');
         setTimeout(() => slots.forEach(s => s.style.borderColor = ''), 500);
@@ -633,13 +465,11 @@ let scannerIndex = 0;
 let scannerLocked = false;
 
 function initScanner() {
-    const filtered = scannerScenarios.filter(s => currentCategory === 'todos' || s.topic === currentCategory);
-    scannerPool = shuffleArray(filtered).slice(0, BLOCK_SIZE);
+    const filtered = scannerScenarios.filter(s => s.topic === currentSpecialty || currentSpecialty === 'seguridad');
+    scannerPool = shuffleArray(filtered.length > 0 ? filtered : scannerScenarios).slice(0, BLOCK_SIZE);
     scannerIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
-    comboCount = 0;
-    updateOverdriveVisual(false);
     loadScannerQuestion();
 }
 
@@ -649,7 +479,6 @@ function loadScannerQuestion() {
         return;
     }
 
-    updateProgressBar(scannerIndex);
     scannerLocked = false;
     const item = scannerPool[scannerIndex];
 
@@ -683,8 +512,6 @@ function clickScannerToken(span, clickedHanzi, item) {
         scannerLocked = true;
         span.classList.add('success-hit');
         sessionCorrect++;
-        comboCount++;
-        if (comboCount >= 3) updateOverdriveVisual(true);
 
         playVoice(item.targetHanzi);
 
@@ -705,8 +532,6 @@ function clickScannerToken(span, clickedHanzi, item) {
     } else {
         playSound('wrong');
         triggerErrorShake('scanner-chassis');
-        comboCount = 0;
-        updateOverdriveVisual(false);
         span.classList.add('fail-hit');
         setTimeout(() => span.classList.remove('fail-hit'), 400);
     }
@@ -720,5 +545,4 @@ function nextScannerQuestion() {
 
 // INICIALIZACIÓN
 loadUserData();
-refreshSessionPool();
-updateFlashcard();
+enterLobby();

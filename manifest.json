@@ -2,19 +2,21 @@
   "name": "Zìdòng Core - HMI Terminal",
   "short_name": "Zìdòng Core",
   "description": "Terminal técnica de aprendizaje de Hanzi industrial y pantallas HMI",
-  "start_url": "./index.html",
+  "start_url": "/Zidong-Core/index.html",
+  "scope": "/Zidong-Core/",
+  "id": "/Zidong-Core/",
   "display": "standalone",
   "background_color": "#060a12",
   "theme_color": "#060a12",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/Zidong-Core/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/Zidong-Core/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

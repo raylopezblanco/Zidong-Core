@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZÌDÒNG // CYBER-HMI TERMINAL</title>
+    <title>TECH MANDARIN // ZÌDÒNG CORE</title>
     
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#04070d">
+    <meta name="theme-color" content="#070c14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <!-- Fuentes Cyberpunk -->
+    <!-- Tipografía Táctica y Militar -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700;800&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-deep: #03060b;
-            --cyber-cyan: #00f0ff;
-            --cyber-yellow: #fcee0a;
-            --cyber-red: #ff003c;
-            --cyber-green: #00ff66;
-            --panel-inner: rgba(7, 14, 27, 0.92);
-            --border-glow: rgba(0, 240, 255, 0.35);
+            --bg-deep: #070c14;
+            --panel-card: #0d1524;
+            --panel-border: rgba(56, 189, 248, 0.16);
+            --cyber-cyan: #38bdf8;
+            --cyber-yellow: #facc15;
+            --cyber-green: #22c55e;
+            --cyber-red: #ef4444;
             --text-pure: #ffffff;
-            --text-dim: #798a9c;
+            --text-dim: #94a3b8;
             --font-display: 'Orbitron', sans-serif;
             --font-tech: 'Chakra Petch', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
@@ -54,123 +54,155 @@
             position: relative;
         }
 
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 100;
-            opacity: 0.5;
-        }
-
         .terminal-container {
             width: 100%;
-            max-width: 460px;
+            max-width: 440px;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 10px 14px 12px 14px;
+            padding: 14px 14px 10px 14px;
             position: relative;
-            z-index: 1;
         }
 
-        /* HUD SUPERIOR */
-        .cyber-hud {
+        /* HEADER PRINCIPAL TIPO SISTEMA ONLINE */
+        .system-topbar {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(11, 19, 32, 0.9);
-            border: 1px solid var(--border-glow);
-            padding: 6px 10px;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
-
-        .op-badge-cyber {
+        .system-brand-group {
             display: flex;
-            align-items: center;
-            gap: 7px;
-            background: rgba(0, 240, 255, 0.08);
-            border: 1px solid rgba(0, 240, 255, 0.4);
-            padding: 4px 8px;
-            cursor: pointer;
-            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+            flex-direction: column;
         }
-        .op-avatar {
-            width: 22px;
-            height: 22px;
-            background: var(--cyber-yellow);
-            color: #000;
+        .system-title {
             font-family: var(--font-display);
+            font-size: 1.25rem;
             font-weight: 900;
-            font-size: 0.75rem;
+            color: var(--cyber-cyan);
+            letter-spacing: 0.5px;
+            line-height: 1.1;
+        }
+        .system-subtitle {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            letter-spacing: 0.6px;
+            margin-top: 2px;
+        }
+        .system-online-badge {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: var(--cyber-green);
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* TARJETA DE OPERADOR */
+        .operator-panel {
+            background: var(--panel-card);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        }
+        .op-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .op-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .op-avatar-frame {
+            width: 44px;
+            height: 44px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1.5px solid var(--cyber-cyan);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 8px var(--cyber-yellow);
+            font-size: 1.3rem;
+            color: var(--cyber-cyan);
         }
-        .op-meta {
+        .op-text-block {
             display: flex;
             flex-direction: column;
-            line-height: 1;
-            text-align: left;
         }
-        .op-name {
-            font-size: 0.72rem;
+        .op-id-title {
+            font-size: 0.95rem;
             font-weight: 800;
-            color: #fff;
-            max-width: 80px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #ffffff;
+            letter-spacing: 0.5px;
         }
-        .op-rank {
-            font-size: 0.58rem;
+        .op-role-desc {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+        .op-rank-label {
+            font-size: 0.68rem;
             font-family: var(--font-mono);
-            color: var(--cyber-cyan);
+            font-weight: 800;
+            color: var(--cyber-yellow);
             margin-top: 2px;
         }
-
-        .hud-tag {
+        .op-right-xp {
             display: flex;
-            align-items: center;
-            gap: 4px;
-            background: #060b13;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 4px 7px;
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            font-weight: 700;
+            flex-direction: column;
+            align-items: flex-end;
         }
-        .hud-tag-streak { color: var(--cyber-yellow); border-color: rgba(252, 238, 10, 0.3); }
-        .hud-tag-xp { color: var(--cyber-cyan); border-color: rgba(0, 240, 255, 0.3); }
+        .xp-number {
+            font-family: var(--font-display);
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: var(--cyber-yellow);
+            line-height: 1;
+        }
+        .xp-caption {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+        }
 
-        .btn-hub-return {
-            background: rgba(0, 240, 255, 0.15);
-            border: 1px solid var(--cyber-cyan);
+        .op-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+        }
+        .op-progress-header span:last-child {
             color: var(--cyber-cyan);
-            font-family: var(--font-tech);
-            font-size: 0.68rem;
-            font-weight: 800;
-            padding: 5px 8px;
-            cursor: pointer;
-            margin-left: auto;
-            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+        }
+        .op-progress-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .op-progress-bar-fill {
+            height: 100%;
+            width: 35%;
+            background: linear-gradient(90deg, #0284c7, var(--cyber-cyan));
+            border-radius: 6px;
+            transition: width 0.3s ease;
         }
 
         /* WORKSPACE Y VISTAS */
@@ -179,9 +211,8 @@
             display: flex;
             flex-direction: column;
             min-height: 0;
-            margin: 6px 0;
+            overflow: hidden;
         }
-
         .mode-screen {
             display: none;
             flex: 1;
@@ -192,51 +223,224 @@
             display: flex;
         }
 
-        /* VISTA: LOBBY DE MISIONES */
-        .lobby-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            overflow-y: auto;
-            padding: 4px 2px;
-        }
-        .specialty-card {
-            background: var(--panel-inner);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-left: 3px solid var(--cyber-cyan);
-            padding: 12px 10px;
-            cursor: pointer;
+        /* VISTA: LOBBY DE MISIONES ACTIVAS */
+        .section-header-row {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
-            transition: all 0.15s ease;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
-        .specialty-card:active {
-            transform: scale(0.97);
-            background: rgba(0, 240, 255, 0.18);
-        }
-        .specialty-icon {
-            font-size: 1.5rem;
-            margin-bottom: 4px;
-        }
-        .specialty-title {
-            font-size: 0.8rem;
-            font-weight: 800;
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 900;
             color: #ffffff;
-            line-height: 1.2;
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .specialty-desc {
-            font-size: 0.62rem;
-            color: var(--text-dim);
-            margin-top: 4px;
+        .section-pill-tag {
+            background: rgba(251, 146, 60, 0.15);
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            color: #fb923c;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 8px;
         }
 
-        /* CHASIS DE JUEGO */
-        .cyber-chassis {
-            background: var(--panel-inner);
-            border: 1px solid var(--border-glow);
+        .missions-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 2px;
+        }
+
+        .mission-panel-card {
+            background: var(--panel-card);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: transform 0.12s ease, border-color 0.15s;
+        }
+        .mission-panel-card:active {
+            transform: scale(0.98);
+            border-color: var(--cyber-cyan);
+        }
+        .mission-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .mission-card-title-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mission-icon {
+            font-size: 1.25rem;
+        }
+        .mission-card-title {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+        .mission-xp-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyber-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        .mission-card-desc {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            line-height: 1.25;
+        }
+        .mission-card-status {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--cyber-cyan);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* PANTALLA DE LOGROS & MEDALLAS (ESTILO XBOX / HALO) */
+        .achievements-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 2px;
+        }
+        .achievement-tile {
+            background: var(--panel-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+        .achievement-tile.unlocked {
+            border-color: rgba(250, 204, 21, 0.4);
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.08), rgba(13, 21, 36, 0.9));
+        }
+        .ach-icon-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .achievement-tile.unlocked .ach-icon-circle {
+            border-color: var(--cyber-yellow);
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+        }
+        .ach-info-block {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .ach-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .ach-name {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .achievement-tile.unlocked .ach-name {
+            color: var(--cyber-yellow);
+        }
+        .ach-xp-reward {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--cyber-cyan);
+        }
+        .ach-desc {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            line-height: 1.25;
+        }
+
+        /* POP-UP FLOTANTE: LOGRO DESBLOQUEADO (TIPO XBOX) */
+        .xbox-toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            width: 90%;
+            max-width: 380px;
+            background: #090e17;
+            border: 1.5px solid var(--cyber-green);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(34, 197, 94, 0.4);
+            z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+        .xbox-toast-container.active {
+            transform: translateX(-50%) translateY(0);
+        }
+        .xbox-toast-logo {
+            width: 36px;
+            height: 36px;
+            background: var(--cyber-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #070c14;
+            flex-shrink: 0;
+        }
+        .xbox-toast-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .xbox-toast-headline {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--cyber-green);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .xbox-toast-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* CHASIS DE PRUEBAS / JUEGO */
+        .game-chassis {
+            background: var(--panel-card);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -244,32 +448,17 @@
             align-items: center;
             padding: 16px 14px;
             position: relative;
-            clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
         }
-
-        .screen-shake {
-            animation: cyber-shake 0.35s cubic-bezier(.36,.07,.19,.97) both;
-            border-color: var(--cyber-red) !important;
-            box-shadow: 0 0 25px rgba(255, 0, 60, 0.5) !important;
-        }
-        @keyframes cyber-shake {
-            10%, 90% { transform: translate3d(-2px, 0, 0); }
-            20%, 80% { transform: translate3d(3px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
         .hanzi-character {
             font-family: var(--font-hanzi);
-            font-size: 5rem;
+            font-size: 4.8rem;
             font-weight: 900;
             line-height: 1;
             color: #ffffff;
-            text-shadow: 0 0 20px var(--cyber-cyan), 0 0 40px rgba(0, 240, 255, 0.4);
+            text-shadow: 0 0 20px var(--cyber-cyan);
         }
-
         .meaning-title {
             font-size: 1.3rem;
             font-weight: 800;
@@ -277,7 +466,6 @@
             text-align: center;
             margin: 6px 0;
         }
-
         .pinyin-label {
             font-family: var(--font-mono);
             font-size: 1.2rem;
@@ -289,23 +477,14 @@
             gap: 8px;
         }
 
-        .inspect-badge {
-            background: rgba(0, 240, 255, 0.05);
-            border: 1px dashed rgba(0, 240, 255, 0.3);
-            color: var(--cyber-cyan);
-            padding: 4px 10px;
-            font-size: 0.68rem;
-            font-family: var(--font-mono);
-        }
-
         .telemetry-box {
             width: 100%;
-            background: #040810;
-            border: 1px solid rgba(0, 240, 255, 0.3);
+            background: #060a12;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
             padding: 8px 10px;
             margin-top: 8px;
             text-align: left;
-            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
         }
         .telemetry-chips {
             display: flex;
@@ -314,9 +493,10 @@
             margin: 4px 0;
         }
         .telemetry-chip {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.3);
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             padding: 2px 6px;
+            border-radius: 6px;
             font-size: 0.7rem;
             font-family: var(--font-mono);
         }
@@ -335,32 +515,32 @@
             margin-top: 8px;
         }
         .matrix-button {
-            background: #081120;
-            border: 1px solid rgba(0, 240, 255, 0.25);
+            background: #0a1120;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-left: 3px solid var(--cyber-cyan);
             color: #ffffff;
-            padding: 10px 6px;
+            padding: 10px 8px;
+            border-radius: 10px;
             font-size: 0.78rem;
             font-weight: 700;
-            min-height: 50px;
+            min-height: 48px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
         }
         .matrix-button.correct {
-            background: rgba(0, 255, 102, 0.2) !important;
+            background: rgba(34, 197, 94, 0.2) !important;
             border-color: var(--cyber-green) !important;
             border-left: 3px solid var(--cyber-green) !important;
-            color: #afffd0 !important;
+            color: #86efac !important;
         }
         .matrix-button.incorrect {
-            background: rgba(255, 0, 60, 0.2) !important;
+            background: rgba(239, 68, 68, 0.2) !important;
             border-color: var(--cyber-red) !important;
             border-left: 3px solid var(--cyber-red) !important;
-            color: #ffa1b2 !important;
+            color: #fca5a5 !important;
         }
 
         /* ENSAMBLE */
@@ -371,43 +551,45 @@
             margin: 8px 0;
         }
         .assembly-slot {
-            width: 52px;
-            height: 52px;
-            border: 2px dashed rgba(0, 240, 255, 0.35);
+            width: 50px;
+            height: 50px;
+            border: 2px dashed rgba(56, 189, 248, 0.35);
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: var(--font-hanzi);
             font-size: 1.8rem;
             font-weight: 700;
-            background: #040810;
+            background: #060a12;
             cursor: pointer;
         }
         .assembly-slot.active-dock {
             border: 2px solid var(--cyber-cyan);
-            background: rgba(0, 240, 255, 0.15);
+            background: rgba(56, 189, 248, 0.15);
         }
         .parts-tray {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 8px;
-            background: #040810;
+            background: #060a12;
             padding: 8px;
-            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             margin-top: 8px;
         }
         .component-tile {
-            width: 48px;
-            height: 48px;
-            background: #0a1424;
+            width: 46px;
+            height: 46px;
+            background: #0d1524;
             border: 1px solid var(--cyber-cyan);
+            border-radius: 8px;
             color: #ffffff;
             font-family: var(--font-hanzi);
             font-size: 1.6rem;
             font-weight: 700;
             cursor: pointer;
-            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
         }
         .component-tile.used {
             opacity: 0.15;
@@ -417,9 +599,10 @@
         /* ESCÁNER TERMINAL */
         .terminal-display {
             width: 100%;
-            background: #020408;
+            background: #04070d;
             border-left: 4px solid var(--cyber-red);
-            border: 1px solid rgba(255, 0, 60, 0.4);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
             padding: 10px;
             font-family: var(--font-mono);
             font-size: 1.05rem;
@@ -430,12 +613,13 @@
             display: inline-block;
             padding: 2px 5px;
             margin: 2px;
+            border-radius: 4px;
             cursor: pointer;
             border: 1px solid transparent;
         }
         .terminal-token.success-hit {
             background: var(--cyber-green) !important;
-            color: #000 !important;
+            color: #070c14 !important;
             font-weight: 900;
         }
         .terminal-token.fail-hit {
@@ -446,28 +630,26 @@
         /* BOTONES DE CONTROL */
         .btn-core {
             border: none;
+            border-radius: 10px;
             font-family: var(--font-tech);
             font-weight: 800;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             cursor: pointer;
             display: inline-flex;
             justify-content: center;
             align-items: center;
         }
         .btn-cyan {
-            background: var(--cyber-cyan);
-            color: #03060b;
-            padding: 11px 16px;
-            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            font-weight: 900;
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            padding: 10px 14px;
         }
         .btn-ghost {
-            background: #081120;
-            border: 1px solid rgba(0, 240, 255, 0.3);
+            background: #0a1120;
+            border: 1px solid rgba(56, 189, 248, 0.3);
             color: var(--cyber-cyan);
             padding: 7px 12px;
             font-size: 0.75rem;
-            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
         }
         .full-trigger {
             width: 100%;
@@ -475,15 +657,17 @@
             display: none;
         }
 
-        /* DOCK DE NAVEGACIÓN */
-        .cyber-dock {
-            height: 56px;
-            background: rgba(7, 14, 27, 0.95);
-            border: 1px solid var(--border-glow);
+        /* DOCK INFERIOR */
+        .system-dock {
+            height: 54px;
+            background: rgba(13, 21, 36, 0.95);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            padding: 2px 4px;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            padding: 2px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            margin-top: 6px;
         }
         .dock-item {
             flex: 1;
@@ -494,7 +678,7 @@
             align-items: center;
             justify-content: center;
             color: var(--text-dim);
-            padding: 5px 0;
+            padding: 4px 0;
             cursor: pointer;
             position: relative;
         }
@@ -506,128 +690,163 @@
             stroke-width: 2;
         }
         .dock-title {
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             font-weight: 700;
             margin-top: 2px;
-            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         .dock-item.active { color: var(--cyber-cyan); }
         .dock-item.active::after {
             content: "";
             position: absolute;
             bottom: 2px;
-            width: 14px;
+            width: 12px;
             height: 2px;
             background: var(--cyber-cyan);
-        }
-
-        /* MODAL DE PERFIL */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(2, 4, 8, 0.9);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-        .modal-overlay.active { display: flex; }
-        .badge-card {
-            width: 100%;
-            max-width: 350px;
-            background: #060c16;
-            border: 2px solid var(--cyber-cyan);
-            padding: 18px 16px;
-            clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-            text-align: center;
+            border-radius: 2px;
         }
     </style>
 </head>
 <body>
 
 <div class="terminal-container">
-    <!-- HUD SUPERIOR -->
-    <header class="cyber-hud">
-        <div class="op-badge-cyber" onclick="openProfileModal()">
-            <div id="hud-avatar" class="op-avatar">R</div>
-            <div class="op-meta">
-                <span id="hud-username" class="op-name">Raymundo</span>
-                <span id="hud-userrank" class="op-rank">Practicante</span>
-            </div>
+    <!-- POP-UP TIPO XBOX: LOGRO DESBLOQUEADO -->
+    <div id="xbox-achievement-toast" class="xbox-toast-container">
+        <div class="xbox-toast-logo">🏆</div>
+        <div class="xbox-toast-text">
+            <span class="xbox-toast-headline">¡Logro Desbloqueado!</span>
+            <span id="toast-achievement-name" class="xbox-toast-title">Pequeño Saltamontes</span>
         </div>
+    </div>
 
-        <div class="hud-tag hud-tag-streak">
-            <span>🔥</span>
-            <span id="hud-streak-count">1</span>
+    <!-- HEADER STATUS -->
+    <header class="system-topbar">
+        <div class="system-brand-group">
+            <span class="system-title">TECH MANDARIN</span>
+            <span class="system-subtitle">ENGINEER TRAINING SYSTEM v2.0</span>
         </div>
-        <div class="hud-tag hud-tag-xp">
-            <span>⚡</span>
-            <span id="hud-xp-count">0 XP</span>
-        </div>
-
-        <button class="btn-hub-return" onclick="enterLobby()">HUB //</button>
+        <div class="system-online-badge">SYSTEM ONLINE</div>
     </header>
 
-    <!-- WORKBENCH -->
-    <main class="workspace">
-        <!-- 0. LOBBY: SELECTOR DE ESPECIALIDAD -->
-        <section id="mode-lobby" class="mode-screen active">
-            <div style="font-family: var(--font-display); font-size: 0.9rem; color: var(--cyber-cyan); margin-bottom: 8px;">
-                // SELECCIONA SECTOR INDUSTRIAL:
+    <!-- TARJETA OPERADOR (PERFIL) -->
+    <section class="operator-panel" onclick="enterLobby()">
+        <div class="op-hero">
+            <div class="op-left">
+                <div id="op-avatar" class="op-avatar-frame">R</div>
+                <div class="op-text-block">
+                    <span id="op-name" class="op-id-title">ENGINEER 001</span>
+                    <span class="op-role-desc">Automation Specialist</span>
+                    <span id="op-rank" class="op-rank-label">RANK: PRACTICANTE</span>
+                </div>
             </div>
-            <div class="lobby-grid">
-                <div class="specialty-card" onclick="selectSpecialty('plc')">
-                    <span class="specialty-icon">🤖</span>
-                    <span class="specialty-title">PLC & Redes</span>
-                    <span class="specialty-desc">I/O, Bits, Profinet</span>
+            <div class="op-right-xp">
+                <span id="op-xp-total" class="xp-number">0</span>
+                <span class="xp-caption">TOTAL XP</span>
+            </div>
+        </div>
+        <div class="op-progress-header">
+            <span>NEXT RANK</span>
+            <span id="op-next-pct">0%</span>
+        </div>
+        <div class="op-progress-bar-bg">
+            <div id="op-bar-fill" class="op-progress-bar-fill"></div>
+        </div>
+    </section>
+
+    <!-- WORKSPACE -->
+    <main class="workspace">
+        <!-- 0. LOBBY DE MISIONES (CAMPANA) -->
+        <section id="mode-lobby" class="mode-screen active">
+            <div class="section-header-row">
+                <span class="section-heading">ACTIVE MISSIONS</span>
+                <span class="section-pill-tag">7 DISPONIBLES</span>
+            </div>
+            <div class="missions-scroll-area">
+                <!-- MISION 1: PLC -->
+                <div class="mission-panel-card" onclick="selectMission('plc')">
+                    <div class="mission-card-top">
+                        <div class="mission-card-title-group">
+                            <span class="mission-icon">⚙️</span>
+                            <span class="mission-card-title">PLC SYSTEMS</span>
+                        </div>
+                        <span class="mission-xp-badge">+150 XP</span>
+                    </div>
+                    <p class="mission-card-desc">Aprende 10 términos de control industrial y señales lógicas.</p>
+                    <span id="status-plc" class="mission-card-status">MISIÓN 01 · DISPONIBLE</span>
                 </div>
-                <div class="specialty-card" onclick="selectSpecialty('electricidad')">
-                    <span class="specialty-icon">⚡</span>
-                    <span class="specialty-title">Electricidad</span>
-                    <span class="specialty-desc">Voltaje, Tierra, Relés</span>
+
+                <!-- MISION 2: ELECTRICIDAD -->
+                <div class="mission-panel-card" onclick="selectMission('electricidad')">
+                    <div class="mission-card-top">
+                        <div class="mission-card-title-group">
+                            <span class="mission-icon">⚡</span>
+                            <span class="mission-card-title">ELECTRIC POWER</span>
+                        </div>
+                        <span class="mission-xp-badge">+200 XP</span>
+                    </div>
+                    <p class="mission-card-desc">Controla voltajes, relevadores y conexión a tierra de gabinetes.</p>
+                    <span id="status-electricidad" class="mission-card-status">MISIÓN 02 · DISPONIBLE</span>
                 </div>
-                <div class="specialty-card" onclick="selectSpecialty('mantenimiento')">
-                    <span class="specialty-icon">⚙️</span>
-                    <span class="specialty-title">Mecánica</span>
-                    <span class="specialty-desc">Cilindros, Servos, Guías</span>
+
+                <!-- MISION 3: MECANICA -->
+                <div class="mission-panel-card" onclick="selectMission('mantenimiento')">
+                    <div class="mission-card-top">
+                        <div class="mission-card-title-group">
+                            <span class="mission-icon">🔧</span>
+                            <span class="mission-card-title">MAINTENANCE PROTOCOL</span>
+                        </div>
+                        <span class="mission-xp-badge">+250 XP</span>
+                    </div>
+                    <p class="mission-card-desc">Domina vocabulario de servomotores, cilindros y lubricación.</p>
+                    <span id="status-mantenimiento" class="mission-card-status">MISIÓN 03 · DISPONIBLE</span>
                 </div>
-                <div class="specialty-card" onclick="selectSpecialty('agv')">
-                    <span class="specialty-icon">🚚</span>
-                    <span class="specialty-title">AGV / AMR</span>
-                    <span class="specialty-desc">Rutas, Guiado, Sensores</span>
+
+                <!-- MISION 4: AGV -->
+                <div class="mission-panel-card" onclick="selectMission('agv')">
+                    <div class="mission-card-top">
+                        <div class="mission-card-title-group">
+                            <span class="mission-icon">🤖</span>
+                            <span class="mission-card-title">AGV COMMUNICATION</span>
+                        </div>
+                        <span class="mission-xp-badge">+200 XP</span>
+                    </div>
+                    <p class="mission-card-desc">Identifica instrucciones, rutas de guiado y alarmas de AGV.</p>
+                    <span id="status-agv" class="mission-card-status">MISIÓN 04 · DISPONIBLE</span>
                 </div>
-                <div class="specialty-card" onclick="selectSpecialty('produccion')">
-                    <span class="specialty-icon">🏭</span>
-                    <span class="specialty-title">Producción</span>
-                    <span class="specialty-desc">Ciclo, Yield, Estaciones</span>
-                </div>
-                <div class="specialty-card" onclick="selectSpecialty('seguridad')">
-                    <span class="specialty-icon">🚨</span>
-                    <span class="specialty-title">Seguridad</span>
-                    <span class="specialty-desc">E-Stop, Cortinas, Puertas</span>
-                </div>
-                <div class="specialty-card" onclick="selectSpecialty('calidad')" style="grid-column: span 2;">
-                    <span class="specialty-icon">🔍</span>
-                    <span class="specialty-title">Calidad & Visión Artificial</span>
-                    <span class="specialty-desc">Inspección, Descarte, Reconocimiento OCR</span>
+
+                <!-- MISION 5: SEGURIDAD -->
+                <div class="mission-panel-card" onclick="selectMission('seguridad')">
+                    <div class="mission-card-top">
+                        <div class="mission-card-title-group">
+                            <span class="mission-icon">🚨</span>
+                            <span class="mission-card-title">SAFETY & INTERLOCKS</span>
+                        </div>
+                        <span class="mission-xp-badge">+300 XP</span>
+                    </div>
+                    <p class="mission-card-desc">Decodifica paros de emergencia críticos y cortinas ópticas.</p>
+                    <span id="status-seguridad" class="mission-card-status">MISIÓN 05 · DISPONIBLE</span>
                 </div>
             </div>
         </section>
 
-        <!-- 1. FLASHCARDS -->
+        <!-- 1. VITRAL DE LOGROS (ESTILO XBOX / HALO) -->
+        <section id="mode-achievements" class="mode-screen">
+            <div class="section-header-row">
+                <span class="section-heading">VITRAL DE LOGROS</span>
+                <span id="ach-unlocked-counter" class="section-pill-tag">0 / 6 DESBLOQUEADOS</span>
+            </div>
+            <div id="achievements-list" class="achievements-scroll-area">
+                <!-- Se llena dinámicamente desde app.js -->
+            </div>
+        </section>
+
+        <!-- 2. TARJETAS (FLASHCARDS) -->
         <section id="mode-flashcards" class="mode-screen">
-            <div id="fc-chassis" class="cyber-chassis" onclick="flipCard()" style="cursor: pointer;">
-                <div class="hanzi-viewport">
-                    <div id="fc-hanzi" class="hanzi-character">--</div>
-                </div>
+            <div class="game-chassis" onclick="flipCard()" style="cursor: pointer;">
+                <div id="fc-hanzi" class="hanzi-character">--</div>
                 <div id="fc-pinyin" class="pinyin-label">--</div>
                 <div id="fc-body">
-                    <span class="inspect-badge">&gt; TOCAR PARA DECODIFICAR &lt;</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyber-cyan);">[ TOCAR PARA INSPECCIONAR ]</span>
                 </div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
@@ -637,53 +856,60 @@
             </div>
         </section>
 
-        <!-- 2. QUIZ -->
+        <!-- 3. QUIZ -->
         <section id="mode-quiz" class="mode-screen">
-            <div id="quiz-chassis" class="cyber-chassis">
-                <div class="hanzi-viewport" style="margin: 0;">
-                    <div id="quiz-hanzi" class="hanzi-character" style="font-size: 4rem;">--</div>
-                </div>
+            <div class="game-chassis">
+                <div id="quiz-hanzi" class="hanzi-character" style="font-size: 3.8rem;">--</div>
                 <div id="quiz-pinyin" class="pinyin-label">--</div>
                 <div id="quiz-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
             <div id="quiz-options" class="quiz-options-matrix"></div>
-            <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">SECUENCIA CONFIRMADA &gt;&gt;</button>
+            <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">CONTINUAR SECUENCIA &gt;&gt;</button>
         </section>
 
-        <!-- 3. ENSAMBLE -->
+        <!-- 4. ENSAMBLE -->
         <section id="mode-builder" class="mode-screen">
-            <div id="builder-chassis" class="cyber-chassis">
-                <div id="builder-meaning" style="font-size: 1.15rem; font-weight: 800; color: var(--cyber-yellow); margin: 4px 0;">--</div>
+            <div class="game-chassis">
+                <div id="builder-meaning" style="font-size: 1.15rem; font-weight: 800; color: var(--cyber-yellow); margin-bottom: 4px;">--</div>
                 <div id="builder-slots" class="assembly-rail"></div>
                 <div id="builder-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
             <div id="builder-pool" class="parts-tray"></div>
-            <button id="builder-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextBuilderQuestion()">ENSAMBLE OK &gt;&gt;</button>
+            <button id="builder-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextBuilderQuestion()">CONFIRMAR ENSAMBLE &gt;&gt;</button>
         </section>
 
-        <!-- 4. ESCÁNER -->
+        <!-- 5. ESCÁNER -->
         <section id="mode-scanner" class="mode-screen">
-            <div id="scanner-chassis" class="cyber-chassis" style="justify-content: flex-start;">
-                <div id="scanner-task" style="font-size: 0.92rem; font-weight: 800; color: var(--cyber-cyan); margin: 4px 0;">--</div>
+            <div class="game-chassis" style="justify-content: flex-start;">
+                <div id="scanner-task" style="font-size: 0.88rem; font-weight: 800; color: var(--cyber-cyan); margin: 4px 0;">--</div>
                 <div id="scanner-alarm-display" class="terminal-display"></div>
                 <div id="scanner-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
-            <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">FALLA RESUELTA &gt;&gt;</button>
+            <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">SIGUIENTE ALARMA &gt;&gt;</button>
         </section>
 
-        <!-- RESUMEN -->
+        <!-- RESUMEN DE SESION -->
         <section id="mode-summary" class="mode-screen">
-            <div class="cyber-chassis" style="text-align: center;">
-                <h2 style="color: var(--cyber-cyan); font-family: var(--font-display); font-size: 1.2rem;">CICLO DECODIFICADO</h2>
-                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 3rem; font-weight: 900; color: var(--cyber-green); margin: 6px 0;">100%</div>
-                <p id="summary-details" style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 16px;">Operación completada sin fallas de celda.</p>
-                <button class="btn-core btn-cyan" style="width: 100%;" onclick="enterLobby()">VOLVER AL HUB PRINCIPAL</button>
+            <div class="game-chassis" style="text-align: center;">
+                <div style="font-size: 2.5rem; margin-bottom: 4px;">⚡</div>
+                <h2 style="color: var(--cyber-cyan); font-family: var(--font-display); font-size: 1.2rem;">MISIÓN CONCLUIDA</h2>
+                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--cyber-green); margin: 6px 0;">100%</div>
+                <p id="summary-details" style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 16px;">Términos validados sin error crítico.</p>
+                <button class="btn-core btn-cyan" style="width: 100%;" onclick="enterLobby()">REGRESAR AL CENTRO DE MANDO</button>
             </div>
         </section>
     </main>
 
     <!-- DOCK INFERIOR -->
-    <nav class="cyber-dock">
+    <nav class="system-dock">
+        <button class="dock-item active" onclick="enterLobby()">
+            <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span class="dock-title">Misiones</span>
+        </button>
+        <button class="dock-item" onclick="switchMode('achievements')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            <span class="dock-title">Logros</span>
+        </button>
         <button class="dock-item" onclick="switchMode('flashcards')">
             <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
             <span class="dock-title">Tarjetas</span>
@@ -692,29 +918,11 @@
             <svg class="dock-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2"/></svg>
             <span class="dock-title">Quiz</span>
         </button>
-        <button class="dock-item" onclick="switchMode('builder')">
-            <svg class="dock-svg" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-            <span class="dock-title">Ensamble</span>
-        </button>
         <button class="dock-item" onclick="switchMode('scanner')">
             <svg class="dock-svg" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="9" x2="12" y2="15"/></svg>
             <span class="dock-title">Escáner</span>
         </button>
     </nav>
-
-    <!-- MODAL DE PERFIL -->
-    <div id="profile-modal" class="modal-overlay" onclick="closeProfileModal(event)">
-        <div class="badge-card" onclick="event.stopPropagation()">
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyber-cyan); letter-spacing: 2px; margin-bottom: 8px;">
-                CREDENCIAL HMI DE OPERADOR
-            </div>
-            <div id="modal-avatar" class="op-avatar" style="width: 56px; height: 56px; margin: 0 auto 10px auto; font-size: 1.8rem;">R</div>
-            <input type="text" id="modal-name-input" class="badge-input-name" value="Raymundo" maxlength="16" onchange="saveUserName(this.value)" style="background:#02050a; border:1px solid var(--cyber-cyan); color:#fff; text-align:center; padding:5px; width:80%; font-family:var(--font-tech); font-weight:800; font-size:1.1rem; margin-bottom:6px;">
-            <div id="modal-rank-name" style="color:var(--cyber-cyan); font-weight:800; font-size:1rem; margin-bottom:4px;">Practicante</div>
-            <div id="modal-access-level" style="color:var(--cyber-yellow); font-size:0.65rem; margin-bottom:12px;">NIVEL ACCESO: N1 · OBSERVADOR</div>
-            <button class="btn-core btn-cyan" style="width: 100%;" onclick="closeProfileModalDirect()">CERRAR CREDENCIAL</button>
-        </div>
-    </div>
 </div>
 
 <script src="data.js"></script>

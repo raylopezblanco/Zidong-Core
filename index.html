@@ -3,125 +3,716 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zìdòng Core - HMI & Automatización</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Zìdòng Core - HMI Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@500;700;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #060a12;
+            --panel-bg: rgba(14, 22, 38, 0.75);
+            --panel-border: rgba(56, 189, 248, 0.2);
+            --card-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --accent-cyan: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.4);
+            --status-green: #22c55e;
+            --status-red: #ef4444;
+            --status-amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --font-ui: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-hanzi: 'Noto Sans SC', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            /* Patrón de cuadrícula de precisión milimétrica */
+            background-image: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 116, 144, 0.3), transparent 70%),
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 24px 24px, 24px 24px;
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .terminal-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px 14px 12px 14px;
+        }
+
+        /* ========================================================
+           HUD INDUSTRIAL SUPERIOR (STATUS BAR)
+           ======================================================== */
+        .hmi-hud {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border);
+            padding: 6px 10px;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hud-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .badge-streak { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); }
+        .badge-xp { color: #facc15; border-color: rgba(250, 204, 21, 0.3); }
+
+        .system-select-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        .system-select {
+            width: 100%;
+            appearance: none;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 5px 22px 5px 8px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-family: var(--font-ui);
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .system-select-wrapper::after {
+            content: "▼";
+            font-size: 0.55rem;
+            color: var(--accent-cyan);
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* BARRA DE CICLO / PROGRESO */
+        .cycle-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 6px 2px 4px 2px;
+            position: relative;
+        }
+        .cycle-progress-bar {
+            height: 100%;
+            width: 20%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--status-green));
+            box-shadow: 0 0 10px var(--accent-cyan);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* TOGGLE DE MODO / NIVEL */
+        .level-selector-strip {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 3px;
+            border-radius: 10px;
+            gap: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 6px;
+        }
+        .level-pill {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 5px;
+            border-radius: 7px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .level-pill.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            box-shadow: inset 0 0 0 1px var(--accent-cyan);
+        }
+
+        /* ========================================================
+           ÁREA CENTRAL INTERACTIVA (WORKBENCH)
+           ======================================================== */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .mode-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .mode-screen.active {
+            display: flex;
+        }
+
+        /* TARJETA DISPLAY CENTRAL ESTILO TERMINAL */
+        .chassis-card {
+            background: linear-gradient(180deg, rgba(16, 26, 46, 0.85) 0%, rgba(9, 14, 26, 0.95) 100%);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 16px;
+            position: relative;
+            box-shadow: var(--card-glow);
+            overflow: hidden;
+        }
+        /* Indicadores esquineros de hardware técnico */
+        .chassis-card::before {
+            content: "";
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            width: 14px;
+            height: 14px;
+            border-top: 2px solid var(--accent-cyan);
+            border-left: 2px solid var(--accent-cyan);
+            opacity: 0.7;
+        }
+        .chassis-card::after {
+            content: "";
+            position: absolute;
+            bottom: 6px;
+            right: 8px;
+            width: 14px;
+            height: 14px;
+            border-bottom: 2px solid var(--accent-cyan);
+            border-right: 2px solid var(--accent-cyan);
+            opacity: 0.7;
+        }
+
+        /* Retícula caligráfica / retícula de servo */
+        .hanzi-viewport {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 4px;
+        }
+        .hanzi-character {
+            font-family: var(--font-hanzi);
+            font-size: 5.4rem;
+            font-weight: 900;
+            line-height: 1;
+            color: #ffffff;
+            text-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+        }
+
+        .pinyin-label {
+            font-family: var(--font-mono);
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .inspect-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .nav-actions-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        /* QUIZ GRID INDUSTRIAL */
+        .status-pill-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        .status-pill-alarm {
+            color: var(--status-red);
+            background: rgba(239, 68, 68, 0.12);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .quiz-options-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .matrix-button {
+            background: rgba(14, 22, 38, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 4px solid #080f1d;
+            color: var(--text-main);
+            padding: 12px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-height: 52px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.08s ease;
+        }
+        .matrix-button:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .matrix-button.correct {
+            background: rgba(34, 197, 94, 0.2) !important;
+            border-color: var(--status-green) !important;
+            border-bottom-color: #15803d !important;
+            color: #86efac !important;
+        }
+        .matrix-button.incorrect {
+            background: rgba(239, 68, 68, 0.2) !important;
+            border-color: var(--status-red) !important;
+            border-bottom-color: #991b1b !important;
+            color: #fca5a5 !important;
+        }
+
+        /* ENSAMBLE MECATRÓNICO */
+        .assembly-rail {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 8px 0;
+        }
+        .assembly-slot {
+            width: 52px;
+            height: 52px;
+            border: 2px dashed rgba(56, 189, 248, 0.3);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-hanzi);
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+        .assembly-slot.active-dock {
+            border: 2px solid var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.15);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+
+        .parts-tray {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 8px;
+        }
+        .component-tile {
+            width: 48px;
+            height: 48px;
+            background: #111c33;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-bottom: 4px solid #080f1d;
+            border-radius: 10px;
+            color: var(--text-main);
+            font-family: var(--font-hanzi);
+            font-size: 1.6rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.08s ease;
+        }
+        .component-tile:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+        .component-tile.used {
+            opacity: 0.15;
+            pointer-events: none;
+            border-bottom-width: 1px;
+        }
+
+        /* TERMINAL DE ALARMAS / ESCÁNER */
+        .terminal-display {
+            width: 100%;
+            background: #04070e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid var(--status-red);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin: 8px 0;
+            word-break: break-all;
+        }
+        .terminal-token {
+            display: inline-block;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s;
+        }
+        .terminal-token:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.15);
+        }
+        .terminal-token.token-static {
+            cursor: default;
+            color: #475569;
+        }
+        .terminal-token.token-static:hover {
+            border-color: transparent;
+            background: transparent;
+        }
+        .terminal-token.success-hit {
+            background: var(--status-green) !important;
+            color: white !important;
+            font-weight: 700;
+            box-shadow: 0 0 10px var(--status-green);
+        }
+        .terminal-token.fail-hit {
+            background: var(--status-red) !important;
+            color: white !important;
+        }
+
+        /* DESGLOSE / ANATOMÍA POP-UP */
+        .telemetry-box {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .telemetry-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 5px 0;
+        }
+        .telemetry-chip {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+        }
+        .telemetry-chip strong { color: var(--accent-cyan); }
+        .telemetry-log {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            line-height: 1.35;
+        }
+
+        /* ========================================================
+           BOTONES TÁCTILES ACCIÓN PRIMARIA
+           ======================================================== */
+        .btn-core {
+            border: none;
+            border-radius: 12px;
+            font-family: var(--font-ui);
+            font-weight: 800;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-core:active {
+            transform: translateY(2px);
+        }
+
+        .btn-cyan {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border-bottom: 4px solid #075985;
+            padding: 12px 16px;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+        }
+        .btn-cyan:active {
+            border-bottom-width: 2px;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 3px solid rgba(0, 0, 0, 0.5);
+            color: var(--text-main);
+            padding: 8px 14px;
+            font-size: 0.78rem;
+        }
+        .btn-ghost:active {
+            border-bottom-width: 1px;
+        }
+
+        .full-trigger {
+            width: 100%;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* PANTALLA SUMMARY */
+        .summary-dashboard {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 24px 16px;
+            text-align: center;
+            margin: auto 0;
+            box-shadow: var(--card-glow);
+        }
+
+        /* ========================================================
+           BARRA DOCK INFERIOR (ESTILO PANEL DE CONTROL)
+           ======================================================== */
+        .hmi-dock {
+            height: 58px;
+            background: rgba(10, 16, 28, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            padding: 3px;
+            box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .dock-item {
+            flex: 1;
+            background: transparent;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            padding: 6px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .dock-svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.2s ease;
+        }
+        .dock-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            margin-top: 3px;
+        }
+        .dock-item.active {
+            color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.08);
+        }
+        .dock-item.active .dock-svg {
+            transform: scale(1.1);
+        }
+        .dock-item.active::after {
+            content: "";
+            position: absolute;
+            bottom: 3px;
+            width: 12px;
+            height: 2px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+            box-shadow: 0 0 6px var(--accent-cyan);
+        }
+    </style>
 </head>
 <body>
 
-<div class="app-layout">
-    <!-- BARRA SUPERIOR (HUD DUOLINGO STYLE) -->
-    <header class="hud-header">
-        <div class="hud-item streak" title="Días seguidos practicando">
-            <span class="hud-icon">🔥</span>
+<div class="terminal-container">
+    <!-- SUPERIOR: HUD STATUS -->
+    <header class="hmi-hud">
+        <div class="hud-badge badge-streak" title="Días consecutivos">
+            <span>🔥</span>
             <span id="hud-streak-count">1</span>
         </div>
-        <div class="hud-item xp" title="Puntos de experiencia acumulados">
-            <span class="hud-icon">⚡</span>
+        <div class="hud-badge badge-xp" title="Experiencia acumulada">
+            <span>⚡</span>
             <span id="hud-xp-count">0 XP</span>
         </div>
-        <div class="hud-selector-wrap">
-            <select id="category-selector" class="hud-select" onchange="changeCategory(this.value)">
+        <div class="system-select-wrapper">
+            <select id="category-selector" class="system-select" onchange="changeCategory(this.value)">
                 <option value="todos">🌐 General</option>
                 <option value="alarmas">🚨 Alarmas / Seguridad</option>
-                <option value="mecanica">⚙️ Mecánica / Ejes</option>
+                <option value="mecanica">⚙️ Mecánica / Actuadores</option>
                 <option value="operacion">🎛️ Operación / Test</option>
             </select>
         </div>
     </header>
 
-    <!-- ÁREA DE CONTENIDO CENTRAL -->
-    <main class="content-viewport">
-        <!-- Barra de progreso del bloque de 5 -->
-        <div class="progress-container">
-            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+    <!-- WORKBENCH PRINCIPAL -->
+    <main class="workspace">
+        <div class="cycle-progress">
+            <div id="progress-bar-fill" class="cycle-progress-bar"></div>
         </div>
 
-        <!-- Sub-selector de Nivel (Básicos vs Compuestos) -->
-        <div id="level-container" class="level-pills">
-            <button class="pill-btn active" onclick="setLevel(1)">Nivel 1: Radicales</button>
-            <button class="pill-btn" onclick="setLevel(2)">Nivel 2: Ecuación HMI</button>
+        <div id="level-container" class="level-selector-strip">
+            <button class="level-pill active" onclick="setLevel(1)">Nivel 1: Radicales</button>
+            <button class="level-pill" onclick="setLevel(2)">Nivel 2: Ecuación HMI</button>
         </div>
 
-        <!-- MODALIDAD 1: FLASHCARDS -->
-        <section id="mode-flashcards" class="view-panel active">
-            <div class="flashcard-canvas" onclick="flipCard()">
-                <div id="fc-hanzi" class="hanzi-hero">--</div>
-                <div id="fc-pinyin" class="pinyin-hero">--</div>
-                <div id="fc-body" class="fc-body-zone">
-                    <span class="tap-hint">Toca para inspeccionar desglose</span>
+        <!-- 1. FLASHCARDS -->
+        <section id="mode-flashcards" class="mode-screen active">
+            <div class="chassis-card" onclick="flipCard()" style="cursor: pointer;">
+                <div class="hanzi-viewport">
+                    <div id="fc-hanzi" class="hanzi-character">--</div>
+                </div>
+                <div id="fc-pinyin" class="pinyin-label">--</div>
+                <div id="fc-body">
+                    <span class="inspect-badge">Toca para inspeccionar telemetría</span>
                 </div>
             </div>
-            <div class="fc-action-row">
-                <button class="duo-btn duo-btn-secondary" onclick="prevCard()">← Anterior</button>
-                <span id="fc-counter" class="counter-badge">1 / 5</span>
-                <button class="duo-btn duo-btn-secondary" onclick="nextCard()">Siguiente →</button>
+            <div class="nav-actions-strip">
+                <button class="btn-core btn-ghost" onclick="prevCard()">← Anterior</button>
+                <span id="fc-counter" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-dim); font-weight: 700;">1 / 5</span>
+                <button class="btn-core btn-ghost" onclick="nextCard()">Siguiente →</button>
             </div>
         </section>
 
-        <!-- MODALIDAD 2: QUIZ -->
-        <section id="mode-quiz" class="view-panel">
-            <div class="quiz-question-box">
-                <span class="badge-tag">Diagnóstico</span>
-                <div id="quiz-hanzi" class="hanzi-medium">--</div>
-                <div id="quiz-pinyin" class="pinyin-medium">--</div>
-                <div id="quiz-breakdown" class="anatomy-popout" style="display: none;"></div>
+        <!-- 2. QUIZ -->
+        <section id="mode-quiz" class="mode-screen">
+            <div class="chassis-card">
+                <span class="status-pill-tag">Diagnóstico de Parámetro</span>
+                <div class="hanzi-viewport" style="margin: 0;">
+                    <div id="quiz-hanzi" class="hanzi-character" style="font-size: 4rem;">--</div>
+                </div>
+                <div id="quiz-pinyin" class="pinyin-label" style="font-size: 1.15rem; margin-bottom: 4px;">--</div>
+                <div id="quiz-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
-            <div id="quiz-options" class="quiz-grid"></div>
-            <button id="quiz-next-btn" class="duo-btn duo-btn-primary full-width-action" onclick="nextQuizQuestion()">Continuar → [Espacio]</button>
+            <div id="quiz-options" class="quiz-options-matrix"></div>
+            <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">Continuar Secuencia → [Espacio]</button>
         </section>
 
-        <!-- MODALIDAD 3: TALLER ENSAMBLE -->
-        <section id="mode-builder" class="view-panel">
-            <div class="builder-mission-box">
-                <span class="badge-tag">Ensamble Mecatrónico</span>
-                <div id="builder-meaning" class="target-term">--</div>
-                <div id="builder-slots" class="slots-rail"></div>
-                <div id="builder-breakdown" class="anatomy-popout" style="display: none;"></div>
+        <!-- 3. ENSAMBLE -->
+        <section id="mode-builder" class="mode-screen">
+            <div class="chassis-card">
+                <span class="status-pill-tag">Secuencia Mecatrónica</span>
+                <div id="builder-meaning" style="font-size: 1.15rem; font-weight: 800; color: var(--accent-cyan); margin: 6px 0;">--</div>
+                <div id="builder-slots" class="assembly-rail"></div>
+                <div id="builder-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
-            <div id="builder-pool" class="tiles-tray"></div>
-            <button id="builder-next-btn" class="duo-btn duo-btn-primary full-width-action" onclick="nextBuilderQuestion()">Término Ensamblado → [Espacio]</button>
+            <div id="builder-pool" class="parts-tray"></div>
+            <button id="builder-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextBuilderQuestion()">Ensamble Confirmado → [Espacio]</button>
         </section>
 
-        <!-- MODALIDAD 4: ESCÁNER HMI -->
-        <section id="mode-scanner" class="view-panel">
-            <div class="scanner-frame">
-                <span class="badge-tag badge-alarm">Interlock / Pantalla de Error</span>
-                <div id="scanner-task" class="scanner-prompt">--</div>
-                <div id="scanner-alarm-display" class="hmi-screen-terminal"></div>
-                <div id="scanner-breakdown" class="anatomy-popout" style="display: none;"></div>
+        <!-- 4. ESCÁNER HMI -->
+        <section id="mode-scanner" class="mode-screen">
+            <div class="chassis-card" style="justify-content: flex-start;">
+                <span class="status-pill-tag status-pill-alarm">Interlock / Alarma de Línea</span>
+                <div id="scanner-task" style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin: 6px 0;">--</div>
+                <div id="scanner-alarm-display" class="terminal-display"></div>
+                <div id="scanner-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
-            <button id="scanner-next-btn" class="duo-btn duo-btn-primary full-width-action" onclick="nextScannerQuestion()">Siguiente Alarma → [Espacio]</button>
+            <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">Siguiente Incidente → [Espacio]</button>
         </section>
 
-        <!-- PANTALLA: RESUMEN DE SESIÓN -->
-        <section id="mode-summary" class="view-panel">
-            <div class="summary-card-duo">
-                <div class="victory-icon">🎉</div>
-                <h2 class="victory-title">¡Bloque Concluido!</h2>
-                <div id="summary-percentage" class="score-display">100%</div>
-                <p id="summary-details" class="summary-subtitle">Completaste la tanda de 5 términos técnicos.</p>
-                <button class="duo-btn duo-btn-primary full-width-action" onclick="restartSession()">Iniciar otro bloque de 5</button>
+        <!-- RESUMEN -->
+        <section id="mode-summary" class="mode-screen">
+            <div class="summary-dashboard">
+                <div style="font-size: 2.8rem; margin-bottom: 6px;">🎯</div>
+                <h2 style="color: var(--accent-cyan); font-size: 1.3rem; font-weight: 800;">Ciclo Concluido</h2>
+                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 3rem; font-weight: 800; color: var(--status-green); margin: 6px 0;">100%</div>
+                <p id="summary-details" style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 16px;">Términos validados correctamente en este bloque.</p>
+                <button class="btn-core btn-cyan" style="width: 100%;" onclick="restartSession()">Iniciar Siguiente Ciclo (5 al azar)</button>
             </div>
         </section>
     </main>
 
-    <!-- BARRA INFERIOR DE NAVEGACIÓN FIJA (BOTTOM DOCK) -->
-    <nav class="bottom-dock">
-        <button class="dock-tab active" onclick="switchMode('flashcards')">
-            <span class="dock-icon">🎴</span>
-            <span class="dock-label">Tarjetas</span>
+    <!-- INFERIOR: BARRA DOCK HMI CON ICONOS VECTORIALES SVG -->
+    <nav class="hmi-dock">
+        <button class="dock-item active" onclick="switchMode('flashcards')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
+            <span class="dock-title">Tarjetas</span>
         </button>
-        <button class="dock-tab" onclick="switchMode('quiz')">
-            <span class="dock-icon">🎯</span>
-            <span class="dock-label">Quiz</span>
+        <button class="dock-item" onclick="switchMode('quiz')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2"/></svg>
+            <span class="dock-title">Quiz</span>
         </button>
-        <button class="dock-tab" onclick="switchMode('builder')">
-            <span class="dock-icon">⚙️</span>
-            <span class="dock-label">Ensamble</span>
+        <button class="dock-item" onclick="switchMode('builder')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span class="dock-title">Ensamble</span>
         </button>
-        <button class="dock-tab" onclick="switchMode('scanner')">
-            <span class="dock-icon">🔍</span>
-            <span class="dock-label">Escáner</span>
+        <button class="dock-item" onclick="switchMode('scanner')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="9" x2="12" y2="15"/></svg>
+            <span class="dock-title">Escáner</span>
         </button>
     </nav>
 </div>

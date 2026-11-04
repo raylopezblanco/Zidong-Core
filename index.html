@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanzi Industrial - HMI & Automatización</title>
+    <style>
+        :root {
+            --bg-color: #0b1329;
+            --card-bg: #152243;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --part-bg: #1e293b;
+            --slot-border: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0b1329 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 8px 12px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px; /* Ancho optimizado para visualización centrada y móvil */
+            display: flex;
+            flex-direction: column;
+            height: calc(100dvh - 16px); /* Ocupa exactamente el alto de pantalla del celular */
+            gap: 6px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        /* Selector de Categoría */
+        .category-box {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .category-label {
+            font-size: 0.68rem;
+            color: var(--accent);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .category-select {
+            width: 100%;
+            background: #080d1a;
+            color: #f8fafc;
+            border: 1px solid #334155;
+            padding: 7px 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        /* Marcador compacto */
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(11, 19, 41, 0.7);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            border: 1px solid #334155;
+        }
+
+        .finish-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Selectores de Nivel y Pestañas */
+        .level-switcher {
+            display: flex;
+            background: #080d1a;
+            padding: 2px;
+            border-radius: 8px;
+            gap: 4px;
+        }
+        .level-btn {
+            flex: 1;
+            padding: 6px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .level-btn.active {
+            background: var(--card-bg);
+            color: var(--accent);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 7px 2px;
+            background: var(--card-bg);
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: var(--accent);
+            color: #0b1329;
+        }
+
+        /* Estenedores de Modos para ocupar el resto de pantalla */
+        #mode-flashcards, #mode-quiz, #mode-builder, #mode-scanner, #mode-summary {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* Permite estiramiento fluido */
+        }
+
+        /* Tarjeta principal con estiramiento elástico */
+        .card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1; /* Ocupa todo el espacio vertical sobrante */
+            min-height: 220px;
+            overflow-y: auto;
+        }
+
+        /* Hanzi gigante y visible */
+        .hanzi-display {
+            font-size: 4.6rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.1;
+            text-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+
+        .pinyin-display {
+            font-size: 1.15rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 4px;
+            margin-bottom: 6px;
+        }
+
+        /* Desglose anatómico */
+        .anatomy-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            margin-top: 6px;
+            background: #080d1a;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            text-align: left;
+        }
+        .anatomy-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .anatomy-parts {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .part-chip {
+            background: var(--part-bg);
+            padding: 4px 6px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            flex: 1;
+            min-width: 85px;
+        }
+        .part-char {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-right: 3px;
+        }
+        .anatomy-summary {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            line-height: 1.25;
+        }
+
+        /* Opciones en 2x2 */
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .option-btn {
+            background: var(--card-bg);
+            border: 2px solid #334155;
+            color: var(--text-main);
+            padding: 10px 6px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .option-btn.correct { background: var(--success); border-color: var(--success); color: white; }
+        .option-btn.incorrect { background: var(--error); border-color: var(--error); color: white; }
+
+        /* Controles pegados abajo */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-bottom: 2px;
+        }
+        .action-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .next-btn {
+            width: 100%;
+            margin-top: 8px;
+            background: var(--accent);
+            color: #0b1329;
+            border: none;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Taller Ensamble */
+        .builder-target {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .slots-container {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 10px 0;
+        }
+        .slot {
+            width: 48px;
+            height: 48px;
+            border: 2px dashed var(--slot-border);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            font-weight: bold;
+            background: rgba(8, 13, 26, 0.4);
+            cursor: pointer;
+        }
+        .slot.filled {
+            border-style: solid;
+            border-color: var(--accent);
+            background: var(--card-bg);
+        }
+        .pool-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px;
+            background: #080d1a;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+        .tile-btn {
+            width: 46px;
+            height: 46px;
+            background: var(--card-bg);
+            border: 2px solid #334155;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .tile-btn.used {
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Escáner */
+        .scanner-alarm-box {
+            background: #050b18;
+            border: 1px solid #334155;
+            border-left: 4px solid #ef4444;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.15rem;
+            line-height: 1.7;
+            text-align: left;
+            margin-top: 6px;
+            width: 100%;
+        }
+        .hmi-token {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 2px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .hmi-token.token-plain {
+            cursor: default;
+            color: #64748b;
+        }
+        .hmi-token.hit-success {
+            background: var(--success) !important;
+            color: white !important;
+            font-weight: bold;
+        }
+        .hmi-token.hit-error {
+            background: var(--error) !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Hanzi Industrial</h1>
+        <p>Automatización y HMI</p>
+    </header>
+
+    <!-- Selector de Categoría / Tema Técnico -->
+    <div class="category-box">
+        <span class="category-label">Subsistema HMI / Tema:</span>
+        <select id="category-selector" class="category-select" onchange="changeCategory(this.value)">
+            <option value="todos">🌐 Todos los temas (Repaso General)</option>
+            <option value="alarmas">🚨 1. Alarmas y Seguridad (Puertas, Interlocks)</option>
+            <option value="mecanica">⚙️ 2. Mecánica y Actuadores (Gantry, Cilindros, Motores)</option>
+            <option value="operacion">🎛️ 3. Operación, Menús y Pruebas (Test, Habilitación)</option>
+        </select>
+    </div>
+
+    <!-- Marcador de sesión activa -->
+    <div id="session-score-bar" class="score-bar" style="display: none;">
+        <span>🎯 Aciertos: <strong id="score-counter" style="color: var(--accent);">0 / 0</strong></span>
+        <button class="finish-btn" onclick="finishSession()">Finalizar sesión</button>
+    </div>
+
+    <!-- Selector de Nivel -->
+    <div id="level-container" class="level-switcher">
+        <button class="level-btn active" onclick="setLevel(1)">Nivel 1: Básicos / Radicales</button>
+        <button class="level-btn" onclick="setLevel(2)">Nivel 2: Compuestos / Ecuación</button>
+    </div>
+
+    <!-- Pestañas de Navegación -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchMode('flashcards')">Flashcards</button>
+        <button class="tab-btn" onclick="switchMode('quiz')">Quiz</button>
+        <button class="tab-btn" onclick="switchMode('builder')">Taller Ensamble</button>
+        <button class="tab-btn" onclick="switchMode('scanner')">🔍 Escáner HMI</button>
+    </div>
+
+    <!-- PANTALLA 1: FLASHCARDS -->
+    <div id="mode-flashcards">
+        <div class="card" onclick="flipCard()" style="cursor: pointer;">
+            <div id="fc-hanzi" class="hanzi-display">--</div>
+            <div id="fc-pinyin" class="pinyin-display">--</div>
+            <div id="fc-body"></div>
+        </div>
+        <div class="controls">
+            <button class="action-btn" onclick="prevCard()">Anterior</button>
+            <span id="fc-counter" style="align-self: center; color: var(--text-muted); font-size: 0.8rem;">- / -</span>
+            <button class="action-btn" onclick="nextCard()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: QUIZ -->
+    <div id="mode-quiz" style="display: none;">
+        <div class="card" style="padding: 14px; margin-bottom: 10px; cursor: default;">
+            <p id="quiz-prompt" style="font-size: 0.78rem; margin-bottom: 3px;">¿Qué significa este término técnico?</p>
+            <div id="quiz-hanzi" class="hanzi-display">--</div>
+            <div id="quiz-pinyin" class="pinyin-display">--</div>
+            <div id="quiz-breakdown" class="anatomy-box" style="display: none;"></div>
+        </div>
+        <div id="quiz-options" class="quiz-options"></div>
+        <button id="quiz-next-btn" class="next-btn" onclick="nextQuizQuestion()">Siguiente pregunta → [Espacio]</button>
+    </div>
+
+    <!-- PANTALLA 3: TALLER ENSAMBLE -->
+    <div id="mode-builder" style="display: none;">
+        <div class="card" style="padding: 14px; cursor: default;">
+            <p style="font-size: 0.78rem; margin-bottom: 3px;">Arma el término industrial:</p>
+            <div id="builder-meaning" class="builder-target">--</div>
+            <p style="font-size: 0.72rem; color: var(--text-muted);">(Toca las fichas en orden para ensamblar)</p>
+            <div id="builder-slots" class="slots-container"></div>
+            <div id="builder-breakdown" class="anatomy-box" style="display: none;"></div>
+        </div>
+        <div id="builder-pool" class="pool-container"></div>
+        <button id="builder-next-btn" class="next-btn" onclick="nextBuilderQuestion()">¡Correcto! Siguiente término → [Espacio]</button>
+    </div>
+
+    <!-- PANTALLA 4: ESCÁNER HMI (LECTURA DE CONTEXTO) -->
+    <div id="mode-scanner" style="display: none;">
+        <div class="card" style="padding: 14px; cursor: default;">
+            <p style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 2px;">MISIÓN DE ESCANEO DE ALARMA:</p>
+            <div id="scanner-task" style="font-size: 1.1rem; font-weight: bold; color: var(--accent); margin-bottom: 8px;">--</div>
+            <p style="font-size: 0.74rem; color: #94a3b8;">Toca la palabra correcta dentro del texto de pantalla:</p>
+            
+            <div id="scanner-alarm-display" class="scanner-alarm-box"></div>
+            <div id="scanner-breakdown" class="anatomy-box" style="display: none;"></div>
+        </div>
+        <button id="scanner-next-btn" class="next-btn" onclick="nextScannerQuestion()">Siguiente alarma → [Espacio]</button>
+    </div>
+
+    <!-- PANTALLA 5: RESUMEN DE SESIÓN -->
+    <div id="mode-summary" style="display: none;">
+        <div class="summary-card">
+            <h2 style="margin: 0; color: var(--accent); font-size: 1.2rem;">Resumen de la Sesión</h2>
+            <div id="summary-percentage" class="score-circle">0%</div>
+            <p id="summary-details" style="font-size: 0.9rem; margin-bottom: 16px;">Respondiste correctamente 0 de 0 preguntas.</p>
+            <button class="action-btn" style="width: 100%; padding: 10px; background: var(--accent); color: #0b1329;" onclick="restartSession()">Reiniciar práctica</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========================================================
+// BASE DE VOCABULARIO CLASIFICADA POR TEMA TÉCNICO
+// ========================================================
+const vocabulary = [
+    // ----------------------------------------------------
+    // TEMA: ALARMAS Y SEGURIDAD (alarmas)
+    // ----------------------------------------------------
+    {
+        hanzi: "警", pinyin: "jǐng", meaning: "Alerta / Advertencia", level: 1, topic: "alarmas",
+        parts: [{ char: "敬 (jìng)", desc: "Respeto/Atención" }, { char: "言 (yán)", desc: "Palabra/Aviso" }],
+        summary: "Dar aviso verbal o señal de peligro. Núcleo de 报警 (alarma)."
+    },
+    {
+        hanzi: "停", pinyin: "tíng", meaning: "Parar / Detener", level: 1, topic: "alarmas",
+        parts: [{ char: "亻 (rén)", desc: "Persona" }, { char: "亭 (tíng)", desc: "Pabellón/Parada" }],
+        summary: "Persona que se detiene en un pabellón. Base de 急停 (paro de emergencia)."
+    },
+    {
+        hanzi: "安", pinyin: "ān", meaning: "Seguro / Tranquilo", level: 1, topic: "alarmas",
+        parts: [{ char: "宀 (mián)", desc: "Techo/Protección" }, { char: "女 (nǚ)", desc: "Paz bajo techo" }],
+        summary: "Protección bajo techo. Base de 安全 (seguridad)."
+    },
+    {
+        hanzi: "锁", pinyin: "suǒ", meaning: "Cerradura / Candado / Traba", level: 1, topic: "alarmas",
+        parts: [{ char: "钅 (jīn)", desc: "Metal" }, { char: "𧴪", desc: "Cadena o pasador metálico" }],
+        summary: "Enclavamiento físico o de seguridad. Base de 解锁 (desbloqueo) y 锁死 (bloqueado)."
+    },
+    {
+        hanzi: "门", pinyin: "mén", meaning: "Puerta / Acceso", level: 1, topic: "alarmas",
+        parts: [{ char: "门", desc: "Marco de una puerta de dos hojas" }],
+        summary: "Acceso físico de cabina o celda (安全门, 龙门)."
+    },
+    {
+        hanzi: "鸣", pinyin: "míng", meaning: "Zumbido / Sonido de alarma", level: 1, topic: "alarmas",
+        parts: [{ char: "口 (kǒu)", desc: "Boca / Sonido" }, { char: "鸟 (niǎo)", desc: "Canto o tono agudo" }],
+        summary: "Emisión sonora acústica. Base de 蜂鸣器 (buzzer)."
+    },
+
+    // Compuestos de Alarmas
+    {
+        hanzi: "报警", pinyin: "bàojǐng", meaning: "Alarma activa", level: 2, topic: "alarmas",
+        parts: [{ char: "报", desc: "Reportar" }, { char: "警", desc: "Alerta" }],
+        summary: "Ecuación: [Reportar] + [Alerta] = Condición de alarma de máquina."
+    },
+    {
+        hanzi: "急停", pinyin: "jítíng", meaning: "Paro de Emergencia (E-Stop)", level: 2, topic: "alarmas",
+        parts: [{ char: "急", desc: "Urgente" }, { char: "停", desc: "Detener" }],
+        summary: "Ecuación: [Urgente] + [Detener] = Botón o circuito de Paro de Emergencia."
+    },
+    {
+        hanzi: "安全门", pinyin: "ānquán mén", meaning: "Puerta de seguridad / Enclavamiento", level: 2, topic: "alarmas",
+        parts: [{ char: "安全", desc: "Seguridad" }, { char: "门", desc: "Puerta" }],
+        summary: "Ecuación: [Seguridad] + [Puerta] = Puerta con switch de interlock (左前, 右后)."
+    },
+    {
+        hanzi: "解锁", pinyin: "jiěsuǒ", meaning: "Desbloquear / Quitar interlock", level: 2, topic: "alarmas",
+        parts: [{ char: "解", desc: "Liberar / Soltar" }, { char: "锁", desc: "Candado / Traba" }],
+        summary: "Ecuación: [Liberar] + [Candado] = Botón para desenergizar seguros y abrir cabina."
+    },
+    {
+        hanzi: "蜂鸣器", pinyin: "fēngmíngqì", meaning: "Buzzer / Bocina de alarma acústica", level: 2, topic: "alarmas",
+        parts: [{ char: "蜂", desc: "Abeja" }, { char: "鸣", desc: "Zumbido" }, { char: "器", desc: "Aparato" }],
+        summary: "Ecuación: [Zumbido de abeja] + [Aparato] = Alarma sonora de panel."
+    },
+
+    // ----------------------------------------------------
+    // TEMA: MECÁNICA Y ACTUADORES (mecanica)
+    // ----------------------------------------------------
+    {
+        hanzi: "电", pinyin: "diàn", meaning: "Electricidad / Eléctrico", level: 1, topic: "mecanica",
+        parts: [{ char: "申 (shēn)", desc: "Rayo" }, { char: "乚", desc: "Tierra" }],
+        summary: "Energía eléctrica. Base de motores y actuadores eléctricos (电机, 电缸)."
+    },
+    {
+        hanzi: "机", pinyin: "jī", meaning: "Máquina / Mecanismo", level: 1, topic: "mecanica",
+        parts: [{ char: "木 (mù)", desc: "Madera / Estructura" }, { char: "几 (jī)", desc: "Soporte" }],
+        summary: "Mecanismo electromecánico con movimiento."
+    },
+    {
+        hanzi: "组", pinyin: "zǔ", meaning: "Grupo / Ensamble (piezas unidas)", level: 1, topic: "mecanica",
+        parts: [{ char: "纟 (sī)", desc: "Seda (atar partes)" }, { char: "且 (qiě)", desc: "Soporte" }],
+        summary: "Unir componentes móviles sobre un eje. Núcleo de 模组 (módulo móvil)."
+    },
+    {
+        hanzi: "缸", pinyin: "gāng", meaning: "Cilindro / Actuador", level: 1, topic: "mecanica",
+        parts: [{ char: "缶 (fǒu)", desc: "Vasija cilíndrica" }, { char: "工 (gōng)", desc: "Trabajo" }],
+        summary: "Cuerpo cilíndrico de empuje (电缸 = cilindro eléctrico, 气缸 = neumático)."
+    },
+    {
+        hanzi: "龙", pinyin: "lóng", meaning: "Dragón / Puente elevado", level: 1, topic: "mecanica",
+        parts: [{ char: "龙", desc: "Figura alargada sobre caballetes" }],
+        summary: "Estructura elevada sobre dos postes. Base del pórtico 龙门 (Gantry)."
+    },
+    {
+        hanzi: "推", pinyin: "tuī", meaning: "Empujar / Avance lineal", level: 1, topic: "mecanica",
+        parts: [{ char: "扌(shǒu)", desc: "Mano" }, { char: "隹 (zhuī)", desc: "Avanzar recto" }],
+        summary: "Acción de empuje lineal de un pistón o eje (侧推 = empuje lateral)."
+    },
+    {
+        hanzi: "臂", pinyin: "bì", meaning: "Brazo", level: 1, topic: "mecanica",
+        parts: [{ char: "辟", desc: "Fonética" }, { char: "月 / 肉", desc: "Cuerpo" }],
+        summary: "Elemento articulado de manipulación (机械臂)."
+    },
+    {
+        hanzi: "直", pinyin: "zhí", meaning: "Recto / Directo", level: 1, topic: "mecanica",
+        parts: [{ char: "十", desc: "Alineación" }, { char: "目", desc: "Ojo directo" }],
+        summary: "Alineación y movimiento sin desviación (直线)."
+    },
+    {
+        hanzi: "线", pinyin: "xiàn", meaning: "Línea / Trayectoria", level: 1, topic: "mecanica",
+        parts: [{ char: "纟", desc: "Seda continua" }, { char: "戋", desc: "Trazo recto" }],
+        summary: "Línea de producción o eje recto (直线模组)."
+    },
+
+    // Compuestos de Mecánica
+    {
+        hanzi: "龙门", pinyin: "lóngmén", meaning: "Gantry / Estructura pórtico", level: 2, topic: "mecanica",
+        parts: [{ char: "龙", desc: "Dragón / Puente" }, { char: "门", desc: "Puerta" }],
+        summary: "Ecuación: [Puente] + [Pórtico] = Gantry con servomotores superiores (龙门Z1)."
+    },
+    {
+        hanzi: "电缸", pinyin: "diàngāng", meaning: "Cilindro eléctrico / Actuador", level: 2, topic: "mecanica",
+        parts: [{ char: "电", desc: "Eléctrico" }, { char: "缸", desc: "Cilindro" }],
+        summary: "Ecuación: [Eléctrico] + [Cilindro] = Servocilindro lineal de empuje."
+    },
+    {
+        hanzi: "电机", pinyin: "diànjī", meaning: "Motor eléctrico / Servomotor", level: 2, topic: "mecanica",
+        parts: [{ char: "电", desc: "Electricidad" }, { char: "机", desc: "Máquina" }],
+        summary: "Ecuación: [Electricidad] + [Máquina] = Motor / Servomotor."
+    },
+    {
+        hanzi: "模组", pinyin: "mózǔ", meaning: "Módulo mecatrónico (Ensamble móvil)", level: 2, topic: "mecanica",
+        parts: [{ char: "模", desc: "Molde estándar" }, { char: "组", desc: "Ensamble (seda 纟)" }],
+        summary: "Ecuación: [Molde] + [Grupo] = Actuador o eje ensamblado con movimiento."
+    },
+    {
+        hanzi: "机械臂", pinyin: "jīxièbì", meaning: "Brazo robótico articulado", level: 2, topic: "mecanica",
+        parts: [{ char: "机械", desc: "Mecánico" }, { char: "臂", desc: "Brazo" }],
+        summary: "Ecuación: [Mecánico] + [Brazo] = Manipulador de piezas."
+    },
+    {
+        hanzi: "直线", pinyin: "zhíxiàn", meaning: "Línea recta / Lineal", level: 2, topic: "mecanica",
+        parts: [{ char: "直", desc: "Recto" }, { char: "线", desc: "Línea" }],
+        summary: "Ecuación: [Recto] + [Línea] = Guía lineal o servomotor directo."
+    },
+
+    // ----------------------------------------------------
+    // TEMA: OPERACIÓN, MENÚS Y PRUEBAS (operacion)
+    // ----------------------------------------------------
+    {
+        hanzi: "使", pinyin: "shǐ", meaning: "Comandar / Poner a trabajar", level: 1, topic: "operacion",
+        parts: [{ char: "亻", desc: "Persona" }, { char: "吏", desc: "Oficial que ordena" }],
+        summary: "Mandar una señal de activación. Base de 使能 (Enable)."
+    },
+    {
+        hanzi: "能", pinyin: "néng", meaning: "Poder / Capacidad / Habilitar", level: 1, topic: "operacion",
+        parts: [{ char: "厶", desc: "Fuerza propia" }, { char: "月", desc: "Músculo" }],
+        summary: "Capacidad de encender un driver. Base de 使能 (Enable)."
+    },
+    {
+        hanzi: "未", pinyin: "wèi", meaning: "Aún no / NO (Negación técnica)", level: 1, topic: "operacion",
+        parts: [{ char: "木 con trazo superior", desc: "Árbol que aún no madura" }],
+        summary: "Prefijo clave de falla en HMI: 未使能 (No habilitado / Disabled)."
+    },
+    {
+        hanzi: "测", pinyin: "cè", meaning: "Medir / Sondear / Test", level: 1, topic: "operacion",
+        parts: [{ char: "氵(shuǐ)", desc: "Agua (nivel)" }, { char: "则 (zé)", desc: "Regla/Norma" }],
+        summary: "Medir parámetros según norma. Núcleo de 测试 (test)."
+    },
+    {
+        hanzi: "视", pinyin: "shì", meaning: "Ver / Inspección visual", level: 1, topic: "operacion",
+        parts: [{ char: "礻", desc: "Señal" }, { char: "见 (jiàn)", desc: "Mirar con ojo atento" }],
+        summary: "Cámara o sistema de visión artificial (视觉)."
+    },
+    {
+        hanzi: "块", pinyin: "kuài", meaning: "Bloque / Tarjeta compacta", level: 1, topic: "operacion",
+        parts: [{ char: "土", desc: "Tierra compacta" }, { char: "夬", desc: "Pieza sólida" }],
+        summary: "Ladrillo o bloque funcional electrónico (模块)."
+    },
+
+    // Compuestos de Operación
+    {
+        hanzi: "使能", pinyin: "shǐnéng", meaning: "Habilitar / Enable (Servo On)", level: 2, topic: "operacion",
+        parts: [{ char: "使", desc: "Comandar" }, { char: "能", desc: "Capacidad" }],
+        summary: "Ecuación: [Comandar] + [Poder] = Habilitación de potencia en servocontrolador."
+    },
+    {
+        hanzi: "未使能", pinyin: "wèi shǐnéng", meaning: "No habilitado / Disabled (Servo Off)", level: 2, topic: "operacion",
+        parts: [{ char: "未", desc: "No / Aún no" }, { char: "使能", desc: "Habilitar" }],
+        summary: "Ecuación: [NO] + [Habilitar] = Driver sin señal de Enable en el bus."
+    },
+    {
+        hanzi: "测试", pinyin: "cèshì", meaning: "Prueba / Test de producto", level: 2, topic: "operacion",
+        parts: [{ char: "测", desc: "Medir" }, { char: "试", desc: "Probar" }],
+        summary: "Ecuación: [Medir] + [Probar] = Rutina de validación eléctrica o funcional."
+    },
+    {
+        hanzi: "视觉", pinyin: "shìjué", meaning: "Visión artificial / Cámara HMI", level: 2, topic: "operacion",
+        parts: [{ char: "视", desc: "Ver" }, { char: "觉", desc: "Detectar" }],
+        summary: "Ecuación: [Ver] + [Sensar] = Menú de cámaras e inspección por visión."
+    },
+    {
+        hanzi: "模块", pinyin: "mókuài", meaning: "Módulo electrónico / Bloque funcional", level: 2, topic: "operacion",
+        parts: [{ char: "模", desc: "Molde estándar" }, { char: "块", desc: "Ladrillo sólido (tierra 土)" }],
+        summary: "Ecuación: [Molde] + [Bloque] = Tarjetas I/O de PLC o bloques funcionales."
+    }
+];
+
+// ========================================================
+// TEXTOS REALES DE PANTALLA HMI (MODO ESCÁNER)
+// ========================================================
+const scannerScenarios = [
+    {
+        id: "s1",
+        topic: "mecanica",
+        rawText: "W201: 龙门 Z1 未使能",
+        tokens: [
+            { text: "W201: ", isTarget: false },
+            { text: "龙门", isTarget: true, hanzi: "龙门" },
+            { text: " Z1 ", isTarget: false },
+            { text: "未使能", isTarget: true, hanzi: "未使能" }
+        ],
+        targetHanzi: "龙门",
+        prompt: "Localiza el término que significa: Gantry / Estructura pórtico"
+    },
+    {
+        id: "s2",
+        topic: "operacion",
+        rawText: "W107: 侧推 电缸 7 未使能",
+        tokens: [
+            { text: "W107: 侧推 ", isTarget: false },
+            { text: "电缸", isTarget: true, hanzi: "电缸" },
+            { text: " 7 ", isTarget: false },
+            { text: "未使能", isTarget: true, hanzi: "未使能" }
+        ],
+        targetHanzi: "未使能",
+        prompt: "Localiza la condición de error: No habilitado / Disabled (Servo Off)"
+    },
+    {
+        id: "s3",
+        topic: "mecanica",
+        rawText: "W105: 侧推 电缸 5 未使能",
+        tokens: [
+            { text: "W105: 侧推 ", isTarget: false },
+            { text: "电缸", isTarget: true, hanzi: "电缸" },
+            { text: " 5 ", isTarget: false },
+            { text: "未使能", isTarget: true, hanzi: "未使能" }
+        ],
+        targetHanzi: "电缸",
+        prompt: "Identifica el actuador lineal: Cilindro eléctrico"
+    },
+    {
+        id: "s4",
+        topic: "alarmas",
+        rawText: "护栏安全门: 按下对应侧护栏 解锁 按钮 解锁",
+        tokens: [
+            { text: "护栏", isTarget: false },
+            { text: "安全门", isTarget: true, hanzi: "安全门" },
+            { text: ": 按下对应侧护栏 ", isTarget: false },
+            { text: "解锁", isTarget: true, hanzi: "解锁" },
+            { text: " 按钮 ", isTarget: false },
+            { text: "解锁", isTarget: true, hanzi: "解锁" }
+        ],
+        targetHanzi: "安全门",
+        prompt: "Encuentra el dispositivo de interlock: Puerta de seguridad"
+    },
+    {
+        id: "s5",
+        topic: "alarmas",
+        rawText: "护栏安全门: 按下对应侧护栏 解锁 按钮",
+        tokens: [
+            { text: "护栏", isTarget: false },
+            { text: "安全门", isTarget: true, hanzi: "安全门" },
+            { text: ": 按下对应侧护栏 ", isTarget: false },
+            { text: "解锁", isTarget: true, hanzi: "解锁" },
+            { text: " 按钮", isTarget: false }
+        ],
+        targetHanzi: "解锁",
+        prompt: "Identifica el comando de seguridad: Desbloquear / Quitar interlock"
+    },
+    {
+        id: "s6",
+        topic: "alarmas",
+        rawText: "设备状态: 报警中 | 蜂鸣器 激活",
+        tokens: [
+            { text: "设备状态: ", isTarget: false },
+            { text: "报警", isTarget: true, hanzi: "报警" },
+            { text: "中 | ", isTarget: false },
+            { text: "蜂鸣器", isTarget: true, hanzi: "蜂鸣器" },
+            { text: " 激活", isTarget: false }
+        ],
+        targetHanzi: "蜂鸣器",
+        prompt: "Localiza el dispositivo acústico: Buzzer / Bocina de alarma"
+    },
+    {
+        id: "s7",
+        topic: "operacion",
+        rawText: "菜单导航: 测试机设备 | 视觉 控制",
+        tokens: [
+            { text: "菜单导航: ", isTarget: false },
+            { text: "测试", isTarget: true, hanzi: "测试" },
+            { text: "机设备 | ", isTarget: false },
+            { text: "视觉", isTarget: true, hanzi: "视觉" },
+            { text: " 控制", isTarget: false }
+        ],
+        targetHanzi: "视觉",
+        prompt: "Encuentra el subsistema de cámaras: Visión artificial"
+    }
+];
+
+// ========================================================
+// LÓGICA DE CONTROL
+// ========================================================
+let currentCategory = 'todos';
+let currentLevel = 1;
+let currentMode = 'flashcards';
+let sessionCorrect = 0;
+let sessionTotal = 0;
+
+function resetScore() {
+    sessionCorrect = 0;
+    sessionTotal = 0;
+    updateScoreUI();
+}
+
+function updateScoreUI() {
+    document.getElementById('score-counter').innerText = `${sessionCorrect} / ${sessionTotal}`;
+}
+
+function getActivePool() {
+    return vocabulary.filter(item => {
+        const matchesLevel = item.level === currentLevel;
+        const matchesTopic = (currentCategory === 'todos' || item.topic === currentCategory);
+        return matchesLevel && matchesTopic;
+    });
+}
+
+function changeCategory(cat) {
+    currentCategory = cat;
+    if (currentMode === 'flashcards') {
+        currentFC = 0;
+        updateFlashcard();
+    } else if (currentMode === 'quiz') {
+        resetScore();
+        initQuiz();
+    } else if (currentMode === 'builder') {
+        resetScore();
+        initBuilder();
+    } else if (currentMode === 'scanner') {
+        resetScore();
+        initScanner();
+    }
+}
+
+function setLevel(lvl) {
+    currentLevel = lvl;
+    document.querySelectorAll('.level-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', (idx + 1) === lvl);
+    });
+
+    if (currentMode === 'flashcards') {
+        currentFC = 0;
+        updateFlashcard();
+    } else if (currentMode === 'quiz') {
+        resetScore();
+        initQuiz();
+    } else if (currentMode === 'builder') {
+        resetScore();
+        initBuilder();
+    }
+}
+
+function switchMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('mode-flashcards').style.display = 'none';
+    document.getElementById('mode-quiz').style.display = 'none';
+    document.getElementById('mode-builder').style.display = 'none';
+    document.getElementById('mode-scanner').style.display = 'none';
+    document.getElementById('mode-summary').style.display = 'none';
+
+    const levelContainer = document.getElementById('level-container');
+    const scoreBar = document.getElementById('session-score-bar');
+
+    if (mode === 'flashcards') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('mode-flashcards').style.display = 'block';
+        levelContainer.style.display = 'flex';
+        scoreBar.style.display = 'none';
+        currentFC = 0;
+        updateFlashcard();
+    } else if (mode === 'quiz') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('mode-quiz').style.display = 'block';
+        levelContainer.style.display = 'flex';
+        scoreBar.style.display = 'flex';
+        resetScore();
+        initQuiz();
+    } else if (mode === 'builder') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('mode-builder').style.display = 'block';
+        currentLevel = 2;
+        document.querySelectorAll('.level-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === 1);
+        });
+        levelContainer.style.display = 'flex';
+        scoreBar.style.display = 'flex';
+        resetScore();
+        initBuilder();
+    } else if (mode === 'scanner') {
+        document.querySelectorAll('.tab-btn')[3].classList.add('active');
+        document.getElementById('mode-scanner').style.display = 'block';
+        levelContainer.style.display = 'none'; // El escáner trabaja directamente con oraciones completas
+        scoreBar.style.display = 'flex';
+        resetScore();
+        initScanner();
+    }
+}
+
+function finishSession() {
+    document.getElementById('mode-quiz').style.display = 'none';
+    document.getElementById('mode-builder').style.display = 'none';
+    document.getElementById('mode-scanner').style.display = 'none';
+    document.getElementById('session-score-bar').style.display = 'none';
+    document.getElementById('level-container').style.display = 'none';
+
+    const percentage = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 0;
+    document.getElementById('summary-percentage').innerText = `${percentage}%`;
+    document.getElementById('summary-details').innerText = `Acertaste ${sessionCorrect} de ${sessionTotal} ejercicios en esta sesión.`;
+    document.getElementById('mode-summary').style.display = 'block';
+}
+
+function restartSession() {
+    document.getElementById('mode-summary').style.display = 'none';
+    switchMode(currentMode);
+}
+
+// Atajo de teclado: Espacio o Enter avanza
+window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'Enter') {
+        const quizNext = document.getElementById('quiz-next-btn');
+        const builderNext = document.getElementById('builder-next-btn');
+        const scannerNext = document.getElementById('scanner-next-btn');
+
+        if (currentMode === 'quiz' && quizNext && quizNext.style.display === 'block') {
+            e.preventDefault();
+            nextQuizQuestion();
+        } else if (currentMode === 'builder' && builderNext && builderNext.style.display === 'block') {
+            e.preventDefault();
+            nextBuilderQuestion();
+        } else if (currentMode === 'scanner' && scannerNext && scannerNext.style.display === 'block') {
+            e.preventDefault();
+            nextScannerQuestion();
+        }
+    }
+});
+
+// --------------------------------------------------------
+// 1. FLASHCARDS
+// --------------------------------------------------------
+let currentFC = 0;
+let isFlipped = false;
+
+function renderFlashcardContent() {
+    const pool = getActivePool();
+    const body = document.getElementById('fc-body');
+    
+    if (pool.length === 0) {
+        document.getElementById('fc-hanzi').innerText = "Vacío";
+        document.getElementById('fc-pinyin').innerText = "";
+        body.innerHTML = "<div style='margin-top:10px; color:var(--text-muted);'>No hay términos en esta categoría.</div>";
+        return;
+    }
+
+    const item = pool[currentFC];
+    if (!isFlipped) {
+        document.getElementById('fc-hanzi').innerText = item.hanzi;
+        document.getElementById('fc-pinyin').innerText = item.pinyin;
+        body.innerHTML = `<div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">(Clic para voltear y ver desglose)</div>`;
+    } else {
+        document.getElementById('fc-hanzi').innerText = item.meaning;
+        document.getElementById('fc-pinyin').innerText = `${item.hanzi} [${item.pinyin}]`;
+        
+        const titleLabel = item.level === 1 ? "Radicales / Componentes:" : "Ecuación del Término:";
+        let partsHtml = item.parts.map(p => 
+            `<div class="part-chip"><span class="part-char">${p.char}</span><span class="part-desc">${p.desc}</span></div>`
+        ).join('');
+
+        body.innerHTML = `
+            <div class="anatomy-box" style="margin-top: 8px;">
+                <div class="anatomy-title">${titleLabel}</div>
+                <div class="anatomy-parts">${partsHtml}</div>
+                <div class="anatomy-summary">${item.summary}</div>
+            </div>
+        `;
+    }
+}
+
+function updateFlashcard() {
+    isFlipped = false;
+    const pool = getActivePool();
+    if (currentFC >= pool.length) currentFC = 0;
+    renderFlashcardContent();
+    document.getElementById('fc-counter').innerText = pool.length > 0 ? `${currentFC + 1} / ${pool.length}` : "0 / 0";
+}
+
+function flipCard() {
+    isFlipped = !isFlipped;
+    renderFlashcardContent();
+}
+
+function nextCard() {
+    const pool = getActivePool();
+    if (pool.length === 0) return;
+    currentFC = (currentFC + 1) % pool.length;
+    updateFlashcard();
+}
+
+function prevCard() {
+    const pool = getActivePool();
+    if (pool.length === 0) return;
+    currentFC = (currentFC - 1 + pool.length) % pool.length;
+    updateFlashcard();
+}
+
+// --------------------------------------------------------
+// 2. QUIZ
+// --------------------------------------------------------
+let quizList = [];
+let currentQuizIndex = 0;
+
+function initQuiz() {
+    quizList = [...getActivePool()].sort(() => Math.random() - 0.5);
+    currentQuizIndex = 0;
+    loadQuizQuestion();
+}
+
+function loadQuizQuestion() {
+    if (currentQuizIndex >= quizList.length) {
+        finishSession();
+        return;
+    }
+
+    const nextBtn = document.getElementById('quiz-next-btn');
+    nextBtn.style.display = 'none';
+
+    const breakdownBox = document.getElementById('quiz-breakdown');
+    breakdownBox.style.display = 'none';
+
+    const item = quizList[currentQuizIndex];
+    document.getElementById('quiz-hanzi').innerText = item.hanzi;
+    document.getElementById('quiz-pinyin').innerText = item.pinyin;
+
+    let options = [item.meaning];
+    let candidates = vocabulary.filter(p => p.meaning !== item.meaning);
+    candidates.sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < Math.min(3, candidates.length); i++) {
+        options.push(candidates[i].meaning);
+    }
+    options.sort(() => Math.random() - 0.5);
+
+    const optionsContainer = document.getElementById('quiz-options');
+    optionsContainer.innerHTML = '';
+
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => checkQuizAnswer(btn, opt, item);
+        optionsContainer.appendChild(btn);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function checkQuizAnswer(selectedBtn, selectedOpt, item) {
+    const allBtns = document.querySelectorAll('.option-btn');
+    allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+    sessionTotal++;
+
+    if (selectedOpt === item.meaning) {
+        selectedBtn.classList.add('correct');
+        sessionCorrect++;
+    } else {
+        selectedBtn.classList.add('incorrect');
+        allBtns.forEach(b => {
+            if (b.innerText === item.meaning) b.classList.add('correct');
+        });
+    }
+
+    updateScoreUI();
+
+    const breakdownBox = document.getElementById('quiz-breakdown');
+    const titleLabel = item.level === 1 ? "Estructura y Radicales:" : "Ecuación del Término:";
+    let partsHtml = item.parts.map(p => 
+        `<div class="part-chip"><span class="part-char">${p.char}</span><span class="part-desc">${p.desc}</span></div>`
+    ).join('');
+
+    breakdownBox.innerHTML = `
+        <div class="anatomy-title">${titleLabel}</div>
+        <div class="anatomy-parts">${partsHtml}</div>
+        <div class="anatomy-summary">${item.summary}</div>
+    `;
+    breakdownBox.style.display = 'flex';
+
+    const nextBtn = document.getElementById('quiz-next-btn');
+    nextBtn.style.display = 'block';
+
+    setTimeout(() => {
+        nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
+
+function nextQuizQuestion() {
+    currentQuizIndex++;
+    loadQuizQuestion();
+}
+
+// --------------------------------------------------------
+// 3. TALLER ENSAMBLE
+// --------------------------------------------------------
+let builderList = [];
+let builderIndex = 0;
+let selectedChars = [];
+let builderHadMistake = false;
+
+function initBuilder() {
+    const pool = vocabulary.filter(v => {
+        const matchesLevel = v.level === 2;
+        const matchesTopic = (currentCategory === 'todos' || v.topic === currentCategory);
+        return matchesLevel && matchesTopic;
+    });
+
+    builderList = [...pool].sort(() => Math.random() - 0.5);
+    builderIndex = 0;
+    loadBuilderQuestion();
+}
+
+function loadBuilderQuestion() {
+    if (builderIndex >= builderList.length) {
+        finishSession();
+        return;
+    }
+
+    selectedChars = [];
+    builderHadMistake = false;
+    const item = builderList[builderIndex];
+    const targetChars = item.hanzi.split('');
+
+    const nextBtn = document.getElementById('builder-next-btn');
+    nextBtn.style.display = 'none';
+
+    const breakdownBox = document.getElementById('builder-breakdown');
+    breakdownBox.style.display = 'none';
+
+    document.getElementById('builder-meaning').innerText = item.meaning;
+
+    const slotsContainer = document.getElementById('builder-slots');
+    slotsContainer.innerHTML = '';
+    for (let i = 0; i < targetChars.length; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.onclick = () => removeCharFromSlot(i);
+        slotsContainer.appendChild(slot);
+    }
+
+    const distractorChars = ['龙', '门', '使', '能', '未', '缸', '推', '安', '锁', '警', '停', '电', '直', '模', '组', '块'];
+    let poolChars = [...targetChars];
+    
+    while (poolChars.length < targetChars.length + 3) {
+        let randChar = distractorChars[Math.floor(Math.random() * distractorChars.length)];
+        if (!poolChars.includes(randChar)) {
+            poolChars.push(randChar);
+        }
+    }
+    poolChars.sort(() => Math.random() - 0.5);
+
+    const poolContainer = document.getElementById('builder-pool');
+    poolContainer.innerHTML = '';
+    poolChars.forEach((ch, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'tile-btn';
+        btn.innerText = ch;
+        btn.id = `tile-${idx}`;
+        btn.onclick = () => selectTile(ch, `tile-${idx}`);
+        poolContainer.appendChild(btn);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectTile(char, tileId) {
+    const item = builderList[builderIndex];
+    const targetLen = item.hanzi.length;
+
+    if (selectedChars.length < targetLen) {
+        selectedChars.push({ char, tileId });
+        document.getElementById(tileId).classList.add('used');
+        updateSlots();
+
+        if (selectedChars.length === targetLen) {
+            validateAssembly();
+        }
+    }
+}
+
+function removeCharFromSlot(slotIndex) {
+    if (slotIndex < selectedChars.length) {
+        const removed = selectedChars.splice(slotIndex, 1)[0];
+        document.getElementById(removed.tileId).classList.remove('used');
+        updateSlots();
+    }
+}
+
+function updateSlots() {
+    const slots = document.querySelectorAll('.slot');
+    slots.forEach((slot, i) => {
+        if (i < selectedChars.length) {
+            slot.innerText = selectedChars[i].char;
+            slot.classList.add('filled');
+        } else {
+            slot.innerText = '';
+            slot.classList.remove('filled');
+        }
+    });
+}
+
+function validateAssembly() {
+    const item = builderList[builderIndex];
+    const assembledWord = selectedChars.map(s => s.char).join('');
+    const slots = document.querySelectorAll('.slot');
+
+    if (assembledWord === item.hanzi) {
+        slots.forEach(s => s.style.borderColor = 'var(--success)');
+        
+        sessionTotal++;
+        if (!builderHadMistake) {
+            sessionCorrect++;
+        }
+        updateScoreUI();
+
+        const breakdownBox = document.getElementById('builder-breakdown');
+        let partsHtml = item.parts.map(p => 
+            `<div class="part-chip"><span class="part-char">${p.char}</span><span class="part-desc">${p.desc}</span></div>`
+        ).join('');
+
+        breakdownBox.innerHTML = `
+            <div class="anatomy-title">Ecuación Técnica Resuelta:</div>
+            <div class="anatomy-parts">${partsHtml}</div>
+            <div class="anatomy-summary">${item.summary}</div>
+        `;
+        breakdownBox.style.display = 'flex';
+
+        const nextBtn = document.getElementById('builder-next-btn');
+        nextBtn.style.display = 'block';
+
+        setTimeout(() => {
+            nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    } else {
+        builderHadMistake = true;
+        slots.forEach(s => s.style.borderColor = 'var(--error)');
+        setTimeout(() => {
+            slots.forEach(s => s.style.borderColor = '');
+        }, 600);
+    }
+}
+
+function nextBuilderQuestion() {
+    builderIndex++;
+    loadBuilderQuestion();
+}
+
+// --------------------------------------------------------
+// 4. MODO ESCÁNER HMI (LECTURA DE CONTEXTO)
+// --------------------------------------------------------
+let scannerList = [];
+let scannerIndex = 0;
+let scannerResolved = false;
+
+function initScanner() {
+    const pool = scannerScenarios.filter(s => currentCategory === 'todos' || s.topic === currentCategory);
+    scannerList = [...pool].sort(() => Math.random() - 0.5);
+    scannerIndex = 0;
+    loadScannerQuestion();
+}
+
+function loadScannerQuestion() {
+    if (scannerIndex >= scannerList.length) {
+        finishSession();
+        return;
+    }
+
+    scannerResolved = false;
+    const scenario = scannerList[scannerIndex];
+
+    document.getElementById('scanner-task').innerText = scenario.prompt;
+    document.getElementById('scanner-next-btn').style.display = 'none';
+
+    const breakdownBox = document.getElementById('scanner-breakdown');
+    breakdownBox.style.display = 'none';
+
+    const displayContainer = document.getElementById('scanner-alarm-display');
+    displayContainer.innerHTML = '';
+
+    scenario.tokens.forEach((token, idx) => {
+        const span = document.createElement('span');
+        span.className = 'hmi-token';
+        span.innerText = token.text;
+
+        if (token.isTarget) {
+            span.onclick = () => handleScannerClick(span, token.hanzi, scenario);
+        } else {
+            span.classList.add('token-plain');
+        }
+
+        displayContainer.appendChild(span);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function handleScannerClick(tokenElem, clickedHanzi, scenario) {
+    if (scannerResolved) return;
+
+    if (clickedHanzi === scenario.targetHanzi) {
+        scannerResolved = true;
+        tokenElem.classList.add('hit-success');
+        sessionTotal++;
+        sessionCorrect++;
+        updateScoreUI();
+
+        // Buscar información del término
+        const vocabInfo = vocabulary.find(v => v.hanzi === scenario.targetHanzi);
+        const breakdownBox = document.getElementById('scanner-breakdown');
+
+        if (vocabInfo) {
+            let partsHtml = vocabInfo.parts.map(p => 
+                `<div class="part-chip"><span class="part-char">${p.char}</span><span class="part-desc">${p.desc}</span></div>`
+            ).join('');
+
+            breakdownBox.innerHTML = `
+                <div class="anatomy-title">Término Identificado en Pantalla:</div>
+                <div style="font-size: 1.2rem; font-weight: bold; color: var(--accent); margin: 2px 0;">${vocabInfo.hanzi} [${vocabInfo.pinyin}] - ${vocabInfo.meaning}</div>
+                <div class="anatomy-parts">${partsHtml}</div>
+                <div class="anatomy-summary">${vocabInfo.summary}</div>
+            `;
+            breakdownBox.style.display = 'flex';
+        }
+
+        const nextBtn = document.getElementById('scanner-next-btn');
+        nextBtn.style.display = 'block';
+
+        setTimeout(() => {
+            nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+
+    } else {
+        tokenElem.classList.add('hit-error');
+        setTimeout(() => {
+            tokenElem.classList.remove('hit-error');
+        }, 500);
+    }
+}
+
+function nextScannerQuestion() {
+    scannerIndex++;
+    loadScannerQuestion();
+}
+
+// Iniciar al cargar
+updateFlashcard();
+</script>
+
+</body>
+</html>

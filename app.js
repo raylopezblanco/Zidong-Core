@@ -1,5 +1,5 @@
 // ========================================================
-// ZÌDÒNG CORE - APP CONTROLLER COMPLETO
+// ZÌDÒNG CORE - APP CONTROLLER & ESCALAFÓN INDUSTRIAL
 // ========================================================
 
 const BLOCK_SIZE = 5;
@@ -12,6 +12,27 @@ let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
 
+// TABLA DE RANGOS DE INGENIERÍA
+const RANKS = [
+    { title: "Practicante", minXP: 0, nextXP: 150, access: "N1 · OBSERVADOR" },
+    { title: "Técnico", minXP: 150, nextXP: 400, access: "N2 · MANTENIMIENTO BÁSICO" },
+    { title: "Especialista", minXP: 400, nextXP: 800, access: "N3 · DIAGNÓSTICO I/O" },
+    { title: "Ingeniero Jr", minXP: 800, nextXP: 1500, access: "N4 · EDICIÓN DE RECETAS" },
+    { title: "Ingeniero Full", minXP: 1500, nextXP: 2500, access: "N5 · MODIFICACIÓN PLC/HMI" },
+    { title: "Ingeniero Sr", minXP: 2500, nextXP: 4000, access: "N6 · CALIBRACIÓN ROBÓTICA" },
+    { title: "Superintendente", minXP: 4000, nextXP: 6000, access: "N7 · GESTIÓN DE CELDA" },
+    { title: "Gerente", minXP: 6000, nextXP: 99999, access: "N8 · CONTROL MAESTRO DE PLANTA" }
+];
+
+function getCurrentRank(xp) {
+    for (let i = RANKS.length - 1; i >= 0; i--) {
+        if (xp >= RANKS[i].minXP) {
+            return RANKS[i];
+        }
+    }
+    return RANKS[0];
+}
+
 // REPRODUCTOR DE VOZ EN MANDARÍN (TTS NATIVO)
 function playVoice(text) {
     if ('speechSynthesis' in window) {
@@ -23,10 +44,11 @@ function playVoice(text) {
     }
 }
 
-// PERSISTENCIA: RACHA Y XP
+// PERSISTENCIA Y PERFIL DE USUARIO
 function loadUserData() {
     let streak = parseInt(localStorage.getItem('zidong_streak') || '1');
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
+    let username = localStorage.getItem('zidong_username') || 'Raymundo';
     let lastDate = localStorage.getItem('zidong_last_date');
 
     const today = new Date().toISOString().slice(0, 10);
@@ -42,14 +64,63 @@ function loadUserData() {
         }
     }
 
+    const rank = getCurrentRank(xp);
+
+    // Actualizar HUD superior
+    document.getElementById('hud-username').innerText = username;
+    document.getElementById('hud-avatar').innerText = username.charAt(0).toUpperCase();
+    document.getElementById('hud-userrank').innerText = rank.title;
     document.getElementById('hud-streak-count').innerText = streak;
     document.getElementById('hud-xp-count').innerText = `${xp} XP`;
+}
+
+function saveUserName(newName) {
+    const clean = newName.trim() || 'Operador';
+    localStorage.setItem('zidong_username', clean);
+    loadUserData();
+}
+
+function openProfileModal() {
+    const xp = parseInt(localStorage.getItem('zidong_xp') || '0');
+    const streak = parseInt(localStorage.getItem('zidong_streak') || '1');
+    const username = localStorage.getItem('zidong_username') || 'Raymundo';
+    const rank = getCurrentRank(xp);
+
+    document.getElementById('modal-avatar').innerText = username.charAt(0).toUpperCase();
+    document.getElementById('modal-name-input').value = username;
+    document.getElementById('modal-rank-name').innerText = rank.title;
+    document.getElementById('modal-access-level').innerText = `NIVEL ACCESO: ${rank.access}`;
+    document.getElementById('modal-streak-val').innerText = streak;
+    document.getElementById('modal-total-xp').innerText = xp;
+
+    if (rank.nextXP >= 99999) {
+        document.getElementById('modal-rank-progress').style.width = '100%';
+        document.getElementById('modal-xp-details').innerText = 'Rango Máximo Alcanzado';
+    } else {
+        const xpInCurrentRank = xp - rank.minXP;
+        const totalNeededInRank = rank.nextXP - rank.minXP;
+        const pct = Math.min(100, Math.max(0, Math.round((xpInCurrentRank / totalNeededInRank) * 100)));
+        document.getElementById('modal-rank-progress').style.width = `${pct}%`;
+        document.getElementById('modal-xp-details').innerText = `${xp} / ${rank.nextXP} XP (${pct}%) para siguiente ascenso`;
+    }
+
+    document.getElementById('profile-modal').classList.add('active');
+}
+
+function closeProfileModal(e) {
+    if (e.target.id === 'profile-modal') {
+        document.getElementById('profile-modal').classList.remove('active');
+    }
+}
+
+function closeProfileModalDirect() {
+    document.getElementById('profile-modal').classList.remove('active');
 }
 
 function addXP(amount) {
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0') + amount;
     localStorage.setItem('zidong_xp', xp);
-    document.getElementById('hud-xp-count').innerText = `${xp} XP`;
+    loadUserData();
 }
 
 function registerDailyActivity() {
@@ -65,7 +136,7 @@ function registerDailyActivity() {
     }
 }
 
-// GESTIÓN DE POOL Y PROGRESO
+// POOL Y SESIONES
 function shuffleArray(array) {
     let arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -167,7 +238,7 @@ function finishSession() {
     document.getElementById('mode-summary').classList.add('active');
 
     registerDailyActivity();
-    addXP(sessionCorrect * 15);
+    addXP(sessionCorrect * 25);
 }
 
 function restartSession() {

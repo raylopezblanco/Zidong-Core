@@ -1,5 +1,5 @@
 // ========================================================
-// ZÌDÒNG CORE - APP CONTROLLER CON PERSISTENCIA
+// ZÌDÒNG CORE - APP CONTROLLER COMPLETO
 // ========================================================
 
 const BLOCK_SIZE = 5;
@@ -12,7 +12,18 @@ let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
 
-// SISTEMA DE RACHA Y XP CON LOCALSTORAGE
+// REPRODUCTOR DE VOZ EN MANDARÍN (TTS NATIVO)
+function playVoice(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// PERSISTENCIA: RACHA Y XP
 function loadUserData() {
     let streak = parseInt(localStorage.getItem('zidong_streak') || '1');
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
@@ -26,7 +37,7 @@ function loadUserData() {
         const yestStr = yesterday.toISOString().slice(0, 10);
 
         if (lastDate !== yestStr) {
-            streak = 1; // Se reinicia la racha si pasó más de un día
+            streak = 1;
             localStorage.setItem('zidong_streak', streak);
         }
     }
@@ -54,7 +65,7 @@ function registerDailyActivity() {
     }
 }
 
-// BARAJADO DE SESIÓN
+// GESTIÓN DE POOL Y PROGRESO
 function shuffleArray(array) {
     let arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -97,7 +108,7 @@ function changeCategory(cat) {
 
 function setLevel(lvl) {
     currentLevel = lvl;
-    document.querySelectorAll('.pill-btn').forEach((btn, idx) => {
+    document.querySelectorAll('.level-pill').forEach((btn, idx) => {
         btn.classList.toggle('active', (idx + 1) === lvl);
     });
 
@@ -114,32 +125,32 @@ function setLevel(lvl) {
 
 function switchMode(mode) {
     currentMode = mode;
-    document.querySelectorAll('.dock-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
 
     const levelContainer = document.getElementById('level-container');
 
     if (mode === 'flashcards') {
-        document.querySelectorAll('.dock-tab')[0].classList.add('active');
+        document.querySelectorAll('.dock-item')[0].classList.add('active');
         document.getElementById('mode-flashcards').classList.add('active');
-        levelContainer.style.display = 'flex';
+        levelContainer.style.display = 'grid';
         currentFC = 0;
         updateFlashcard();
     } else if (mode === 'quiz') {
-        document.querySelectorAll('.dock-tab')[1].classList.add('active');
+        document.querySelectorAll('.dock-item')[1].classList.add('active');
         document.getElementById('mode-quiz').classList.add('active');
-        levelContainer.style.display = 'flex';
+        levelContainer.style.display = 'grid';
         initQuiz();
     } else if (mode === 'builder') {
-        document.querySelectorAll('.dock-tab')[2].classList.add('active');
+        document.querySelectorAll('.dock-item')[2].classList.add('active');
         document.getElementById('mode-builder').classList.add('active');
         currentLevel = 2;
-        document.querySelectorAll('.pill-btn').forEach((b, idx) => b.classList.toggle('active', idx === 1));
+        document.querySelectorAll('.level-pill').forEach((b, idx) => b.classList.toggle('active', idx === 1));
         refreshSessionPool();
-        levelContainer.style.display = 'flex';
+        levelContainer.style.display = 'grid';
         initBuilder();
     } else if (mode === 'scanner') {
-        document.querySelectorAll('.dock-tab')[3].classList.add('active');
+        document.querySelectorAll('.dock-item')[3].classList.add('active');
         document.getElementById('mode-scanner').classList.add('active');
         levelContainer.style.display = 'none';
         initScanner();
@@ -147,12 +158,12 @@ function switchMode(mode) {
 }
 
 function finishSession() {
-    document.querySelectorAll('.view-panel').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
     document.getElementById('level-container').style.display = 'none';
 
     const percentage = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 100;
     document.getElementById('summary-percentage').innerText = `${percentage}%`;
-    document.getElementById('summary-details').innerText = `Completaste ${sessionCorrect} aciertos en este bloque.`;
+    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} diagnósticos en este bloque.`;
     document.getElementById('mode-summary').classList.add('active');
 
     registerDailyActivity();
@@ -189,13 +200,14 @@ function renderFlashcardContent() {
     if (!isFlipped) {
         hanziElem.className = "hanzi-character";
         hanziElem.innerText = item.hanzi;
-        pinyinElem.innerText = item.pinyin;
+        pinyinElem.innerHTML = `
+            ${item.pinyin} 
+            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--accent-cyan);" title="Escuchar">🔊</button>
+        `;
         body.innerHTML = `<span class="inspect-badge">Toca para inspeccionar telemetría</span>`;
     } else {
         hanziElem.className = "meaning-title";
         hanziElem.innerText = item.meaning;
-        
-        // Incluye pronunciación y botón de audio
         pinyinElem.innerHTML = `
             ${item.hanzi} [${item.pinyin}] 
             <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--accent-cyan);" title="Escuchar">🔊</button>
@@ -214,16 +226,30 @@ function renderFlashcardContent() {
     }
 }
 
-// Función nativa para pronunciación en mandarín
-function playVoice(text) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-    }
+function updateFlashcard() {
+    isFlipped = false;
+    if (currentFC >= activeSessionPool.length) currentFC = 0;
+    renderFlashcardContent();
+    document.getElementById('fc-counter').innerText = `${currentFC + 1} / ${activeSessionPool.length}`;
 }
+
+function flipCard() {
+    isFlipped = !isFlipped;
+    renderFlashcardContent();
+}
+
+function nextCard() {
+    if (activeSessionPool.length === 0) return;
+    currentFC = (currentFC + 1) % activeSessionPool.length;
+    updateFlashcard();
+}
+
+function prevCard() {
+    if (activeSessionPool.length === 0) return;
+    currentFC = (currentFC - 1 + activeSessionPool.length) % activeSessionPool.length;
+    updateFlashcard();
+}
+
 // --------------------------------------------------------
 // 2. QUIZ
 // --------------------------------------------------------
@@ -249,7 +275,10 @@ function loadQuizQuestion() {
     document.getElementById('quiz-breakdown').style.display = 'none';
 
     document.getElementById('quiz-hanzi').innerText = item.hanzi;
-    document.getElementById('quiz-pinyin').innerText = item.pinyin;
+    document.getElementById('quiz-pinyin').innerHTML = `
+        ${item.pinyin} 
+        <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--accent-cyan);">🔊</button>
+    `;
 
     let options = [item.meaning];
     let distractors = vocabulary.filter(v => v.meaning !== item.meaning).sort(() => Math.random() - 0.5);
@@ -260,7 +289,7 @@ function loadQuizQuestion() {
     grid.innerHTML = '';
     options.forEach(opt => {
         const btn = document.createElement('div');
-        btn.className = 'option-cell';
+        btn.className = 'matrix-button';
         btn.innerText = opt;
         btn.onclick = () => checkQuiz(btn, opt, item);
         grid.appendChild(btn);
@@ -268,7 +297,7 @@ function loadQuizQuestion() {
 }
 
 function checkQuiz(btn, selected, item) {
-    const all = document.querySelectorAll('.option-cell');
+    const all = document.querySelectorAll('.matrix-button');
     all.forEach(b => b.style.pointerEvents = 'none');
     sessionTotal++;
 
@@ -281,8 +310,8 @@ function checkQuiz(btn, selected, item) {
     }
 
     const popout = document.getElementById('quiz-breakdown');
-    let chips = item.parts.map(p => `<div class="anatomy-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
-    popout.innerHTML = `<div class="chips-row">${chips}</div><div class="anatomy-desc">${item.summary}</div>`;
+    let chips = item.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
+    popout.innerHTML = `<div class="telemetry-chips">${chips}</div><div class="telemetry-log">${item.summary}</div>`;
     popout.style.display = 'block';
 
     document.getElementById('quiz-next-btn').style.display = 'block';
@@ -327,7 +356,7 @@ function loadBuilderQuestion() {
     rail.innerHTML = '';
     for (let i = 0; i < targetChars.length; i++) {
         const slot = document.createElement('div');
-        slot.className = 'slot-box';
+        slot.className = 'assembly-slot';
         slot.onclick = () => removeTile(i);
         rail.appendChild(slot);
     }
@@ -344,7 +373,7 @@ function loadBuilderQuestion() {
     tray.innerHTML = '';
     poolChars.forEach((ch, idx) => {
         const tile = document.createElement('button');
-        tile.className = 'tile-press';
+        tile.className = 'component-tile';
         tile.innerText = ch;
         tile.id = `t-${idx}`;
         tile.onclick = () => pickTile(ch, `t-${idx}`);
@@ -374,14 +403,14 @@ function removeTile(idx) {
 }
 
 function renderSlots() {
-    const slots = document.querySelectorAll('.slot-box');
+    const slots = document.querySelectorAll('.assembly-slot');
     slots.forEach((s, i) => {
         if (i < selectedBuilderChars.length) {
             s.innerText = selectedBuilderChars[i].char;
-            s.classList.add('filled');
+            s.classList.add('active-dock');
         } else {
             s.innerText = '';
-            s.classList.remove('filled');
+            s.classList.remove('active-dock');
         }
     });
 }
@@ -389,22 +418,24 @@ function renderSlots() {
 function validateAssembly() {
     const item = activeSessionPool[builderIndex];
     const word = selectedBuilderChars.map(s => s.char).join('');
-    const slots = document.querySelectorAll('.slot-box');
+    const slots = document.querySelectorAll('.assembly-slot');
 
     sessionTotal++;
     if (word === item.hanzi) {
-        slots.forEach(s => s.style.borderColor = 'var(--success)');
+        slots.forEach(s => s.style.borderColor = 'var(--status-green)');
         if (!builderMistake) sessionCorrect++;
 
+        playVoice(item.hanzi);
+
         const popout = document.getElementById('builder-breakdown');
-        let chips = item.parts.map(p => `<div class="anatomy-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
-        popout.innerHTML = `<div class="chips-row">${chips}</div><div class="anatomy-desc">${item.summary}</div>`;
+        let chips = item.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
+        popout.innerHTML = `<div class="telemetry-chips">${chips}</div><div class="telemetry-log">${item.summary}</div>`;
         popout.style.display = 'block';
 
         document.getElementById('builder-next-btn').style.display = 'block';
     } else {
         builderMistake = true;
-        slots.forEach(s => s.style.borderColor = 'var(--danger)');
+        slots.forEach(s => s.style.borderColor = 'var(--status-red)');
         setTimeout(() => slots.forEach(s => s.style.borderColor = ''), 500);
     }
 }
@@ -449,13 +480,13 @@ function loadScannerQuestion() {
 
     item.tokens.forEach(tok => {
         const span = document.createElement('span');
-        span.className = 'hmi-token-unit';
+        span.className = 'terminal-token';
         span.innerText = tok.text;
 
         if (tok.isTarget) {
             span.onclick = () => clickScannerToken(span, tok.hanzi, item);
         } else {
-            span.classList.add('plain');
+            span.classList.add('token-static');
         }
         terminal.appendChild(span);
     });
@@ -467,26 +498,28 @@ function clickScannerToken(span, clickedHanzi, item) {
     sessionTotal++;
     if (clickedHanzi === item.targetHanzi) {
         scannerLocked = true;
-        span.classList.add('hit-success');
+        span.classList.add('success-hit');
         sessionCorrect++;
+
+        playVoice(item.targetHanzi);
 
         const vocabInfo = vocabulary.find(v => v.hanzi === item.targetHanzi);
         const popout = document.getElementById('scanner-breakdown');
 
         if (vocabInfo) {
-            let chips = vocabInfo.parts.map(p => `<div class="anatomy-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
+            let chips = vocabInfo.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
             popout.innerHTML = `
-                <div style="font-weight: 800; color: var(--accent-blue); margin-bottom: 4px;">${vocabInfo.hanzi} [${vocabInfo.pinyin}] - ${vocabInfo.meaning}</div>
-                <div class="chips-row">${chips}</div>
-                <div class="anatomy-desc">${vocabInfo.summary}</div>
+                <div style="font-weight: 800; color: var(--accent-cyan); margin-bottom: 4px;">${vocabInfo.hanzi} [${vocabInfo.pinyin}] - ${vocabInfo.meaning}</div>
+                <div class="telemetry-chips">${chips}</div>
+                <div class="telemetry-log">${vocabInfo.summary}</div>
             `;
             popout.style.display = 'block';
         }
 
         document.getElementById('scanner-next-btn').style.display = 'block';
     } else {
-        span.classList.add('hit-error');
-        setTimeout(() => span.classList.remove('hit-error'), 400);
+        span.classList.add('fail-hit');
+        setTimeout(() => span.classList.remove('fail-hit'), 400);
     }
 }
 
@@ -495,7 +528,7 @@ function nextScannerQuestion() {
     loadScannerQuestion();
 }
 
-// ARRANQUE
+// ARRANQUE INICIAL
 loadUserData();
 refreshSessionPool();
 updateFlashcard();

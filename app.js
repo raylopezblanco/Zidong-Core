@@ -1,5 +1,5 @@
 // ========================================================
-// ZÌDÒNG CORE - APP CONTROLLER & ESCALAFÓN INDUSTRIAL
+// ZÌDÒNG CORE - APP CONTROLLER & SFX GAMING ENGINE
 // ========================================================
 
 const BLOCK_SIZE = 5;
@@ -12,9 +12,7 @@ let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
 
-// ==========================================
 // MOTOR DE AUDIO SFX (WEB AUDIO API NATIVA)
-// ==========================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -29,7 +27,7 @@ function playSound(type) {
     const now = audioCtx.currentTime;
 
     if (type === 'click') {
-        // Clic mecánico tipo switch táctil
+        // Clic mecánico tipo switch de control
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(420, now);
         osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
@@ -39,27 +37,28 @@ function playSound(type) {
         osc.stop(now + 0.04);
     } 
     else if (type === 'correct') {
-        // Tono ascendente de acierto / subida
+        // Fanfarria corta de acierto / level-up (Arpegio C5 - E5 - G5)
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now); // Nota C5
-        osc.frequency.setValueAtTime(659.25, now + 0.08); // Nota E5
-        osc.frequency.setValueAtTime(783.99, now + 0.16); // Nota G5
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.07);
+        osc.frequency.setValueAtTime(783.99, now + 0.14);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.28);
     } 
     else if (type === 'wrong') {
-        // Buzzer grave de alarma / error
+        // Buzzer grave industrial de falla
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.setValueAtTime(150, now);
         osc.frequency.linearRampToValueAtTime(90, now + 0.22);
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
         osc.start(now);
         osc.stop(now + 0.22);
     }
 }
+
 // TABLA DE RANGOS DE INGENIERÍA
 const RANKS = [
     { title: "Practicante", minXP: 0, nextXP: 150, access: "N1 · OBSERVADOR" },
@@ -81,7 +80,7 @@ function getCurrentRank(xp) {
     return RANKS[0];
 }
 
-// REPRODUCTOR DE VOZ EN MANDARÍN (TTS NATIVO)
+// PRONUNCIACIÓN EN MANDARÍN (TTS NATIVO)
 function playVoice(text) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -92,7 +91,7 @@ function playVoice(text) {
     }
 }
 
-// PERSISTENCIA Y PERFIL DE USUARIO
+// PERSISTENCIA Y PERFIL
 function loadUserData() {
     let streak = parseInt(localStorage.getItem('zidong_streak') || '1');
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
@@ -114,7 +113,6 @@ function loadUserData() {
 
     const rank = getCurrentRank(xp);
 
-    // Actualizar HUD superior
     document.getElementById('hud-username').innerText = username;
     document.getElementById('hud-avatar').innerText = username.charAt(0).toUpperCase();
     document.getElementById('hud-userrank').innerText = rank.title;
@@ -125,10 +123,12 @@ function loadUserData() {
 function saveUserName(newName) {
     const clean = newName.trim() || 'Operador';
     localStorage.setItem('zidong_username', clean);
+    playSound('click');
     loadUserData();
 }
 
 function openProfileModal() {
+    playSound('click');
     const xp = parseInt(localStorage.getItem('zidong_xp') || '0');
     const streak = parseInt(localStorage.getItem('zidong_streak') || '1');
     const username = localStorage.getItem('zidong_username') || 'Raymundo';
@@ -157,11 +157,13 @@ function openProfileModal() {
 
 function closeProfileModal(e) {
     if (e.target.id === 'profile-modal') {
+        playSound('click');
         document.getElementById('profile-modal').classList.remove('active');
     }
 }
 
 function closeProfileModalDirect() {
+    playSound('click');
     document.getElementById('profile-modal').classList.remove('active');
 }
 
@@ -211,6 +213,7 @@ function updateProgressBar(stepIndex) {
 }
 
 function changeCategory(cat) {
+    playSound('click');
     currentCategory = cat;
     refreshSessionPool();
     if (currentMode === 'flashcards') {
@@ -226,6 +229,7 @@ function changeCategory(cat) {
 }
 
 function setLevel(lvl) {
+    playSound('click');
     currentLevel = lvl;
     document.querySelectorAll('.level-pill').forEach((btn, idx) => {
         btn.classList.toggle('active', (idx + 1) === lvl);
@@ -243,6 +247,7 @@ function setLevel(lvl) {
 }
 
 function switchMode(mode) {
+    playSound('click');
     currentMode = mode;
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
@@ -277,6 +282,7 @@ function switchMode(mode) {
 }
 
 function finishSession() {
+    playSound('correct');
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
     document.getElementById('level-container').style.display = 'none';
 
@@ -290,6 +296,7 @@ function finishSession() {
 }
 
 function restartSession() {
+    playSound('click');
     document.getElementById('mode-summary').classList.remove('active');
     refreshSessionPool();
     switchMode(currentMode);
@@ -353,17 +360,20 @@ function updateFlashcard() {
 }
 
 function flipCard() {
+    playSound('click');
     isFlipped = !isFlipped;
     renderFlashcardContent();
 }
 
 function nextCard() {
+    playSound('click');
     if (activeSessionPool.length === 0) return;
     currentFC = (currentFC + 1) % activeSessionPool.length;
     updateFlashcard();
 }
 
 function prevCard() {
+    playSound('click');
     if (activeSessionPool.length === 0) return;
     currentFC = (currentFC - 1 + activeSessionPool.length) % activeSessionPool.length;
     updateFlashcard();
@@ -421,9 +431,11 @@ function checkQuiz(btn, selected, item) {
     sessionTotal++;
 
     if (selected === item.meaning) {
+        playSound('correct');
         btn.classList.add('correct');
         sessionCorrect++;
     } else {
+        playSound('wrong');
         btn.classList.add('incorrect');
         all.forEach(b => { if (b.innerText === item.meaning) b.classList.add('correct'); });
     }
@@ -437,6 +449,7 @@ function checkQuiz(btn, selected, item) {
 }
 
 function nextQuizQuestion() {
+    playSound('click');
     quizIndex++;
     loadQuizQuestion();
 }
@@ -501,6 +514,7 @@ function loadBuilderQuestion() {
 }
 
 function pickTile(char, id) {
+    playSound('click');
     const item = activeSessionPool[builderIndex];
     if (selectedBuilderChars.length < item.hanzi.length) {
         selectedBuilderChars.push({ char, id });
@@ -514,6 +528,7 @@ function pickTile(char, id) {
 }
 
 function removeTile(idx) {
+    playSound('click');
     if (idx < selectedBuilderChars.length) {
         const rem = selectedBuilderChars.splice(idx, 1)[0];
         document.getElementById(rem.id).classList.remove('used');
@@ -541,6 +556,7 @@ function validateAssembly() {
 
     sessionTotal++;
     if (word === item.hanzi) {
+        playSound('correct');
         slots.forEach(s => s.style.borderColor = 'var(--status-green)');
         if (!builderMistake) sessionCorrect++;
 
@@ -553,6 +569,7 @@ function validateAssembly() {
 
         document.getElementById('builder-next-btn').style.display = 'block';
     } else {
+        playSound('wrong');
         builderMistake = true;
         slots.forEach(s => s.style.borderColor = 'var(--status-red)');
         setTimeout(() => slots.forEach(s => s.style.borderColor = ''), 500);
@@ -560,6 +577,7 @@ function validateAssembly() {
 }
 
 function nextBuilderQuestion() {
+    playSound('click');
     builderIndex++;
     loadBuilderQuestion();
 }
@@ -616,6 +634,7 @@ function clickScannerToken(span, clickedHanzi, item) {
 
     sessionTotal++;
     if (clickedHanzi === item.targetHanzi) {
+        playSound('correct');
         scannerLocked = true;
         span.classList.add('success-hit');
         sessionCorrect++;
@@ -637,17 +656,19 @@ function clickScannerToken(span, clickedHanzi, item) {
 
         document.getElementById('scanner-next-btn').style.display = 'block';
     } else {
+        playSound('wrong');
         span.classList.add('fail-hit');
         setTimeout(() => span.classList.remove('fail-hit'), 400);
     }
 }
 
 function nextScannerQuestion() {
+    playSound('click');
     scannerIndex++;
     loadScannerQuestion();
 }
 
-// ARRANQUE INICIAL
+// INICIALIZACIÓN
 loadUserData();
 refreshSessionPool();
 updateFlashcard();

@@ -17,7 +17,6 @@
             --accent-glow: rgba(56, 189, 248, 0.4);
             --status-green: #22c55e;
             --status-red: #ef4444;
-            --status-amber: #f59e0b;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
             --font-ui: 'Plus Jakarta Sans', sans-serif;
@@ -34,7 +33,6 @@
 
         body {
             background-color: var(--bg-base);
-            /* Patrón de cuadrícula de precisión milimétrica */
             background-image: 
                 radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14, 116, 144, 0.3), transparent 70%),
                 linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
@@ -60,9 +58,7 @@
             padding: 10px 14px 12px 14px;
         }
 
-        /* ========================================================
-           HUD INDUSTRIAL SUPERIOR (STATUS BAR)
-           ======================================================== */
+        /* HUD SUPERIOR */
         .hmi-hud {
             display: flex;
             align-items: center;
@@ -122,24 +118,23 @@
             pointer-events: none;
         }
 
-        /* BARRA DE CICLO / PROGRESO */
+        /* PROGRESO DE CICLO */
         .cycle-progress {
             height: 4px;
             background: rgba(255, 255, 255, 0.06);
             border-radius: 4px;
             overflow: hidden;
             margin: 6px 2px 4px 2px;
-            position: relative;
         }
         .cycle-progress-bar {
             height: 100%;
             width: 20%;
             background: linear-gradient(90deg, var(--accent-cyan), var(--status-green));
             box-shadow: 0 0 10px var(--accent-cyan);
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
         }
 
-        /* TOGGLE DE MODO / NIVEL */
+        /* SELECTOR DE NIVEL */
         .level-selector-strip {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -158,7 +153,6 @@
             border-radius: 7px;
             font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 0.2px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -168,9 +162,7 @@
             box-shadow: inset 0 0 0 1px var(--accent-cyan);
         }
 
-        /* ========================================================
-           ÁREA CENTRAL INTERACTIVA (WORKBENCH)
-           ======================================================== */
+        /* WORKSPACE Y VISTAS */
         .workspace {
             flex: 1;
             display: flex;
@@ -188,7 +180,7 @@
             display: flex;
         }
 
-        /* TARJETA DISPLAY CENTRAL ESTILO TERMINAL */
+        /* CHASIS CENTRAL DE TARJETA */
         .chassis-card {
             background: linear-gradient(180deg, rgba(16, 26, 46, 0.85) 0%, rgba(9, 14, 26, 0.95) 100%);
             border: 1px solid var(--panel-border);
@@ -201,9 +193,8 @@
             padding: 20px 16px;
             position: relative;
             box-shadow: var(--card-glow);
-            overflow: hidden;
+            overflow-y: auto;
         }
-        /* Indicadores esquineros de hardware técnico */
         .chassis-card::before {
             content: "";
             position: absolute;
@@ -227,31 +218,44 @@
             opacity: 0.7;
         }
 
-        /* Retícula caligráfica / retícula de servo */
         .hanzi-viewport {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
-            margin-bottom: 4px;
+            padding: 6px;
         }
         .hanzi-character {
             font-family: var(--font-hanzi);
-            font-size: 5.4rem;
+            font-size: 5rem;
             font-weight: 900;
             line-height: 1;
             color: #ffffff;
             text-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
         }
 
+        /* FORMATO CONTROLADO DE TRADUCCIÓN */
+        .meaning-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.25;
+            color: #ffffff;
+            text-align: center;
+            margin: 6px 0;
+            max-width: 95%;
+        }
+
         .pinyin-label {
             font-family: var(--font-mono);
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--accent-cyan);
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .inspect-badge {
@@ -274,7 +278,7 @@
             margin-top: 8px;
         }
 
-        /* QUIZ GRID INDUSTRIAL */
+        /* TAGS Y POPUPS TELEMETRÍA */
         .status-pill-tag {
             font-family: var(--font-mono);
             font-size: 0.65rem;
@@ -293,6 +297,36 @@
             border-color: rgba(239, 68, 68, 0.3);
         }
 
+        .telemetry-box {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-top: 8px;
+            text-align: left;
+        }
+        .telemetry-chips {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 5px 0;
+        }
+        .telemetry-chip {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+        }
+        .telemetry-chip strong { color: var(--accent-cyan); }
+        .telemetry-log {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            line-height: 1.35;
+        }
+
+        /* QUIZ */
         .quiz-options-matrix {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -333,7 +367,7 @@
             color: #fca5a5 !important;
         }
 
-        /* ENSAMBLE MECATRÓNICO */
+        /* ENSAMBLE */
         .assembly-rail {
             display: flex;
             gap: 8px;
@@ -441,39 +475,7 @@
             color: white !important;
         }
 
-        /* DESGLOSE / ANATOMÍA POP-UP */
-        .telemetry-box {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-top: 10px;
-            text-align: left;
-        }
-        .telemetry-chips {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin: 5px 0;
-        }
-        .telemetry-chip {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.72rem;
-        }
-        .telemetry-chip strong { color: var(--accent-cyan); }
-        .telemetry-log {
-            font-size: 0.74rem;
-            color: var(--text-dim);
-            line-height: 1.35;
-        }
-
-        /* ========================================================
-           BOTONES TÁCTILES ACCIÓN PRIMARIA
-           ======================================================== */
+        /* BOTONES DE ACCIÓN */
         .btn-core {
             border: none;
             border-radius: 12px;
@@ -519,7 +521,6 @@
             display: none;
         }
 
-        /* PANTALLA SUMMARY */
         .summary-dashboard {
             background: var(--panel-bg);
             border: 1px solid var(--panel-border);
@@ -530,9 +531,7 @@
             box-shadow: var(--card-glow);
         }
 
-        /* ========================================================
-           BARRA DOCK INFERIOR (ESTILO PANEL DE CONTROL)
-           ======================================================== */
+        /* DOCK INFERIOR */
         .hmi-dock {
             height: 58px;
             background: rgba(10, 16, 28, 0.85);
@@ -568,7 +567,6 @@
             stroke-width: 2;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: transform 0.2s ease;
         }
         .dock-title {
             font-size: 0.65rem;
@@ -579,9 +577,6 @@
         .dock-item.active {
             color: var(--accent-cyan);
             background: rgba(56, 189, 248, 0.08);
-        }
-        .dock-item.active .dock-svg {
-            transform: scale(1.1);
         }
         .dock-item.active::after {
             content: "";
@@ -617,16 +612,7 @@
             </select>
         </div>
     </header>
-     <!-- Texto Corregido -->
-.meaning-title {
-    font-size: 1.45rem;
-    font-weight: 800;
-    line-height: 1.25;
-    color: #ffffff;
-    text-align: center;
-    margin: 8px 0;
-    max-width: 90%;
-}
+
     <!-- WORKBENCH PRINCIPAL -->
     <main class="workspace">
         <div class="cycle-progress">
@@ -705,7 +691,7 @@
         </section>
     </main>
 
-    <!-- INFERIOR: BARRA DOCK HMI CON ICONOS VECTORIALES SVG -->
+    <!-- INFERIOR: BARRA DOCK -->
     <nav class="hmi-dock">
         <button class="dock-item active" onclick="switchMode('flashcards')">
             <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>

@@ -12,6 +12,54 @@ let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
 
+// ==========================================
+// MOTOR DE AUDIO SFX (WEB AUDIO API NATIVA)
+// ==========================================
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSound(type) {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    if (type === 'click') {
+        // Clic mecánico tipo switch táctil
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
+        osc.start(now);
+        osc.stop(now + 0.04);
+    } 
+    else if (type === 'correct') {
+        // Tono ascendente de acierto / subida
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now); // Nota C5
+        osc.frequency.setValueAtTime(659.25, now + 0.08); // Nota E5
+        osc.frequency.setValueAtTime(783.99, now + 0.16); // Nota G5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+    } 
+    else if (type === 'wrong') {
+        // Buzzer grave de alarma / error
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.linearRampToValueAtTime(90, now + 0.22);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
+        osc.start(now);
+        osc.stop(now + 0.22);
+    }
+}
 // TABLA DE RANGOS DE INGENIERÍA
 const RANKS = [
     { title: "Practicante", minXP: 0, nextXP: 150, access: "N1 · OBSERVADOR" },

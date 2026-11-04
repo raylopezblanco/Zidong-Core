@@ -2,113 +2,130 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Zìdòng Core - HMI & Automatización</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <header class="header">
-        <h1>Zìdòng Core</h1>
-        <p>Automatización y HMI de Planta</p>
+<div class="app-layout">
+    <!-- BARRA SUPERIOR (HUD DUOLINGO STYLE) -->
+    <header class="hud-header">
+        <div class="hud-item streak" title="Días seguidos practicando">
+            <span class="hud-icon">🔥</span>
+            <span id="hud-streak-count">1</span>
+        </div>
+        <div class="hud-item xp" title="Puntos de experiencia acumulados">
+            <span class="hud-icon">⚡</span>
+            <span id="hud-xp-count">0 XP</span>
+        </div>
+        <div class="hud-selector-wrap">
+            <select id="category-selector" class="hud-select" onchange="changeCategory(this.value)">
+                <option value="todos">🌐 General</option>
+                <option value="alarmas">🚨 Alarmas / Seguridad</option>
+                <option value="mecanica">⚙️ Mecánica / Ejes</option>
+                <option value="operacion">🎛️ Operación / Test</option>
+            </select>
+        </div>
     </header>
 
-    <!-- Selector de Subsistema / Categoría -->
-    <div class="category-box">
-        <label for="category-selector" class="category-label">Subsistema HMI / Tema:</label>
-        <select id="category-selector" class="category-select" onchange="changeCategory(this.value)">
-            <option value="todos">🌐 Todos los temas (Repaso General)</option>
-            <option value="alarmas">🚨 1. Alarmas y Seguridad (Puertas, Interlocks)</option>
-            <option value="mecanica">⚙️ 2. Mecánica y Actuadores (Gantry, Cilindros, Motores)</option>
-            <option value="operacion">🎛️ 3. Operación, Menús y Pruebas (Test, Habilitación)</option>
-        </select>
-    </div>
+    <!-- ÁREA DE CONTENIDO CENTRAL -->
+    <main class="content-viewport">
+        <!-- Barra de progreso del bloque de 5 -->
+        <div class="progress-container">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
 
-    <!-- Barra de Estado / Marcador de Sesión -->
-    <div id="session-score-bar" class="score-bar" style="display: none;">
-        <span>🎯 Bloque: <strong id="score-counter" style="color: var(--accent);">0 / 0</strong></span>
-        <button class="finish-btn" onclick="finishSession()">Finalizar sesión</button>
-    </div>
+        <!-- Sub-selector de Nivel (Básicos vs Compuestos) -->
+        <div id="level-container" class="level-pills">
+            <button class="pill-btn active" onclick="setLevel(1)">Nivel 1: Radicales</button>
+            <button class="pill-btn" onclick="setLevel(2)">Nivel 2: Ecuación HMI</button>
+        </div>
 
-    <!-- Selector de Nivel -->
-    <div id="level-container" class="level-switcher">
-        <button class="level-btn active" onclick="setLevel(1)">Nivel 1: Básicos / Radicales</button>
-        <button class="level-btn" onclick="setLevel(2)">Nivel 2: Compuestos / Ecuación</button>
-    </div>
+        <!-- MODALIDAD 1: FLASHCARDS -->
+        <section id="mode-flashcards" class="view-panel active">
+            <div class="flashcard-canvas" onclick="flipCard()">
+                <div id="fc-hanzi" class="hanzi-hero">--</div>
+                <div id="fc-pinyin" class="pinyin-hero">--</div>
+                <div id="fc-body" class="fc-body-zone">
+                    <span class="tap-hint">Toca para inspeccionar desglose</span>
+                </div>
+            </div>
+            <div class="fc-action-row">
+                <button class="duo-btn duo-btn-secondary" onclick="prevCard()">← Anterior</button>
+                <span id="fc-counter" class="counter-badge">1 / 5</span>
+                <button class="duo-btn duo-btn-secondary" onclick="nextCard()">Siguiente →</button>
+            </div>
+        </section>
 
-    <!-- Barra de Pestañas / Modos -->
-    <nav class="nav-tabs">
-        <button class="tab-btn active" onclick="switchMode('flashcards')">Flashcards</button>
-        <button class="tab-btn" onclick="switchMode('quiz')">Quiz</button>
-        <button class="tab-btn" onclick="switchMode('builder')">Taller Ensamble</button>
-        <button class="tab-btn" onclick="switchMode('scanner')">🔍 Escáner HMI</button>
+        <!-- MODALIDAD 2: QUIZ -->
+        <section id="mode-quiz" class="view-panel">
+            <div class="quiz-question-box">
+                <span class="badge-tag">Diagnóstico</span>
+                <div id="quiz-hanzi" class="hanzi-medium">--</div>
+                <div id="quiz-pinyin" class="pinyin-medium">--</div>
+                <div id="quiz-breakdown" class="anatomy-popout" style="display: none;"></div>
+            </div>
+            <div id="quiz-options" class="quiz-grid"></div>
+            <button id="quiz-next-btn" class="duo-btn duo-btn-primary full-width-action" onclick="nextQuizQuestion()">Continuar → [Espacio]</button>
+        </section>
+
+        <!-- MODALIDAD 3: TALLER ENSAMBLE -->
+        <section id="mode-builder" class="view-panel">
+            <div class="builder-mission-box">
+                <span class="badge-tag">Ensamble Mecatrónico</span>
+                <div id="builder-meaning" class="target-term">--</div>
+                <div id="builder-slots" class="slots-rail"></div>
+                <div id="builder-breakdown" class="anatomy-popout" style="display: none;"></div>
+            </div>
+            <div id="builder-pool" class="tiles-tray"></div>
+            <button id="builder-next-btn" class="duo-btn duo-btn-primary full-width-action" onclick="nextBuilderQuestion()">Término Ensamblado → [Espacio]</button>
+        </section>
+
+        <!-- MODALIDAD 4: ESCÁNER HMI -->
+        <section id="mode-scanner" class="view-panel">
+            <div class="scanner-frame">
+                <span class="badge-tag badge-alarm">Interlock / Pantalla de Error</span>
+                <div id="scanner-task" class="scanner-prompt">--</div>
+                <div id="scanner-alarm-display" class="hmi-screen-terminal"></div>
+                <div id="scanner-breakdown" class="anatomy-popout" style="display: none;"></div>
+            </div>
+            <button id="scanner-next-btn" class="duo-btn duo-btn-primary full-width-action" onclick="nextScannerQuestion()">Siguiente Alarma → [Espacio]</button>
+        </section>
+
+        <!-- PANTALLA: RESUMEN DE SESIÓN -->
+        <section id="mode-summary" class="view-panel">
+            <div class="summary-card-duo">
+                <div class="victory-icon">🎉</div>
+                <h2 class="victory-title">¡Bloque Concluido!</h2>
+                <div id="summary-percentage" class="score-display">100%</div>
+                <p id="summary-details" class="summary-subtitle">Completaste la tanda de 5 términos técnicos.</p>
+                <button class="duo-btn duo-btn-primary full-width-action" onclick="restartSession()">Iniciar otro bloque de 5</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- BARRA INFERIOR DE NAVEGACIÓN FIJA (BOTTOM DOCK) -->
+    <nav class="bottom-dock">
+        <button class="dock-tab active" onclick="switchMode('flashcards')">
+            <span class="dock-icon">🎴</span>
+            <span class="dock-label">Tarjetas</span>
+        </button>
+        <button class="dock-tab" onclick="switchMode('quiz')">
+            <span class="dock-icon">🎯</span>
+            <span class="dock-label">Quiz</span>
+        </button>
+        <button class="dock-tab" onclick="switchMode('builder')">
+            <span class="dock-icon">⚙️</span>
+            <span class="dock-label">Ensamble</span>
+        </button>
+        <button class="dock-tab" onclick="switchMode('scanner')">
+            <span class="dock-icon">🔍</span>
+            <span class="dock-label">Escáner</span>
+        </button>
     </nav>
-
-    <!-- MODALIDAD 1: FLASHCARDS -->
-    <main id="mode-flashcards" class="mode-view">
-        <div class="card" onclick="flipCard()" style="cursor: pointer;">
-            <div id="fc-hanzi" class="hanzi-display">--</div>
-            <div id="fc-pinyin" class="pinyin-display">--</div>
-            <div id="fc-body"></div>
-        </div>
-        <div class="controls">
-            <button class="action-btn" onclick="prevCard()">Anterior</button>
-            <span id="fc-counter" class="counter-label">- / -</span>
-            <button class="action-btn" onclick="nextCard()">Siguiente</button>
-        </div>
-    </main>
-
-    <!-- MODALIDAD 2: QUIZ -->
-    <main id="mode-quiz" class="mode-view" style="display: none;">
-        <div class="card interactive-card">
-            <p id="quiz-prompt" class="instruction-text">¿Qué significa este término técnico?</p>
-            <div id="quiz-hanzi" class="hanzi-display">--</div>
-            <div id="quiz-pinyin" class="pinyin-display">--</div>
-            <div id="quiz-breakdown" class="anatomy-box" style="display: none;"></div>
-        </div>
-        <div id="quiz-options" class="quiz-options"></div>
-        <button id="quiz-next-btn" class="next-btn" onclick="nextQuizQuestion()">Siguiente pregunta → [Espacio]</button>
-    </main>
-
-    <!-- MODALIDAD 3: TALLER ENSAMBLE -->
-    <main id="mode-builder" class="mode-view" style="display: none;">
-        <div class="card interactive-card">
-            <p class="instruction-text">Arma el término industrial:</p>
-            <div id="builder-meaning" class="builder-target">--</div>
-            <p class="sub-instruction">(Toca las fichas en orden para ensamblar)</p>
-            <div id="builder-slots" class="slots-container"></div>
-            <div id="builder-breakdown" class="anatomy-box" style="display: none;"></div>
-        </div>
-        <div id="builder-pool" class="pool-container"></div>
-        <button id="builder-next-btn" class="next-btn" onclick="nextBuilderQuestion()">¡Correcto! Siguiente término → [Espacio]</button>
-    </main>
-
-    <!-- MODALIDAD 4: ESCÁNER HMI -->
-    <main id="mode-scanner" class="mode-view" style="display: none;">
-        <div class="card interactive-card">
-            <p class="instruction-text" style="color: var(--accent); font-weight: bold;">MISIÓN DE ESCANEO DE ALARMA:</p>
-            <div id="scanner-task" class="scanner-task-title">--</div>
-            <p class="sub-instruction">Toca la palabra correcta en el mensaje del HMI:</p>
-            
-            <div id="scanner-alarm-display" class="scanner-alarm-box"></div>
-            <div id="scanner-breakdown" class="anatomy-box" style="display: none;"></div>
-        </div>
-        <button id="scanner-next-btn" class="next-btn" onclick="nextScannerQuestion()">Siguiente alarma → [Espacio]</button>
-    </main>
-
-    <!-- RESUMEN DE SESIÓN -->
-    <section id="mode-summary" class="mode-view" style="display: none;">
-        <div class="summary-card">
-            <h2 class="summary-title">Resumen de Bloque</h2>
-            <div id="summary-percentage" class="score-circle">0%</div>
-            <p id="summary-details" class="summary-text">Completaste el bloque de estudio.</p>
-            <button class="action-btn restart-btn" onclick="restartSession()">Reiniciar nuevo bloque (5 al azar)</button>
-        </div>
-    </section>
 </div>
 
-<!-- Carga de datos y lógica modular -->
 <script src="data.js"></script>
 <script src="app.js"></script>
 </body>

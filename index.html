@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Zìdòng Core - HMI Terminal</title>
+    
+    <!-- PWA & Mobile Engine -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#060a12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Fuentes Técnicas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@500;700;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --bg-base: #060a12;
@@ -714,5 +724,16 @@
 
 <script src="data.js"></script>
 <script src="app.js"></script>
+
+<!-- REGISTRO DEL SERVICE WORKER (PWA) -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Zìdòng Core Service Worker Activo:', reg.scope))
+                .catch(err => console.error('Error registrando Service Worker:', err));
+        });
+    }
+</script>
 </body>
 </html>

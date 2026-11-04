@@ -15,12 +15,12 @@
     <!-- Fuentes Técnicas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+SC:wght@500;700;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@500;700;900&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --bg-base: #060a12;
-            --panel-bg: rgba(14, 22, 38, 0.75);
+            --panel-bg: rgba(14, 22, 38, 0.78);
             --panel-border: rgba(56, 189, 248, 0.2);
             --card-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             --accent-cyan: #38bdf8;
@@ -66,6 +66,7 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 10px 14px 12px 14px;
+            position: relative;
         }
 
         /* HUD SUPERIOR */
@@ -81,16 +82,66 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
+        .operator-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 4px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .operator-badge:active {
+            transform: scale(0.96);
+            background: rgba(56, 189, 248, 0.15);
+        }
+        .operator-avatar {
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #060a12;
+            font-family: var(--font-mono);
+        }
+        .operator-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            line-height: 1.1;
+        }
+        .operator-name {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-main);
+            max-width: 75px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .operator-rank {
+            font-size: 0.58rem;
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
         .hud-badge {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 4px 8px;
+            padding: 4px 7px;
             border-radius: 8px;
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
         }
         .badge-streak { color: #fb923c; border-color: rgba(251, 146, 60, 0.3); }
@@ -106,9 +157,9 @@
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
-            padding: 5px 22px 5px 8px;
+            padding: 5px 20px 5px 6px;
             border-radius: 8px;
-            font-size: 0.76rem;
+            font-size: 0.72rem;
             font-family: var(--font-ui);
             font-weight: 700;
             outline: none;
@@ -119,10 +170,10 @@
         }
         .system-select-wrapper::after {
             content: "▼";
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             color: var(--accent-cyan);
             position: absolute;
-            right: 8px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
@@ -244,7 +295,6 @@
             text-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
         }
 
-        /* FORMATO CONTROLADO DE TRADUCCIÓN */
         .meaning-title {
             font-size: 1.35rem;
             font-weight: 800;
@@ -598,6 +648,144 @@
             border-radius: 2px;
             box-shadow: 0 0 6px var(--accent-cyan);
         }
+
+        /* MODAL DE PERFIL / CREDENCIAL INDUSTRIAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(12px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .badge-card {
+            width: 100%;
+            max-width: 360px;
+            background: linear-gradient(180deg, #0e172a 0%, #060a12 100%);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 20px;
+            padding: 20px 18px;
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);
+            position: relative;
+            text-align: center;
+        }
+        .badge-header {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 6px;
+        }
+        .badge-avatar-frame {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 10px auto;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #060a12;
+            font-weight: 900;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+        }
+        .badge-input-name {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--panel-border);
+            color: #ffffff;
+            font-family: var(--font-ui);
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-align: center;
+            border-radius: 8px;
+            padding: 6px 10px;
+            width: 80%;
+            margin-bottom: 6px;
+            outline: none;
+        }
+        .badge-input-name:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--accent-cyan);
+        }
+        .badge-rank-title {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #38bdf8;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .badge-access-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 14px;
+        }
+        .badge-level-bar-bg {
+            background: rgba(255, 255, 255, 0.08);
+            height: 6px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .badge-level-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--status-green));
+            transition: width 0.3s ease;
+        }
+        .badge-xp-text {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+        }
+        .badge-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .badge-stat-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .badge-stat-val {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #facc15;
+        }
+        .badge-stat-lbl {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -605,7 +793,16 @@
 <div class="terminal-container">
     <!-- SUPERIOR: HUD STATUS -->
     <header class="hmi-hud">
-        <div class="hud-badge badge-streak" title="Días consecutivos">
+        <!-- BOTÓN OPERADOR / CREDENCIAL -->
+        <div class="operator-badge" onclick="openProfileModal()" title="Abrir Credencial de Ingeniero">
+            <div id="hud-avatar" class="operator-avatar">R</div>
+            <div class="operator-info">
+                <span id="hud-username" class="operator-name">Raymundo</span>
+                <span id="hud-userrank" class="operator-rank">Practicante</span>
+            </div>
+        </div>
+
+        <div class="hud-badge badge-streak" title="Racha activa">
             <span>🔥</span>
             <span id="hud-streak-count">1</span>
         </div>
@@ -616,9 +813,9 @@
         <div class="system-select-wrapper">
             <select id="category-selector" class="system-select" onchange="changeCategory(this.value)">
                 <option value="todos">🌐 General</option>
-                <option value="alarmas">🚨 Alarmas / Seguridad</option>
-                <option value="mecanica">⚙️ Mecánica / Actuadores</option>
-                <option value="operacion">🎛️ Operación / Test</option>
+                <option value="alarmas">🚨 Alarmas</option>
+                <option value="mecanica">⚙️ Mecánica</option>
+                <option value="operacion">🎛️ Operación</option>
             </select>
         </div>
     </header>
@@ -720,6 +917,41 @@
             <span class="dock-title">Escáner</span>
         </button>
     </nav>
+
+    <!-- MODAL DE PERFIL / CREDENCIAL HMI -->
+    <div id="profile-modal" class="modal-overlay" onclick="closeProfileModal(event)">
+        <div class="badge-card" onclick="event.stopPropagation()">
+            <div class="badge-header">
+                <span>ZÌDÒNG HMI SECURITY</span>
+                <span>SYS-ID #088</span>
+            </div>
+            
+            <div id="modal-avatar" class="badge-avatar-frame">R</div>
+            
+            <input type="text" id="modal-name-input" class="badge-input-name" value="Raymundo" maxlength="16" onchange="saveUserName(this.value)">
+            
+            <div id="modal-rank-name" class="badge-rank-title">Practicante</div>
+            <div id="modal-access-level" class="badge-access-tag">NIVEL ACCESO: N1 · OBSERVADOR</div>
+            
+            <div class="badge-level-bar-bg">
+                <div id="modal-rank-progress" class="badge-level-bar-fill" style="width: 10%;"></div>
+            </div>
+            <div id="modal-xp-details" class="badge-xp-text">0 / 150 XP para ascenso</div>
+
+            <div class="badge-stats-grid">
+                <div class="badge-stat-box">
+                    <div id="modal-streak-val" class="badge-stat-val">1</div>
+                    <div class="badge-stat-lbl">Días de Turno</div>
+                </div>
+                <div class="badge-stat-box">
+                    <div id="modal-total-xp" class="badge-stat-val">0</div>
+                    <div class="badge-stat-lbl">XP Totales</div>
+                </div>
+            </div>
+
+            <button class="btn-core btn-cyan" style="width: 100%;" onclick="closeProfileModalDirect()">Cerrar Credencial</button>
+        </div>
+    </div>
 </div>
 
 <script src="data.js"></script>
@@ -730,8 +962,8 @@
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/Zidong-Core/sw.js', { scope: '/Zidong-Core/' })
-                .then(reg => console.log('PWA Service Worker Activo:', reg.scope))
-                .catch(err => console.error('Falla en Service Worker:', err));
+                .then(reg => console.log('Zìdòng Core Service Worker Activo:', reg.scope))
+                .catch(err => console.error('Error registrando Service Worker:', err));
         });
     }
 </script>

@@ -1,5 +1,5 @@
 // ========================================================
-// ZÌDÒNG CORE - APP CONTROLLER & SFX GAMING ENGINE
+// ZÌDÒNG CORE - CYBER ENGINE & SFX CONTROLLER
 // ========================================================
 
 const BLOCK_SIZE = 5;
@@ -11,8 +11,9 @@ let currentMode = 'flashcards';
 let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
+let comboCount = 0;
 
-// MOTOR DE AUDIO SFX (WEB AUDIO API NATIVA)
+// MOTOR DE AUDIO SFX SINTETIZADO (WEB AUDIO API)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -27,36 +28,59 @@ function playSound(type) {
     const now = audioCtx.currentTime;
 
     if (type === 'click') {
-        // Clic mecánico tipo switch de control
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(420, now);
-        osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
+        osc.frequency.setValueAtTime(480, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.04);
         gain.gain.setValueAtTime(0.15, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
         osc.start(now);
         osc.stop(now + 0.04);
     } 
     else if (type === 'correct') {
-        // Fanfarria corta de acierto / level-up (Arpegio C5 - E5 - G5)
+        // Tono ascendente neón (Arpegio Cyber)
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now);
-        osc.frequency.setValueAtTime(659.25, now + 0.07);
-        osc.frequency.setValueAtTime(783.99, now + 0.14);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+        osc.frequency.setValueAtTime(587.33, now); // D5
+        osc.frequency.setValueAtTime(739.99, now + 0.06); // F#5
+        osc.frequency.setValueAtTime(880.00, now + 0.12); // A5
+        osc.frequency.setValueAtTime(1174.66, now + 0.18); // D6
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.32);
         osc.start(now);
-        osc.stop(now + 0.28);
+        osc.stop(now + 0.32);
     } 
     else if (type === 'wrong') {
-        // Buzzer grave industrial de falla
+        // Buzzer grave analógico
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.linearRampToValueAtTime(90, now + 0.22);
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.linearRampToValueAtTime(80, now + 0.25);
         gain.gain.setValueAtTime(0.3, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
         osc.start(now);
-        osc.stop(now + 0.22);
+        osc.stop(now + 0.25);
     }
+}
+
+// EFECTO VISUAL: SHAKE DE ERROR
+function triggerErrorShake(elementId) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.classList.remove('screen-shake');
+        void el.offsetWidth; // Forzar reflow
+        el.classList.add('screen-shake');
+        setTimeout(() => el.classList.remove('screen-shake'), 400);
+    }
+}
+
+// EFECTO VISUAL: OVERDRIVE
+function updateOverdriveVisual(active) {
+    const chassisList = ['fc-chassis', 'quiz-chassis', 'builder-chassis', 'scanner-chassis'];
+    chassisList.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (active) el.classList.add('overdrive-active');
+            else el.classList.remove('overdrive-active');
+        }
+    });
 }
 
 // TABLA DE RANGOS DE INGENIERÍA
@@ -80,7 +104,7 @@ function getCurrentRank(xp) {
     return RANKS[0];
 }
 
-// PRONUNCIACIÓN EN MANDARÍN (TTS NATIVO)
+// PRONUNCIACIÓN DE MANDARÍN (TTS NATIVO)
 function playVoice(text) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -249,6 +273,9 @@ function setLevel(lvl) {
 function switchMode(mode) {
     playSound('click');
     currentMode = mode;
+    comboCount = 0;
+    updateOverdriveVisual(false);
+
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
 
@@ -316,7 +343,7 @@ function renderFlashcardContent() {
     if (activeSessionPool.length === 0) {
         hanziElem.innerText = "--";
         pinyinElem.innerText = "";
-        body.innerHTML = `<span class="inspect-badge">Sin términos</span>`;
+        body.innerHTML = `<span class="inspect-badge">SIN TÉRMINOS</span>`;
         return;
     }
 
@@ -328,15 +355,15 @@ function renderFlashcardContent() {
         hanziElem.innerText = item.hanzi;
         pinyinElem.innerHTML = `
             ${item.pinyin} 
-            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--accent-cyan);" title="Escuchar">🔊</button>
+            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);" title="Escuchar">🔊</button>
         `;
-        body.innerHTML = `<span class="inspect-badge">Toca para inspeccionar telemetría</span>`;
+        body.innerHTML = `<span class="inspect-badge">&gt; TOCAR PARA DECODIFICAR &lt;</span>`;
     } else {
         hanziElem.className = "meaning-title";
         hanziElem.innerText = item.meaning;
         pinyinElem.innerHTML = `
             ${item.hanzi} [${item.pinyin}] 
-            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--accent-cyan);" title="Escuchar">🔊</button>
+            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);" title="Escuchar">🔊</button>
         `;
 
         let chips = item.parts.map(p => 
@@ -388,6 +415,8 @@ function initQuiz() {
     quizIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
+    comboCount = 0;
+    updateOverdriveVisual(false);
     loadQuizQuestion();
 }
 
@@ -406,7 +435,7 @@ function loadQuizQuestion() {
     document.getElementById('quiz-hanzi').innerText = item.hanzi;
     document.getElementById('quiz-pinyin').innerHTML = `
         ${item.pinyin} 
-        <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--accent-cyan);">🔊</button>
+        <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--cyber-cyan);">🔊</button>
     `;
 
     let options = [item.meaning];
@@ -434,9 +463,14 @@ function checkQuiz(btn, selected, item) {
         playSound('correct');
         btn.classList.add('correct');
         sessionCorrect++;
+        comboCount++;
+        if (comboCount >= 3) updateOverdriveVisual(true);
     } else {
         playSound('wrong');
         btn.classList.add('incorrect');
+        triggerErrorShake('quiz-chassis');
+        comboCount = 0;
+        updateOverdriveVisual(false);
         all.forEach(b => { if (b.innerText === item.meaning) b.classList.add('correct'); });
     }
 
@@ -465,6 +499,8 @@ function initBuilder() {
     builderIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
+    comboCount = 0;
+    updateOverdriveVisual(false);
     loadBuilderQuestion();
 }
 
@@ -557,8 +593,12 @@ function validateAssembly() {
     sessionTotal++;
     if (word === item.hanzi) {
         playSound('correct');
-        slots.forEach(s => s.style.borderColor = 'var(--status-green)');
-        if (!builderMistake) sessionCorrect++;
+        slots.forEach(s => s.style.borderColor = 'var(--cyber-green)');
+        if (!builderMistake) {
+            sessionCorrect++;
+            comboCount++;
+            if (comboCount >= 3) updateOverdriveVisual(true);
+        }
 
         playVoice(item.hanzi);
 
@@ -570,8 +610,11 @@ function validateAssembly() {
         document.getElementById('builder-next-btn').style.display = 'block';
     } else {
         playSound('wrong');
+        triggerErrorShake('builder-chassis');
+        comboCount = 0;
+        updateOverdriveVisual(false);
         builderMistake = true;
-        slots.forEach(s => s.style.borderColor = 'var(--status-red)');
+        slots.forEach(s => s.style.borderColor = 'var(--cyber-red)');
         setTimeout(() => slots.forEach(s => s.style.borderColor = ''), 500);
     }
 }
@@ -583,7 +626,7 @@ function nextBuilderQuestion() {
 }
 
 // --------------------------------------------------------
-// 4. ESCÁNER HMI
+// 4. ESCÁNER
 // --------------------------------------------------------
 let scannerPool = [];
 let scannerIndex = 0;
@@ -595,6 +638,8 @@ function initScanner() {
     scannerIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
+    comboCount = 0;
+    updateOverdriveVisual(false);
     loadScannerQuestion();
 }
 
@@ -638,6 +683,8 @@ function clickScannerToken(span, clickedHanzi, item) {
         scannerLocked = true;
         span.classList.add('success-hit');
         sessionCorrect++;
+        comboCount++;
+        if (comboCount >= 3) updateOverdriveVisual(true);
 
         playVoice(item.targetHanzi);
 
@@ -647,7 +694,7 @@ function clickScannerToken(span, clickedHanzi, item) {
         if (vocabInfo) {
             let chips = vocabInfo.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
             popout.innerHTML = `
-                <div style="font-weight: 800; color: var(--accent-cyan); margin-bottom: 4px;">${vocabInfo.hanzi} [${vocabInfo.pinyin}] - ${vocabInfo.meaning}</div>
+                <div style="font-weight: 800; color: var(--cyber-cyan); margin-bottom: 4px;">${vocabInfo.hanzi} [${vocabInfo.pinyin}] - ${vocabInfo.meaning}</div>
                 <div class="telemetry-chips">${chips}</div>
                 <div class="telemetry-log">${vocabInfo.summary}</div>
             `;
@@ -657,6 +704,9 @@ function clickScannerToken(span, clickedHanzi, item) {
         document.getElementById('scanner-next-btn').style.display = 'block';
     } else {
         playSound('wrong');
+        triggerErrorShake('scanner-chassis');
+        comboCount = 0;
+        updateOverdriveVisual(false);
         span.classList.add('fail-hit');
         setTimeout(() => span.classList.remove('fail-hit'), 400);
     }

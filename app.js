@@ -1,17 +1,17 @@
 // ========================================================
-// ZÌDÒNG CORE - HUB CONTROLLER & SPECIALTY ROUTING
+// ZÌDÒNG CORE - CAMPAIGN CONTROLLER & XBOX ACHIEVEMENTS
 // ========================================================
 
 const BLOCK_SIZE = 5;
 
-let currentSpecialty = 'plc';
+let currentMission = 'plc';
 let currentMode = 'lobby';
 
 let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
 
-// MOTOR DE AUDIO SFX SINTETIZADO
+// MOTOR DE AUDIO SFX (WEB AUDIO API)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -27,7 +27,7 @@ function playSound(type) {
 
     if (type === 'click') {
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(480, now);
+        osc.frequency.setValueAtTime(450, now);
         osc.frequency.exponentialRampToValueAtTime(140, now + 0.04);
         gain.gain.setValueAtTime(0.15, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
@@ -46,71 +46,189 @@ function playSound(type) {
     } 
     else if (type === 'wrong') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(160, now);
-        osc.frequency.linearRampToValueAtTime(80, now + 0.25);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(80, now + 0.22);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
         osc.start(now);
-        osc.stop(now + 0.25);
+        osc.stop(now + 0.22);
+    }
+    else if (type === 'achievement') {
+        // Tono clásico de desbloqueo de logro Xbox (Fanfarria F5 -> C6)
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(698.46, now); // F5
+        osc.frequency.setValueAtTime(1046.50, now + 0.12); // C6
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.45);
+        osc.start(now);
+        osc.stop(now + 0.45);
     }
 }
 
-function triggerErrorShake(elementId) {
-    const el = document.getElementById(elementId);
-    if (el) {
-        el.classList.remove('screen-shake');
-        void el.offsetWidth;
-        el.classList.add('screen-shake');
-        setTimeout(() => el.classList.remove('screen-shake'), 400);
+// TABLA DE RANGOS DE INGENIERÍA
+const RANKS = [
+    { title: "PRACTICANTE", minXP: 0, nextXP: 150 },
+    { title: "TÉCNICO", minXP: 150, nextXP: 400 },
+    { title: "ESPECIALISTA", minXP: 400, nextXP: 800 },
+    { title: "INGENIERO JR", minXP: 800, nextXP: 1500 },
+    { title: "INGENIERO FULL", minXP: 1500, nextXP: 2500 },
+    { title: "INGENIERO SR", minXP: 2500, nextXP: 4000 },
+    { title: "SUPERINTENDENTE", minXP: 4000, nextXP: 6000 },
+    { title: "GERENTE", minXP: 6000, nextXP: 99999 }
+];
+
+function getCurrentRank(xp) {
+    for (let i = RANKS.length - 1; i >= 0; i--) {
+        if (xp >= RANKS[i].minXP) {
+            return RANKS[i];
+        }
     }
+    return RANKS[0];
 }
 
-// PERSISTENCIA Y USUARIO
+// SISTEMA DE LOGROS & MEDALLAS (ESTILO XBOX / HALO 3)
+const ACHIEVEMENTS = [
+    {
+        id: "ach_saltamontes",
+        icon: "🦗",
+        title: "Pequeño Saltamontes",
+        desc: "Conquistaste tu primera sesión en PLC Systems.",
+        rewardXP: 150
+    },
+    {
+        id: "ach_chispazo",
+        icon: "⚡",
+        title: "Cuidado con el Chispazo",
+        desc: "Dominaste términos críticos de Electricidad y Potencia.",
+        rewardXP: 200
+    },
+    {
+        id: "ach_grano_arroz",
+        icon: "🌾",
+        title: "Grano de Arroz",
+        desc: "Completaste 5 sesiones de vocabulario técnico con éxito.",
+        rewardXP: 250
+    },
+    {
+        id: "ach_agv_pilot",
+        icon: "🤖",
+        title: "Piloto de Cintas",
+        desc: "Identificaste comandos y sensores de navegación AGV.",
+        rewardXP: 200
+    },
+    {
+        id: "ach_palacio_imperial",
+        icon: "🏯",
+        title: "Palacio Imperial",
+        desc: "Alcanzaste una calificación perfecta (100%) en cualquier modo.",
+        rewardXP: 300
+    },
+    {
+        id: "ach_dedos_rapidos",
+        icon: "🚨",
+        title: "Dedos Rápidos",
+        desc: "Resolviste una alarma de Paro de Emergencia sin vacilar.",
+        rewardXP: 200
+    }
+];
+
+function triggerAchievement(achId) {
+    let unlocked = JSON.parse(localStorage.getItem('zidong_achievements') || '[]');
+    if (unlocked.includes(achId)) return; // Ya desbloqueado previamente
+
+    const ach = ACHIEVEMENTS.find(a => a.id === achId);
+    if (!ach) return;
+
+    unlocked.push(achId);
+    localStorage.setItem('zidong_achievements', JSON.stringify(unlocked));
+
+    // Sonido y banner animado Xbox
+    playSound('achievement');
+    const toast = document.getElementById('xbox-achievement-toast');
+    document.getElementById('toast-achievement-name').innerText = `${ach.icon} ${ach.title} (+${ach.rewardXP} XP)`;
+    toast.classList.add('active');
+
+    setTimeout(() => {
+        toast.classList.remove('active');
+    }, 3800);
+
+    // Sumar XP del logro
+    addXP(ach.rewardXP);
+    renderAchievements();
+}
+
+function renderAchievements() {
+    const listContainer = document.getElementById('achievements-list');
+    if (!listContainer) return;
+
+    let unlocked = JSON.parse(localStorage.getItem('zidong_achievements') || '[]');
+    listContainer.innerHTML = '';
+
+    document.getElementById('ach-unlocked-counter').innerText = `${unlocked.length} / ${ACHIEVEMENTS.length} DESBLOQUEADOS`;
+
+    ACHIEVEMENTS.forEach(ach => {
+        const isDone = unlocked.includes(ach.id);
+        const tile = document.createElement('div');
+        tile.className = `achievement-tile ${isDone ? 'unlocked' : ''}`;
+        tile.innerHTML = `
+            <div class="ach-icon-circle">${isDone ? ach.icon : '🔒'}</div>
+            <div class="ach-info-block">
+                <div class="ach-title-row">
+                    <span class="ach-name">${ach.title}</span>
+                    <span class="ach-xp-reward">+${ach.rewardXP} XP</span>
+                </div>
+                <div class="ach-desc">${ach.desc}</div>
+            </div>
+        `;
+        listContainer.appendChild(tile);
+    });
+}
+
+// PERSISTENCIA Y ACTUALIZACIÓN DE PERFIL
 function loadUserData() {
-    let streak = parseInt(localStorage.getItem('zidong_streak') || '1');
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
-    let username = localStorage.getItem('zidong_username') || 'Raymundo';
+    let username = localStorage.getItem('zidong_username') || 'ENGINEER 001';
 
-    document.getElementById('hud-username').innerText = username;
-    document.getElementById('hud-avatar').innerText = username.charAt(0).toUpperCase();
-    document.getElementById('hud-streak-count').innerText = streak;
-    document.getElementById('hud-xp-count').innerText = `${xp} XP`;
+    const rank = getCurrentRank(xp);
+
+    document.getElementById('op-name').innerText = username;
+    document.getElementById('op-avatar').innerText = username.charAt(0).toUpperCase();
+    document.getElementById('op-rank').innerText = `RANK: ${rank.title}`;
+    document.getElementById('op-xp-total').innerText = xp.toLocaleString();
+
+    if (rank.nextXP >= 99999) {
+        document.getElementById('op-next-pct').innerText = 'MAX';
+        document.getElementById('op-bar-fill').style.width = '100%';
+    } else {
+        const xpInRank = xp - rank.minXP;
+        const totalNeeded = rank.nextXP - rank.minXP;
+        const pct = Math.min(100, Math.max(0, Math.round((xpInRank / totalNeeded) * 100)));
+        document.getElementById('op-next-pct').innerText = `${pct}%`;
+        document.getElementById('op-bar-fill').style.width = `${pct}%`;
+    }
+
+    renderAchievements();
 }
 
-function saveUserName(newName) {
-    const clean = newName.trim() || 'Operador';
-    localStorage.setItem('zidong_username', clean);
-    playSound('click');
+function addXP(amount) {
+    let xp = parseInt(localStorage.getItem('zidong_xp') || '0') + amount;
+    localStorage.setItem('zidong_xp', xp);
     loadUserData();
 }
 
-function openProfileModal() {
-    playSound('click');
-    document.getElementById('profile-modal').classList.add('active');
-}
-function closeProfileModal(e) {
-    if (e.target.id === 'profile-modal') {
-        playSound('click');
-        document.getElementById('profile-modal').classList.remove('active');
-    }
-}
-function closeProfileModalDirect() {
-    playSound('click');
-    document.getElementById('profile-modal').classList.remove('active');
-}
-
-// SISTEMA DE NAVEGACIÓN Y LOBBY
+// NAVEGACIÓN Y CAMPANA
 function enterLobby() {
     playSound('click');
     currentMode = 'lobby';
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.dock-item')[0].classList.add('active');
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
     document.getElementById('mode-lobby').classList.add('active');
 }
 
-function selectSpecialty(topic) {
+function selectMission(topic) {
     playSound('click');
-    currentSpecialty = topic;
+    currentMission = topic;
     refreshSessionPool();
     switchMode('flashcards');
 }
@@ -125,7 +243,7 @@ function shuffleArray(array) {
 }
 
 function refreshSessionPool() {
-    const pool = vocabulary.filter(v => v.topic === currentSpecialty);
+    const pool = vocabulary.filter(v => v.topic === currentMission);
     activeSessionPool = shuffleArray(pool).slice(0, BLOCK_SIZE);
 }
 
@@ -135,21 +253,24 @@ function switchMode(mode) {
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
 
-    if (mode === 'flashcards') {
+    if (mode === 'lobby') {
         document.querySelectorAll('.dock-item')[0].classList.add('active');
+        document.getElementById('mode-lobby').classList.add('active');
+    } else if (mode === 'achievements') {
+        document.querySelectorAll('.dock-item')[1].classList.add('active');
+        document.getElementById('mode-achievements').classList.add('active');
+        renderAchievements();
+    } else if (mode === 'flashcards') {
+        document.querySelectorAll('.dock-item')[2].classList.add('active');
         document.getElementById('mode-flashcards').classList.add('active');
         currentFC = 0;
         updateFlashcard();
     } else if (mode === 'quiz') {
-        document.querySelectorAll('.dock-item')[1].classList.add('active');
+        document.querySelectorAll('.dock-item')[3].classList.add('active');
         document.getElementById('mode-quiz').classList.add('active');
         initQuiz();
-    } else if (mode === 'builder') {
-        document.querySelectorAll('.dock-item')[2].classList.add('active');
-        document.getElementById('mode-builder').classList.add('active');
-        initBuilder();
     } else if (mode === 'scanner') {
-        document.querySelectorAll('.dock-item')[3].classList.add('active');
+        document.querySelectorAll('.dock-item')[4].classList.add('active');
         document.getElementById('mode-scanner').classList.add('active');
         initScanner();
     }
@@ -161,12 +282,20 @@ function finishSession() {
 
     const percentage = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 100;
     document.getElementById('summary-percentage').innerText = `${percentage}%`;
-    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} reactivos de ${currentSpecialty.toUpperCase()}.`;
+    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} reactivos de ${currentMission.toUpperCase()}.`;
     document.getElementById('mode-summary').classList.add('active');
 
-    let xp = parseInt(localStorage.getItem('zidong_xp') || '0') + (sessionCorrect * 25);
-    localStorage.setItem('zidong_xp', xp);
-    loadUserData();
+    addXP(sessionCorrect * 25);
+
+    // Comprobar logros al terminar ciclo
+    if (currentMission === 'plc' && sessionCorrect > 0) triggerAchievement('ach_saltamontes');
+    if (currentMission === 'electricidad' && sessionCorrect > 0) triggerAchievement('ach_chispazo');
+    if (currentMission === 'agv' && sessionCorrect > 0) triggerAchievement('ach_agv_pilot');
+    if (percentage === 100) triggerAchievement('ach_palacio_imperial');
+
+    let totalRuns = parseInt(localStorage.getItem('zidong_completed_runs') || '0') + 1;
+    localStorage.setItem('zidong_completed_runs', totalRuns);
+    if (totalRuns >= 5) triggerAchievement('ach_grano_arroz');
 }
 
 function playVoice(text) {
@@ -193,22 +322,20 @@ function renderFlashcardContent() {
     if (activeSessionPool.length === 0) {
         hanziElem.innerText = "--";
         pinyinElem.innerText = "";
-        body.innerHTML = `<span class="inspect-badge">SIN TÉRMINOS</span>`;
+        body.innerHTML = `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyber-cyan);">SIN TÉRMINOS</span>`;
         return;
     }
 
     const item = activeSessionPool[currentFC];
 
     if (!isFlipped) {
-        hanziElem.className = "hanzi-character";
         hanziElem.innerText = item.hanzi;
         pinyinElem.innerHTML = `
             ${item.pinyin} 
             <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);">🔊</button>
         `;
-        body.innerHTML = `<span class="inspect-badge">&gt; TOCAR PARA DECODIFICAR &lt;</span>`;
+        body.innerHTML = `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyber-cyan);">[ TOCAR PARA INSPECCIONAR ]</span>`;
     } else {
-        hanziElem.className = "meaning-title";
         hanziElem.innerText = item.meaning;
         pinyinElem.innerHTML = `
             ${item.hanzi} [${item.pinyin}] 
@@ -311,7 +438,6 @@ function checkQuiz(btn, selected, item) {
     } else {
         playSound('wrong');
         btn.classList.add('incorrect');
-        triggerErrorShake('quiz-chassis');
         all.forEach(b => { if (b.innerText === item.meaning) b.classList.add('correct'); });
     }
 
@@ -330,142 +456,14 @@ function nextQuizQuestion() {
 }
 
 // --------------------------------------------------------
-// 3. TALLER ENSAMBLE
-// --------------------------------------------------------
-let builderIndex = 0;
-let selectedBuilderChars = [];
-let builderMistake = false;
-
-function initBuilder() {
-    builderIndex = 0;
-    sessionCorrect = 0;
-    sessionTotal = 0;
-    loadBuilderQuestion();
-}
-
-function loadBuilderQuestion() {
-    if (builderIndex >= activeSessionPool.length) {
-        finishSession();
-        return;
-    }
-
-    selectedBuilderChars = [];
-    builderMistake = false;
-    const item = activeSessionPool[builderIndex];
-    const targetChars = item.hanzi.split('');
-
-    document.getElementById('builder-next-btn').style.display = 'none';
-    document.getElementById('builder-breakdown').style.display = 'none';
-    document.getElementById('builder-meaning').innerText = item.meaning;
-
-    const rail = document.getElementById('builder-slots');
-    rail.innerHTML = '';
-    for (let i = 0; i < targetChars.length; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'assembly-slot';
-        slot.onclick = () => removeTile(i);
-        rail.appendChild(slot);
-    }
-
-    const distractors = ['电', '缸', '模', '组', '臂', '门', '锁', '停', '警', '能', '未', '推'];
-    let poolChars = [...targetChars];
-    while (poolChars.length < targetChars.length + 3) {
-        let r = distractors[Math.floor(Math.random() * distractors.length)];
-        if (!poolChars.includes(r)) poolChars.push(r);
-    }
-    poolChars = shuffleArray(poolChars);
-
-    const tray = document.getElementById('builder-pool');
-    tray.innerHTML = '';
-    poolChars.forEach((ch, idx) => {
-        const tile = document.createElement('button');
-        tile.className = 'component-tile';
-        tile.innerText = ch;
-        tile.id = `t-${idx}`;
-        tile.onclick = () => pickTile(ch, `t-${idx}`);
-        tray.appendChild(tile);
-    });
-}
-
-function pickTile(char, id) {
-    playSound('click');
-    const item = activeSessionPool[builderIndex];
-    if (selectedBuilderChars.length < item.hanzi.length) {
-        selectedBuilderChars.push({ char, id });
-        document.getElementById(id).classList.add('used');
-        renderSlots();
-
-        if (selectedBuilderChars.length === item.hanzi.length) {
-            validateAssembly();
-        }
-    }
-}
-
-function removeTile(idx) {
-    playSound('click');
-    if (idx < selectedBuilderChars.length) {
-        const rem = selectedBuilderChars.splice(idx, 1)[0];
-        document.getElementById(rem.id).classList.remove('used');
-        renderSlots();
-    }
-}
-
-function renderSlots() {
-    const slots = document.querySelectorAll('.assembly-slot');
-    slots.forEach((s, i) => {
-        if (i < selectedBuilderChars.length) {
-            s.innerText = selectedBuilderChars[i].char;
-            s.classList.add('active-dock');
-        } else {
-            s.innerText = '';
-            s.classList.remove('active-dock');
-        }
-    });
-}
-
-function validateAssembly() {
-    const item = activeSessionPool[builderIndex];
-    const word = selectedBuilderChars.map(s => s.char).join('');
-    const slots = document.querySelectorAll('.assembly-slot');
-
-    sessionTotal++;
-    if (word === item.hanzi) {
-        playSound('correct');
-        slots.forEach(s => s.style.borderColor = 'var(--cyber-green)');
-        if (!builderMistake) sessionCorrect++;
-
-        playVoice(item.hanzi);
-
-        const popout = document.getElementById('builder-breakdown');
-        let chips = item.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
-        popout.innerHTML = `<div class="telemetry-chips">${chips}</div><div class="telemetry-log">${item.summary}</div>`;
-        popout.style.display = 'block';
-
-        document.getElementById('builder-next-btn').style.display = 'block';
-    } else {
-        playSound('wrong');
-        triggerErrorShake('builder-chassis');
-        builderMistake = true;
-        slots.forEach(s => s.style.borderColor = 'var(--cyber-red)');
-        setTimeout(() => slots.forEach(s => s.style.borderColor = ''), 500);
-    }
-}
-
-function nextBuilderQuestion() {
-    playSound('click');
-    builderIndex++;
-    loadBuilderQuestion();
-}
-
-// --------------------------------------------------------
-// 4. ESCÁNER
+// 3. ESCÁNER
 // --------------------------------------------------------
 let scannerPool = [];
 let scannerIndex = 0;
 let scannerLocked = false;
 
 function initScanner() {
-    const filtered = scannerScenarios.filter(s => s.topic === currentSpecialty || currentSpecialty === 'seguridad');
+    const filtered = scannerScenarios.filter(s => s.topic === currentMission || currentMission === 'seguridad');
     scannerPool = shuffleArray(filtered.length > 0 ? filtered : scannerScenarios).slice(0, BLOCK_SIZE);
     scannerIndex = 0;
     sessionCorrect = 0;
@@ -497,7 +495,8 @@ function loadScannerQuestion() {
         if (tok.isTarget) {
             span.onclick = () => clickScannerToken(span, tok.hanzi, item);
         } else {
-            span.classList.add('token-static');
+            span.style.cursor = 'default';
+            span.style.color = '#475569';
         }
         terminal.appendChild(span);
     });
@@ -515,6 +514,8 @@ function clickScannerToken(span, clickedHanzi, item) {
 
         playVoice(item.targetHanzi);
 
+        if (item.targetHanzi === "急停") triggerAchievement('ach_dedos_rapidos');
+
         const vocabInfo = vocabulary.find(v => v.hanzi === item.targetHanzi);
         const popout = document.getElementById('scanner-breakdown');
 
@@ -531,7 +532,6 @@ function clickScannerToken(span, clickedHanzi, item) {
         document.getElementById('scanner-next-btn').style.display = 'block';
     } else {
         playSound('wrong');
-        triggerErrorShake('scanner-chassis');
         span.classList.add('fail-hit');
         setTimeout(() => span.classList.remove('fail-hit'), 400);
     }
@@ -543,6 +543,6 @@ function nextScannerQuestion() {
     loadScannerQuestion();
 }
 
-// INICIALIZACIÓN
+// ARRANQUE
 loadUserData();
 enterLobby();

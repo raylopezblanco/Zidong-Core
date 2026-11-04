@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <!-- Tipografía Militar / Futurista -->
+    <!-- Fuentes Cyberpunk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700;800&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
@@ -24,8 +24,7 @@
             --cyber-yellow: #fcee0a;
             --cyber-red: #ff003c;
             --cyber-green: #00ff66;
-            --metal-frame: #0b1320;
-            --panel-inner: rgba(7, 14, 27, 0.88);
+            --panel-inner: rgba(7, 14, 27, 0.92);
             --border-glow: rgba(0, 240, 255, 0.35);
             --text-pure: #ffffff;
             --text-dim: #798a9c;
@@ -55,7 +54,6 @@
             position: relative;
         }
 
-        /* REJILLA DE RADAR Y SCANLINES CRT */
         body::before {
             content: "";
             position: absolute;
@@ -76,7 +74,7 @@
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 100;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         .terminal-container {
@@ -91,7 +89,7 @@
             z-index: 1;
         }
 
-        /* HUD CYBERPUNK */
+        /* HUD SUPERIOR */
         .cyber-hud {
             display: flex;
             align-items: center;
@@ -100,7 +98,7 @@
             border: 1px solid var(--border-glow);
             padding: 6px 10px;
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
         }
 
         .op-badge-cyber {
@@ -111,12 +109,7 @@
             border: 1px solid rgba(0, 240, 255, 0.4);
             padding: 4px 8px;
             cursor: pointer;
-            transition: all 0.1s ease;
             clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
-        }
-        .op-badge-cyber:active {
-            transform: scale(0.96);
-            background: rgba(0, 240, 255, 0.25);
         }
         .op-avatar {
             width: 22px;
@@ -141,7 +134,7 @@
             font-size: 0.72rem;
             font-weight: 800;
             color: #fff;
-            max-width: 65px;
+            max-width: 80px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -150,7 +143,6 @@
             font-size: 0.58rem;
             font-family: var(--font-mono);
             color: var(--cyber-cyan);
-            letter-spacing: 0.5px;
             margin-top: 2px;
         }
 
@@ -168,88 +160,26 @@
         .hud-tag-streak { color: var(--cyber-yellow); border-color: rgba(252, 238, 10, 0.3); }
         .hud-tag-xp { color: var(--cyber-cyan); border-color: rgba(0, 240, 255, 0.3); }
 
-        .system-select-wrapper {
-            flex: 1;
-            position: relative;
-        }
-        .system-select {
-            width: 100%;
-            appearance: none;
-            background: #060b13;
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            color: var(--text-pure);
-            padding: 5px 18px 5px 6px;
-            font-size: 0.7rem;
-            font-family: var(--font-tech);
-            font-weight: 700;
-            outline: none;
-            cursor: pointer;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .system-select-wrapper::after {
-            content: "▼";
-            font-size: 0.5rem;
-            color: var(--cyber-cyan);
-            position: absolute;
-            right: 6px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-
-        /* BARRA DE CICLO / RECARGA */
-        .cyber-progress-track {
-            height: 5px;
-            background: #060b13;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            margin: 6px 0;
-            overflow: hidden;
-            position: relative;
-        }
-        .cyber-progress-bar {
-            height: 100%;
-            width: 20%;
-            background: linear-gradient(90deg, var(--cyber-cyan), var(--cyber-yellow));
-            box-shadow: 0 0 10px var(--cyber-cyan);
-            transition: width 0.25s ease;
-        }
-
-        /* SELECTOR DE NIVEL ESTILO MILITAR */
-        .level-strip {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-        .level-pill {
-            background: #070e1b;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            color: var(--text-dim);
-            padding: 5px;
-            font-size: 0.72rem;
-            font-family: var(--font-tech);
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            text-transform: uppercase;
-            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
-            transition: all 0.15s;
-        }
-        .level-pill.active {
+        .btn-hub-return {
             background: rgba(0, 240, 255, 0.15);
+            border: 1px solid var(--cyber-cyan);
             color: var(--cyber-cyan);
-            border-color: var(--cyber-cyan);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 240, 255, 0.1);
+            font-family: var(--font-tech);
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 5px 8px;
+            cursor: pointer;
+            margin-left: auto;
+            clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
         }
 
-        /* WORKSPACE Y CHASIS CYBER */
+        /* WORKSPACE Y VISTAS */
         .workspace {
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            margin: 6px 0;
         }
 
         .mode-screen {
@@ -262,6 +192,48 @@
             display: flex;
         }
 
+        /* VISTA: LOBBY DE MISIONES */
+        .lobby-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            overflow-y: auto;
+            padding: 4px 2px;
+        }
+        .specialty-card {
+            background: var(--panel-inner);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-left: 3px solid var(--cyber-cyan);
+            padding: 12px 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+            transition: all 0.15s ease;
+        }
+        .specialty-card:active {
+            transform: scale(0.97);
+            background: rgba(0, 240, 255, 0.18);
+        }
+        .specialty-icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+        .specialty-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+        .specialty-desc {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* CHASIS DE JUEGO */
         .cyber-chassis {
             background: var(--panel-inner);
             border: 1px solid var(--border-glow);
@@ -273,36 +245,10 @@
             padding: 16px 14px;
             position: relative;
             clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
             overflow-y: auto;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        /* ESQUINAS TÁCTICAS */
-        .cyber-chassis::before {
-            content: "// SEC-HMI 4.0";
-            position: absolute;
-            top: 6px;
-            left: 12px;
-            font-family: var(--font-mono);
-            font-size: 0.55rem;
-            color: var(--cyber-cyan);
-            letter-spacing: 1px;
-            opacity: 0.7;
-        }
-        .cyber-chassis::after {
-            content: "STATE: LIVE";
-            position: absolute;
-            bottom: 6px;
-            right: 12px;
-            font-family: var(--font-mono);
-            font-size: 0.55rem;
-            color: var(--cyber-yellow);
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        /* SHAKE DE ERROR */
         .screen-shake {
             animation: cyber-shake 0.35s cubic-bezier(.36,.07,.19,.97) both;
             border-color: var(--cyber-red) !important;
@@ -315,22 +261,9 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* COMBO OVERDRIVE GLOW */
-        .overdrive-active {
-            border-color: var(--cyber-yellow) !important;
-            box-shadow: 0 0 25px rgba(252, 238, 10, 0.4), inset 0 0 15px rgba(252, 238, 10, 0.1) !important;
-        }
-
-        .hanzi-viewport {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 4px;
-        }
         .hanzi-character {
             font-family: var(--font-hanzi);
-            font-size: 5.2rem;
+            font-size: 5rem;
             font-weight: 900;
             line-height: 1;
             color: #ffffff;
@@ -338,51 +271,33 @@
         }
 
         .meaning-title {
-            font-size: 1.35rem;
-            font-family: var(--font-tech);
+            font-size: 1.3rem;
             font-weight: 800;
-            line-height: 1.2;
             color: var(--cyber-yellow);
-            text-shadow: 0 0 10px rgba(252, 238, 10, 0.5);
             text-align: center;
             margin: 6px 0;
-            max-width: 95%;
         }
 
         .pinyin-label {
             font-family: var(--font-mono);
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: var(--cyber-cyan);
-            letter-spacing: 1px;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
         }
 
         .inspect-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             background: rgba(0, 240, 255, 0.05);
             border: 1px dashed rgba(0, 240, 255, 0.3);
             color: var(--cyber-cyan);
             padding: 4px 10px;
             font-size: 0.68rem;
             font-family: var(--font-mono);
-            letter-spacing: 0.5px;
         }
 
-        .nav-actions-strip {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        /* TELEMETRÍA Y CAJAS */
         .telemetry-box {
             width: 100%;
             background: #040810;
@@ -425,8 +340,7 @@
             border-left: 3px solid var(--cyber-cyan);
             color: #ffffff;
             padding: 10px 6px;
-            font-size: 0.8rem;
-            font-family: var(--font-tech);
+            font-size: 0.78rem;
             font-weight: 700;
             min-height: 50px;
             cursor: pointer;
@@ -434,26 +348,19 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            transition: all 0.1s ease;
             clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
-        }
-        .matrix-button:active {
-            transform: scale(0.97);
-            background: rgba(0, 240, 255, 0.2);
         }
         .matrix-button.correct {
             background: rgba(0, 255, 102, 0.2) !important;
             border-color: var(--cyber-green) !important;
             border-left: 3px solid var(--cyber-green) !important;
             color: #afffd0 !important;
-            box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
         }
         .matrix-button.incorrect {
             background: rgba(255, 0, 60, 0.2) !important;
             border-color: var(--cyber-red) !important;
             border-left: 3px solid var(--cyber-red) !important;
             color: #ffa1b2 !important;
-            box-shadow: 0 0 12px rgba(255, 0, 60, 0.4);
         }
 
         /* ENSAMBLE */
@@ -479,9 +386,7 @@
         .assembly-slot.active-dock {
             border: 2px solid var(--cyber-cyan);
             background: rgba(0, 240, 255, 0.15);
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
         }
-
         .parts-tray {
             display: flex;
             flex-wrap: wrap;
@@ -502,30 +407,24 @@
             font-size: 1.6rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.08s ease;
             clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
-        }
-        .component-tile:active {
-            transform: scale(0.92);
         }
         .component-tile.used {
             opacity: 0.15;
             pointer-events: none;
-            border-color: rgba(255, 255, 255, 0.1);
         }
 
         /* ESCÁNER TERMINAL */
         .terminal-display {
             width: 100%;
             background: #020408;
-            border: 1px solid rgba(255, 0, 60, 0.4);
             border-left: 4px solid var(--cyber-red);
+            border: 1px solid rgba(255, 0, 60, 0.4);
             padding: 10px;
             font-family: var(--font-mono);
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             line-height: 1.7;
             margin: 8px 0;
-            box-shadow: inset 0 0 10px rgba(255, 0, 60, 0.1);
         }
         .terminal-token {
             display: inline-block;
@@ -533,55 +432,33 @@
             margin: 2px;
             cursor: pointer;
             border: 1px solid transparent;
-            transition: all 0.12s;
-        }
-        .terminal-token:hover {
-            border-color: var(--cyber-cyan);
-            background: rgba(0, 240, 255, 0.15);
-        }
-        .terminal-token.token-static {
-            cursor: default;
-            color: #445366;
-        }
-        .terminal-token.token-static:hover {
-            border-color: transparent;
-            background: transparent;
         }
         .terminal-token.success-hit {
             background: var(--cyber-green) !important;
             color: #000 !important;
             font-weight: 900;
-            box-shadow: 0 0 12px var(--cyber-green);
         }
         .terminal-token.fail-hit {
             background: var(--cyber-red) !important;
             color: #fff !important;
         }
 
-        /* BOTONES CYBERPUNK */
+        /* BOTONES DE CONTROL */
         .btn-core {
             border: none;
             font-family: var(--font-tech);
             font-weight: 800;
             font-size: 0.88rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.1s ease;
             display: inline-flex;
             justify-content: center;
             align-items: center;
         }
-        .btn-core:active {
-            transform: scale(0.97);
-        }
-
         .btn-cyan {
             background: var(--cyber-cyan);
             color: #03060b;
             padding: 11px 16px;
             clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
             font-weight: 900;
         }
         .btn-ghost {
@@ -592,24 +469,13 @@
             font-size: 0.75rem;
             clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
         }
-
         .full-trigger {
             width: 100%;
             margin-top: 8px;
             display: none;
         }
 
-        .summary-dashboard {
-            background: var(--panel-inner);
-            border: 2px solid var(--cyber-cyan);
-            padding: 22px 14px;
-            text-align: center;
-            margin: auto 0;
-            clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
-        }
-
-        /* DOCK DE MISIONES */
+        /* DOCK DE NAVEGACIÓN */
         .cyber-dock {
             height: 56px;
             background: rgba(7, 14, 27, 0.95);
@@ -618,9 +484,7 @@
             align-items: center;
             padding: 2px 4px;
             clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.8);
         }
-
         .dock-item {
             flex: 1;
             background: transparent;
@@ -632,7 +496,6 @@
             color: var(--text-dim);
             padding: 5px 0;
             cursor: pointer;
-            transition: all 0.15s ease;
             position: relative;
         }
         .dock-svg {
@@ -641,19 +504,14 @@
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
-            stroke-linecap: square;
         }
         .dock-title {
             font-size: 0.62rem;
-            font-family: var(--font-tech);
             font-weight: 700;
-            letter-spacing: 0.5px;
             margin-top: 2px;
             text-transform: uppercase;
         }
-        .dock-item.active {
-            color: var(--cyber-cyan);
-        }
+        .dock-item.active { color: var(--cyber-cyan); }
         .dock-item.active::after {
             content: "";
             position: absolute;
@@ -661,10 +519,9 @@
             width: 14px;
             height: 2px;
             background: var(--cyber-cyan);
-            box-shadow: 0 0 6px var(--cyber-cyan);
         }
 
-        /* MODAL DE CREDENCIAL CYBER */
+        /* MODAL DE PERFIL */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -679,10 +536,7 @@
             z-index: 1000;
             padding: 16px;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
-
+        .modal-overlay.active { display: flex; }
         .badge-card {
             width: 100%;
             max-width: 350px;
@@ -690,113 +544,16 @@
             border: 2px solid var(--cyber-cyan);
             padding: 18px 16px;
             clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-            box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
             text-align: center;
-        }
-        .badge-header {
-            font-family: var(--font-mono);
-            font-size: 0.62rem;
-            color: var(--cyber-cyan);
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(0, 240, 255, 0.25);
-            padding-bottom: 4px;
-        }
-        .badge-avatar-frame {
-            width: 68px;
-            height: 68px;
-            margin: 0 auto 10px auto;
-            background: var(--cyber-yellow);
-            color: #000;
-            font-family: var(--font-display);
-            font-size: 2rem;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            box-shadow: 0 0 16px var(--cyber-yellow);
-        }
-        .badge-input-name {
-            background: #02050a;
-            border: 1px solid var(--cyber-cyan);
-            color: #ffffff;
-            font-family: var(--font-tech);
-            font-size: 1.1rem;
-            font-weight: 800;
-            text-align: center;
-            padding: 5px 8px;
-            width: 80%;
-            margin-bottom: 6px;
-            outline: none;
-        }
-        .badge-rank-title {
-            font-family: var(--font-display);
-            font-size: 0.95rem;
-            font-weight: 900;
-            color: var(--cyber-cyan);
-            margin-bottom: 4px;
-        }
-        .badge-access-tag {
-            font-family: var(--font-mono);
-            font-size: 0.62rem;
-            color: var(--cyber-yellow);
-            background: rgba(252, 238, 10, 0.08);
-            border: 1px solid rgba(252, 238, 10, 0.25);
-            padding: 2px 6px;
-            display: inline-block;
-            margin-bottom: 12px;
-        }
-        .badge-level-bar-bg {
-            background: #02050a;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            height: 6px;
-            margin-bottom: 6px;
-        }
-        .badge-level-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--cyber-cyan), var(--cyber-yellow));
-            box-shadow: 0 0 8px var(--cyber-cyan);
-            transition: width 0.3s ease;
-        }
-        .badge-xp-text {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            margin-bottom: 12px;
-        }
-        .badge-stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 14px;
-        }
-        .badge-stat-box {
-            background: #02050a;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 6px;
-        }
-        .badge-stat-val {
-            font-family: var(--font-mono);
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--cyber-yellow);
-        }
-        .badge-stat-lbl {
-            font-size: 0.6rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
 <div class="terminal-container">
-    <!-- HUD SUPERIOR TÁCTICO -->
+    <!-- HUD SUPERIOR -->
     <header class="cyber-hud">
-        <div class="op-badge-cyber" onclick="openProfileModal()" title="Credencial de Planta">
+        <div class="op-badge-cyber" onclick="openProfileModal()">
             <div id="hud-avatar" class="op-avatar">R</div>
             <div class="op-meta">
                 <span id="hud-username" class="op-name">Raymundo</span>
@@ -804,37 +561,66 @@
             </div>
         </div>
 
-        <div class="hud-tag hud-tag-streak" title="Racha activa">
+        <div class="hud-tag hud-tag-streak">
             <span>🔥</span>
             <span id="hud-streak-count">1</span>
         </div>
-        <div class="hud-tag hud-tag-xp" title="Experiencia acumulada">
+        <div class="hud-tag hud-tag-xp">
             <span>⚡</span>
             <span id="hud-xp-count">0 XP</span>
         </div>
-        <div class="system-select-wrapper">
-            <select id="category-selector" class="system-select" onchange="changeCategory(this.value)">
-                <option value="todos">🌐 SYS: GENERAL</option>
-                <option value="alarmas">🚨 SYS: ALARMAS</option>
-                <option value="mecanica">⚙️ SYS: MECÁNICA</option>
-                <option value="operacion">🎛️ SYS: TEST/OP</option>
-            </select>
-        </div>
+
+        <button class="btn-hub-return" onclick="enterLobby()">HUB //</button>
     </header>
 
-    <!-- WORKSPACE CENTRAL -->
+    <!-- WORKBENCH -->
     <main class="workspace">
-        <div class="cyber-progress-track">
-            <div id="progress-bar-fill" class="cyber-progress-bar"></div>
-        </div>
-
-        <div id="level-container" class="level-strip">
-            <button class="level-pill active" onclick="setLevel(1)">[N1] Radicales</button>
-            <button class="level-pill" onclick="setLevel(2)">[N2] Ecuación HMI</button>
-        </div>
+        <!-- 0. LOBBY: SELECTOR DE ESPECIALIDAD -->
+        <section id="mode-lobby" class="mode-screen active">
+            <div style="font-family: var(--font-display); font-size: 0.9rem; color: var(--cyber-cyan); margin-bottom: 8px;">
+                // SELECCIONA SECTOR INDUSTRIAL:
+            </div>
+            <div class="lobby-grid">
+                <div class="specialty-card" onclick="selectSpecialty('plc')">
+                    <span class="specialty-icon">🤖</span>
+                    <span class="specialty-title">PLC & Redes</span>
+                    <span class="specialty-desc">I/O, Bits, Profinet</span>
+                </div>
+                <div class="specialty-card" onclick="selectSpecialty('electricidad')">
+                    <span class="specialty-icon">⚡</span>
+                    <span class="specialty-title">Electricidad</span>
+                    <span class="specialty-desc">Voltaje, Tierra, Relés</span>
+                </div>
+                <div class="specialty-card" onclick="selectSpecialty('mantenimiento')">
+                    <span class="specialty-icon">⚙️</span>
+                    <span class="specialty-title">Mecánica</span>
+                    <span class="specialty-desc">Cilindros, Servos, Guías</span>
+                </div>
+                <div class="specialty-card" onclick="selectSpecialty('agv')">
+                    <span class="specialty-icon">🚚</span>
+                    <span class="specialty-title">AGV / AMR</span>
+                    <span class="specialty-desc">Rutas, Guiado, Sensores</span>
+                </div>
+                <div class="specialty-card" onclick="selectSpecialty('produccion')">
+                    <span class="specialty-icon">🏭</span>
+                    <span class="specialty-title">Producción</span>
+                    <span class="specialty-desc">Ciclo, Yield, Estaciones</span>
+                </div>
+                <div class="specialty-card" onclick="selectSpecialty('seguridad')">
+                    <span class="specialty-icon">🚨</span>
+                    <span class="specialty-title">Seguridad</span>
+                    <span class="specialty-desc">E-Stop, Cortinas, Puertas</span>
+                </div>
+                <div class="specialty-card" onclick="selectSpecialty('calidad')" style="grid-column: span 2;">
+                    <span class="specialty-icon">🔍</span>
+                    <span class="specialty-title">Calidad & Visión Artificial</span>
+                    <span class="specialty-desc">Inspección, Descarte, Reconocimiento OCR</span>
+                </div>
+            </div>
+        </section>
 
         <!-- 1. FLASHCARDS -->
-        <section id="mode-flashcards" class="mode-screen active">
+        <section id="mode-flashcards" class="mode-screen">
             <div id="fc-chassis" class="cyber-chassis" onclick="flipCard()" style="cursor: pointer;">
                 <div class="hanzi-viewport">
                     <div id="fc-hanzi" class="hanzi-character">--</div>
@@ -844,9 +630,9 @@
                     <span class="inspect-badge">&gt; TOCAR PARA DECODIFICAR &lt;</span>
                 </div>
             </div>
-            <div class="nav-actions-strip">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
                 <button class="btn-core btn-ghost" onclick="prevCard()">&lt; PREV</button>
-                <span id="fc-counter" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyber-cyan); font-weight: 700;">1 / 5</span>
+                <span id="fc-counter" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyber-cyan);">1 / 5</span>
                 <button class="btn-core btn-ghost" onclick="nextCard()">NEXT &gt;</button>
             </div>
         </section>
@@ -855,9 +641,9 @@
         <section id="mode-quiz" class="mode-screen">
             <div id="quiz-chassis" class="cyber-chassis">
                 <div class="hanzi-viewport" style="margin: 0;">
-                    <div id="quiz-hanzi" class="hanzi-character" style="font-size: 4.2rem;">--</div>
+                    <div id="quiz-hanzi" class="hanzi-character" style="font-size: 4rem;">--</div>
                 </div>
-                <div id="quiz-pinyin" class="pinyin-label" style="font-size: 1.15rem; margin-bottom: 4px;">--</div>
+                <div id="quiz-pinyin" class="pinyin-label">--</div>
                 <div id="quiz-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
             <div id="quiz-options" class="quiz-options-matrix"></div>
@@ -887,19 +673,18 @@
 
         <!-- RESUMEN -->
         <section id="mode-summary" class="mode-screen">
-            <div class="summary-dashboard">
-                <div style="font-size: 2.8rem; margin-bottom: 6px;">⚡</div>
-                <h2 style="color: var(--cyber-cyan); font-family: var(--font-display); font-size: 1.3rem;">CICLO DECODIFICADO</h2>
-                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 3.2rem; font-weight: 900; color: var(--cyber-green); margin: 6px 0;">100%</div>
-                <p id="summary-details" style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 16px;">Términos validados sin error crítico.</p>
-                <button class="btn-core btn-cyan" style="width: 100%;" onclick="restartSession()">RECARGAR SIGUIENTE CICLO</button>
+            <div class="cyber-chassis" style="text-align: center;">
+                <h2 style="color: var(--cyber-cyan); font-family: var(--font-display); font-size: 1.2rem;">CICLO DECODIFICADO</h2>
+                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 3rem; font-weight: 900; color: var(--cyber-green); margin: 6px 0;">100%</div>
+                <p id="summary-details" style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 16px;">Operación completada sin fallas de celda.</p>
+                <button class="btn-core btn-cyan" style="width: 100%;" onclick="enterLobby()">VOLVER AL HUB PRINCIPAL</button>
             </div>
         </section>
     </main>
 
-    <!-- DOCK DE NAVEGACIÓN -->
+    <!-- DOCK INFERIOR -->
     <nav class="cyber-dock">
-        <button class="dock-item active" onclick="switchMode('flashcards')">
+        <button class="dock-item" onclick="switchMode('flashcards')">
             <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
             <span class="dock-title">Tarjetas</span>
         </button>
@@ -917,37 +702,16 @@
         </button>
     </nav>
 
-    <!-- MODAL DE CREDENCIAL CYBER -->
+    <!-- MODAL DE PERFIL -->
     <div id="profile-modal" class="modal-overlay" onclick="closeProfileModal(event)">
         <div class="badge-card" onclick="event.stopPropagation()">
-            <div class="badge-header">
-                <span>CYBER-HMI SECURITY</span>
-                <span>SYS-ID #088</span>
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--cyber-cyan); letter-spacing: 2px; margin-bottom: 8px;">
+                CREDENCIAL HMI DE OPERADOR
             </div>
-            
-            <div id="modal-avatar" class="badge-avatar-frame">R</div>
-            
-            <input type="text" id="modal-name-input" class="badge-input-name" value="Raymundo" maxlength="16" onchange="saveUserName(this.value)">
-            
-            <div id="modal-rank-name" class="badge-rank-title">Practicante</div>
-            <div id="modal-access-level" class="badge-access-tag">NIVEL ACCESO: N1 · OBSERVADOR</div>
-            
-            <div class="badge-level-bar-bg">
-                <div id="modal-rank-progress" class="badge-level-bar-fill" style="width: 10%;"></div>
-            </div>
-            <div id="modal-xp-details" class="badge-xp-text">0 / 150 XP para ascenso</div>
-
-            <div class="badge-stats-grid">
-                <div class="badge-stat-box">
-                    <div id="modal-streak-val" class="badge-stat-val">1</div>
-                    <div class="badge-stat-lbl">Turnos Activos</div>
-                </div>
-                <div class="badge-stat-box">
-                    <div id="modal-total-xp" class="badge-stat-val">0</div>
-                    <div class="badge-stat-lbl">XP Totales</div>
-                </div>
-            </div>
-
+            <div id="modal-avatar" class="op-avatar" style="width: 56px; height: 56px; margin: 0 auto 10px auto; font-size: 1.8rem;">R</div>
+            <input type="text" id="modal-name-input" class="badge-input-name" value="Raymundo" maxlength="16" onchange="saveUserName(this.value)" style="background:#02050a; border:1px solid var(--cyber-cyan); color:#fff; text-align:center; padding:5px; width:80%; font-family:var(--font-tech); font-weight:800; font-size:1.1rem; margin-bottom:6px;">
+            <div id="modal-rank-name" style="color:var(--cyber-cyan); font-weight:800; font-size:1rem; margin-bottom:4px;">Practicante</div>
+            <div id="modal-access-level" style="color:var(--cyber-yellow); font-size:0.65rem; margin-bottom:12px;">NIVEL ACCESO: N1 · OBSERVADOR</div>
             <button class="btn-core btn-cyan" style="width: 100%;" onclick="closeProfileModalDirect()">CERRAR CREDENCIAL</button>
         </div>
     </div>
@@ -956,7 +720,6 @@
 <script src="data.js"></script>
 <script src="app.js"></script>
 
-<!-- REGISTRO DEL SERVICE WORKER (PWA) -->
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {

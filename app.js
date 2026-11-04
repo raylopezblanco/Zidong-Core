@@ -173,10 +173,13 @@ let isFlipped = false;
 
 function renderFlashcardContent() {
     const body = document.getElementById('fc-body');
+    const hanziElem = document.getElementById('fc-hanzi');
+    const pinyinElem = document.getElementById('fc-pinyin');
+
     if (activeSessionPool.length === 0) {
-        document.getElementById('fc-hanzi').innerText = "--";
-        document.getElementById('fc-pinyin').innerText = "";
-        body.innerHTML = `<span class="tap-hint">Sin términos</span>`;
+        hanziElem.innerText = "--";
+        pinyinElem.innerText = "";
+        body.innerHTML = `<span class="inspect-badge">Sin términos</span>`;
         return;
     }
 
@@ -184,50 +187,43 @@ function renderFlashcardContent() {
     updateProgressBar(currentFC);
 
     if (!isFlipped) {
-        document.getElementById('fc-hanzi').innerText = item.hanzi;
-        document.getElementById('fc-pinyin').innerText = item.pinyin;
-        body.innerHTML = `<span class="tap-hint">Toca para inspeccionar desglose</span>`;
+        hanziElem.className = "hanzi-character";
+        hanziElem.innerText = item.hanzi;
+        pinyinElem.innerText = item.pinyin;
+        body.innerHTML = `<span class="inspect-badge">Toca para inspeccionar telemetría</span>`;
     } else {
-        document.getElementById('fc-hanzi').innerText = item.meaning;
-        document.getElementById('fc-pinyin').innerText = `${item.hanzi} [${item.pinyin}]`;
+        hanziElem.className = "meaning-title";
+        hanziElem.innerText = item.meaning;
+        
+        // Incluye pronunciación y botón de audio
+        pinyinElem.innerHTML = `
+            ${item.hanzi} [${item.pinyin}] 
+            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--accent-cyan);" title="Escuchar">🔊</button>
+        `;
 
         let chips = item.parts.map(p => 
-            `<div class="anatomy-chip"><strong>${p.char}</strong> ${p.desc}</div>`
+            `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`
         ).join('');
 
         body.innerHTML = `
-            <div class="anatomy-popout">
-                <div class="chips-row">${chips}</div>
-                <div class="anatomy-desc">${item.summary}</div>
+            <div class="telemetry-box">
+                <div class="telemetry-chips">${chips}</div>
+                <div class="telemetry-log">${item.summary}</div>
             </div>
         `;
     }
 }
 
-function updateFlashcard() {
-    isFlipped = false;
-    if (currentFC >= activeSessionPool.length) currentFC = 0;
-    renderFlashcardContent();
-    document.getElementById('fc-counter').innerText = `${currentFC + 1} / ${activeSessionPool.length}`;
+// Función nativa para pronunciación en mandarín
+function playVoice(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
 }
-
-function flipCard() {
-    isFlipped = !isFlipped;
-    renderFlashcardContent();
-}
-
-function nextCard() {
-    if (activeSessionPool.length === 0) return;
-    currentFC = (currentFC + 1) % activeSessionPool.length;
-    updateFlashcard();
-}
-
-function prevCard() {
-    if (activeSessionPool.length === 0) return;
-    currentFC = (currentFC - 1 + activeSessionPool.length) % activeSessionPool.length;
-    updateFlashcard();
-}
-
 // --------------------------------------------------------
 // 2. QUIZ
 // --------------------------------------------------------

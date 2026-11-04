@@ -729,9 +729,9 @@
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Zìdòng Core Service Worker Activo:', reg.scope))
-                .catch(err => console.error('Error registrando Service Worker:', err));
+            navigator.serviceWorker.register('/Zidong-Core/sw.js', { scope: '/Zidong-Core/' })
+                .then(reg => console.log('PWA Service Worker Activo:', reg.scope))
+                .catch(err => console.error('Falla en Service Worker:', err));
         });
     }
 </script>

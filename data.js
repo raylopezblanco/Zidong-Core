@@ -1,350 +1,133 @@
 // ========================================================
-// ZÌDÒNG CORE - BANCO DE DATOS TÉCNICO POR ESPECIALIDADES
+// ZÌDÒNG CORE - BANCO TÉCNICO Y NIVELES DE MODO CARRERA
 // ========================================================
 
-const vocabulary = [
-    // --- 1. PLC & REDES INDUSTRIALES ---
-    {
-        hanzi: "输入",
-        pinyin: "shūrù",
-        meaning: "Entrada (Input / I)",
-        level: 1,
-        topic: "plc",
-        parts: [
-            { char: "输", desc: "Transportar / Enviar datos" },
-            { char: "入", desc: "Entrar / Hacia adentro" }
-        ],
-        summary: "Señal física o lógica que ingresa al controlador lógico programable (PLC)."
-    },
-    {
-        hanzi: "输出",
-        pinyin: "shūchū",
-        meaning: "Salida (Output / Q / O)",
-        level: 1,
-        topic: "plc",
-        parts: [
-            { char: "输", desc: "Transportar / Transmitir" },
-            { char: "出", desc: "Salir / Activar hacia afuera" }
-        ],
-        summary: "Señal enviada por el PLC hacia un actuador, bobina o indicador de campo."
-    },
-    {
-        hanzi: "通讯",
-        pinyin: "tōngxùn",
-        meaning: "Comunicación de Red",
-        level: 2,
-        topic: "plc",
-        parts: [
-            { char: "通", desc: "Conectar / Atravesar" },
-            { char: "讯", desc: "Mensaje / Información" }
-        ],
-        summary: "Enlace de red industrial (Profinet, Ethernet/IP, Modbus) entre CPU y periféricos."
-    },
+// 1. CARACTERES SIMPLES / RADICALES (Niveles 1-1 a 1-5)
+const baseHanzi = [
+    { id: 1, hanzi: "电", pinyin: "diàn", meaning: "Electricidad / Señal eléctrica", desc: "El rayo cayendo. Base de cables, relevadores y sensores." },
+    { id: 2, hanzi: "线", pinyin: "xiàn", meaning: "Cable / Línea de conexión", desc: "Hilo de seda + hilo conductor. El camino físico de la señal." },
+    { id: 3, hanzi: "气", pinyin: "qì", meaning: "Aire / Neumática", desc: "Flujo de gas o vapor. Energía neumática en cilindros de ensamble." },
+    { id: 4, hanzi: "缸", pinyin: "gāng", meaning: "Cilindro / Pistón lineal", desc: "Recipiente rígido donde actúa el aire a presión." },
+    { id: 5, hanzi: "门", pinyin: "mén", meaning: "Puerta / Acceso físico", desc: "Dos hojas de acceso. Base de enclavamientos e interlocks." }
+];
 
-    // --- 2. ELECTRICIDAD & POTENCIA ---
+// 2. TÉRMINOS COMPLEJOS / UNIÓN (Niveles 1-6 a 1-10)
+const compoundTerms = [
     {
-        hanzi: "电压",
-        pinyin: "diànyā",
-        meaning: "Voltaje / Tensión",
-        level: 1,
-        topic: "electricidad",
-        parts: [
+        hanzi: "电线",
+        pinyin: "diànxiàn",
+        meaning: "Cable Eléctrico",
+        components: [
             { char: "电", desc: "Electricidad" },
-            { char: "压", desc: "Presión / Fuerza potencial" }
+            { char: "线", desc: "Cable / Hilo" }
         ],
-        summary: "Diferencia de potencial eléctrico en gabinetes de control y servodrivers."
+        explanation: "电 (Electricidad) + 线 (Cable) = Cable conductor de energía o señales en gabinetes."
     },
-    {
-        hanzi: "接地",
-        pinyin: "jiēdì",
-        meaning: "Puesta a Tierra (GND)",
-        level: 1,
-        topic: "electricidad",
-        parts: [
-            { char: "接", desc: "Conectar / Unir" },
-            { char: "地", desc: "Tierra / Suelo" }
-        ],
-        summary: "Conexión de protección contra descargas y filtrado de ruido electromagnético."
-    },
-    {
-        hanzi: "继电器",
-        pinyin: "jìdiànqì",
-        meaning: "Relevador / Relé",
-        level: 2,
-        topic: "electricidad",
-        parts: [
-            { char: "继", desc: "Continuar / Transmitir" },
-            { char: "电", desc: "Eléctrico" },
-            { char: "器", desc: "Dispositivo / Componente" }
-        ],
-        summary: "Dispositivo electromagnético de conmutación para aislamiento de circuitos de mando."
-    },
-
-    // --- 3. MANTENIMIENTO & MECÁNICA ---
     {
         hanzi: "气缸",
         pinyin: "qìgāng",
         meaning: "Cilindro Neumático",
-        level: 1,
-        topic: "mantenimiento",
-        parts: [
-            { char: "气", desc: "Aire comprimido / Gas" },
-            { char: "缸", desc: "Cilindro / Recipiente lineal" }
+        components: [
+            { char: "气", desc: "Aire comprimido" },
+            { char: "缸", desc: "Cilindro actuador" }
         ],
-        summary: "Actuador lineal neumático operado por electroválvulas en celdas de ensamble."
-    },
-    {
-        hanzi: "伺服",
-        pinyin: "sìfú",
-        meaning: "Servomotor / Servo",
-        level: 1,
-        topic: "mantenimiento",
-        parts: [
-            { char: "伺", desc: "Vigilar / Esperar comando" },
-            { char: "服", desc: "Obedecer con precisión" }
-        ],
-        summary: "Motor de alta precisión con encoder y lazo cerrado para posicionamiento de ejes."
-    },
-    {
-        hanzi: "润滑",
-        pinyin: "rùnhuá",
-        meaning: "Lubricación",
-        level: 2,
-        topic: "mantenimiento",
-        parts: [
-            { char: "润", desc: "Humedecer / Aceitar" },
-            { char: "滑", desc: "Deslizar / Suavizar" }
-        ],
-        summary: "Mantenimiento preventivo en guías lineales, husillos de bolas y rodamientos."
-    },
-
-    // --- 4. AGV / AMR & LOGÍSTICA ---
-    {
-        hanzi: "寻迹",
-        pinyin: "xúnjì",
-        meaning: "Guiado / Rastreo de Ruta",
-        level: 1,
-        topic: "agv",
-        parts: [
-            { char: "寻", desc: "Buscar / Seguir" },
-            { char: "迹", desc: "Rastro / Pista magnética" }
-        ],
-        summary: "Sistema de navegación por banda magnética, QR o mapeo láser SLAM."
-    },
-    {
-        hanzi: "充电",
-        pinyin: "chōngdiàn",
-        meaning: "Carga de Batería",
-        level: 1,
-        topic: "agv",
-        parts: [
-            { char: "充", desc: "Llenar / Abastecer" },
-            { char: "电", desc: "Energía eléctrica" }
-        ],
-        summary: "Estación de contacto automático o acople inductivo para unidades de transporte móvil."
-    },
-    {
-        hanzi: "避障",
-        pinyin: "bìzhàng",
-        meaning: "Evasión de Obstáculos",
-        level: 2,
-        topic: "agv",
-        parts: [
-            { char: "避", desc: "Evitar / Esquivar" },
-            { char: "障", desc: "Obstáculo / Bloqueo" }
-        ],
-        summary: "Activación de escáneres láser LiDAR de seguridad ante personas u objetos en ruta."
-    },
-
-    // --- 5. PRODUCCIÓN & ENSAMBLE ---
-    {
-        hanzi: "节拍",
-        pinyin: "jiépāi",
-        meaning: "Tiempo de Ciclo (Takt Time)",
-        level: 1,
-        topic: "produccion",
-        parts: [
-            { char: "节", desc: "Ritmo / Segmento" },
-            { char: "拍", desc: "Pulso / Golpe de reloj" }
-        ],
-        summary: "Cadencia objetivo y tiempo de procesamiento por pieza en estaciones automatizadas."
-    },
-    {
-        hanzi: "良率",
-        pinyin: "liánglǜ",
-        meaning: "Tasa de Rendimiento (Yield)",
-        level: 1,
-        topic: "produccion",
-        parts: [
-            { char: "良", desc: "Bueno / Aceptable" },
-            { char: "率", desc: "Proporción / Porcentaje" }
-        ],
-        summary: "Porcentaje de piezas que cumplen especificaciones en la primera corrida sin retrabajo."
-    },
-    {
-        hanzi: "工位",
-        pinyin: "gōngwèi",
-        meaning: "Estación de Trabajo / Celda",
-        level: 2,
-        topic: "produccion",
-        parts: [
-            { char: "工", desc: "Trabajo / Proceso fabril" },
-            { char: "位", desc: "Ubicación / Posición" }
-        ],
-        summary: "Posición fija dentro del transfer mecánico o mesa rotativa de ensamble."
-    },
-
-    // --- 6. SEGURIDAD & INTERLOCKS ---
-    {
-        hanzi: "急停",
-        pinyin: "jítíng",
-        meaning: "Paro de Emergencia (E-Stop)",
-        level: 1,
-        topic: "seguridad",
-        parts: [
-            { char: "急", desc: "Urgente / Crítico" },
-            { char: "停", desc: "Detener" }
-        ],
-        summary: "Corte inmediato de energía en bobinas de actuadores mediante circuito de seguridad."
-    },
-    {
-        hanzi: "光栅",
-        pinyin: "guāngshān",
-        meaning: "Cortina de Luz Óptica",
-        level: 1,
-        topic: "seguridad",
-        parts: [
-            { char: "光", desc: "Luz infrarroja" },
-            { char: "栅", desc: "Rejilla / Barrera" }
-        ],
-        summary: "Sensor de seguridad perimetral para protección de operadores en celdas de robot."
+        explanation: "气 (Aire) + 缸 (Cilindro) = Actuador neumático lineal que empuja o sujeta piezas."
     },
     {
         hanzi: "安全门",
         pinyin: "ānquánmén",
-        meaning: "Puerta de Seguridad / Enclavamiento",
-        level: 2,
-        topic: "seguridad",
-        parts: [
-            { char: "安全", desc: "Seguro / Protegido" },
-            { char: "门", desc: "Puerta / Acceso" }
+        meaning: "Puerta de Seguridad",
+        components: [
+            { char: "安全", desc: "Seguridad" },
+            { char: "门", desc: "Puerta" }
         ],
-        summary: "Acceso con switch interlock magnético o electromecánico monitoreado por relevador de seguridad."
-    },
-
-    // --- 7. CALIDAD & VISIÓN ARTIFICIAL ---
-    {
-        hanzi: "检测",
-        pinyin: "jiǎncè",
-        meaning: "Inspección / Detección",
-        level: 1,
-        topic: "calidad",
-        parts: [
-            { char: "检", desc: "Examinar / Verificar" },
-            { char: "测", desc: "Medir / Sondear" }
-        ],
-        summary: "Medición dimensional o verificación de presencia realizada por sensores y cámaras."
+        explanation: "Enclavamiento con interlock monitoreado por relevador de seguridad en celdas robóticas."
     },
     {
-        hanzi: "不良",
-        pinyin: "bùliáng",
-        meaning: "Defectuoso / Rechazo (NG)",
-        level: 1,
-        topic: "calidad",
-        parts: [
-            { char: "不", desc: "No / Negativo" },
-            { char: "良", desc: "Bueno / Aceptable" }
+        hanzi: "输入",
+        pinyin: "shūrù",
+        meaning: "Entrada (Input / I)",
+        components: [
+            { char: "输", desc: "Transportar señal" },
+            { char: "入", desc: "Entrar" }
         ],
-        summary: "Pieza fuera de tolerancia o con fallas visuales enviada a tolva de descarte."
+        explanation: "Señal de sensor o pulsador que entra a las tarjetas del PLC."
     },
     {
-        hanzi: "视觉",
-        pinyin: "shìjué",
-        meaning: "Visión Artificial (Cámara Cognex/Keyence)",
-        level: 2,
-        topic: "calidad",
-        parts: [
-            { char: "视", desc: "Ver / Mirar" },
-            { char: "觉", desc: "Percibir / Detectar patrón" }
+        hanzi: "急停",
+        pinyin: "jítíng",
+        meaning: "Paro de Emergencia (E-Stop)",
+        components: [
+            { char: "急", desc: "Urgente" },
+            { char: "停", desc: "Detener" }
         ],
-        summary: "Sistema de procesamiento de imágenes para inspección de alineación y lectura OCR."
+        explanation: "Corte inmediato de energía en actuadores mediante circuito de relevadores de seguridad."
     }
 ];
 
-const scannerScenarios = [
+// 3. VOCABULARIO POR ÁREAS DE AUTOMATIZACIÓN
+const vocabulary = [
+    { hanzi: "输入", pinyin: "shūrù", meaning: "Entrada (Input / I)", topic: "plc", parts: [{char:"输",desc:"Enviar"},{char:"入",desc:"Entrar"}], summary: "Señal física o lógica hacia la CPU del PLC." },
+    { hanzi: "输出", pinyin: "shūchū", meaning: "Salida (Output / Q)", topic: "plc", parts: [{char:"输",desc:"Enviar"},{char:"出",desc:"Salir"}], summary: "Comando del PLC a válvulas o contactores." },
+    { hanzi: "通讯", pinyin: "tōngxùn", meaning: "Comunicación de Red", topic: "plc", parts: [{char:"通",desc:"Conectar"},{char:"讯",desc:"Datos"}], summary: "Enlace Profinet o Ethernet/IP entre dispositivos." },
+
+    { hanzi: "电压", pinyin: "diànyā", meaning: "Voltaje / Tensión", topic: "electricidad", parts: [{char:"电",desc:"Electricidad"},{char:"压",desc:"Presión"}], summary: "Diferencia de potencial en gabinetes de control." },
+    { hanzi: "接地", pinyin: "jiēdì", meaning: "Puesta a Tierra (GND)", topic: "electricidad", parts: [{char:"接",desc:"Conectar"},{char:"地",desc:"Tierra"}], summary: "Descarga de protección y filtro de ruido." },
+    { hanzi: "继电器", pinyin: "jìdiànqì", meaning: "Relevador / Relé", topic: "electricidad", parts: [{char:"继",desc:"Transmitir"},{char:"电",desc:"Eléctrico"},{char:"器",desc:"Dispositivo"}], summary: "Conmutador electromagnético de aislamiento." },
+
+    { hanzi: "气缸", pinyin: "qìgāng", meaning: "Cilindro Neumático", topic: "mantenimiento", parts: [{char:"气",desc:"Aire"},{char:"缸",desc:"Pistón"}], summary: "Actuador de movimiento lineal en celdas." },
+    { hanzi: "伺服", pinyin: "sìfú", meaning: "Servomotor", topic: "mantenimiento", parts: [{char:"伺",desc:"Vigilar"},{char:"服",desc:"Obedecer"}], summary: "Motor de alta precisión con lazo cerrado y encoder." },
+    { hanzi: "润滑", pinyin: "rùnhuá", meaning: "Lubricación", topic: "mantenimiento", parts: [{char:"润",desc:"Aceitar"},{char:"滑",desc:"Deslizar"}], summary: "Mantenimiento preventivo en guías lineales." },
+
+    { hanzi: "寻迹", pinyin: "xúnjì", meaning: "Guiado de Ruta AGV", topic: "agv", parts: [{char:"寻",desc:"Rastrear"},{char:"迹",desc:"Pista"}], summary: "Navegación por cinta magnética o código QR." },
+    { hanzi: "避障", pinyin: "bìzhàng", meaning: "Evasión de Obstáculos", topic: "agv", parts: [{char:"避",desc:"Evitar"},{char:"障",desc:"Bloqueo"}], summary: "Detección por sensor láser LiDAR perimetral." },
+
+    { hanzi: "急停", pinyin: "jítíng", meaning: "Paro de Emergencia", topic: "seguridad", parts: [{char:"急",desc:"Urgente"},{char:"停",desc:"Paro"}], summary: "Parada crítica mediante relevador de seguridad." },
+    { hanzi: "光栅", pinyin: "guāngshān", meaning: "Cortina Óptica de Luz", topic: "seguridad", parts: [{char:"光",desc:"Luz"},{char:"栅",desc:"Barrera"}], summary: "Barrera fotoeléctrica de protección humana." },
+
+    { hanzi: "检测", pinyin: "jiǎncè", meaning: "Inspección / Prueba", topic: "calidad", parts: [{char:"检",desc:"Revisar"},{char:"测",desc:"Medir"}], summary: "Verificación de ensamble por sensores." },
+    { hanzi: "不良", pinyin: "bùliáng", meaning: "Rechazo / Pieza NG", topic: "calidad", parts: [{char:"不",desc:"No"},{char:"良",desc:"Bueno"}], summary: "Pieza fuera de tolerancia rechazada." }
+];
+
+// 4. SIMULACIONES DE ALARMAS DE PLANTA (Vinculadas a la palabra del día)
+const hmiSimulations = [
     {
-        topic: "seguridad",
-        prompt: "Localiza el comando de PARO DE EMERGENCIA en el reporte:",
-        targetHanzi: "急停",
-        tokens: [
-            { text: "ALARM-01:", isTarget: false },
-            { text: "LINEA_4", isTarget: false },
-            { text: "急停", isTarget: true, hanzi: "急停" },
-            { text: "INTERVENCION", isTarget: false },
-            { text: "REQUERIDA", isTarget: false }
+        keyword: "输入",
+        code: "HMI ALARM // E-102 [ESTACIÓN DE ENTRADA]",
+        alarmText: "输入信号丢失",
+        pinyin: "shūrù xìnhào diūshī",
+        question: "La HMI reporta 'Falta de Señal de Entrada'. ¿Qué acción técnica debes realizar?",
+        correctOption: "Verificar alimentación 24V y sensor de presencia en terminal de entrada del PLC",
+        distractors: [
+            "Reemplazar la fuente de alimentación de potencia del servomotor",
+            "Cambiar la bobina del contactor de salida hacia los motores",
+            "Lubricar las guías lineales del eje de movimiento principal"
         ]
     },
     {
-        topic: "seguridad",
-        prompt: "Identifica la CORTINA DE LUZ vulnerada:",
-        targetHanzi: "光栅",
-        tokens: [
-            { text: "SEGURIDAD:", isTarget: false },
-            { text: "SENSOR", isTarget: false },
-            { text: "光栅", isTarget: true, hanzi: "光栅" },
-            { text: "BLOQUEO_HAZ", isTarget: false }
+        keyword: "急停",
+        code: "HMI ALARM // S-001 [CIRCUITO DE SEGURIDAD]",
+        alarmText: "急停按钮动作中",
+        pinyin: "jítíng ànniǔ dòngzuò zhōng",
+        question: "La celda está bloqueada por paro de emergencia. ¿Cuál es el procedimiento?",
+        correctOption: "Liberar la seta de paro activada y rearmar el relevador de seguridad mediante botón Reset",
+        distractors: [
+            "Forzar la marca de software desde la programación del PLC",
+            "Cambiar la receta de producción de la pantalla táctil",
+            "Desconectar el cable Ethernet del módulo de comunicación"
         ]
     },
     {
-        topic: "mantenimiento",
-        prompt: "Ubica la falla del CILINDRO NEUMÁTICO:",
-        targetHanzi: "气缸",
-        tokens: [
-            { text: "ZONA_3", isTarget: false },
-            { text: "气缸", isTarget: true, hanzi: "气缸" },
-            { text: "TIEMPO_EXCEDIDO", isTarget: false },
-            { text: "REVISAR_PRESION", isTarget: false }
-        ]
-    },
-    {
-        topic: "mantenimiento",
-        prompt: "Localiza la alerta de sobrecarga en el SERVOMOTOR:",
-        targetHanzi: "伺服",
-        tokens: [
-            { text: "EJE_Z", isTarget: false },
-            { text: "伺服", isTarget: true, hanzi: "伺服" },
-            { text: "SOBRETORQUE", isTarget: false },
-            { text: "DRIVER_ERROR", isTarget: false }
-        ]
-    },
-    {
-        topic: "plc",
-        prompt: "Detecta la condición de pérdida de COMUNICACIÓN DE RED:",
-        targetHanzi: "通讯",
-        tokens: [
-            { text: "PLC_SLAVE", isTarget: false },
-            { text: "通讯", isTarget: true, hanzi: "通讯" },
-            { text: "TIMEOUT_ERROR", isTarget: false }
-        ]
-    },
-    {
-        topic: "agv",
-        prompt: "Ubica el sensor de EVASIÓN DE OBSTÁCULOS activado:",
-        targetHanzi: "避障",
-        tokens: [
-            { text: "AGV-02", isTarget: false },
-            { text: "避障", isTarget: true, hanzi: "避障" },
-            { text: "PARO_PREVENTIVO", isTarget: false }
-        ]
-    },
-    {
-        topic: "calidad",
-        prompt: "Identifica el marcador de PIEZA DEFECTUOSA (NG):",
-        targetHanzi: "不良",
-        tokens: [
-            { text: "INSPECCION_FINAL:", isTarget: false },
-            { text: "不良", isTarget: true, hanzi: "不良" },
-            { text: "ACTIVAR_DESCARTE", isTarget: false }
+        keyword: "气缸",
+        code: "HMI ALARM // M-045 [ACTUADOR NEUMÁTICO]",
+        alarmText: "气缸伸出超时",
+        pinyin: "qìgāng shēnchū chāoshí",
+        question: "Alarma: 'Cilindro extendido fuera de tiempo'. ¿Cómo resuelves el problema?",
+        correctOption: "Inspeccionar presión neumática (bar) y posición del sensor magnético Reed Switch",
+        distractors: [
+            "Recalibrar el servocontrolador del eje vertical",
+            "Limpiar el lente de la cámara de visión artificial",
+            "Aumentar el tiempo de escaneo del programa del PLC"
         ]
     }
 ];

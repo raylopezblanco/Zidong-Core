@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <!-- Tipografía Táctica -->
+    <!-- Fuentes Tácticas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
@@ -61,16 +61,16 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 14px 14px 10px 14px;
+            padding: 12px 14px 10px 14px;
             position: relative;
         }
 
-        /* HEADER PRINCIPAL */
+        /* HEADER */
         .system-topbar {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         .system-brand-group {
             display: flex;
@@ -78,7 +78,7 @@
         }
         .system-title {
             font-family: var(--font-display);
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 900;
             color: var(--cyber-cyan);
             letter-spacing: 0.5px;
@@ -86,10 +86,9 @@
         }
         .system-subtitle {
             font-family: var(--font-mono);
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             color: var(--text-dim);
             letter-spacing: 0.6px;
-            margin-top: 2px;
         }
         .system-online-badge {
             background: rgba(34, 197, 94, 0.15);
@@ -100,40 +99,38 @@
             font-weight: 800;
             padding: 3px 8px;
             border-radius: 12px;
-            letter-spacing: 0.5px;
         }
 
         /* TARJETA DE OPERADOR */
         .operator-panel {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
         }
         .op-hero {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
         .op-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .op-avatar-frame {
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             background: rgba(56, 189, 248, 0.1);
             border: 1.5px solid var(--cyber-cyan);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--cyber-cyan);
         }
         .op-text-block {
@@ -141,114 +138,94 @@
             flex-direction: column;
         }
         .op-id-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 800;
             color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-        .op-role-desc {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            font-weight: 600;
         }
         .op-rank-label {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-family: var(--font-mono);
             font-weight: 800;
             color: var(--cyber-yellow);
-            margin-top: 2px;
-        }
-        .op-right-xp {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
         }
         .xp-number {
             font-family: var(--font-display);
-            font-size: 1.45rem;
+            font-size: 1.3rem;
             font-weight: 900;
             color: var(--cyber-yellow);
             line-height: 1;
         }
-        .xp-caption {
-            font-family: var(--font-mono);
-            font-size: 0.62rem;
-            color: var(--text-dim);
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-top: 3px;
-        }
-
         .op-progress-header {
             display: flex;
             justify-content: space-between;
             font-family: var(--font-mono);
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             font-weight: 700;
             color: var(--text-dim);
-            margin-bottom: 5px;
-        }
-        .op-progress-header span:last-child {
-            color: var(--cyber-cyan);
+            margin-bottom: 4px;
         }
         .op-progress-bar-bg {
-            height: 6px;
+            height: 5px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 6px;
             overflow: hidden;
         }
         .op-progress-bar-fill {
             height: 100%;
-            width: 35%;
+            width: 20%;
             background: linear-gradient(90deg, #0284c7, var(--cyber-cyan));
             border-radius: 6px;
             transition: width 0.3s ease;
         }
 
-        /* COMBO HUD FLOTANTE */
-        .combo-meter {
-            height: 24px;
+        /* PALABRA DEL DÍA / TURNO ACTIVO */
+        .daily-focus-panel {
+            background: linear-gradient(135deg, rgba(14, 28, 48, 0.9), rgba(6, 12, 22, 0.95));
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 6px;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
         }
-        .combo-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 3px 12px;
-            border-radius: 20px;
-            font-family: var(--font-display);
-            font-size: 0.75rem;
+        .focus-label-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .focus-tag {
+            font-family: var(--font-mono);
+            font-size: 0.58rem;
+            font-weight: 800;
+            color: var(--cyber-cyan);
+            letter-spacing: 0.6px;
+        }
+        .focus-chinese {
+            font-family: var(--font-hanzi);
+            font-size: 1.6rem;
             font-weight: 900;
-            letter-spacing: 1px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-dim);
-            opacity: 0;
-            transform: scale(0.85);
-            transition: all 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #ffffff;
+            line-height: 1.1;
         }
-        .combo-badge.active {
-            opacity: 1;
-            transform: scale(1);
+        .focus-details {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+        }
+        .focus-pinyin {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
             color: var(--cyber-yellow);
-            border-color: var(--cyber-yellow);
-            box-shadow: 0 0 14px rgba(250, 204, 21, 0.35);
         }
-        .combo-badge.overdrive {
-            color: #ff0055;
-            border-color: #ff0055;
-            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
-            animation: pulse-overdrive 0.8s infinite alternate;
-        }
-        @keyframes pulse-overdrive {
-            from { transform: scale(1); }
-            to { transform: scale(1.06); }
+        .focus-spanish {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 600;
         }
 
-        /* WORKSPACE Y VISTAS */
+        /* WORKSPACE Y SECCIONES */
         .workspace {
             flex: 1;
             display: flex;
@@ -266,32 +243,8 @@
             display: flex;
         }
 
-        /* LOBBY DE MISIONES */
-        .section-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .section-heading {
-            font-family: var(--font-display);
-            font-size: 0.85rem;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-        .section-pill-tag {
-            background: rgba(251, 146, 60, 0.15);
-            border: 1px solid rgba(251, 146, 60, 0.3);
-            color: #fb923c;
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 8px;
-        }
-
-        .missions-scroll-area {
+        /* SCROLL DEL LOBBY */
+        .lobby-scroll-area {
             flex: 1;
             overflow-y: auto;
             display: flex;
@@ -300,60 +253,101 @@
             padding-right: 2px;
         }
 
-        .mission-panel-card {
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            margin-bottom: 6px;
+        }
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 0.78rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        /* MISIONES DIARIAS CARDS */
+        .daily-mission-card {
+            background: var(--panel-card);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-left: 4px solid var(--cyber-red);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .daily-mission-card.done {
+            border-color: rgba(34, 197, 94, 0.4);
+            border-left-color: var(--cyber-green);
+            opacity: 0.7;
+        }
+        .dm-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .dm-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .dm-sub {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+        }
+        .dm-alert-tag {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            font-weight: 800;
+            color: var(--cyber-red);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .daily-mission-card.done .dm-alert-tag {
+            color: var(--cyber-green);
+        }
+
+        /* CARDS SECTORES DE PLANTA */
+        .specialty-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .sector-card {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
-            border-radius: 14px;
-            padding: 12px 14px;
+            border-radius: 12px;
+            padding: 10px;
             cursor: pointer;
-            transition: transform 0.12s ease, border-color 0.15s;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.12s ease;
         }
-        .mission-panel-card:active {
-            transform: scale(0.98);
+        .sector-card:active {
+            transform: scale(0.97);
             border-color: var(--cyber-cyan);
         }
-        .mission-card-top {
+        .sector-card-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 4px;
         }
-        .mission-card-title-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mission-icon {
-            font-size: 1.25rem;
-        }
-        .mission-card-title {
-            font-size: 0.88rem;
+        .sector-title {
+            font-size: 0.8rem;
             font-weight: 800;
             color: #ffffff;
-            letter-spacing: 0.3px;
         }
-        .mission-xp-badge {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--cyber-cyan);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            font-family: var(--font-mono);
+        .sector-desc {
             font-size: 0.65rem;
-            font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 6px;
-        }
-        .mission-card-desc {
-            font-size: 0.72rem;
             color: var(--text-dim);
-            margin-bottom: 6px;
-            line-height: 1.25;
-        }
-        .mission-card-status {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            color: var(--cyber-cyan);
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            line-height: 1.2;
         }
 
         /* VITRAL DE LOGROS */
@@ -373,38 +367,21 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: all 0.2s ease;
         }
         .achievement-tile.unlocked {
             border-color: rgba(250, 204, 21, 0.4);
             background: linear-gradient(90deg, rgba(250, 204, 21, 0.08), rgba(13, 21, 36, 0.9));
         }
         .ach-icon-circle {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
             background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             flex-shrink: 0;
-        }
-        .achievement-tile.unlocked .ach-icon-circle {
-            border-color: var(--cyber-yellow);
-            box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
-        }
-        .ach-info-block {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .ach-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2px;
         }
         .ach-name {
             font-size: 0.82rem;
@@ -414,22 +391,11 @@
         .achievement-tile.unlocked .ach-name {
             color: var(--cyber-yellow);
         }
-        .ach-xp-reward {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: var(--cyber-cyan);
-        }
-        .ach-desc {
-            font-size: 0.68rem;
-            color: var(--text-dim);
-            line-height: 1.25;
-        }
 
-        /* POP-UP TIPO XBOX */
+        /* NOTIFICACION XBOX */
         .xbox-toast-container {
             position: fixed;
-            top: 20px;
+            top: 16px;
             left: 50%;
             transform: translateX(-50%) translateY(-120px);
             width: 90%;
@@ -446,44 +412,13 @@
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none;
         }
-        .xbox-toast-container.active {
-            transform: translateX(-50%) translateY(0);
-        }
-        .xbox-toast-logo {
-            width: 36px;
-            height: 36px;
-            background: var(--cyber-green);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #070c14;
-            flex-shrink: 0;
-        }
-        .xbox-toast-text {
-            display: flex;
-            flex-direction: column;
-        }
-        .xbox-toast-headline {
-            font-family: var(--font-mono);
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: var(--cyber-green);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .xbox-toast-title {
-            font-size: 0.85rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
+        .xbox-toast-container.active { transform: translateX(-50%) translateY(0); }
 
         /* CHASIS DE JUEGO */
         .game-chassis {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
-            border-radius: 18px;
+            border-radius: 16px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -491,19 +426,18 @@
             align-items: center;
             padding: 16px 14px;
             position: relative;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
         }
         .hanzi-character {
             font-family: var(--font-hanzi);
-            font-size: 4.8rem;
+            font-size: 4.6rem;
             font-weight: 900;
             line-height: 1;
             color: #ffffff;
             text-shadow: 0 0 20px var(--cyber-cyan);
         }
         .meaning-title {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 800;
             color: var(--cyber-yellow);
             text-align: center;
@@ -511,7 +445,7 @@
         }
         .pinyin-label {
             font-family: var(--font-mono);
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: var(--cyber-cyan);
             margin-bottom: 8px;
@@ -544,11 +478,6 @@
             font-family: var(--font-mono);
         }
         .telemetry-chip strong { color: var(--cyber-yellow); }
-        .telemetry-log {
-            font-size: 0.72rem;
-            color: var(--text-dim);
-            line-height: 1.35;
-        }
 
         /* QUIZ */
         .quiz-options-matrix {
@@ -564,7 +493,7 @@
             color: #ffffff;
             padding: 10px 8px;
             border-radius: 10px;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-weight: 700;
             min-height: 48px;
             cursor: pointer;
@@ -617,7 +546,7 @@
             color: #fff !important;
         }
 
-        /* BOTONES DE CONTROL */
+        /* BOTONES */
         .btn-core {
             border: none;
             border-radius: 10px;
@@ -628,16 +557,9 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.1s;
         }
-        .btn-core:active { transform: scale(0.97); }
         .btn-cyan {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
-            color: #ffffff;
-            padding: 11px 14px;
-        }
-        .btn-amber {
-            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
             color: #ffffff;
             padding: 11px 14px;
         }
@@ -654,29 +576,9 @@
             display: none;
         }
 
-        /* SELLO PERFECT & RESULTADOS */
-        .perfect-stamp {
-            display: inline-block;
-            font-family: var(--font-display);
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--cyber-yellow);
-            text-shadow: 0 0 25px rgba(250, 204, 21, 0.8);
-            border: 3px solid var(--cyber-yellow);
-            padding: 4px 18px;
-            border-radius: 12px;
-            transform: rotate(-5deg);
-            margin-bottom: 8px;
-            animation: stamp-drop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-        }
-        @keyframes stamp-drop {
-            from { transform: scale(2.2) rotate(-20deg); opacity: 0; }
-            to { transform: scale(1) rotate(-5deg); opacity: 1; }
-        }
-
         /* DOCK INFERIOR */
         .system-dock {
-            height: 54px;
+            height: 52px;
             background: rgba(13, 21, 36, 0.95);
             border: 1px solid var(--panel-border);
             border-radius: 14px;
@@ -710,7 +612,6 @@
             font-size: 0.6rem;
             font-weight: 700;
             margin-top: 2px;
-            letter-spacing: 0.3px;
         }
         .dock-item.active { color: var(--cyber-cyan); }
         .dock-item.active::after {
@@ -727,42 +628,41 @@
 <body>
 
 <div class="terminal-container">
-    <!-- NOTIFICACION XBOX DE LOGRO -->
+    <!-- POP-UP LOGROS -->
     <div id="xbox-achievement-toast" class="xbox-toast-container">
-        <div class="xbox-toast-logo">🏆</div>
-        <div class="xbox-toast-text">
-            <span class="xbox-toast-headline">¡Logro Desbloqueado!</span>
-            <span id="toast-achievement-name" class="xbox-toast-title">Pequeño Saltamontes</span>
+        <div style="width:36px; height:36px; background:var(--cyber-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#070c14;">🏆</div>
+        <div style="display:flex; flex-direction:column;">
+            <span style="font-family:var(--font-mono); font-size:0.65rem; font-weight:800; color:var(--cyber-green); text-transform:uppercase;">¡Logro Desbloqueado!</span>
+            <span id="toast-achievement-name" style="font-size:0.85rem; font-weight:800; color:#fff;">Pequeño Saltamontes</span>
         </div>
     </div>
 
-    <!-- HEADER TOP -->
+    <!-- TOPBAR -->
     <header class="system-topbar">
         <div class="system-brand-group">
             <span class="system-title">TECH MANDARIN</span>
-            <span class="system-subtitle">ENGINEER TRAINING SYSTEM v2.0</span>
+            <span class="system-subtitle">ENGINEER TRAINING SYSTEM v2.5</span>
         </div>
         <div class="system-online-badge">SYSTEM ONLINE</div>
     </header>
 
-    <!-- TARJETA OPERADOR -->
+    <!-- OPERADOR -->
     <section class="operator-panel" onclick="enterLobby()">
         <div class="op-hero">
             <div class="op-left">
                 <div id="op-avatar" class="op-avatar-frame">R</div>
                 <div class="op-text-block">
                     <span id="op-name" class="op-id-title">ENGINEER 001</span>
-                    <span class="op-role-desc">Automation Specialist</span>
                     <span id="op-rank" class="op-rank-label">RANK: PRACTICANTE</span>
                 </div>
             </div>
-            <div class="op-right-xp">
+            <div style="display:flex; flex-direction:column; align-items:flex-end;">
                 <span id="op-xp-total" class="xp-number">0</span>
-                <span class="xp-caption">TOTAL XP</span>
+                <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-dim);">TOTAL XP</span>
             </div>
         </div>
         <div class="op-progress-header">
-            <span>NEXT RANK</span>
+            <span>NEXT ASCENSO</span>
             <span id="op-next-pct">0%</span>
         </div>
         <div class="op-progress-bar-bg">
@@ -770,81 +670,104 @@
         </div>
     </section>
 
-    <!-- INDICADOR FLOTANTE DE COMBO -->
-    <div class="combo-meter">
-        <div id="combo-hud" class="combo-badge">
-            <span>⚡</span>
-            <span id="combo-text">COMBO x2</span>
+    <!-- PALABRA DEL TURNO / DIARIA -->
+    <section class="daily-focus-panel">
+        <div class="focus-label-group">
+            <span class="focus-tag">// PALABRA DEL TURNO (PRIORITARIA)</span>
+            <span id="daily-focus-hanzi" class="focus-chinese">输入</span>
         </div>
-    </div>
+        <div class="focus-details">
+            <span id="daily-focus-pinyin" class="focus-pinyin">shūrù</span>
+            <span id="daily-focus-meaning" class="focus-spanish">Entrada (Input / I)</span>
+        </div>
+    </section>
 
     <!-- WORKSPACE -->
     <main class="workspace">
-        <!-- 0. LOBBY DE MISIONES -->
+        <!-- 0. LOBBY: MISIONES DIARIAS Y SECTORES SEPARADOS -->
         <section id="mode-lobby" class="mode-screen active">
-            <div class="section-header-row">
-                <span class="section-heading">ACTIVE MISSIONS</span>
-                <span class="section-pill-tag">DISPONIBLES</span>
-            </div>
-            <div class="missions-scroll-area">
-                <div class="mission-panel-card" onclick="selectMission('plc')">
-                    <div class="mission-card-top">
-                        <div class="mission-card-title-group">
-                            <span class="mission-icon">⚙️</span>
-                            <span class="mission-card-title">PLC SYSTEMS</span>
-                        </div>
-                        <span class="mission-xp-badge">+150 XP</span>
-                    </div>
-                    <p class="mission-card-desc">Control industrial, señales lógicas y buses de campo.</p>
-                    <span class="mission-card-status">MISIÓN 01 · ACTIVAR</span>
+            <div class="lobby-scroll-area">
+                <!-- SECCION 1: MISIONES DIARIAS -->
+                <div class="section-header-row">
+                    <span class="section-heading">MISIONES DIARIAS</span>
+                    <span id="daily-badge-counter" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:var(--cyber-red); font-family:var(--font-mono); font-size:0.6rem; font-weight:800; padding:2px 7px; border-radius:8px;">2 ACTIVAS</span>
                 </div>
 
-                <div class="mission-panel-card" onclick="selectMission('electricidad')">
-                    <div class="mission-card-top">
-                        <div class="mission-card-title-group">
-                            <span class="mission-icon">⚡</span>
-                            <span class="mission-card-title">ELECTRIC POWER</span>
-                        </div>
-                        <span class="mission-xp-badge">+200 XP</span>
+                <!-- MISION DIARIA 1 -->
+                <div id="dm-card-1" class="daily-mission-card" onclick="startDailyBounty(1)">
+                    <div class="dm-left">
+                        <span class="dm-title">Diagnóstico de Entrada/Salida</span>
+                        <span class="dm-sub">Acierta la palabra del turno en el Quiz de PLC</span>
                     </div>
-                    <p class="mission-card-desc">Tensiones, contactores, tierras y aislamiento de mando.</p>
-                    <span class="mission-card-status">MISIÓN 02 · ACTIVAR</span>
+                    <div class="dm-alert-tag" id="dm-status-1">
+                        <span>🚨</span>
+                        <span>PENDIENTE</span>
+                    </div>
                 </div>
 
-                <div class="mission-panel-card" onclick="selectMission('mantenimiento')">
-                    <div class="mission-card-top">
-                        <div class="mission-card-title-group">
-                            <span class="mission-icon">🔧</span>
-                            <span class="mission-card-title">MAINTENANCE PROTOCOL</span>
-                        </div>
-                        <span class="mission-xp-badge">+250 XP</span>
+                <!-- MISION DIARIA 2 -->
+                <div id="dm-card-2" class="daily-mission-card" onclick="startDailyBounty(2)">
+                    <div class="dm-left">
+                        <span class="dm-title">Protocolo de Interlock</span>
+                        <span class="dm-sub">Resuelve 1 alarma en el Escáner sin fallar</span>
                     </div>
-                    <p class="mission-card-desc">Actuadores neumáticos, servomotores y lubricación.</p>
-                    <span class="mission-card-status">MISIÓN 03 · ACTIVAR</span>
+                    <div class="dm-alert-tag" id="dm-status-2">
+                        <span>🚨</span>
+                        <span>PENDIENTE</span>
+                    </div>
                 </div>
 
-                <div class="mission-panel-card" onclick="selectMission('agv')">
-                    <div class="mission-card-top">
-                        <div class="mission-card-title-group">
-                            <span class="mission-icon">🤖</span>
-                            <span class="mission-card-title">AGV COMMUNICATION</span>
-                        </div>
-                        <span class="mission-xp-badge">+200 XP</span>
-                    </div>
-                    <p class="mission-card-desc">Navegación magnética/láser, estaciones y evasión de ruta.</p>
-                    <span class="mission-card-status">MISIÓN 04 · ACTIVAR</span>
+                <!-- SECCION 2: SECTORES DE PLANTA -->
+                <div class="section-header-row" style="margin-top: 8px;">
+                    <span class="section-heading">SECTORES DE PLANTA</span>
+                    <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-dim);">SELECCIÓN LIBRE</span>
                 </div>
 
-                <div class="mission-panel-card" onclick="selectMission('seguridad')">
-                    <div class="mission-card-top">
-                        <div class="mission-card-title-group">
-                            <span class="mission-icon">🚨</span>
-                            <span class="mission-card-title">SAFETY & INTERLOCKS</span>
+                <div class="specialty-grid">
+                    <div class="sector-card" onclick="selectSector('plc')">
+                        <div class="sector-card-top">
+                            <span style="font-size:1.1rem;">⚙️</span>
+                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+150 XP</span>
                         </div>
-                        <span class="mission-xp-badge">+300 XP</span>
+                        <span class="sector-title">PLC & Redes</span>
+                        <span class="sector-desc">Bits, memorias, entradas y salidas.</span>
                     </div>
-                    <p class="mission-card-desc">Paros de emergencia, cortinas de haz y puertas enclavadas.</p>
-                    <span class="mission-card-status">MISIÓN 05 · ACTIVAR</span>
+
+                    <div class="sector-card" onclick="selectSector('electricidad')">
+                        <div class="sector-card-top">
+                            <span style="font-size:1.1rem;">⚡</span>
+                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+200 XP</span>
+                        </div>
+                        <span class="sector-title">Electricidad</span>
+                        <span class="sector-desc">Voltaje, relevadores y conexión a tierra.</span>
+                    </div>
+
+                    <div class="sector-card" onclick="selectSector('mantenimiento')">
+                        <div class="sector-card-top">
+                            <span style="font-size:1.1rem;">🔧</span>
+                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+250 XP</span>
+                        </div>
+                        <span class="sector-title">Mecánica</span>
+                        <span class="sector-desc">Cilindros neumáticos y servomotores.</span>
+                    </div>
+
+                    <div class="sector-card" onclick="selectSector('agv')">
+                        <div class="sector-card-top">
+                            <span style="font-size:1.1rem;">🤖</span>
+                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+200 XP</span>
+                        </div>
+                        <span class="sector-title">AGV / AMR</span>
+                        <span class="sector-desc">Rutas guiadas y evasión de obstáculos.</span>
+                    </div>
+
+                    <div class="sector-card" onclick="selectSector('seguridad')" style="grid-column: span 2;">
+                        <div class="sector-card-top">
+                            <span style="font-size:1.1rem;">🚨</span>
+                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-red);">+300 XP</span>
+                        </div>
+                        <span class="sector-title">Seguridad & E-Stop</span>
+                        <span class="sector-desc">Paros de emergencia, cortinas de luz ópticas y puertas enclavadas.</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -853,7 +776,7 @@
         <section id="mode-achievements" class="mode-screen">
             <div class="section-header-row">
                 <span class="section-heading">VITRAL DE LOGROS</span>
-                <span id="ach-unlocked-counter" class="section-pill-tag">0 / 6 DESBLOQUEADOS</span>
+                <span id="ach-unlocked-counter" style="color:var(--cyber-cyan); font-family:var(--font-mono); font-size:0.65rem;">0 / 6</span>
             </div>
             <div id="achievements-list" class="achievements-scroll-area"></div>
         </section>
@@ -882,7 +805,7 @@
                 <div id="quiz-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
             <div id="quiz-options" class="quiz-options-matrix"></div>
-            <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">CONTINUAR SECUENCIA &gt;&gt;</button>
+            <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">CONTINUAR &gt;&gt;</button>
         </section>
 
         <!-- 4. ESCÁNER -->
@@ -892,21 +815,16 @@
                 <div id="scanner-alarm-display" class="terminal-display"></div>
                 <div id="scanner-breakdown" class="telemetry-box" style="display: none;"></div>
             </div>
-            <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">SIGUIENTE ALARMA &gt;&gt;</button>
+            <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">SIGUIENTE &gt;&gt;</button>
         </section>
 
-        <!-- 5. RESULTADOS DE MISIÓN & FLUJO PERFECT -->
+        <!-- 5. RESUMEN -->
         <section id="mode-summary" class="mode-screen">
             <div class="game-chassis" style="text-align: center;">
                 <div id="summary-badge-container"></div>
                 <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--cyber-green); margin: 4px 0;">100%</div>
-                <p id="summary-details" style="color: var(--text-dim); font-size: 0.78rem; margin-bottom: 14px;">Diagnóstico de celda completado.</p>
-                
-                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-                    <button id="btn-retry-mistakes" class="btn-core btn-amber" style="display: none;" onclick="retryMistakes()">REPASAR FALLAS (0) ↻</button>
-                    <button class="btn-core btn-cyan" onclick="startNextSession()">SIGUIENTE CICLO &gt;&gt;</button>
-                    <button class="btn-core btn-ghost" onclick="enterLobby()">HUB PRINCIPAL //</button>
-                </div>
+                <p id="summary-details" style="color: var(--text-dim); font-size: 0.78rem; margin-bottom: 14px;">Operación de celda concluida.</p>
+                <button class="btn-core btn-cyan" style="width: 100%;" onclick="enterLobby()">REGRESAR AL CENTRO DE MANDO</button>
             </div>
         </section>
     </main>
@@ -915,7 +833,7 @@
     <nav class="system-dock">
         <button class="dock-item active" onclick="enterLobby()">
             <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            <span class="dock-title">Misiones</span>
+            <span class="dock-title">Mando</span>
         </button>
         <button class="dock-item" onclick="switchMode('achievements')">
             <svg class="dock-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>

@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <!-- Tipografía Táctica y Militar -->
+    <!-- Tipografía Táctica -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
@@ -65,7 +65,7 @@
             position: relative;
         }
 
-        /* HEADER PRINCIPAL TIPO SISTEMA ONLINE */
+        /* HEADER PRINCIPAL */
         .system-topbar {
             display: flex;
             justify-content: space-between;
@@ -205,6 +205,49 @@
             transition: width 0.3s ease;
         }
 
+        /* COMBO HUD FLOTANTE */
+        .combo-meter {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+        .combo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            opacity: 0;
+            transform: scale(0.85);
+            transition: all 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .combo-badge.active {
+            opacity: 1;
+            transform: scale(1);
+            color: var(--cyber-yellow);
+            border-color: var(--cyber-yellow);
+            box-shadow: 0 0 14px rgba(250, 204, 21, 0.35);
+        }
+        .combo-badge.overdrive {
+            color: #ff0055;
+            border-color: #ff0055;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+            animation: pulse-overdrive 0.8s infinite alternate;
+        }
+        @keyframes pulse-overdrive {
+            from { transform: scale(1); }
+            to { transform: scale(1.06); }
+        }
+
         /* WORKSPACE Y VISTAS */
         .workspace {
             flex: 1;
@@ -223,7 +266,7 @@
             display: flex;
         }
 
-        /* VISTA: LOBBY DE MISIONES ACTIVAS */
+        /* LOBBY DE MISIONES */
         .section-header-row {
             display: flex;
             justify-content: space-between;
@@ -313,7 +356,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* PANTALLA DE LOGROS & MEDALLAS (ESTILO XBOX / HALO) */
+        /* VITRAL DE LOGROS */
         .achievements-scroll-area {
             flex: 1;
             overflow-y: auto;
@@ -383,7 +426,7 @@
             line-height: 1.25;
         }
 
-        /* POP-UP FLOTANTE: LOGRO DESBLOQUEADO (TIPO XBOX) */
+        /* POP-UP TIPO XBOX */
         .xbox-toast-container {
             position: fixed;
             top: 20px;
@@ -436,7 +479,7 @@
             color: #ffffff;
         }
 
-        /* CHASIS DE PRUEBAS / JUEGO */
+        /* CHASIS DE JUEGO */
         .game-chassis {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
@@ -543,59 +586,6 @@
             color: #fca5a5 !important;
         }
 
-        /* ENSAMBLE */
-        .assembly-rail {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin: 8px 0;
-        }
-        .assembly-slot {
-            width: 50px;
-            height: 50px;
-            border: 2px dashed rgba(56, 189, 248, 0.35);
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: var(--font-hanzi);
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: #060a12;
-            cursor: pointer;
-        }
-        .assembly-slot.active-dock {
-            border: 2px solid var(--cyber-cyan);
-            background: rgba(56, 189, 248, 0.15);
-        }
-        .parts-tray {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            background: #060a12;
-            padding: 8px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 8px;
-        }
-        .component-tile {
-            width: 46px;
-            height: 46px;
-            background: #0d1524;
-            border: 1px solid var(--cyber-cyan);
-            border-radius: 8px;
-            color: #ffffff;
-            font-family: var(--font-hanzi);
-            font-size: 1.6rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .component-tile.used {
-            opacity: 0.15;
-            pointer-events: none;
-        }
-
         /* ESCÁNER TERMINAL */
         .terminal-display {
             width: 100%;
@@ -638,11 +628,18 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
+            transition: transform 0.1s;
         }
+        .btn-core:active { transform: scale(0.97); }
         .btn-cyan {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
             color: #ffffff;
-            padding: 10px 14px;
+            padding: 11px 14px;
+        }
+        .btn-amber {
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+            padding: 11px 14px;
         }
         .btn-ghost {
             background: #0a1120;
@@ -655,6 +652,26 @@
             width: 100%;
             margin-top: 8px;
             display: none;
+        }
+
+        /* SELLO PERFECT & RESULTADOS */
+        .perfect-stamp {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--cyber-yellow);
+            text-shadow: 0 0 25px rgba(250, 204, 21, 0.8);
+            border: 3px solid var(--cyber-yellow);
+            padding: 4px 18px;
+            border-radius: 12px;
+            transform: rotate(-5deg);
+            margin-bottom: 8px;
+            animation: stamp-drop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        @keyframes stamp-drop {
+            from { transform: scale(2.2) rotate(-20deg); opacity: 0; }
+            to { transform: scale(1) rotate(-5deg); opacity: 1; }
         }
 
         /* DOCK INFERIOR */
@@ -710,7 +727,7 @@
 <body>
 
 <div class="terminal-container">
-    <!-- POP-UP TIPO XBOX: LOGRO DESBLOQUEADO -->
+    <!-- NOTIFICACION XBOX DE LOGRO -->
     <div id="xbox-achievement-toast" class="xbox-toast-container">
         <div class="xbox-toast-logo">🏆</div>
         <div class="xbox-toast-text">
@@ -719,7 +736,7 @@
         </div>
     </div>
 
-    <!-- HEADER STATUS -->
+    <!-- HEADER TOP -->
     <header class="system-topbar">
         <div class="system-brand-group">
             <span class="system-title">TECH MANDARIN</span>
@@ -728,7 +745,7 @@
         <div class="system-online-badge">SYSTEM ONLINE</div>
     </header>
 
-    <!-- TARJETA OPERADOR (PERFIL) -->
+    <!-- TARJETA OPERADOR -->
     <section class="operator-panel" onclick="enterLobby()">
         <div class="op-hero">
             <div class="op-left">
@@ -753,16 +770,23 @@
         </div>
     </section>
 
+    <!-- INDICADOR FLOTANTE DE COMBO -->
+    <div class="combo-meter">
+        <div id="combo-hud" class="combo-badge">
+            <span>⚡</span>
+            <span id="combo-text">COMBO x2</span>
+        </div>
+    </div>
+
     <!-- WORKSPACE -->
     <main class="workspace">
-        <!-- 0. LOBBY DE MISIONES (CAMPANA) -->
+        <!-- 0. LOBBY DE MISIONES -->
         <section id="mode-lobby" class="mode-screen active">
             <div class="section-header-row">
                 <span class="section-heading">ACTIVE MISSIONS</span>
-                <span class="section-pill-tag">7 DISPONIBLES</span>
+                <span class="section-pill-tag">DISPONIBLES</span>
             </div>
             <div class="missions-scroll-area">
-                <!-- MISION 1: PLC -->
                 <div class="mission-panel-card" onclick="selectMission('plc')">
                     <div class="mission-card-top">
                         <div class="mission-card-title-group">
@@ -771,11 +795,10 @@
                         </div>
                         <span class="mission-xp-badge">+150 XP</span>
                     </div>
-                    <p class="mission-card-desc">Aprende 10 términos de control industrial y señales lógicas.</p>
-                    <span id="status-plc" class="mission-card-status">MISIÓN 01 · DISPONIBLE</span>
+                    <p class="mission-card-desc">Control industrial, señales lógicas y buses de campo.</p>
+                    <span class="mission-card-status">MISIÓN 01 · ACTIVAR</span>
                 </div>
 
-                <!-- MISION 2: ELECTRICIDAD -->
                 <div class="mission-panel-card" onclick="selectMission('electricidad')">
                     <div class="mission-card-top">
                         <div class="mission-card-title-group">
@@ -784,11 +807,10 @@
                         </div>
                         <span class="mission-xp-badge">+200 XP</span>
                     </div>
-                    <p class="mission-card-desc">Controla voltajes, relevadores y conexión a tierra de gabinetes.</p>
-                    <span id="status-electricidad" class="mission-card-status">MISIÓN 02 · DISPONIBLE</span>
+                    <p class="mission-card-desc">Tensiones, contactores, tierras y aislamiento de mando.</p>
+                    <span class="mission-card-status">MISIÓN 02 · ACTIVAR</span>
                 </div>
 
-                <!-- MISION 3: MECANICA -->
                 <div class="mission-panel-card" onclick="selectMission('mantenimiento')">
                     <div class="mission-card-top">
                         <div class="mission-card-title-group">
@@ -797,11 +819,10 @@
                         </div>
                         <span class="mission-xp-badge">+250 XP</span>
                     </div>
-                    <p class="mission-card-desc">Domina vocabulario de servomotores, cilindros y lubricación.</p>
-                    <span id="status-mantenimiento" class="mission-card-status">MISIÓN 03 · DISPONIBLE</span>
+                    <p class="mission-card-desc">Actuadores neumáticos, servomotores y lubricación.</p>
+                    <span class="mission-card-status">MISIÓN 03 · ACTIVAR</span>
                 </div>
 
-                <!-- MISION 4: AGV -->
                 <div class="mission-panel-card" onclick="selectMission('agv')">
                     <div class="mission-card-top">
                         <div class="mission-card-title-group">
@@ -810,11 +831,10 @@
                         </div>
                         <span class="mission-xp-badge">+200 XP</span>
                     </div>
-                    <p class="mission-card-desc">Identifica instrucciones, rutas de guiado y alarmas de AGV.</p>
-                    <span id="status-agv" class="mission-card-status">MISIÓN 04 · DISPONIBLE</span>
+                    <p class="mission-card-desc">Navegación magnética/láser, estaciones y evasión de ruta.</p>
+                    <span class="mission-card-status">MISIÓN 04 · ACTIVAR</span>
                 </div>
 
-                <!-- MISION 5: SEGURIDAD -->
                 <div class="mission-panel-card" onclick="selectMission('seguridad')">
                     <div class="mission-card-top">
                         <div class="mission-card-title-group">
@@ -823,24 +843,22 @@
                         </div>
                         <span class="mission-xp-badge">+300 XP</span>
                     </div>
-                    <p class="mission-card-desc">Decodifica paros de emergencia críticos y cortinas ópticas.</p>
-                    <span id="status-seguridad" class="mission-card-status">MISIÓN 05 · DISPONIBLE</span>
+                    <p class="mission-card-desc">Paros de emergencia, cortinas de haz y puertas enclavadas.</p>
+                    <span class="mission-card-status">MISIÓN 05 · ACTIVAR</span>
                 </div>
             </div>
         </section>
 
-        <!-- 1. VITRAL DE LOGROS (ESTILO XBOX / HALO) -->
+        <!-- 1. VITRAL DE LOGROS -->
         <section id="mode-achievements" class="mode-screen">
             <div class="section-header-row">
                 <span class="section-heading">VITRAL DE LOGROS</span>
                 <span id="ach-unlocked-counter" class="section-pill-tag">0 / 6 DESBLOQUEADOS</span>
             </div>
-            <div id="achievements-list" class="achievements-scroll-area">
-                <!-- Se llena dinámicamente desde app.js -->
-            </div>
+            <div id="achievements-list" class="achievements-scroll-area"></div>
         </section>
 
-        <!-- 2. TARJETAS (FLASHCARDS) -->
+        <!-- 2. TARJETAS -->
         <section id="mode-flashcards" class="mode-screen">
             <div class="game-chassis" onclick="flipCard()" style="cursor: pointer;">
                 <div id="fc-hanzi" class="hanzi-character">--</div>
@@ -867,18 +885,7 @@
             <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">CONTINUAR SECUENCIA &gt;&gt;</button>
         </section>
 
-        <!-- 4. ENSAMBLE -->
-        <section id="mode-builder" class="mode-screen">
-            <div class="game-chassis">
-                <div id="builder-meaning" style="font-size: 1.15rem; font-weight: 800; color: var(--cyber-yellow); margin-bottom: 4px;">--</div>
-                <div id="builder-slots" class="assembly-rail"></div>
-                <div id="builder-breakdown" class="telemetry-box" style="display: none;"></div>
-            </div>
-            <div id="builder-pool" class="parts-tray"></div>
-            <button id="builder-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextBuilderQuestion()">CONFIRMAR ENSAMBLE &gt;&gt;</button>
-        </section>
-
-        <!-- 5. ESCÁNER -->
+        <!-- 4. ESCÁNER -->
         <section id="mode-scanner" class="mode-screen">
             <div class="game-chassis" style="justify-content: flex-start;">
                 <div id="scanner-task" style="font-size: 0.88rem; font-weight: 800; color: var(--cyber-cyan); margin: 4px 0;">--</div>
@@ -888,19 +895,23 @@
             <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">SIGUIENTE ALARMA &gt;&gt;</button>
         </section>
 
-        <!-- RESUMEN DE SESION -->
+        <!-- 5. RESULTADOS DE MISIÓN & FLUJO PERFECT -->
         <section id="mode-summary" class="mode-screen">
             <div class="game-chassis" style="text-align: center;">
-                <div style="font-size: 2.5rem; margin-bottom: 4px;">⚡</div>
-                <h2 style="color: var(--cyber-cyan); font-family: var(--font-display); font-size: 1.2rem;">MISIÓN CONCLUIDA</h2>
-                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--cyber-green); margin: 6px 0;">100%</div>
-                <p id="summary-details" style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 16px;">Términos validados sin error crítico.</p>
-                <button class="btn-core btn-cyan" style="width: 100%;" onclick="enterLobby()">REGRESAR AL CENTRO DE MANDO</button>
+                <div id="summary-badge-container"></div>
+                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--cyber-green); margin: 4px 0;">100%</div>
+                <p id="summary-details" style="color: var(--text-dim); font-size: 0.78rem; margin-bottom: 14px;">Diagnóstico de celda completado.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+                    <button id="btn-retry-mistakes" class="btn-core btn-amber" style="display: none;" onclick="retryMistakes()">REPASAR FALLAS (0) ↻</button>
+                    <button class="btn-core btn-cyan" onclick="startNextSession()">SIGUIENTE CICLO &gt;&gt;</button>
+                    <button class="btn-core btn-ghost" onclick="enterLobby()">HUB PRINCIPAL //</button>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- DOCK INFERIOR -->
+    <!-- DOCK NAVEGACIÓN -->
     <nav class="system-dock">
         <button class="dock-item active" onclick="enterLobby()">
             <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>

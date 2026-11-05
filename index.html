@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TECH MANDARIN // ZÌDÒNG CORE</title>
     
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#070c14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <!-- Fuentes Tácticas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Noto+Sans+SC:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
@@ -51,7 +49,6 @@
             justify-content: center;
             overflow: hidden;
             user-select: none;
-            position: relative;
         }
 
         .terminal-container {
@@ -61,7 +58,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 12px 14px 10px 14px;
+            padding: 12px 14px 8px 14px;
             position: relative;
         }
 
@@ -69,163 +66,89 @@
         .system-topbar {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 8px;
-        }
-        .system-brand-group {
-            display: flex;
-            flex-direction: column;
         }
         .system-title {
             font-family: var(--font-display);
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 900;
             color: var(--cyber-cyan);
             letter-spacing: 0.5px;
-            line-height: 1.1;
         }
-        .system-subtitle {
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            color: var(--text-dim);
-            letter-spacing: 0.6px;
-        }
-        .system-online-badge {
+        .system-badge {
             background: rgba(34, 197, 94, 0.15);
             border: 1px solid rgba(34, 197, 94, 0.4);
             color: var(--cyber-green);
             font-family: var(--font-mono);
             font-size: 0.58rem;
             font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 2px 7px;
+            border-radius: 10px;
         }
 
-        /* TARJETA DE OPERADOR */
+        /* OPERADOR HEADER */
         .operator-panel {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
-            border-radius: 14px;
-            padding: 10px 12px;
+            border-radius: 12px;
+            padding: 8px 10px;
             margin-bottom: 8px;
-            cursor: pointer;
         }
         .op-hero {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 6px;
         }
         .op-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
-        .op-avatar-frame {
-            width: 38px;
-            height: 38px;
-            background: rgba(56, 189, 248, 0.1);
+        .op-avatar {
+            width: 32px;
+            height: 32px;
+            background: rgba(56, 189, 248, 0.15);
             border: 1.5px solid var(--cyber-cyan);
-            border-radius: 10px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--cyber-cyan);
+            font-weight: 800;
         }
-        .op-text-block {
-            display: flex;
-            flex-direction: column;
-        }
-        .op-id-title {
-            font-size: 0.9rem;
+        .op-name {
+            font-size: 0.85rem;
             font-weight: 800;
             color: #ffffff;
+            line-height: 1.1;
         }
-        .op-rank-label {
-            font-size: 0.65rem;
+        .op-rank {
+            font-size: 0.6rem;
             font-family: var(--font-mono);
-            font-weight: 800;
             color: var(--cyber-yellow);
+            font-weight: 700;
         }
-        .xp-number {
+        .op-xp-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .op-xp-val {
             font-family: var(--font-display);
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 900;
             color: var(--cyber-yellow);
             line-height: 1;
         }
-        .op-progress-header {
-            display: flex;
-            justify-content: space-between;
+        .op-xp-lbl {
             font-family: var(--font-mono);
-            font-size: 0.62rem;
-            font-weight: 700;
+            font-size: 0.55rem;
             color: var(--text-dim);
-            margin-bottom: 4px;
-        }
-        .op-progress-bar-bg {
-            height: 5px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .op-progress-bar-fill {
-            height: 100%;
-            width: 20%;
-            background: linear-gradient(90deg, #0284c7, var(--cyber-cyan));
-            border-radius: 6px;
-            transition: width 0.3s ease;
         }
 
-        /* PALABRA DEL DÍA / TURNO ACTIVO */
-        .daily-focus-panel {
-            background: linear-gradient(135deg, rgba(14, 28, 48, 0.9), rgba(6, 12, 22, 0.95));
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 12px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.1);
-        }
-        .focus-label-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .focus-tag {
-            font-family: var(--font-mono);
-            font-size: 0.58rem;
-            font-weight: 800;
-            color: var(--cyber-cyan);
-            letter-spacing: 0.6px;
-        }
-        .focus-chinese {
-            font-family: var(--font-hanzi);
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: #ffffff;
-            line-height: 1.1;
-        }
-        .focus-details {
-            display: flex;
-            flex-direction: column;
-            text-align: right;
-        }
-        .focus-pinyin {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--cyber-yellow);
-        }
-        .focus-spanish {
-            font-size: 0.72rem;
-            color: var(--text-dim);
-            font-weight: 600;
-        }
-
-        /* WORKSPACE Y SECCIONES */
+        /* WORKSPACE Y VISTAS */
         .workspace {
             flex: 1;
             display: flex;
@@ -243,22 +166,21 @@
             display: flex;
         }
 
-        /* SCROLL DEL LOBBY */
-        .lobby-scroll-area {
+        .scrollable-content {
             flex: 1;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             padding-right: 2px;
         }
 
+        /* SECCIONES Y ENCABEZADOS */
         .section-header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 4px;
-            margin-bottom: 6px;
+            margin: 4px 0;
         }
         .section-heading {
             font-family: var(--font-display);
@@ -268,58 +190,144 @@
             letter-spacing: 0.5px;
         }
 
-        /* MISIONES DIARIAS CARDS */
-        .daily-mission-card {
+        /* PALABRA DEL DÍA */
+        .daily-focus-card {
+            background: linear-gradient(135deg, rgba(14, 28, 48, 0.95), rgba(6, 12, 22, 0.98));
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .focus-hanzi {
+            font-family: var(--font-hanzi);
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+        }
+        .focus-meta {
+            text-align: right;
+        }
+        .focus-pinyin {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--cyber-yellow);
+        }
+        .focus-meaning {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        /* MISIONES DIARIAS */
+        .daily-mission-item {
             background: var(--panel-card);
             border: 1px solid rgba(239, 68, 68, 0.35);
             border-left: 4px solid var(--cyber-red);
             border-radius: 10px;
-            padding: 10px 12px;
+            padding: 9px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: all 0.15s ease;
         }
-        .daily-mission-card.done {
+        .daily-mission-item.done {
             border-color: rgba(34, 197, 94, 0.4);
             border-left-color: var(--cyber-green);
             opacity: 0.7;
         }
-        .dm-left {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
         .dm-title {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 800;
             color: #ffffff;
         }
         .dm-sub {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             color: var(--text-dim);
         }
-        .dm-alert-tag {
+        .dm-tag {
             font-family: var(--font-mono);
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             font-weight: 800;
             color: var(--cyber-red);
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
-        .daily-mission-card.done .dm-alert-tag {
+        .daily-mission-item.done .dm-tag {
             color: var(--cyber-green);
         }
 
-        /* CARDS SECTORES DE PLANTA */
-        .specialty-grid {
+        /* RUTA DUOLINGO (MODO CARRERA) */
+        .path-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 0;
+        }
+        .path-node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--panel-card);
+            border: 3px solid var(--panel-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: var(--text-dim);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+        .path-node.completed {
+            border-color: var(--cyber-green);
+            color: var(--cyber-green);
+            background: rgba(34, 197, 94, 0.1);
+            box-shadow: 0 0 14px rgba(34, 197, 94, 0.3);
+        }
+        .path-node.current {
+            border-color: var(--cyber-cyan);
+            color: #ffffff;
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 16px var(--cyber-cyan);
+            animation: pulse-node 1.5s infinite alternate;
+        }
+        .path-node.locked {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        @keyframes pulse-node {
+            from { transform: scale(1); }
+            to { transform: scale(1.08); }
+        }
+        .node-tag {
+            position: absolute;
+            bottom: -14px;
+            font-family: var(--font-mono);
+            font-size: 0.55rem;
+            font-weight: 700;
+            background: #040812;
+            padding: 1px 6px;
+            border-radius: 6px;
+            border: 1px solid var(--panel-border);
+            white-space: nowrap;
+        }
+
+        /* SECTORES / AREAS */
+        .areas-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
-        .sector-card {
+        .area-card {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
             border-radius: 12px;
@@ -327,94 +335,64 @@
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: all 0.12s ease;
+            gap: 3px;
         }
-        .sector-card:active {
-            transform: scale(0.97);
+        .area-card:active {
             border-color: var(--cyber-cyan);
+            transform: scale(0.98);
         }
-        .sector-card-top {
+        .area-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
         }
-        .sector-title {
+        .area-title {
             font-size: 0.8rem;
             font-weight: 800;
             color: #ffffff;
         }
-        .sector-desc {
+        .area-desc {
             font-size: 0.65rem;
             color: var(--text-dim);
             line-height: 1.2;
         }
 
-        /* VITRAL DE LOGROS */
-        .achievements-scroll-area {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-right: 2px;
-        }
-        .achievement-tile {
-            background: var(--panel-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 10px 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .achievement-tile.unlocked {
-            border-color: rgba(250, 204, 21, 0.4);
-            background: linear-gradient(90deg, rgba(250, 204, 21, 0.08), rgba(13, 21, 36, 0.9));
-        }
-        .ach-icon-circle {
-            width: 40px;
-            height: 40px;
+        /* SIMULACION DE ALARMAS HMI */
+        .sim-alarm-card {
+            background: #060b14;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-left: 5px solid var(--cyber-red);
             border-radius: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            flex-shrink: 0;
+            padding: 12px;
+            margin-bottom: 8px;
         }
-        .ach-name {
-            font-size: 0.82rem;
+        .sim-alarm-code {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
             font-weight: 800;
-            color: #ffffff;
+            color: var(--cyber-red);
+            margin-bottom: 4px;
         }
-        .achievement-tile.unlocked .ach-name {
+        .sim-alarm-hanzi {
+            font-family: var(--font-hanzi);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin: 6px 0;
+        }
+        .sim-alarm-sub {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
             color: var(--cyber-yellow);
         }
-
-        /* NOTIFICACION XBOX */
-        .xbox-toast-container {
-            position: fixed;
-            top: 16px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-120px);
-            width: 90%;
-            max-width: 380px;
-            background: #090e17;
-            border: 1.5px solid var(--cyber-green);
-            border-radius: 14px;
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(34, 197, 94, 0.4);
-            z-index: 2000;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
+        .sim-question-box {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--cyber-cyan);
+            margin: 6px 0;
         }
-        .xbox-toast-container.active { transform: translateX(-50%) translateY(0); }
 
-        /* CHASIS DE JUEGO */
+        /* CHASIS DEL JUEGO / NIVELES */
         .game-chassis {
             background: var(--panel-card);
             border: 1px solid var(--panel-border);
@@ -424,129 +402,101 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 16px 14px;
+            padding: 16px;
             position: relative;
             overflow-y: auto;
         }
-        .hanzi-character {
-            font-family: var(--font-hanzi);
-            font-size: 4.6rem;
-            font-weight: 900;
-            line-height: 1;
-            color: #ffffff;
-            text-shadow: 0 0 20px var(--cyber-cyan);
-        }
-        .meaning-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--cyber-yellow);
-            text-align: center;
-            margin: 6px 0;
-        }
-        .pinyin-label {
-            font-family: var(--font-mono);
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--cyber-cyan);
+        .lives-bar {
+            display: flex;
+            gap: 6px;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 1rem;
         }
 
-        .telemetry-box {
-            width: 100%;
-            background: #060a12;
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 10px;
-            padding: 8px 10px;
-            margin-top: 8px;
-            text-align: left;
-        }
-        .telemetry-chips {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin: 4px 0;
-        }
-        .telemetry-chip {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            padding: 2px 6px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-family: var(--font-mono);
-        }
-        .telemetry-chip strong { color: var(--cyber-yellow); }
-
-        /* QUIZ */
-        .quiz-options-matrix {
+        /* MATRIZ DE OPCIONES */
+        .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-top: 8px;
+            width: 100%;
         }
-        .matrix-button {
+        .opt-btn {
             background: #0a1120;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-left: 3px solid var(--cyber-cyan);
             color: #ffffff;
-            padding: 10px 8px;
-            border-radius: 10px;
-            font-size: 0.76rem;
+            padding: 10px 6px;
+            border-radius: 8px;
+            font-size: 0.78rem;
             font-weight: 700;
-            min-height: 48px;
+            min-height: 46px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
         }
-        .matrix-button.correct {
+        .opt-btn.correct {
             background: rgba(34, 197, 94, 0.2) !important;
             border-color: var(--cyber-green) !important;
-            border-left: 3px solid var(--cyber-green) !important;
             color: #86efac !important;
         }
-        .matrix-button.incorrect {
+        .opt-btn.incorrect {
             background: rgba(239, 68, 68, 0.2) !important;
             border-color: var(--cyber-red) !important;
-            border-left: 3px solid var(--cyber-red) !important;
             color: #fca5a5 !important;
         }
 
-        /* ESCÁNER TERMINAL */
-        .terminal-display {
-            width: 100%;
-            background: #04070d;
-            border-left: 4px solid var(--cyber-red);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            padding: 10px;
-            font-family: var(--font-mono);
-            font-size: 1.05rem;
-            line-height: 1.7;
-            margin: 8px 0;
+        /* ENSAMBLE BANDEJA */
+        .assembly-rail {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 10px 0;
         }
-        .terminal-token {
-            display: inline-block;
-            padding: 2px 5px;
-            margin: 2px;
-            border-radius: 4px;
+        .assembly-slot {
+            width: 52px;
+            height: 52px;
+            border: 2px dashed rgba(56, 189, 248, 0.35);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-hanzi);
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: #050a14;
+        }
+        .assembly-slot.docked {
+            border: 2px solid var(--cyber-cyan);
+            background: rgba(56, 189, 248, 0.15);
+        }
+        .parts-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .part-tile {
+            width: 48px;
+            height: 48px;
+            background: #0e172a;
+            border: 1px solid var(--cyber-cyan);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: var(--font-hanzi);
+            font-size: 1.6rem;
+            font-weight: 700;
             cursor: pointer;
-            border: 1px solid transparent;
         }
-        .terminal-token.success-hit {
-            background: var(--cyber-green) !important;
-            color: #070c14 !important;
-            font-weight: 900;
-        }
-        .terminal-token.fail-hit {
-            background: var(--cyber-red) !important;
-            color: #fff !important;
+        .part-tile.used {
+            opacity: 0.15;
+            pointer-events: none;
         }
 
-        /* BOTONES */
+        /* BOTONES GLOBALES */
         .btn-core {
             border: none;
             border-radius: 10px;
@@ -561,22 +511,17 @@
         .btn-cyan {
             background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
             color: #ffffff;
-            padding: 11px 14px;
+            padding: 10px 14px;
         }
         .btn-ghost {
             background: #0a1120;
             border: 1px solid rgba(56, 189, 248, 0.3);
             color: var(--cyber-cyan);
-            padding: 7px 12px;
-            font-size: 0.75rem;
-        }
-        .full-trigger {
-            width: 100%;
-            margin-top: 8px;
-            display: none;
+            padding: 6px 12px;
+            font-size: 0.72rem;
         }
 
-        /* DOCK INFERIOR */
+        /* DOCK INFERIOR (4 MENUS PRINCIPALES) */
         .system-dock {
             height: 52px;
             background: rgba(13, 21, 36, 0.95);
@@ -585,7 +530,6 @@
             display: flex;
             align-items: center;
             padding: 2px;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
             margin-top: 6px;
         }
         .dock-item {
@@ -628,243 +572,207 @@
 <body>
 
 <div class="terminal-container">
-    <!-- POP-UP LOGROS -->
-    <div id="xbox-achievement-toast" class="xbox-toast-container">
-        <div style="width:36px; height:36px; background:var(--cyber-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#070c14;">🏆</div>
-        <div style="display:flex; flex-direction:column;">
-            <span style="font-family:var(--font-mono); font-size:0.65rem; font-weight:800; color:var(--cyber-green); text-transform:uppercase;">¡Logro Desbloqueado!</span>
-            <span id="toast-achievement-name" style="font-size:0.85rem; font-weight:800; color:#fff;">Pequeño Saltamontes</span>
-        </div>
-    </div>
-
     <!-- TOPBAR -->
     <header class="system-topbar">
-        <div class="system-brand-group">
-            <span class="system-title">TECH MANDARIN</span>
-            <span class="system-subtitle">ENGINEER TRAINING SYSTEM v2.5</span>
-        </div>
-        <div class="system-online-badge">SYSTEM ONLINE</div>
+        <span class="system-title">TECH MANDARIN</span>
+        <div class="system-badge">SYS: ONLINE</div>
     </header>
 
     <!-- OPERADOR -->
-    <section class="operator-panel" onclick="enterLobby()">
+    <section class="operator-panel">
         <div class="op-hero">
             <div class="op-left">
-                <div id="op-avatar" class="op-avatar-frame">R</div>
-                <div class="op-text-block">
-                    <span id="op-name" class="op-id-title">ENGINEER 001</span>
-                    <span id="op-rank" class="op-rank-label">RANK: PRACTICANTE</span>
+                <div id="op-avatar" class="op-avatar">R</div>
+                <div>
+                    <div id="op-name" class="op-name">ENGINEER 001</div>
+                    <div id="op-rank" class="op-rank">RANK: PRACTICANTE</div>
                 </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                <span id="op-xp-total" class="xp-number">0</span>
-                <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-dim);">TOTAL XP</span>
+            <div class="op-xp-box">
+                <span id="op-xp-val" class="op-xp-val">0</span>
+                <span class="op-xp-lbl">TOTAL XP</span>
             </div>
-        </div>
-        <div class="op-progress-header">
-            <span>NEXT ASCENSO</span>
-            <span id="op-next-pct">0%</span>
-        </div>
-        <div class="op-progress-bar-bg">
-            <div id="op-bar-fill" class="op-progress-bar-fill"></div>
-        </div>
-    </section>
-
-    <!-- PALABRA DEL TURNO / DIARIA -->
-    <section class="daily-focus-panel">
-        <div class="focus-label-group">
-            <span class="focus-tag">// PALABRA DEL TURNO (PRIORITARIA)</span>
-            <span id="daily-focus-hanzi" class="focus-chinese">输入</span>
-        </div>
-        <div class="focus-details">
-            <span id="daily-focus-pinyin" class="focus-pinyin">shūrù</span>
-            <span id="daily-focus-meaning" class="focus-spanish">Entrada (Input / I)</span>
         </div>
     </section>
 
     <!-- WORKSPACE -->
     <main class="workspace">
-        <!-- 0. LOBBY: MISIONES DIARIAS Y SECTORES SEPARADOS -->
-        <section id="mode-lobby" class="mode-screen active">
-            <div class="lobby-scroll-area">
-                <!-- SECCION 1: MISIONES DIARIAS -->
+        <!-- 1. HOME / PRINCIPAL -->
+        <section id="screen-home" class="mode-screen active">
+            <div class="scrollable-content">
+                <!-- PALABRA DEL TURNO -->
                 <div class="section-header-row">
-                    <span class="section-heading">MISIONES DIARIAS</span>
-                    <span id="daily-badge-counter" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:var(--cyber-red); font-family:var(--font-mono); font-size:0.6rem; font-weight:800; padding:2px 7px; border-radius:8px;">2 ACTIVAS</span>
+                    <span class="section-heading">PALABRA DEL TURNO</span>
+                    <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-cyan);">FOCO ACTIVO</span>
                 </div>
-
-                <!-- MISION DIARIA 1 -->
-                <div id="dm-card-1" class="daily-mission-card" onclick="startDailyBounty(1)">
-                    <div class="dm-left">
-                        <span class="dm-title">Diagnóstico de Entrada/Salida</span>
-                        <span class="dm-sub">Acierta la palabra del turno en el Quiz de PLC</span>
+                <div class="daily-focus-card">
+                    <div>
+                        <div id="daily-hanzi" class="focus-hanzi">输入</div>
                     </div>
-                    <div class="dm-alert-tag" id="dm-status-1">
-                        <span>🚨</span>
-                        <span>PENDIENTE</span>
+                    <div class="focus-meta">
+                        <div id="daily-pinyin" class="focus-pinyin">shūrù</div>
+                        <div id="daily-meaning" class="focus-meaning">Entrada (Input / I)</div>
                     </div>
                 </div>
 
-                <!-- MISION DIARIA 2 -->
-                <div id="dm-card-2" class="daily-mission-card" onclick="startDailyBounty(2)">
-                    <div class="dm-left">
-                        <span class="dm-title">Protocolo de Interlock</span>
-                        <span class="dm-sub">Resuelve 1 alarma en el Escáner sin fallar</span>
-                    </div>
-                    <div class="dm-alert-tag" id="dm-status-2">
-                        <span>🚨</span>
-                        <span>PENDIENTE</span>
-                    </div>
-                </div>
-
-                <!-- SECCION 2: SECTORES DE PLANTA -->
+                <!-- MISIONES DIARIAS -->
                 <div class="section-header-row" style="margin-top: 8px;">
-                    <span class="section-heading">SECTORES DE PLANTA</span>
-                    <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--text-dim);">SELECCIÓN LIBRE</span>
+                    <span class="section-heading">MISIONES DIARIAS</span>
+                    <span id="dm-counter" style="color:var(--cyber-red); font-family:var(--font-mono); font-size:0.6rem; font-weight:800;">2 PENDIENTES</span>
                 </div>
-
-                <div class="specialty-grid">
-                    <div class="sector-card" onclick="selectSector('plc')">
-                        <div class="sector-card-top">
-                            <span style="font-size:1.1rem;">⚙️</span>
-                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+150 XP</span>
-                        </div>
-                        <span class="sector-title">PLC & Redes</span>
-                        <span class="sector-desc">Bits, memorias, entradas y salidas.</span>
+                <div id="dm-item-1" class="daily-mission-item" onclick="startDailyTask(1)">
+                    <div>
+                        <div class="dm-title">Diagnóstico de I/O</div>
+                        <div class="dm-sub">Acierta la palabra del turno en Modo Carrera</div>
                     </div>
-
-                    <div class="sector-card" onclick="selectSector('electricidad')">
-                        <div class="sector-card-top">
-                            <span style="font-size:1.1rem;">⚡</span>
-                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+200 XP</span>
-                        </div>
-                        <span class="sector-title">Electricidad</span>
-                        <span class="sector-desc">Voltaje, relevadores y conexión a tierra.</span>
+                    <div id="dm-tag-1" class="dm-tag">
+                        <span>🚨</span><span>PENDIENTE</span>
                     </div>
-
-                    <div class="sector-card" onclick="selectSector('mantenimiento')">
-                        <div class="sector-card-top">
-                            <span style="font-size:1.1rem;">🔧</span>
-                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+250 XP</span>
-                        </div>
-                        <span class="sector-title">Mecánica</span>
-                        <span class="sector-desc">Cilindros neumáticos y servomotores.</span>
+                </div>
+                <div id="dm-item-2" class="daily-mission-item" onclick="startDailyTask(2)">
+                    <div>
+                        <div class="dm-title">Protocolo de Alarma HMI</div>
+                        <div class="dm-sub">Resuelve 1 simulación de falla en planta</div>
                     </div>
-
-                    <div class="sector-card" onclick="selectSector('agv')">
-                        <div class="sector-card-top">
-                            <span style="font-size:1.1rem;">🤖</span>
-                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-cyan);">+200 XP</span>
-                        </div>
-                        <span class="sector-title">AGV / AMR</span>
-                        <span class="sector-desc">Rutas guiadas y evasión de obstáculos.</span>
-                    </div>
-
-                    <div class="sector-card" onclick="selectSector('seguridad')" style="grid-column: span 2;">
-                        <div class="sector-card-top">
-                            <span style="font-size:1.1rem;">🚨</span>
-                            <span style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyber-red);">+300 XP</span>
-                        </div>
-                        <span class="sector-title">Seguridad & E-Stop</span>
-                        <span class="sector-desc">Paros de emergencia, cortinas de luz ópticas y puertas enclavadas.</span>
+                    <div id="dm-tag-2" class="dm-tag">
+                        <span>🚨</span><span>PENDIENTE</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 1. VITRAL DE LOGROS -->
-        <section id="mode-achievements" class="mode-screen">
+        <!-- 2. MODO CARRERA (TIPO DUOLINGO NIVELES 1-1 AL 1-30) -->
+        <section id="screen-career" class="mode-screen">
             <div class="section-header-row">
-                <span class="section-heading">VITRAL DE LOGROS</span>
-                <span id="ach-unlocked-counter" style="color:var(--cyber-cyan); font-family:var(--font-mono); font-size:0.65rem;">0 / 6</span>
+                <span class="section-heading">MAPA DE RUTA TÉCNICA</span>
+                <span id="career-progress-tag" style="font-family:var(--font-mono); font-size:0.65rem; color:var(--cyber-yellow);">NIVEL 1-1</span>
             </div>
-            <div id="achievements-list" class="achievements-scroll-area"></div>
-        </section>
-
-        <!-- 2. TARJETAS -->
-        <section id="mode-flashcards" class="mode-screen">
-            <div class="game-chassis" onclick="flipCard()" style="cursor: pointer;">
-                <div id="fc-hanzi" class="hanzi-character">--</div>
-                <div id="fc-pinyin" class="pinyin-label">--</div>
-                <div id="fc-body">
-                    <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyber-cyan);">[ TOCAR PARA INSPECCIONAR ]</span>
+            <div class="scrollable-content">
+                <div id="career-path" class="path-container">
+                    <!-- Se genera dinámicamente desde app.js -->
                 </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                <button class="btn-core btn-ghost" onclick="prevCard()">&lt; PREV</button>
-                <span id="fc-counter" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyber-cyan);">1 / 5</span>
-                <button class="btn-core btn-ghost" onclick="nextCard()">NEXT &gt;</button>
+        </section>
+
+        <!-- 3. AREAS (ESPECIALIDADES DE PLANTA) -->
+        <section id="screen-areas" class="mode-screen">
+            <div class="section-header-row">
+                <span class="section-heading">SECTORES DE AUTOMATIZACIÓN</span>
+                <span style="font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim);">6 MÓDULOS</span>
+            </div>
+            <div class="scrollable-content">
+                <div class="areas-grid">
+                    <div class="area-card" onclick="openAreaMode('plc')">
+                        <div class="area-top">
+                            <span style="font-size:1.2rem;">🤖</span>
+                            <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-cyan);">PLC</span>
+                        </div>
+                        <span class="area-title">PLC & Redes</span>
+                        <span class="area-desc">I/O, Bits de control y enlaces Profinet.</span>
+                    </div>
+
+                    <div class="area-card" onclick="openAreaMode('electricidad')">
+                        <div class="area-top">
+                            <span style="font-size:1.2rem;">⚡</span>
+                            <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-cyan);">PWR</span>
+                        </div>
+                        <span class="area-title">Electricidad</span>
+                        <span class="area-desc">Voltaje, relevadores y conexión a tierra.</span>
+                    </div>
+
+                    <div class="area-card" onclick="openAreaMode('mantenimiento')">
+                        <div class="area-top">
+                            <span style="font-size:1.2rem;">⚙️</span>
+                            <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-cyan);">MEC</span>
+                        </div>
+                        <span class="area-title">Mecánica</span>
+                        <span class="area-desc">Cilindros neumáticos, servos y lubricación.</span>
+                    </div>
+
+                    <div class="area-card" onclick="openAreaMode('agv')">
+                        <div class="area-top">
+                            <span style="font-size:1.2rem;">🚚</span>
+                            <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-cyan);">AGV</span>
+                        </div>
+                        <span class="area-title">AGV / Logística</span>
+                        <span class="area-desc">Rutas magnéticas y evasión de obstáculos.</span>
+                    </div>
+
+                    <div class="area-card" onclick="openAreaMode('seguridad')">
+                        <div class="area-top">
+                            <span style="font-size:1.2rem;">🚨</span>
+                            <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-red);">SAFE</span>
+                        </div>
+                        <span class="area-title">Seguridad</span>
+                        <span class="area-desc">Paros de emergencia y cortinas ópticas.</span>
+                    </div>
+
+                    <div class="area-card" onclick="openAreaMode('calidad')">
+                        <div class="area-top">
+                            <span style="font-size:1.2rem;">🔍</span>
+                            <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-cyan);">VIS</span>
+                        </div>
+                        <span class="area-title">Calidad</span>
+                        <span class="area-desc">Detección de defectos (NG) y visión.</span>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- 3. QUIZ -->
-        <section id="mode-quiz" class="mode-screen">
-            <div class="game-chassis">
-                <div id="quiz-hanzi" class="hanzi-character" style="font-size: 3.8rem;">--</div>
-                <div id="quiz-pinyin" class="pinyin-label">--</div>
-                <div id="quiz-breakdown" class="telemetry-box" style="display: none;"></div>
+        <!-- 4. SIMULACIÓN (ALARMAS REALES HMI) -->
+        <section id="screen-sim" class="mode-screen">
+            <div class="section-header-row">
+                <span class="section-heading">SIMULADOR HMI DE PLANTA</span>
+                <span style="font-family:var(--font-mono); font-size:0.6rem; color:var(--cyber-red);">INCIDENTES VIVOS</span>
             </div>
-            <div id="quiz-options" class="quiz-options-matrix"></div>
-            <button id="quiz-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextQuizQuestion()">CONTINUAR &gt;&gt;</button>
+            <div class="scrollable-content" id="sim-container">
+                <div class="sim-alarm-card">
+                    <div id="sim-code" class="sim-alarm-code">ALARMA HMI [E-084] // LÍNEA DE ENSAMBLE</div>
+                    <div id="sim-hanzi" class="sim-alarm-hanzi">输入异常</div>
+                    <div id="sim-pinyin" class="sim-alarm-sub">shūrù yìcháng</div>
+                </div>
+                <div id="sim-question" class="sim-question-box">¿Qué componente está reportando anomalía y cuál es la acción correctiva?</div>
+                <div id="sim-options" class="options-grid"></div>
+            </div>
         </section>
 
-        <!-- 4. ESCÁNER -->
-        <section id="mode-scanner" class="mode-screen">
-            <div class="game-chassis" style="justify-content: flex-start;">
-                <div id="scanner-task" style="font-size: 0.88rem; font-weight: 800; color: var(--cyber-cyan); margin: 4px 0;">--</div>
-                <div id="scanner-alarm-display" class="terminal-display"></div>
-                <div id="scanner-breakdown" class="telemetry-box" style="display: none;"></div>
+        <!-- PANTALLA DE JUEGO (NIVELES DE MODO CARRERA) -->
+        <section id="screen-gameplay" class="mode-screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span id="game-level-tag" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--cyber-cyan); font-weight:800;">NIVEL 1-1</span>
+                <div class="lives-bar" id="lives-display">
+                    <span>❤️</span><span>❤️</span>
+                </div>
             </div>
-            <button id="scanner-next-btn" class="btn-core btn-cyan full-trigger" onclick="nextScannerQuestion()">SIGUIENTE &gt;&gt;</button>
-        </section>
-
-        <!-- 5. RESUMEN -->
-        <section id="mode-summary" class="mode-screen">
-            <div class="game-chassis" style="text-align: center;">
-                <div id="summary-badge-container"></div>
-                <div id="summary-percentage" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--cyber-green); margin: 4px 0;">100%</div>
-                <p id="summary-details" style="color: var(--text-dim); font-size: 0.78rem; margin-bottom: 14px;">Operación de celda concluida.</p>
-                <button class="btn-core btn-cyan" style="width: 100%;" onclick="enterLobby()">REGRESAR AL CENTRO DE MANDO</button>
+            <div class="game-chassis" id="game-stage">
+                <!-- Se llena dinámicamente según el tipo de nivel -->
             </div>
+            <div id="game-action-footer" style="margin-top:8px;"></div>
         </section>
     </main>
 
-    <!-- DOCK NAVEGACIÓN -->
+    <!-- DOCK NAVEGACIÓN (4 MENÚS) -->
     <nav class="system-dock">
-        <button class="dock-item active" onclick="enterLobby()">
+        <button class="dock-item active" onclick="switchNav('home')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="dock-title">Home</span>
+        </button>
+        <button class="dock-item" onclick="switchNav('career')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span class="dock-title">Carrera</span>
+        </button>
+        <button class="dock-item" onclick="switchNav('areas')">
             <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            <span class="dock-title">Mando</span>
+            <span class="dock-title">Áreas</span>
         </button>
-        <button class="dock-item" onclick="switchMode('achievements')">
-            <svg class="dock-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-            <span class="dock-title">Logros</span>
-        </button>
-        <button class="dock-item" onclick="switchMode('flashcards')">
-            <svg class="dock-svg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="13" y2="12"/></svg>
-            <span class="dock-title">Tarjetas</span>
-        </button>
-        <button class="dock-item" onclick="switchMode('quiz')">
-            <svg class="dock-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2"/></svg>
-            <span class="dock-title">Quiz</span>
-        </button>
-        <button class="dock-item" onclick="switchMode('scanner')">
-            <svg class="dock-svg" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="9" x2="12" y2="15"/></svg>
-            <span class="dock-title">Escáner</span>
+        <button class="dock-item" onclick="switchNav('sim')">
+            <svg class="dock-svg" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span class="dock-title">Simulación</span>
         </button>
     </nav>
 </div>
 
 <script src="data.js"></script>
 <script src="app.js"></script>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/Zidong-Core/sw.js', { scope: '/Zidong-Core/' })
-                .then(reg => console.log('Zìdòng Core Service Worker Activo:', reg.scope))
-                .catch(err => console.error('Error registrando Service Worker:', err));
-        });
-    }
-</script>
 </body>
 </html>

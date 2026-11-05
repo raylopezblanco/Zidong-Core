@@ -1,5 +1,5 @@
 // ========================================================
-// ZÌDÒNG CORE - CAMPAIGN CONTROLLER & XBOX ACHIEVEMENTS
+// ZÌDÒNG CORE - COMBAT LOOP, COMBOS & PERFECT ENGINE
 // ========================================================
 
 const BLOCK_SIZE = 5;
@@ -10,11 +10,13 @@ let currentMode = 'lobby';
 let activeSessionPool = [];
 let sessionCorrect = 0;
 let sessionTotal = 0;
+let comboCount = 0;
+let failedItems = [];
 
-// MOTOR DE AUDIO SFX (WEB AUDIO API)
+// MOTOR DE AUDIO SFX SINTETIZADO CON ESCALA DE COMBO
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playSound(type) {
+function playSound(type, comboMultiplier = 1) {
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
@@ -29,35 +31,52 @@ function playSound(type) {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(450, now);
         osc.frequency.exponentialRampToValueAtTime(140, now + 0.04);
-        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.setValueAtTime(0.12, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
         osc.start(now);
         osc.stop(now + 0.04);
     } 
     else if (type === 'correct') {
+        // La frecuencia sube según el combo acumulado
+        const baseFreq = 523.25; // C5
+        const step = Math.min(comboMultiplier, 5) * 60;
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, now);
-        osc.frequency.setValueAtTime(739.99, now + 0.06);
-        osc.frequency.setValueAtTime(880.00, now + 0.12);
+        osc.frequency.setValueAtTime(baseFreq + step, now);
+        osc.frequency.setValueAtTime(baseFreq + step + 120, now + 0.07);
         gain.gain.setValueAtTime(0.2, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
         osc.start(now);
-        osc.stop(now + 0.28);
+        osc.stop(now + 0.25);
     } 
     else if (type === 'wrong') {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(150, now);
-        osc.frequency.linearRampToValueAtTime(80, now + 0.22);
+        osc.frequency.linearRampToValueAtTime(75, now + 0.22);
         gain.gain.setValueAtTime(0.25, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
         osc.start(now);
         osc.stop(now + 0.22);
     }
+    else if (type === 'perfect') {
+        // Fanfarria triunfal mayor (C5 -> E5 -> G5 -> C6)
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freq, now + (idx * 0.09));
+            g.gain.setValueAtTime(0.25, now + (idx * 0.09));
+            g.gain.linearRampToValueAtTime(0.01, now + (idx * 0.09) + 0.25);
+            o.start(now + (idx * 0.09));
+            o.stop(now + (idx * 0.09) + 0.25);
+        });
+    }
     else if (type === 'achievement') {
-        // Tono clásico de desbloqueo de logro Xbox (Fanfarria F5 -> C6)
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(698.46, now); // F5
-        osc.frequency.setValueAtTime(1046.50, now + 0.12); // C6
+        osc.frequency.setValueAtTime(698.46, now);
+        osc.frequency.setValueAtTime(1046.50, now + 0.12);
         gain.gain.setValueAtTime(0.3, now);
         gain.gain.linearRampToValueAtTime(0.01, now + 0.45);
         osc.start(now);
@@ -65,7 +84,28 @@ function playSound(type) {
     }
 }
 
-// TABLA DE RANGOS DE INGENIERÍA
+// GESTIÓN DEL MEDIDOR DE COMBO
+function updateComboHUD(increment = true) {
+    const hud = document.getElementById('combo-hud');
+    const text = document.getElementById('combo-text');
+
+    if (increment) {
+        comboCount++;
+        if (comboCount >= 2) {
+            hud.className = 'combo-badge active';
+            text.innerText = `COMBO x${comboCount}`;
+            if (comboCount >= 4) {
+                hud.classList.add('overdrive');
+                text.innerText = `OVERDRIVE x${comboCount}! ⚡`;
+            }
+        }
+    } else {
+        comboCount = 0;
+        hud.className = 'combo-badge';
+    }
+}
+
+// TABLA DE RANGOS
 const RANKS = [
     { title: "PRACTICANTE", minXP: 0, nextXP: 150 },
     { title: "TÉCNICO", minXP: 150, nextXP: 400 },
@@ -79,62 +119,24 @@ const RANKS = [
 
 function getCurrentRank(xp) {
     for (let i = RANKS.length - 1; i >= 0; i--) {
-        if (xp >= RANKS[i].minXP) {
-            return RANKS[i];
-        }
+        if (xp >= RANKS[i].minXP) return RANKS[i];
     }
     return RANKS[0];
 }
 
-// SISTEMA DE LOGROS & MEDALLAS (ESTILO XBOX / HALO 3)
+// LOGROS DISPONIBLES
 const ACHIEVEMENTS = [
-    {
-        id: "ach_saltamontes",
-        icon: "🦗",
-        title: "Pequeño Saltamontes",
-        desc: "Conquistaste tu primera sesión en PLC Systems.",
-        rewardXP: 150
-    },
-    {
-        id: "ach_chispazo",
-        icon: "⚡",
-        title: "Cuidado con el Chispazo",
-        desc: "Dominaste términos críticos de Electricidad y Potencia.",
-        rewardXP: 200
-    },
-    {
-        id: "ach_grano_arroz",
-        icon: "🌾",
-        title: "Grano de Arroz",
-        desc: "Completaste 5 sesiones de vocabulario técnico con éxito.",
-        rewardXP: 250
-    },
-    {
-        id: "ach_agv_pilot",
-        icon: "🤖",
-        title: "Piloto de Cintas",
-        desc: "Identificaste comandos y sensores de navegación AGV.",
-        rewardXP: 200
-    },
-    {
-        id: "ach_palacio_imperial",
-        icon: "🏯",
-        title: "Palacio Imperial",
-        desc: "Alcanzaste una calificación perfecta (100%) en cualquier modo.",
-        rewardXP: 300
-    },
-    {
-        id: "ach_dedos_rapidos",
-        icon: "🚨",
-        title: "Dedos Rápidos",
-        desc: "Resolviste una alarma de Paro de Emergencia sin vacilar.",
-        rewardXP: 200
-    }
+    { id: "ach_saltamontes", icon: "🦗", title: "Pequeño Saltamontes", desc: "Completaste tu primera sesión en PLC Systems.", rewardXP: 150 },
+    { id: "ach_chispazo", icon: "⚡", title: "Cuidado con el Chispazo", desc: "Dominaste términos críticos de Potencia.", rewardXP: 200 },
+    { id: "ach_grano_arroz", icon: "🌾", title: "Grano de Arroz", desc: "Completaste 5 sesiones técnicas.", rewardXP: 250 },
+    { id: "ach_agv_pilot", icon: "🤖", title: "Piloto de Cintas", desc: "Identificaste comandos y guiado de AGV.", rewardXP: 200 },
+    { id: "ach_palacio_imperial", icon: "🏯", title: "Palacio Imperial", desc: "Obtuviste un PERFECT (100% de aciertos).", rewardXP: 300 },
+    { id: "ach_dedos_rapidos", icon: "🚨", title: "Dedos Rápidos", desc: "Resolviste una alarma crítica sin error.", rewardXP: 200 }
 ];
 
 function triggerAchievement(achId) {
     let unlocked = JSON.parse(localStorage.getItem('zidong_achievements') || '[]');
-    if (unlocked.includes(achId)) return; // Ya desbloqueado previamente
+    if (unlocked.includes(achId)) return;
 
     const ach = ACHIEVEMENTS.find(a => a.id === achId);
     if (!ach) return;
@@ -142,17 +144,13 @@ function triggerAchievement(achId) {
     unlocked.push(achId);
     localStorage.setItem('zidong_achievements', JSON.stringify(unlocked));
 
-    // Sonido y banner animado Xbox
     playSound('achievement');
     const toast = document.getElementById('xbox-achievement-toast');
     document.getElementById('toast-achievement-name').innerText = `${ach.icon} ${ach.title} (+${ach.rewardXP} XP)`;
     toast.classList.add('active');
 
-    setTimeout(() => {
-        toast.classList.remove('active');
-    }, 3800);
+    setTimeout(() => toast.classList.remove('active'), 3800);
 
-    // Sumar XP del logro
     addXP(ach.rewardXP);
     renderAchievements();
 }
@@ -184,7 +182,6 @@ function renderAchievements() {
     });
 }
 
-// PERSISTENCIA Y ACTUALIZACIÓN DE PERFIL
 function loadUserData() {
     let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
     let username = localStorage.getItem('zidong_username') || 'ENGINEER 001';
@@ -216,10 +213,10 @@ function addXP(amount) {
     loadUserData();
 }
 
-// NAVEGACIÓN Y CAMPANA
 function enterLobby() {
     playSound('click');
     currentMode = 'lobby';
+    updateComboHUD(false);
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.dock-item')[0].classList.add('active');
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
@@ -229,6 +226,7 @@ function enterLobby() {
 function selectMission(topic) {
     playSound('click');
     currentMission = topic;
+    failedItems = [];
     refreshSessionPool();
     switchMode('flashcards');
 }
@@ -250,6 +248,8 @@ function refreshSessionPool() {
 function switchMode(mode) {
     playSound('click');
     currentMode = mode;
+    updateComboHUD(false);
+
     document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
 
@@ -277,25 +277,66 @@ function switchMode(mode) {
 }
 
 function finishSession() {
-    playSound('correct');
+    updateComboHUD(false);
     document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
 
     const percentage = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 100;
+    const badgeContainer = document.getElementById('summary-badge-container');
+    const retryBtn = document.getElementById('btn-retry-mistakes');
+
+    if (percentage === 100) {
+        playSound('perfect');
+        badgeContainer.innerHTML = `<div class="perfect-stamp">PERFECT! ★</div>`;
+        addXP(sessionCorrect * 35); // Bono extra por Perfect
+        triggerAchievement('ach_palacio_imperial');
+        retryBtn.style.display = 'none';
+    } else {
+        playSound('correct');
+        badgeContainer.innerHTML = `<div style="font-family: var(--font-display); font-size: 1.1rem; color: var(--cyber-cyan); letter-spacing: 1px; margin-bottom: 6px;">MISSION CLEARED</div>`;
+        addXP(sessionCorrect * 25);
+
+        if (failedItems.length > 0) {
+            retryBtn.innerText = `REPASAR FALLAS (${failedItems.length}) ↻`;
+            retryBtn.style.display = 'block';
+        } else {
+            retryBtn.style.display = 'none';
+        }
+    }
+
     document.getElementById('summary-percentage').innerText = `${percentage}%`;
-    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} reactivos de ${currentMission.toUpperCase()}.`;
+    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} de ${sessionTotal} reactivos en ${currentMission.toUpperCase()}.`;
     document.getElementById('mode-summary').classList.add('active');
 
-    addXP(sessionCorrect * 25);
-
-    // Comprobar logros al terminar ciclo
     if (currentMission === 'plc' && sessionCorrect > 0) triggerAchievement('ach_saltamontes');
     if (currentMission === 'electricidad' && sessionCorrect > 0) triggerAchievement('ach_chispazo');
     if (currentMission === 'agv' && sessionCorrect > 0) triggerAchievement('ach_agv_pilot');
-    if (percentage === 100) triggerAchievement('ach_palacio_imperial');
 
     let totalRuns = parseInt(localStorage.getItem('zidong_completed_runs') || '0') + 1;
     localStorage.setItem('zidong_completed_runs', totalRuns);
     if (totalRuns >= 5) triggerAchievement('ach_grano_arroz');
+}
+
+function retryMistakes() {
+    if (failedItems.length === 0) return;
+    playSound('click');
+    activeSessionPool = shuffleArray([...failedItems]);
+    failedItems = [];
+    if (currentMode === 'scanner') {
+        initScanner();
+    } else {
+        initQuiz();
+    }
+}
+
+function startNextSession() {
+    playSound('click');
+    failedItems = [];
+    refreshSessionPool();
+    if (currentMode === 'scanner') {
+        initScanner();
+    } else {
+        initQuiz();
+    }
 }
 
 function playVoice(text) {
@@ -391,6 +432,9 @@ function initQuiz() {
     quizIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
+    comboCount = 0;
+    failedItems = [];
+    updateComboHUD(false);
     loadQuizQuestion();
 }
 
@@ -432,12 +476,15 @@ function checkQuiz(btn, selected, item) {
     sessionTotal++;
 
     if (selected === item.meaning) {
-        playSound('correct');
+        updateComboHUD(true);
+        playSound('correct', comboCount);
         btn.classList.add('correct');
         sessionCorrect++;
     } else {
+        updateComboHUD(false);
         playSound('wrong');
         btn.classList.add('incorrect');
+        failedItems.push(item);
         all.forEach(b => { if (b.innerText === item.meaning) b.classList.add('correct'); });
     }
 
@@ -468,6 +515,9 @@ function initScanner() {
     scannerIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
+    comboCount = 0;
+    failedItems = [];
+    updateComboHUD(false);
     loadScannerQuestion();
 }
 
@@ -507,7 +557,8 @@ function clickScannerToken(span, clickedHanzi, item) {
 
     sessionTotal++;
     if (clickedHanzi === item.targetHanzi) {
-        playSound('correct');
+        updateComboHUD(true);
+        playSound('correct', comboCount);
         scannerLocked = true;
         span.classList.add('success-hit');
         sessionCorrect++;
@@ -531,6 +582,7 @@ function clickScannerToken(span, clickedHanzi, item) {
 
         document.getElementById('scanner-next-btn').style.display = 'block';
     } else {
+        updateComboHUD(false);
         playSound('wrong');
         span.classList.add('fail-hit');
         setTimeout(() => span.classList.remove('fail-hit'), 400);
@@ -543,6 +595,6 @@ function nextScannerQuestion() {
     loadScannerQuestion();
 }
 
-// ARRANQUE
+// INICIALIZACIÓN
 loadUserData();
 enterLobby();

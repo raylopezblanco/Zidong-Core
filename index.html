@@ -12,11 +12,7 @@
 </head>
 <body>
 
-    <!-- =========================================
-         HEADER / TOPBAR
-    ========================================== -->
     <header class="topbar">
-        <!-- BOTÓN TEMPORAL DE PRUEBA RÁPIDA (Quitar al terminar pruebas) -->
         <button onclick="if(window.debugBossFight) window.debugBossFight();" 
                 style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5); cursor:pointer;">
             ⚡ TEST BOSS FIGHT
@@ -39,26 +35,16 @@
         </div>
     </header>
 
-
-    <!-- =========================================
-         MAIN APPLICATION CONTAINER
-    ========================================== -->
     <main class="app-shell">
 
-        <!-- =========================================
-             DASHBOARD / HOME
-        ========================================== -->
+        <!-- DASHBOARD -->
         <section id="dashboard" class="page active">
-
             <div class="learning-modes">
-
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
                     <div class="mode-icon">🏆</div>
                     <span class="mode-tag">STRUCTURED LEARNING</span>
                     <h3>CAREER MODE</h3>
-                    <p>
-                        Start from zero and progress through every learning level.
-                    </p>
+                    <p>Start from zero and progress through every learning level.</p>
                     <div class="mode-action">
                         <span>START YOUR JOURNEY</span>
                         <span class="arrow">→</span>
@@ -69,18 +55,14 @@
                     <div class="mode-icon">⚠️</div>
                     <span class="mode-tag warning">ARCADE SIMULATOR</span>
                     <h3>CRITICAL FAIL</h3>
-                    <p>
-                        Simulador contrarreloj de alarmas HMI y ensamble de piezas.
-                    </p>
+                    <p>Simulador contrarreloj de alarmas HMI y ensamble de piezas.</p>
                     <div class="mode-action warning">
                         <span>INTERVENIR LÍNEA</span>
                         <span class="arrow">⚡</span>
                     </div>
                 </div>
-
             </div>
 
-            <!-- DAILY GOAL / QUICK STATS -->
             <article class="daily-mission-card">
                 <div class="mission-header">
                     <div>
@@ -97,15 +79,10 @@
                     <small>3 / 5 COMPLETED</small>
                 </div>
             </article>
-
         </section>
 
-
-        <!-- =========================================
-             CAREER MODE / MAPA DE NIVELES
-        ========================================== -->
+        <!-- CAREER MODE -->
         <section id="career" class="page">
-
             <div class="welcome">
                 <span class="eyebrow">ZIDONG ACADEMY · CAREER PATH</span>
                 <h2>Tu camino de aprendizaje</h2>
@@ -163,9 +140,7 @@
                         <span class="path-status">ACTIVE</span>
                     </div>
 
-                    <div class="path-nodes">
-                        <!-- Nodos inyectados dinámicamente por app.js -->
-                    </div>
+                    <div class="path-nodes"></div>
                 </div>
 
                 <div class="path-area locked-area">
@@ -187,61 +162,39 @@
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
                 ← REGRESAR AL DASHBOARD
             </button>
-
         </section>
 
-
-        <!-- =========================================
-             LESSON / NODO INDIVIDUAL (DATA SHEET + HOT TEST)
-        ========================================== -->
+        <!-- LESSON CONTAINER -->
         <section id="level01" class="page">
             <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('career')">
-                    ← MAPA
-                </button>
+                <button class="btn-compact-back" onclick="navigateTo('career')">← MAPA</button>
                 <div class="lesson-hud-info">
                     <span class="eyebrow" style="font-size:9px;">ÁREA 01 · ELÉCTRICA</span>
                     <strong style="color:var(--text); font-size:12px;">ENTRENAMIENTO</strong>
                 </div>
                 <div class="lesson-quick-badge">TEST</div>
             </div>
-
-            <div class="recognition-card" id="lessonCard">
-                <!-- Se inyecta la Data Sheet o las rondas del Hot Test desde app.js -->
-            </div>
+            <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-
-        <!-- =========================================
-             EVALUACIÓN FINAL (BOSS FIGHT / COMISIONAMIENTO)
-        ========================================== -->
+        <!-- BOSS FIGHT / ASSESSMENT -->
         <section id="assessment" class="page">
             <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('career')">
-                    ← MAPA
-                </button>
+                <button class="btn-compact-back" onclick="navigateTo('career')">← MAPA</button>
                 <div class="lesson-hud-info">
                     <span class="eyebrow" style="font-size:9px; color:#ffc857;">CERTIFICACIÓN ÁREA 01</span>
                     <strong style="color:#ffffff; font-size:12px;">COMISIONAMIENTO</strong>
                 </div>
                 <div class="lesson-quick-badge" style="border-color:#ffc857; color:#ffc857;">BOSS</div>
             </div>
-
-            <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;">
-                <!-- Inyectado dinámicamente por app.js -->
-            </div>
+            <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;"></div>
         </section>
 
-
-        <!-- =========================================
-             CRITICAL FAIL (ARCADE MODE)
-        ========================================== -->
+        <!-- CRITICAL FAIL -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div class="arcade-top-bar">
-                    <button class="btn-compact-back" onclick="navigateTo('dashboard')">
-                        ← SALIR
-                    </button>
+                    <button class="btn-compact-back" onclick="navigateTo('dashboard')">← SALIR</button>
                     <div class="arcade-station-tag">
                         <span>ESTACIÓN</span>
                         <strong>LÍNEA 04 · FIXTURE 02</strong>
@@ -259,61 +212,37 @@
                             <small id="cf-alarm-sub">IDENTIFICA EL COMPONENTE EN CHINO</small>
                         </div>
                     </div>
-
-                    <div class="cf-game-card" id="cf-game-container">
-                        <!-- Pantallas de inicio, rondas y game over inyectadas por critical-fail.js -->
-                    </div>
+                    <div class="cf-game-card" id="cf-game-container"></div>
                 </div>
             </div>
         </section>
 
-
-        <!-- =========================================
-             LEADERBOARD / RANKING
-        ========================================== -->
+        <!-- LEADERBOARD -->
         <section id="leaderboard" class="page">
             <div class="welcome">
                 <span class="eyebrow">GLOBAL LINE STATS</span>
                 <h2>Ranking de Ingenieros</h2>
                 <p>Rendimiento en planta y comisionamiento técnico.</p>
             </div>
-
-            <div class="ranking-list" id="rankingListContainer">
-                <!-- Inyectado por app.js -->
-            </div>
+            <div class="ranking-list" id="rankingListContainer"></div>
         </section>
 
-
-        <!-- =========================================
-             PERFIL / LOGROS
-        ========================================== -->
+        <!-- PROFILE -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
                 <h2>Perfil de Especialista</h2>
             </div>
-
             <article class="profile-card">
                 <div class="avatar-large" id="profileAvatar">RL</div>
                 <h3 id="profileName">Raymundo Lopez</h3>
                 <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
-                
                 <div class="profile-stats-grid">
-                    <div class="p-stat">
-                        <span id="profileXP">0</span>
-                        <small>TOTAL XP</small>
-                    </div>
-                    <div class="p-stat">
-                        <span id="profileStars">0</span>
-                        <small>ESTRELLAS ⭐</small>
-                    </div>
-                    <div class="p-stat">
-                        <span id="profileCompleted">0</span>
-                        <small>HANZI DOMINADOS</small>
-                    </div>
+                    <div class="p-stat"><span id="profileXP">0</span><small>TOTAL XP</small></div>
+                    <div class="p-stat"><span id="profileStars">0</span><small>ESTRELLAS ⭐</small></div>
+                    <div class="p-stat"><span id="profileCompleted">0</span><small>HANZI DOMINADOS</small></div>
                 </div>
             </article>
-
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:20px;">
                 ← REGRESAR AL INICIO
             </button>
@@ -321,35 +250,25 @@
 
     </main>
 
-
-    <!-- =========================================
-         BOTTOM NAVIGATION BAR (FIJA)
-    ========================================== -->
+    <!-- FIXED BOTTOM NAV -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">Home</span>
+            <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
         </button>
         <button class="nav-item" onclick="navigateTo('career')">
-            <span class="nav-icon">🗺️</span>
-            <span class="nav-label">Learn</span>
+            <span class="nav-icon">🗺️</span><span class="nav-label">Learn</span>
         </button>
         <button class="nav-item" onclick="navigateTo('arcade')">
-            <span class="nav-icon">⚡</span>
-            <span class="nav-label">Play</span>
+            <span class="nav-icon">⚡</span><span class="nav-label">Play</span>
         </button>
         <button class="nav-item" onclick="navigateTo('leaderboard')">
-            <span class="nav-icon">🏆</span>
-            <span class="nav-label">Rank</span>
+            <span class="nav-icon">🏆</span><span class="nav-label">Rank</span>
         </button>
     </nav>
 
-
-    <!-- =========================================
-         SCRIPTS (ORDEN DE EJECUCIÓN DIRECTO)
-    ========================================== -->
-    <script src="navigation.js"></script>
+    <!-- CARGA DE SCRIPTS PLANOS EN RAÍZ -->
     <script src="audio.js"></script>
+    <script src="navigation.js"></script>
     <script src="hanzi-lab.js"></script>
     <script src="mock-data.js"></script>
     <script src="app.js"></script>

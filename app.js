@@ -1533,6 +1533,11 @@
     }
 
     initializeApplication();
+// EXPONER DISPARADOR DE PRUEBA RÁPIDA
+    window.debugBossFight = () => {
+        career.completedActivities = activities.map(a => a.id);
+        openAssessment();
+    };
 
 })();
 

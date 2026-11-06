@@ -1090,4 +1090,37 @@ function showRankingTab(tab, button) {
         individual.style.display = "none";
         teams.style.display = "block";
     }
+// =====================================
+    // 26. DAILY REWARD & VS MODE HANDLERS
+    // =====================================
+
+    window.claimDailyReward = () => {
+        const lastClaim = localStorage.getItem("zidong_last_daily_claim");
+        const today = new Date().toDateString();
+
+        if (lastClaim === today) {
+            triggerHaptic("error");
+            alert("¡Recompensa diaria ya reclamada hoy! Vuelve mañana.");
+            return;
+        }
+
+        // Entregar 100 XP gratis
+        awardXP(100);
+        localStorage.setItem("zidong_last_daily_claim", today);
+        triggerHaptic("win");
+
+        const sub = document.getElementById("dailyRewardSubtitle");
+        if (sub) sub.textContent = "¡Reclamado hoy! ✓";
+
+        alert("🎁 ¡Has recibido +100 XP por tu bono diario!");
+        updateProfile();
+        saveProgress();
+    };
+
+    window.openVsMode = () => {
+        triggerHaptic("success");
+        // Por ahora lanza el desafío contrarreloj contra el Bot de la máquina
+        alert("⚔️ MODO VS: Desafío contra el Servocontrolador IA. ¡Supera su tiempo!");
+        openCriticalMode();
+    };   
 }

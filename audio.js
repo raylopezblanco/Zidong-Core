@@ -19,12 +19,10 @@ const ZidongAudio = (() => {
         return ctx;
     }
 
-    // Desbloqueo forzado compatible con Chromium / Brave / Safari
     if (typeof window !== "undefined") {
         const unlock = () => {
             const c = getContext();
             if (c) {
-                // Genera un micro-tono inaudible para reactivar el bus de audio
                 const buffer = c.createBuffer(1, 1, 22050);
                 const source = c.createBufferSource();
                 source.buffer = buffer;
@@ -71,9 +69,9 @@ const ZidongAudio = (() => {
         const gain = c.createGain();
 
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(523.25, now);       // Do5
-        osc.frequency.setValueAtTime(659.25, now + 0.06); // Mi5
-        osc.frequency.setValueAtTime(783.99, now + 0.12); // Sol5
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.06);
+        osc.frequency.setValueAtTime(783.99, now + 0.12);
 
         gain.gain.cancelScheduledValues(now);
         gain.gain.setValueAtTime(0.12, now);

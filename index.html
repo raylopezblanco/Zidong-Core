@@ -11,7 +11,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.2">
 </head>
 <body>
 
@@ -35,20 +35,36 @@
 
     <main class="app-shell">
 
-        <!-- DASHBOARD --> 
+        <!-- DASHBOARD (ESTILO BRAWL / CLASH CON COMPAÑERO CENTRAL) -->
         <section id="dashboard" class="page active">
-            <div class="learning-modes">
 
+            <!-- ARENA CENTRAL DEL AVATAR -->
+            <div class="companion-stage">
+                <!-- Globo de diálogo estilo Clippy -->
+                <div class="speech-bubble" id="companionBubble">
+                    <span id="companionText">¡Línea lista! Tócame para calibrar sensores. ⚡</span>
+                </div>
+
+                <!-- Avatar central interactivo sobre su podio -->
+                <div class="companion-podium" onclick="interactWithCompanion()">
+                    <div class="companion-avatar" id="companionVisual">
+                        🤖
+                    </div>
+                    <div class="podium-ring"></div>
+                </div>
+            </div>
+
+            <!-- MODOS DE JUEGO DISTRIBUIDOS A 2 COLUMNAS -->
+            <div class="brawl-menu-grid">
                 <!-- CAREER MODE -->
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
                     <div class="mode-icon">🏆</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">STRUCTURED LEARNING</span>
-                        <h3>CAREER MODE</h3>
-                        <p>Start from zero and progress through every learning level.</p>
+                        <span class="mode-tag">ESTRUCTURADO</span>
+                        <h3>CARRERA</h3>
+                        <p>Nivel por nivel</p>
                     </div>
                     <div class="mode-action">
-                        <span>START</span>
                         <span class="arrow">→</span>
                     </div>
                 </div>
@@ -57,19 +73,17 @@
                 <div class="mode-card arcade-mode" onclick="openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag warning">ARCADE SIMULATOR</span>
-                        <h3>CRITICAL FAIL</h3>
-                        <p>Simulador contrarreloj de alarmas HMI y ensamble de piezas.</p>
+                        <span class="mode-tag warning">SIMULADOR</span>
+                        <h3>ARCADE</h3>
+                        <p>Alarmas HMI</p>
                     </div>
                     <div class="mode-action warning">
-                        <span>LÍNEA</span>
                         <span class="arrow">⚡</span>
                     </div>
                 </div>
-
             </div>
 
-            <!-- DAILY MISSION -->
+            <!-- DAILY MISSION COMPACTA -->
             <article class="daily-mission-card">
                 <div class="mission-header">
                     <div>
@@ -78,7 +92,6 @@
                     </div>
                     <span class="mission-reward">+50 XP</span>
                 </div>
-                <p>Reconoce 5 caracteres Hanzi en Modo Carrera o Arcade.</p>
                 <div class="progress-bar-container">
                     <div class="progress-fill" style="width: 0%;"></div>
                 </div>
@@ -90,24 +103,42 @@
             <!-- MONITOR DE COMPILACIÓN / BUILD INFO -->
             <div class="build-stamp-bar">
                 <span>⚡ BUILD ACTIVO:</span>
-                <strong id="buildTimestamp">Leyendo versión...</strong>
+                <strong id="buildTimestamp">Verificando versión...</strong>
             </div>
 
             <script>
                 (() => {
                     const el = document.getElementById("buildTimestamp");
-                    if (el) {
-                        const d = new Date(document.lastModified);
-                        el.textContent = d.toLocaleString("es-MX", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            hour12: true
+                    fetch("app.js?t=" + Date.now(), { method: "HEAD" })
+                        .then(res => {
+                            const mod = res.headers.get("Last-Modified");
+                            const d = mod ? new Date(mod) : new Date(document.lastModified);
+                            if (el) {
+                                el.textContent = d.toLocaleString("es-MX", {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: true
+                                });
+                            }
+                        })
+                        .catch(() => {
+                            if (el) {
+                                const d = new Date(document.lastModified);
+                                el.textContent = d.toLocaleString("es-MX", {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: true
+                                });
+                            }
                         });
-                    }
                 })();
             </script>
         </section>
@@ -403,11 +434,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js"></script>
-    <script src="navigation.js"></script>
-    <script src="mock-data.js"></script>
-    <script src="critical-fail.js"></script>
-    <script src="app.js"></script>
+    <script src="audio.js?v=2.2"></script>
+    <script src="navigation.js?v=2.2"></script>
+    <script src="mock-data.js?v=2.2"></script>
+    <script src="critical-fail.js?v=2.2"></script>
+    <script src="app.js?v=2.2"></script>
 
     <!-- SERVICE WORKER REGISTRATION (PWA) -->
     <script>

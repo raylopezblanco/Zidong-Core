@@ -6,7 +6,6 @@
 (() => {
     "use strict";
 
-    // Audio / Haptic helper unificado (Web Audio + Haptics)
     function triggerHaptic(type) {
         if (type === "success") {
             if (navigator.vibrate) navigator.vibrate(40);
@@ -146,10 +145,6 @@
 
     let currentActivity = null;
 
-    // =====================================
-    // 3. LOAD SAVED PROGRESS
-    // =====================================
-
     function loadSavedProgress() {
         try {
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -173,10 +168,6 @@
             console.error("Could not load saved progress:", error);
         }
     }
-
-    // =====================================
-    // 4. SAVE PROGRESS
-    // =====================================
 
     function saveProgress() {
         if (typeof data === "undefined") return;
@@ -203,10 +194,6 @@
         }
     }
 
-    // =====================================
-    // 5. HELPERS
-    // =====================================
-
     const formatNumber = value => Number(value || 0).toLocaleString("en-US");
 
     function getCompletedCount() {
@@ -224,10 +211,6 @@
         return index <= nextIndex || nextIndex === -1;
     }
 
-    // =====================================
-    // 6. UPDATE XP
-    // =====================================
-
     function awardXP(reward) {
         if (typeof data === "undefined" || !data.player) return;
         const player = data.player;
@@ -239,10 +222,6 @@
             if (playerRecord) playerRecord.xp = (playerRecord.xp || 0) + reward;
         }
     }
-
-    // =====================================
-    // 7. DAILY MISSION
-    // =====================================
 
     function updateMissionProgress() {
         const completedNewHanzi = activities.filter(activity => {
@@ -261,17 +240,12 @@
         }
     }
 
-    // =====================================
-    // 8. RENDER CAREER PATH
-    // =====================================
-
     function renderCareerPath() {
         const container = document.querySelector("#career .path-nodes");
         if (!container) return;
 
         container.replaceChildren();
 
-        // NODO BIENVENIDA
         const welcome = document.createElement("div");
         welcome.className = "path-step left";
         welcome.innerHTML = `
@@ -283,7 +257,6 @@
         `;
         container.appendChild(welcome);
 
-        // NODOS DE ACTIVIDAD
         activities.forEach((activity, index) => {
             const completed = career.completedActivities.includes(activity.id);
             const unlocked = isActivityUnlocked(index);
@@ -322,7 +295,6 @@
             container.appendChild(node);
         });
 
-        // NODO EVALUACIÓN FINAL
         const assessment = document.createElement("div");
         const allActivitiesCompleted = getCompletedCount() === activities.length;
         assessment.className = "path-step left";
@@ -354,10 +326,6 @@
         updateAreaStatus();
     }
 
-    // =====================================
-    // 9. CAREER OVERVIEW
-    // =====================================
-
     function updateCareerOverview() {
         const completed = getCompletedCount();
         const percentage = career.assessmentPassed ? 100 : Math.round((completed / activities.length) * 100);
@@ -381,10 +349,6 @@
         }
     }
 
-    // =====================================
-    // 10. UPDATE AREA UNLOCK
-    // =====================================
-
     function updateAreaStatus() {
         const areas = document.querySelectorAll("#career .path-area");
         const electrical = areas[0];
@@ -404,10 +368,6 @@
         }
     }
 
-    // =====================================
-    // 11. OPEN ACTIVITY
-    // =====================================
-
     function openActivity(index) {
         if (!isActivityUnlocked(index)) return;
         const activity = activities[index];
@@ -419,10 +379,6 @@
             window.navigateTo("level01");
         }
     }
-
-    // =====================================
-    // 12. RENDER LESSON (DATA SHEET -> TEST EN CALIENTE)
-    // =====================================
 
     function renderLesson(activity) {
         const card = document.querySelector("#level01 .recognition-card");
@@ -666,10 +622,6 @@
         updateAssessmentVisibility();
     }
 
-    // =====================================
-    // 13. COMPLETE ACTIVITY
-    // =====================================
-
     function completeActivity(activity, stars) {
         const isNewCompletion = !career.completedActivities.includes(activity.id);
         const reward = isNewCompletion ? activity.reward : 15;
@@ -685,10 +637,6 @@
         renderCareerPath();
         saveProgress();
     }
-
-    // =====================================
-    // 14. ASSESSMENT VISIBILITY
-    // =====================================
 
     function updateAssessmentVisibility() {
         const allCompleted = getCompletedCount() === activities.length;
@@ -707,10 +655,6 @@
         assessmentPanel.style.display = "block";
     }
 
-    // =====================================
-    // 15. OPEN ASSESSMENT (BOSS FIGHT)
-    // =====================================
-
     function openAssessment() {
         if (typeof window.navigateTo === "function") {
             window.navigateTo("assessment");
@@ -722,10 +666,6 @@
         panel.style.display = "block";
         renderAssessment();
     }
-
-    // =====================================
-    // 16. RENDER ASSESSMENT
-    // =====================================
 
     function renderAssessment() {
         const panel = document.getElementById("electricalAssessment");
@@ -879,10 +819,6 @@
         showQuestion();
     }
 
-    // =====================================
-    // 17. GLOBAL RANKING
-    // =====================================
-
     function updateRanking() {
         if (typeof data === "undefined" || !data.players) return;
         const individualList = document.getElementById("individualRankingList");
@@ -926,7 +862,7 @@
     }
 
     // =====================================
-    // 18. PLAYER PROFILE & VITRINA DE MEDALLAS
+    // 18. PLAYER PROFILE & MEDALLAS
     // =====================================
 
     const MEDALS_DB = [
@@ -987,6 +923,8 @@
                 el.classList.remove("custom-icon");
             }
         });
+
+        syncCompanionWithEquipped();
     }
 
     function renderBadgesGrid() {
@@ -1044,7 +982,55 @@
     }
 
     // =====================================
-    // 19. INITIALIZE
+    // 19. COMPANION INTERACTION ENGINE
+    // =====================================
+
+    const COMPANION_MESSAGES = [
+        "¡Estación lista! ¿Listo para certificar el siguiente Hanzi?",
+        "Tip de planta: 电 (diàn) representa la energía en gabinetes.",
+        "Alerta: Si hay paro de emergencia, presiona Reset en HMI.",
+        "¡Excelente racha! Estás a poco de desbloquear Mecánica.",
+        "¿Probaste ya el contrarreloj de Critical Fail?",
+        "Todo sistema calibrado. Sensores y servomotores al 100%."
+    ];
+
+    let lastMsgIndex = -1;
+
+    function interactWithCompanion() {
+        const bubbleText = document.getElementById("companionText");
+        const avatarEl = document.getElementById("companionVisual");
+
+        triggerHaptic("success");
+
+        let nextIndex;
+        do {
+            nextIndex = Math.floor(Math.random() * COMPANION_MESSAGES.length);
+        } while (nextIndex === lastMsgIndex);
+        
+        lastMsgIndex = nextIndex;
+
+        if (bubbleText) {
+            bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
+        }
+
+        if (avatarEl) {
+            avatarEl.style.transform = "scale(1.22) translateY(-6px)";
+            setTimeout(() => {
+                avatarEl.style.transform = "scale(1) translateY(0)";
+            }, 180);
+        }
+    }
+
+    function syncCompanionWithEquipped() {
+        const avatarEl = document.getElementById("companionVisual");
+        const equipped = localStorage.getItem("zidong_equipped_badge");
+        if (avatarEl && equipped && equipped !== "RL") {
+            avatarEl.textContent = equipped;
+        }
+    }
+
+    // =====================================
+    // 20. INITIALIZE
     // =====================================
 
     function initializeApplication() {
@@ -1054,6 +1040,7 @@
         updateProfile();
         renderCareerPath();
         updateAssessmentVisibility();
+        syncCompanionWithEquipped();
 
         const card = document.querySelector("#level01 .recognition-card");
         if (card) card.style.display = "block";
@@ -1063,12 +1050,13 @@
         console.log("--------------------------------");
     }
 
-    // EXPOSICIÓN GLOBAL PARA ROUTER Y NAVEGACIÓN
     window.updateProfile = updateProfile;
     window.renderBadgesGrid = renderBadgesGrid;
     window.renderCareerPath = renderCareerPath;
     window.updateRanking = updateRanking;
     window.updateMissionProgress = updateMissionProgress;
+    window.interactWithCompanion = interactWithCompanion;
+    window.syncCompanionWithEquipped = syncCompanionWithEquipped;
 
     window.debugBossFight = () => {
         career.completedActivities = activities.map(a => a.id);

@@ -1246,3 +1246,72 @@ body {
     font-weight: 800;
     border: 1px solid;
 }
+/* =========================================
+   COMPANION 3D CYBERDOG & PODIO ILUMINADO
+========================================= */
+
+/* Fondo de la arena con resplandor central azul/cian */
+.companion-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0 10px;
+    position: relative;
+    background: radial-gradient(circle at 50% 65%, rgba(6, 182, 212, 0.16) 0%, rgba(11, 20, 36, 0) 70%);
+}
+
+/* Contenedor del perrito */
+.companion-avatar-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+/* Imagen del Cyberdog con sombra y efecto flotante suave */
+.companion-img {
+    width: 130px;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.65)) 
+            drop-shadow(0 0 16px rgba(39, 216, 232, 0.35));
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Efecto de salto/rebote al tocarlo */
+.companion-podium:active .companion-img {
+    transform: scale(0.92) translateY(6px);
+}
+
+/* Podio estilo disco de energía con doble anillo cian */
+.podium-ring {
+    width: 120px;
+    height: 30px;
+    background: radial-gradient(ellipse at center, rgba(39, 216, 232, 0.6) 0%, rgba(6, 182, 212, 0.25) 50%, transparent 75%);
+    border-radius: 50%;
+    border: 2px solid #27d8e8;
+    margin-top: -18px;
+    box-shadow: 0 0 20px rgba(39, 216, 232, 0.7), inset 0 0 12px rgba(39, 216, 232, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+/* Anillo exterior más amplio de la base */
+.podium-ring::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 148px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(39, 216, 232, 0.3);
+    box-shadow: 0 0 10px rgba(39, 216, 232, 0.2);
+    pointer-events: none;
+}

@@ -1178,4 +1178,32 @@ function showRankingTab(tab, button) {
         individual.style.display = "none";
         teams.style.display = "block";
     }
+   // =====================================
+    // 24. BUILD TIMESTAMP MONITOR
+    // =====================================
+
+    function displayBuildTimestamp() {
+        const stampElement = document.getElementById("buildTimestamp");
+        if (!stampElement) return;
+
+        // document.lastModified obtiene la fecha/hora exacta del archivo entregado por GitHub Pages
+        const modDate = new Date(document.lastModified);
+        
+        // Formato claro en español: dd/mm/aaaa, hh:mm:ss am/pm
+        const formatted = modDate.toLocaleString("es-MX", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
+
+        stampElement.textContent = formatted;
+        console.log(`[Zidong System] Última compilación en caché: ${formatted}`);
+    }
+
+    // Asegurar que se ejecute al arrancar
+    displayBuildTimestamp();
 }

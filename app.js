@@ -1091,185 +1091,149 @@
 
     }
 
-    // =====================================
-    // 17. RENDER ASSESSMENT
+ // =====================================
+    // 17. RENDER ASSESSMENT (BOSS FIGHT / COMISIONAMIENTO)
     // =====================================
 
     function renderAssessment() {
 
-        const panel = document.getElementById(
-            "electricalAssessment"
-        );
-
+        const panel = document.getElementById("electricalAssessment");
         if (!panel) return;
 
-        panel.innerHTML = `
-            <div class="panel-heading">
-                <h3>EVALUACIÓN ELÉCTRICA</h3>
-                <span>🏅</span>
-            </div>
+        let currentQ = 0;
+        let integrity = 100;
+        let correctCount = 0;
 
-            <p>
-                Selecciona el significado correcto de cada carácter.
-                Necesitas 4 respuestas correctas de 5 para aprobar.
-            </p>
+        function showQuestion() {
+            const q = assessmentQuestions[currentQ];
+            const integrityColor = integrity >= 80 ? "#00f59b" : integrity >= 60 ? "#ffaa00" : "#ff4444";
 
-            <div id="assessmentQuestions"></div>
+            panel.innerHTML = `
+                <!-- HUD DEL COMISIONAMIENTO -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span class="tag" style="border-color:#ffc857; color:#ffc857;">CERTIFICACIÓN · PASO ${currentQ + 1} DE ${assessmentQuestions.length}</span>
+                    <strong style="color:${integrityColor}; font-size:14px; font-weight:900;">
+                        INTEGRIDAD: ${integrity}%
+                    </strong>
+                </div>
 
-            <button id="submitAssessment"
-                    class="reveal-button"
-                    type="button">
-                ENVIAR EVALUACIÓN
-            </button>
+                <!-- BARRA DE INTEGRIDAD DEL SISTEMA -->
+                <div style="width:100%; height:8px; background:#19273c; border-radius:4px; overflow:hidden; margin-bottom:18px;">
+                    <div style="width:${integrity}%; height:100%; background:${integrityColor}; transition:width 0.3s ease;"></div>
+                </div>
 
-            <p id="assessmentResult"></p>
-        `;
-
-        const questionContainer = document.getElementById(
-            "assessmentQuestions"
-        );
-
-        assessmentQuestions.forEach((question, index) => {
-
-            const questionBox = document.createElement("div");
-
-            questionBox.className = "assessment-question";
-
-            const heading = document.createElement("h4");
-
-            heading.textContent =
-                `${index + 1}. ${question.question}`;
-
-            const select = document.createElement("select");
-
-            select.id = `assessmentAnswer${index}`;
-
-            select.innerHTML = `
-                <option value="">Selecciona una respuesta</option>
+                <!-- PREGUNTA ARCADE -->
+                <div style="background:#0e1726; border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:18px 14px; text-align:center; margin-bottom:16px;">
+                    <span style="font-size:11px; color:var(--muted); font-weight:bold; letter-spacing:1px; display:block; margin-bottom:6px;">VALIDACIÓN DE SEÑAL</span>
+                    <h2 style="font-size:22px; color:#ffffff; margin-bottom:12px;">${q.question}</h2>
+                    <div class="career-quiz-grid" id="boss-options-grid"></div>
+                </div>
             `;
 
-            question.options.forEach(option => {
+            const grid = panel.querySelector("#boss-options-grid");
+            const shuffledOptions = [...q.options].sort(() => 0.5 - Math.random());
 
-                const optionElement =
-                    document.createElement("option");
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "cf-btn-option";
+                btn.style.fontSize = "15px";
+                btn.style.padding = "14px 10px";
+                btn.textContent = opt;
 
-                optionElement.value = option;
-                optionElement.textContent = option;
+                btn.onclick = () => {
+                    const allBtns = grid.querySelectorAll(".cf-btn-option");
+                    allBtns.forEach(b => b.style.pointerEvents = "none");
 
-                select.appendChild(optionElement);
-
+                    if (opt === q.answer) {
+                        btn.classList.add("btn-correct");
+                        correctCount++;
+                        setTimeout(() => nextStep(), 350);
+                    } else {
+                        btn.classList.add("btn-wrong");
+                        integrity = Math.max(0, integrity - 20);
+                        panel.classList.add("shake-it");
+                        setTimeout(() => {
+                            panel.classList.remove("shake-it");
+                            nextStep();
+                        }, 400);
+                    }
+                };
+                grid.appendChild(btn);
             });
-
-            questionBox.append(heading, select);
-
-            questionContainer.appendChild(questionBox);
-
-        });
-
-        document.getElementById(
-            "submitAssessment"
-        ).addEventListener("click", evaluateAssessment);
-
-    }
-
-    // =====================================
-    // 18. EVALUATE ASSESSMENT
-    // =====================================
-
-    function evaluateAssessment() {
-
-        const result = document.getElementById(
-            "assessmentResult"
-        );
-
-        const answers = assessmentQuestions.map((question, index) => {
-
-            const select = document.getElementById(
-                `assessmentAnswer${index}`
-            );
-
-            return select ? select.value : "";
-
-        });
-
-        if (answers.some(answer => !answer)) {
-
-            alert("Completa las 5 preguntas antes de enviar.");
-
-            return;
-
         }
 
-        let correct = 0;
-
-        assessmentQuestions.forEach((question, index) => {
-
-            if (answers[index] === question.answer) {
-                correct++;
+        function nextStep() {
+            currentQ++;
+            if (currentQ < assessmentQuestions.length) {
+                showQuestion();
+            } else {
+                finishAssessment();
             }
-
-        });
-
-        const percentage = Math.round(
-            (correct / assessmentQuestions.length) * 100
-        );
-
-        career.assessmentAttempts++;
-
-        if (percentage >= 80) {
-
-            career.assessmentPassed = true;
-
-            const reward = 100;
-
-            awardXP(reward);
-
-            registerActivity(
-                "Electrical Area Completed",
-                `Passed electrical assessment with ${percentage}%`,
-                reward
-            );
-
-            if (result) {
-                result.textContent =
-                    `¡APROBADO! ${correct}/5 respuestas correctas · ${percentage}% · +${reward} XP`;
-            }
-
-            updateRanking();
-
-            updateProfile();
-
-            updateActivity();
-
-            renderCareerPath();
-
-            saveProgress();
-
-            alert(
-                `¡Felicidades!\n\n` +
-                `Aprobaste con ${percentage}%.\n` +
-                `Ganaste ${reward} XP.\n\n` +
-                "¡El área de Mecánica está desbloqueada!"
-            );
-
-        } else {
-
-            if (result) {
-
-                result.textContent =
-                    `Todavía no aprobado: ${correct}/5 respuestas correctas (${percentage}%). Necesitas 80%.`;
-
-            }
-
-            saveProgress();
-
-            alert(
-                `Obtuviste ${percentage}%.\n\n` +
-                "Necesitas al menos 80% para desbloquear Mecánica. Puedes intentarlo nuevamente."
-            );
-
         }
 
+        function finishAssessment() {
+            const passed = integrity >= 80;
+            career.assessmentAttempts++;
+
+            if (passed) {
+                career.assessmentPassed = true;
+                const reward = 100;
+                awardXP(reward);
+
+                registerActivity(
+                    "Área Eléctrica Certificada",
+                    `Comisionamiento aprobado con ${integrity}% de integridad`,
+                    reward
+                );
+
+                updateRanking();
+                updateProfile();
+                updateActivity();
+                renderCareerPath();
+                saveProgress();
+
+                panel.innerHTML = `
+                    <div style="text-align:center; padding:20px 10px;">
+                        <span style="font-size:52px; display:block; margin-bottom:10px;">⚡</span>
+                        <span class="tag" style="border-color:#00f59b; color:#00f59b; margin-bottom:8px;">LÍNEA AUTORIZADA</span>
+                        <h2 style="color:#ffffff; font-size:22px; margin: 8px 0 4px;">¡COMISIONAMIENTO EXITOSO!</h2>
+                        <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">
+                            Integridad final: <strong style="color:#00f59b;">${integrity}%</strong> · Respuestas: <strong>${correctCount}/5</strong>
+                        </p>
+                        <div style="background:rgba(0,245,155,0.1); border:1px solid rgba(0,245,155,0.3); border-radius:12px; padding:12px; margin-bottom:20px;">
+                            <strong style="color:#00f59b; display:block;">⚙️ ÁREA DE MECÁNICA DESBLOQUEADA</strong>
+                            <small style="color:var(--muted);">Has recibido +${reward} XP en tu perfil técnico</small>
+                        </div>
+                        <button class="reveal-button" style="background:#00f59b; color:#0b1424; font-weight:900;" onclick="navigateTo('career')">
+                            VER MAPA DE CARRERA →
+                        </button>
+                    </div>
+                `;
+            } else {
+                saveProgress();
+                panel.innerHTML = `
+                    <div style="text-align:center; padding:20px 10px;">
+                        <span style="font-size:52px; display:block; margin-bottom:10px;">⚠️</span>
+                        <span class="tag" style="border-color:#ff4444; color:#ff4444; margin-bottom:8px;">FALLA DE INTEGRIDAD</span>
+                        <h2 style="color:#ffffff; font-size:20px; margin: 8px 0 4px;">COMISIONAMIENTO RECHAZADO</h2>
+                        <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">
+                            Integridad: <strong style="color:#ff4444;">${integrity}%</strong> (Mínimo requerido: 80%)
+                        </p>
+                        <p style="color:var(--muted); font-size:12px; margin-bottom:20px;">
+                            La estación no superó las pruebas de seguridad. Repasa los componentes e inténtalo de nuevo.
+                        </p>
+                        <button class="reveal-button" style="background:#ffaa00; color:#0b1424; font-weight:900; margin-bottom:10px;" onclick="renderAssessment()">
+                            ↺ REPETIR COMISIONAMIENTO
+                        </button>
+                        <button class="btn-secondary" style="width:100%; max-width:260px;" onclick="navigateTo('career')">
+                            ← REGRESAR AL MAPA
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        showQuestion();
     }
 
     // =====================================

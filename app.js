@@ -733,7 +733,7 @@
         const isCompleted = career.completedActivities.includes(activity.id);
         const currentStars = (career.nodeStars && career.nodeStars[activity.id]) || (isCompleted ? 1 : 0);
 
-        // MOMENTO A: DATA SHEET TÉCNICO (Sin presión de tiempo)
+// MOMENTO A: DATA SHEET TÉCNICO (Sin presión de tiempo)
         function renderDataSheet() {
             const title = activity.type === "review"
                 ? "REPASO DE COMPONENTE"
@@ -744,22 +744,30 @@
             const starBadges = isCompleted ? ` · ${"⭐".repeat(currentStars)}` : "";
 
             card.innerHTML = `
-                <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:10px;">${title}${starBadges}</span>
+                <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:8px;">${title}${starBadges}</span>
 
                 <div class="recognition-hanzi">${activity.hanzi}</div>
 
-                <div style="background:rgba(39, 216, 232, 0.08); border:1px solid rgba(39, 216, 232, 0.2); border-radius:12px; padding:12px 14px; width:100%; max-width:330px; margin-bottom:14px; text-align:left;">
+                <div style="background:rgba(39, 216, 232, 0.08); border:1px solid rgba(39, 216, 232, 0.2); border-radius:14px; padding:12px 14px; width:100%; max-width:340px; margin-bottom:14px; text-align:left;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:10px; color:var(--muted); font-weight:bold;">SIGNIFICADO:</span>
+                        <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px;">SIGNIFICADO:</span>
                         <strong style="color:var(--cyan); font-size:16px;">${activity.meaning}</strong>
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:10px; color:var(--muted); font-weight:bold;">PINYIN / TONO:</span>
-                        <span style="color:#ffffff; font-weight:bold; font-size:14px;">${activity.pinyin}</span>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px;">PINYIN / TONO:</span>
+                        <span style="color:#ffffff; font-weight:bold; font-size:15px;">${activity.pinyin}</span>
                     </div>
-                    <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:10px; color:var(--muted);">EN PLANTA:</span>
-                        <span style="color:#ffffff; font-size:13px;"><strong>${activity.example}</strong> <small style="color:var(--muted);">(${activity.exampleMeaning})</small></span>
+
+                    <!-- CAJA DESTACADA: APLICACIÓN EN PLANTA -->
+                    <div style="border-top:1px solid rgba(255,255,255,0.12); padding-top:8px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25); margin: 0 -14px -12px -14px; padding:10px 14px; border-radius:0 0 13px 13px;">
+                        <div>
+                            <span style="font-size:9px; color:#ffc857; font-weight:900; letter-spacing:1px; display:block;">REFACCIÓN / EN PLANTA</span>
+                            <small style="color:var(--muted); font-size:12px;">${activity.exampleMeaning}</small>
+                        </div>
+                        <div style="font-size:24px; font-weight:bold; color:#00f59b; letter-spacing:3px; font-family:'Noto Sans SC', sans-serif;">
+                            ${activity.example}
+                        </div>
                     </div>
                 </div>
 

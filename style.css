@@ -891,3 +891,94 @@ button {
     .path-step.left { padding-left: 2%; }
     .path-step.right { padding-right: 2%; }
 }
+/* =========================================
+   VITRINA DE MEDALLAS & AVATAR EQUIPADO
+========================================= */
+
+.avatar-large {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), #174c9c);
+    font-size: 26px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    box-shadow: 0 0 18px rgba(39, 133, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease, border-color 0.2s;
+    user-select: none;
+}
+
+.avatar-large.custom-icon {
+    font-size: 34px;
+    background: radial-gradient(circle, #1b3558 0%, #0d1a2d 100%);
+    border-color: var(--cyan);
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.badge-item {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.badge-item:active {
+    transform: scale(0.95);
+}
+
+.badge-item .badge-icon {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.badge-item .badge-title {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Estados de insignia */
+.badge-item.locked {
+    opacity: 0.35;
+    filter: grayscale(1);
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+.badge-item.equipped {
+    border-color: var(--cyan);
+    background: rgba(39, 216, 232, 0.12);
+    box-shadow: 0 0 12px rgba(39, 216, 232, 0.3);
+}
+
+.badge-item.equipped::after {
+    content: "✓";
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: 8px;
+    font-weight: 900;
+    color: var(--cyan);
+}

@@ -111,6 +111,9 @@
     function triggerHaptic(type) {
         if (!navigator.vibrate) return;
         if (type === "success") navigator.vibrate(40);
+        if (window.ZidongAudio) window.ZidongAudio.playSuccess();
+        if (window.ZidongAudio) window.ZidongAudio.playError();
+        if (window.ZidongAudio) window.ZidongAudio.playVictory();
         else if (type === "error") navigator.vibrate([80, 50, 80]);
         else if (type === "win") navigator.vibrate([60, 40, 100]);
     }

@@ -1531,13 +1531,13 @@
         console.log("--------------------------------");
 
     }
-
-    initializeApplication();
-// EXPONER DISPARADOR DE PRUEBA RÁPIDA
+// Justo antes de terminar app.js
     window.debugBossFight = () => {
         career.completedActivities = activities.map(a => a.id);
         openAssessment();
     };
+
+
 
 })();
 

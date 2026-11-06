@@ -865,24 +865,16 @@
         showQuestion();
     }
 
-    // =====================================
+// =====================================
     // 19. RETURN TO CAREER
     // =====================================
 
     function connectCareerBackButton() {
-        const buttons = document.querySelectorAll("#level01 .back-button");
-        buttons.forEach(button => {
-            if (button.dataset.careerConnected) return;
-            button.dataset.careerConnected = "true";
-            button.addEventListener("click", () => {
-                const card = document.querySelector("#level01 .recognition-card");
-                if (card) card.style.display = "block";
-                const panel = document.getElementById("electricalAssessment");
-                if (panel) panel.style.display = "none";
-            });
-        });
+        const card = document.querySelector("#level01 .recognition-card");
+        if (card) {
+            card.style.display = "block";
+        }
     }
-
     // =====================================
     // 20. GLOBAL RANKING
     // =====================================

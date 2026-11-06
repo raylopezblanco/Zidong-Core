@@ -35,14 +35,9 @@
 
     <main class="app-shell">
 
-  <!-- DASHBOARD -->
+ <!-- DASHBOARD -->
         <section id="dashboard" class="page active">
             <div class="learning-modes">
-                <!-- MONITOR DE COMPILACIÓN / BUILD INFO -->
-            <div class="build-stamp-bar">
-                <span>⚡ BUILD ACTIVO:</span>
-                <strong id="buildTimestamp">Verificando versión...</strong>
-            </div>
 
                 <!-- CAREER MODE -->
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
@@ -91,6 +86,12 @@
                     <small>0 / 5 COMPLETED</small>
                 </div>
             </article>
+
+            <!-- MONITOR DE COMPILACIÓN / BUILD INFO (AFUERA DE LAS TARJETAS) -->
+            <div class="build-stamp-bar">
+                <span>⚡ BUILD ACTIVO:</span>
+                <strong id="buildTimestamp">Verificando versión...</strong>
+            </div>
         </section>
 
         <!-- CAREER MODE -->

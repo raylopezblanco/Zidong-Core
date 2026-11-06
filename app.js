@@ -1,638 +1,1591 @@
-// ========================================================
-// ZÌDÒNG CORE - DAILY BOUNTIES & FOCUS VOCABULARY ENGINE
-// ========================================================
+/* =========================================
+   ZIDONG CORE 2.0
+   APPLICATION ENGINE
+   CAREER PROGRESSION SYSTEM
+========================================= */
 
-const BLOCK_SIZE = 5;
+(() => {
 
-let currentSector = 'plc';
-let currentMode = 'lobby';
+    "use strict";
 
-let activeSessionPool = [];
-let sessionCorrect = 0;
-let sessionTotal = 0;
-let comboCount = 0;
+    const data = window.ZIDONG_DEMO;
 
-// DETERMINAR LA PALABRA DEL TURNO / DÍA SEGÚN LA FECHA
-function getDailyFocusWord() {
-    const today = new Date();
-    const daySeed = today.getFullYear() * 1000 + (today.getMonth() + 1) * 31 + today.getDate();
-    const index = daySeed % vocabulary.length;
-    return vocabulary[index];
-}
-
-const dailyFocusWord = getDailyFocusWord();
-
-// MOTOR DE AUDIO SFX SINTETIZADO
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-function playSound(type, comboMultiplier = 1) {
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    const now = audioCtx.currentTime;
-
-    if (type === 'click') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(450, now);
-        osc.frequency.exponentialRampToValueAtTime(140, now + 0.04);
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
-        osc.start(now);
-        osc.stop(now + 0.04);
-    } 
-    else if (type === 'correct') {
-        const baseFreq = 523.25;
-        const step = Math.min(comboMultiplier, 5) * 60;
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(baseFreq + step, now);
-        osc.frequency.setValueAtTime(baseFreq + step + 120, now + 0.07);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-        osc.start(now);
-        osc.stop(now + 0.25);
-    } 
-    else if (type === 'wrong') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.linearRampToValueAtTime(75, now + 0.22);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.22);
-        osc.start(now);
-        osc.stop(now + 0.22);
-    }
-    else if (type === 'achievement') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(698.46, now);
-        osc.frequency.setValueAtTime(1046.50, now + 0.12);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.45);
-        osc.start(now);
-        osc.stop(now + 0.45);
-    }
-}
-
-// LOGROS DISPONIBLES
-const ACHIEVEMENTS = [
-    { id: "ach_saltamontes", icon: "🦗", title: "Pequeño Saltamontes", desc: "Completaste tu primera sesión en PLC Systems.", rewardXP: 150 },
-    { id: "ach_chispazo", icon: "⚡", title: "Cuidado con el Chispazo", desc: "Dominaste términos críticos de Potencia.", rewardXP: 200 },
-    { id: "ach_grano_arroz", icon: "🌾", title: "Grano de Arroz", desc: "Completaste 5 sesiones técnicas.", rewardXP: 250 },
-    { id: "ach_agv_pilot", icon: "🤖", title: "Piloto de Cintas", desc: "Identificaste comandos y guiado de AGV.", rewardXP: 200 },
-    { id: "ach_palacio_imperial", icon: "🏯", title: "Palacio Imperial", desc: "Obtuviste un PERFECT (100% de aciertos).", rewardXP: 300 },
-    { id: "ach_dedos_rapidos", icon: "🚨", title: "Dedos Rápidos", desc: "Resolviste una alarma crítica sin error.", rewardXP: 200 }
-];
-
-function triggerAchievement(achId) {
-    let unlocked = JSON.parse(localStorage.getItem('zidong_achievements') || '[]');
-    if (unlocked.includes(achId)) return;
-
-    const ach = ACHIEVEMENTS.find(a => a.id === achId);
-    if (!ach) return;
-
-    unlocked.push(achId);
-    localStorage.setItem('zidong_achievements', JSON.stringify(unlocked));
-
-    playSound('achievement');
-    const toast = document.getElementById('xbox-achievement-toast');
-    document.getElementById('toast-achievement-name').innerText = `${ach.icon} ${ach.title} (+${ach.rewardXP} XP)`;
-    toast.classList.add('active');
-
-    setTimeout(() => toast.classList.remove('active'), 3800);
-
-    addXP(ach.rewardXP);
-    renderAchievements();
-}
-
-function renderAchievements() {
-    const listContainer = document.getElementById('achievements-list');
-    if (!listContainer) return;
-
-    let unlocked = JSON.parse(localStorage.getItem('zidong_achievements') || '[]');
-    listContainer.innerHTML = '';
-
-    document.getElementById('ach-unlocked-counter').innerText = `${unlocked.length} / ${ACHIEVEMENTS.length}`;
-
-    ACHIEVEMENTS.forEach(ach => {
-        const isDone = unlocked.includes(ach.id);
-        const tile = document.createElement('div');
-        tile.className = `achievement-tile ${isDone ? 'unlocked' : ''}`;
-        tile.innerHTML = `
-            <div class="ach-icon-circle">${isDone ? ach.icon : '🔒'}</div>
-            <div style="flex:1;">
-                <div style="display:flex; justify-content:space-between;">
-                    <span class="ach-name">${ach.title}</span>
-                    <span style="font-family:var(--font-mono); font-size:0.65rem; color:var(--cyber-cyan);">+${ach.rewardXP} XP</span>
-                </div>
-                <div style="font-size:0.68rem; color:var(--text-dim);">${ach.desc}</div>
-            </div>
-        `;
-        listContainer.appendChild(tile);
-    });
-}
-
-// GESTIÓN DE MISIONES DIARIAS Y FECHAS
-function getDailyMissionStatus() {
-    const today = new Date().toISOString().slice(0, 10);
-    const savedDate = localStorage.getItem('zidong_dm_date');
-    
-    if (savedDate !== today) {
-        // Nuevo día: resetear misiones diarias
-        localStorage.setItem('zidong_dm_date', today);
-        localStorage.setItem('zidong_dm_1', 'false');
-        localStorage.setItem('zidong_dm_2', 'false');
+    if (!data) {
+        console.error("ZIDONG ERROR: Mock data not found.");
+        return;
     }
 
-    return {
-        m1: localStorage.getItem('zidong_dm_1') === 'true',
-        m2: localStorage.getItem('zidong_dm_2') === 'true'
+    const STORAGE_KEY = "zidong_core_progress";
+
+    // =====================================
+    // 1. CAREER DATA
+    // =====================================
+
+    const activities = [
+        {
+            id: "hanzi_001",
+            type: "new",
+            hanzi: "电",
+            pinyin: "diàn",
+            meaning: "Electricidad",
+            example: "电缆",
+            exampleMeaning: "Cable eléctrico",
+            reward: 50
+        },
+        {
+            id: "hanzi_002",
+            type: "new",
+            hanzi: "机",
+            pinyin: "jī",
+            meaning: "Máquina",
+            example: "机器",
+            exampleMeaning: "Máquina",
+            reward: 50
+        },
+        {
+            id: "review_001",
+            type: "review",
+            hanzi: "电",
+            pinyin: "diàn",
+            meaning: "Electricidad",
+            example: "电源",
+            exampleMeaning: "Fuente de alimentación",
+            reward: 20
+        },
+        {
+            id: "hanzi_003",
+            type: "new",
+            hanzi: "线",
+            pinyin: "xiàn",
+            meaning: "Línea / cable",
+            example: "电线",
+            exampleMeaning: "Cable eléctrico",
+            reward: 50
+        },
+        {
+            id: "hanzi_004",
+            type: "new",
+            hanzi: "力",
+            pinyin: "lì",
+            meaning: "Fuerza",
+            example: "动力",
+            exampleMeaning: "Potencia",
+            reward: 50
+        },
+        {
+            id: "review_002",
+            type: "review",
+            hanzi: "机",
+            pinyin: "jī",
+            meaning: "Máquina",
+            example: "机器",
+            exampleMeaning: "Máquina",
+            reward: 20
+        },
+        {
+            id: "hanzi_005",
+            type: "new",
+            hanzi: "控",
+            pinyin: "kòng",
+            meaning: "Control",
+            example: "控制",
+            exampleMeaning: "Controlar",
+            reward: 50
+        }
+    ];
+
+    const assessmentQuestions = [
+        {
+            question: "¿Qué significa 电?",
+            options: ["Máquina", "Electricidad", "Fuerza"],
+            answer: "Electricidad"
+        },
+        {
+            question: "¿Qué significa 机?",
+            options: ["Control", "Cable", "Máquina"],
+            answer: "Máquina"
+        },
+        {
+            question: "¿Qué significa 线?",
+            options: ["Línea / cable", "Fuerza", "Electricidad"],
+            answer: "Línea / cable"
+        },
+        {
+            question: "¿Qué significa 力?",
+            options: ["Máquina", "Fuerza", "Control"],
+            answer: "Fuerza"
+        },
+        {
+            question: "¿Qué significa 控?",
+            options: ["Control", "Cable", "Electricidad"],
+            answer: "Control"
+        }
+    ];
+
+    // =====================================
+    // 2. PROGRESS STATE
+    // =====================================
+
+    const career = {
+        completedActivities: [],
+        assessmentPassed: false,
+        assessmentAttempts: 0,
+        nodeStars: {}
     };
-}
 
-function completeDailyMission(num) {
-    const status = getDailyMissionStatus();
-    if (num === 1 && !status.m1) {
-        localStorage.setItem('zidong_dm_1', 'true');
-        addXP(200);
-        playSound('achievement');
-    }
-    if (num === 2 && !status.m2) {
-        localStorage.setItem('zidong_dm_2', 'true');
-        addXP(250);
-        playSound('achievement');
-    }
-    renderDailyMissions();
-}
+    let currentActivity = null;
 
-function renderDailyMissions() {
-    const status = getDailyMissionStatus();
-    const card1 = document.getElementById('dm-card-1');
-    const card2 = document.getElementById('dm-card-2');
-    const tag1 = document.getElementById('dm-status-1');
-    const tag2 = document.getElementById('dm-status-2');
-    const badgeCounter = document.getElementById('daily-badge-counter');
+    // =====================================
+    // 3. LOAD SAVED PROGRESS
+    // =====================================
 
-    let pending = 0;
+    function loadSavedProgress() {
 
-    if (status.m1) {
-        card1.classList.add('done');
-        tag1.innerHTML = '<span>✔</span><span>COMPLETA</span>';
-    } else {
-        card1.classList.remove('done');
-        tag1.innerHTML = '<span>🚨</span><span>PENDIENTE</span>';
-        pending++;
-    }
+        try {
 
-    if (status.m2) {
-        card2.classList.add('done');
-        tag2.innerHTML = '<span>✔</span><span>COMPLETA</span>';
-    } else {
-        card2.classList.remove('done');
-        tag2.innerHTML = '<span>🚨</span><span>PENDIENTE</span>';
-        pending++;
-    }
+            const saved = JSON.parse(
+                localStorage.getItem(STORAGE_KEY)
+            );
 
-    if (pending === 0) {
-        badgeCounter.innerText = 'TODO LISTO';
-        badgeCounter.style.color = 'var(--cyber-green)';
-        badgeCounter.style.borderColor = 'rgba(34,197,94,0.4)';
-        badgeCounter.style.backgroundColor = 'rgba(34,197,94,0.15)';
-    } else {
-        badgeCounter.innerText = `${pending} ACTIVAS`;
-        badgeCounter.style.color = 'var(--cyber-red)';
-        badgeCounter.style.borderColor = 'rgba(239,68,68,0.3)';
-        badgeCounter.style.backgroundColor = 'rgba(239,68,68,0.15)';
-    }
-}
+            if (!saved) return;
 
-function startDailyBounty(num) {
-    playSound('click');
-    if (num === 1) {
-        currentSector = dailyFocusWord.topic;
-        refreshSessionPool();
-        switchMode('quiz');
-    } else if (num === 2) {
-        currentSector = 'seguridad';
-        switchMode('scanner');
-    }
-}
+            if (saved.player) {
+                Object.assign(data.player, saved.player);
+            }
 
-// TABLA DE RANGOS
-const RANKS = [
-    { title: "PRACTICANTE", minXP: 0, nextXP: 150 },
-    { title: "TÉCNICO", minXP: 150, nextXP: 400 },
-    { title: "ESPECIALISTA", minXP: 400, nextXP: 800 },
-    { title: "INGENIERO JR", minXP: 800, nextXP: 1500 },
-    { title: "INGENIERO FULL", minXP: 1500, nextXP: 2500 },
-    { title: "INGENIERO SR", minXP: 2500, nextXP: 4000 },
-    { title: "SUPERINTENDENTE", minXP: 4000, nextXP: 6000 },
-    { title: "GERENTE", minXP: 6000, nextXP: 99999 }
-];
+            if (Array.isArray(saved.activity)) {
 
-function getCurrentRank(xp) {
-    for (let i = RANKS.length - 1; i >= 0; i--) {
-        if (xp >= RANKS[i].minXP) return RANKS[i];
-    }
-    return RANKS[0];
-}
+                const demoActivities = [
+                    "you recognized 5 characters",
+                    "completed a training activity",
+                    "discovered new components"
+                ];
 
-function loadUserData() {
-    let xp = parseInt(localStorage.getItem('zidong_xp') || '0');
-    let username = localStorage.getItem('zidong_username') || 'ENGINEER 001';
+                data.activity = saved.activity.filter(item => {
 
-    const rank = getCurrentRank(xp);
+                    return !demoActivities.includes(
+                        item.detail?.trim().toLowerCase()
+                    );
 
-    document.getElementById('op-name').innerText = username;
-    document.getElementById('op-avatar').innerText = username.charAt(0).toUpperCase();
-    document.getElementById('op-rank').innerText = `RANK: ${rank.title}`;
-    document.getElementById('op-xp-total').innerText = xp.toLocaleString();
+                });
 
-    if (rank.nextXP >= 99999) {
-        document.getElementById('op-next-pct').innerText = 'MAX';
-        document.getElementById('op-bar-fill').style.width = '100%';
-    } else {
-        const xpInRank = xp - rank.minXP;
-        const totalNeeded = rank.nextXP - rank.minXP;
-        const pct = Math.min(100, Math.max(0, Math.round((xpInRank / totalNeeded) * 100)));
-        document.getElementById('op-next-pct').innerText = `${pct}%`;
-        document.getElementById('op-bar-fill').style.width = `${pct}%`;
+            }
+
+            if (saved.missionDetail && data.missions[0]) {
+                data.missions[0].detail = saved.missionDetail;
+            }
+
+            if (Array.isArray(saved.teams)) {
+
+                saved.teams.forEach(savedTeam => {
+
+                    const team = data.teams.find(
+                        item => item.name === savedTeam.name
+                    );
+
+                    if (team) team.xp = savedTeam.xp;
+
+                });
+
+            }
+
+            if (Array.isArray(saved.players)) {
+
+                saved.players.forEach(savedPlayer => {
+
+                    const player = data.players.find(
+                        item => item.initials === savedPlayer.initials
+                    );
+
+                    if (player) player.xp = savedPlayer.xp;
+
+                });
+
+            }
+
+            // NEW CAREER PROGRESS
+
+            if (saved.career) {
+
+                career.completedActivities =
+                    Array.isArray(saved.career.completedActivities)
+                        ? saved.career.completedActivities
+                        : [];
+
+                career.assessmentPassed =
+                    Boolean(saved.career.assessmentPassed);
+
+                career.assessmentAttempts =
+                    Number(saved.career.assessmentAttempts || 0);
+
+                career.nodeStars = saved.career.nodeStars || {};
+
+            } else if (saved.completedLesson) {
+
+                // Compatibility with previous version
+
+                career.completedActivities = ["hanzi_001"];
+
+            }
+
+            console.log("Saved progress: LOADED");
+
+        } catch (error) {
+
+            console.error("Could not load saved progress:", error);
+
+        }
+
     }
 
-    // Renderizar palabra del día
-    document.getElementById('daily-focus-hanzi').innerText = dailyFocusWord.hanzi;
-    document.getElementById('daily-focus-pinyin').innerText = dailyFocusWord.pinyin;
-    document.getElementById('daily-focus-meaning').innerText = dailyFocusWord.meaning;
+    // =====================================
+    // 4. SAVE PROGRESS
+    // =====================================
 
-    renderDailyMissions();
-    renderAchievements();
-}
+    function saveProgress() {
 
-function addXP(amount) {
-    let xp = parseInt(localStorage.getItem('zidong_xp') || '0') + amount;
-    localStorage.setItem('zidong_xp', xp);
-    loadUserData();
-}
+        const saved = {
 
-// NAVEGACIÓN
-function enterLobby() {
-    playSound('click');
-    currentMode = 'lobby';
-    document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.dock-item')[0].classList.add('active');
-    document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
-    document.getElementById('mode-lobby').classList.add('active');
-}
+            player: {
+                xp: data.player.xp,
+                level: data.player.level,
+                streak: data.player.streak,
+                completed: data.player.completed
+            },
 
-function selectSector(topic) {
-    playSound('click');
-    currentSector = topic;
-    refreshSessionPool();
-    switchMode('flashcards');
-}
+            activity: data.activity,
 
-function shuffleArray(array) {
-    let arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-}
+            missionDetail: data.missions[0]?.detail,
 
-// ARMAR EL POOL CON PRIORIDAD AL TÉRMINO DEL DÍA
-function refreshSessionPool() {
-    let pool = vocabulary.filter(v => v.topic === currentSector);
-    let shuffled = shuffleArray(pool);
+            teams: data.teams.map(team => ({
+                name: team.name,
+                xp: team.xp
+            })),
 
-    // Si la palabra del día pertenece a este sector o estamos en sesión general, ponerla en la posición 1
-    if (dailyFocusWord.topic === currentSector) {
-        shuffled = [dailyFocusWord, ...shuffled.filter(item => item.hanzi !== dailyFocusWord.hanzi)];
-    }
+            players: data.players.map(player => ({
+                initials: player.initials,
+                xp: player.xp
+            })),
 
-    activeSessionPool = shuffled.slice(0, BLOCK_SIZE);
-}
+            career: {
+                completedActivities: career.completedActivities,
+                assessmentPassed: career.assessmentPassed,
+                assessmentAttempts: career.assessmentAttempts,
+                nodeStars: career.nodeStars || {}
+            },
 
-function switchMode(mode) {
-    playSound('click');
-    currentMode = mode;
+            completedLesson:
+                career.completedActivities.includes("hanzi_001")
 
-    document.querySelectorAll('.dock-item').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
+        };
 
-    if (mode === 'lobby') {
-        document.querySelectorAll('.dock-item')[0].classList.add('active');
-        document.getElementById('mode-lobby').classList.add('active');
-    } else if (mode === 'achievements') {
-        document.querySelectorAll('.dock-item')[1].classList.add('active');
-        document.getElementById('mode-achievements').classList.add('active');
-        renderAchievements();
-    } else if (mode === 'flashcards') {
-        document.querySelectorAll('.dock-item')[2].classList.add('active');
-        document.getElementById('mode-flashcards').classList.add('active');
-        currentFC = 0;
-        updateFlashcard();
-    } else if (mode === 'quiz') {
-        document.querySelectorAll('.dock-item')[3].classList.add('active');
-        document.getElementById('mode-quiz').classList.add('active');
-        initQuiz();
-    } else if (mode === 'scanner') {
-        document.querySelectorAll('.dock-item')[4].classList.add('active');
-        document.getElementById('mode-scanner').classList.add('active');
-        initScanner();
-    }
-}
+        try {
 
-function finishSession() {
-    document.querySelectorAll('.mode-screen').forEach(v => v.classList.remove('active'));
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(saved)
+            );
 
-    const percentage = sessionTotal > 0 ? Math.round((sessionCorrect / sessionTotal) * 100) : 100;
-    const badgeContainer = document.getElementById('summary-badge-container');
+            console.log("Progress: SAVED");
 
-    if (percentage === 100) {
-        playSound('correct');
-        badgeContainer.innerHTML = `<span style="font-family:var(--font-display); font-size:1.6rem; color:var(--cyber-yellow); font-weight:900;">PERFECT ★</span>`;
-        addXP(sessionCorrect * 35);
-        triggerAchievement('ach_palacio_imperial');
-    } else {
-        playSound('correct');
-        badgeContainer.innerHTML = `<span style="font-family:var(--font-display); font-size:1.1rem; color:var(--cyber-cyan);">MISIÓN CONCLUIDA</span>`;
-        addXP(sessionCorrect * 25);
+        } catch (error) {
+
+            console.error("Could not save progress:", error);
+
+        }
+
     }
 
-    document.getElementById('summary-percentage').innerText = `${percentage}%`;
-    document.getElementById('summary-details').innerText = `Validaste ${sessionCorrect} reactivos de ${currentSector.toUpperCase()}.`;
-    document.getElementById('mode-summary').classList.add('active');
+    // =====================================
+    // 5. HELPERS
+    // =====================================
 
-    // Comprobar si se completó misión diaria 2 en el escáner
-    if (currentMode === 'scanner' && sessionCorrect >= 1) {
-        completeDailyMission(2);
+    const formatNumber = value => {
+        return Number(value).toLocaleString("en-US");
+    };
+
+    function getCompletedCount() {
+        return career.completedActivities.length;
     }
 
-    if (currentSector === 'plc' && sessionCorrect > 0) triggerAchievement('ach_saltamontes');
-    if (currentSector === 'electricidad' && sessionCorrect > 0) triggerAchievement('ach_chispazo');
-    if (currentSector === 'agv' && sessionCorrect > 0) triggerAchievement('ach_agv_pilot');
+    function getNextActivityIndex() {
 
-    let totalRuns = parseInt(localStorage.getItem('zidong_completed_runs') || '0') + 1;
-    localStorage.setItem('zidong_completed_runs', totalRuns);
-    if (totalRuns >= 5) triggerAchievement('ach_grano_arroz');
-}
+        return activities.findIndex(activity => {
 
-function playVoice(text) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-    }
-}
+            return !career.completedActivities.includes(activity.id);
 
-// --------------------------------------------------------
-// 1. FLASHCARDS
-// --------------------------------------------------------
-let currentFC = 0;
-let isFlipped = false;
+        });
 
-function renderFlashcardContent() {
-    const body = document.getElementById('fc-body');
-    const hanziElem = document.getElementById('fc-hanzi');
-    const pinyinElem = document.getElementById('fc-pinyin');
-
-    if (activeSessionPool.length === 0) {
-        hanziElem.innerText = "--";
-        pinyinElem.innerText = "";
-        body.innerHTML = `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyber-cyan);">SIN TÉRMINOS</span>`;
-        return;
     }
 
-    const item = activeSessionPool[currentFC];
+    function isActivityUnlocked(index) {
 
-    if (!isFlipped) {
-        hanziElem.innerText = item.hanzi;
-        pinyinElem.innerHTML = `
-            ${item.pinyin} 
-            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);">🔊</button>
-        `;
-        body.innerHTML = `<span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyber-cyan);">[ TOCAR PARA INSPECCIONAR ]</span>`;
-    } else {
-        hanziElem.innerText = item.meaning;
-        pinyinElem.innerHTML = `
-            ${item.hanzi} [${item.pinyin}] 
-            <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1.1rem; color:var(--cyber-cyan);">🔊</button>
-        `;
+        const nextIndex = getNextActivityIndex();
 
-        let chips = item.parts.map(p => 
-            `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`
-        ).join('');
+        return index <= nextIndex || nextIndex === -1;
 
-        body.innerHTML = `
-            <div class="telemetry-box">
-                <div class="telemetry-chips">${chips}</div>
-                <div style="font-size:0.72rem; color:var(--text-dim); margin-top:4px;">${item.summary}</div>
+    }
+
+    // =====================================
+    // 6. UPDATE XP
+    // =====================================
+
+    function awardXP(reward) {
+
+        const player = data.player;
+
+        player.xp += reward;
+        player.completed += 1;
+
+        const playerRecord = data.players.find(
+            item => item.initials === player.initials
+        );
+
+        if (playerRecord) {
+
+            playerRecord.xp += reward;
+
+            const team = data.teams.find(
+                item =>
+                    item.name.trim().toLowerCase() ===
+                    playerRecord.team.trim().toLowerCase()
+            );
+
+            if (team) {
+                team.xp += reward;
+            }
+
+        }
+
+    }
+
+    // =====================================
+    // 7. REGISTER ACTIVITY
+    // =====================================
+
+    function registerActivity(title, detail, reward) {
+
+        data.activity.unshift({
+
+            icon: "✓",
+            title: title,
+            detail: detail,
+            xp: `+${reward} XP`
+
+        });
+
+    }
+
+    // =====================================
+    // 8. DAILY MISSION
+    // =====================================
+
+    function updateMissionProgress() {
+
+        const completedNewHanzi = activities.filter(activity => {
+
+            return activity.type === "new" &&
+                career.completedActivities.includes(activity.id);
+
+        }).length;
+
+        const mission = data.missions[0];
+
+        if (mission) {
+
+            mission.detail =
+                `Recognize 5 Chinese characters (${completedNewHanzi}/5)`;
+
+        }
+
+        updateDailyMission();
+
+    }
+
+    function updateDailyMission() {
+
+        const mission = data.missions[0];
+
+        if (!mission) return;
+
+        const panels = document.querySelectorAll(
+            "#dashboard .panel"
+        );
+
+        const missionPanel = Array.from(panels).find(panel => {
+
+            const heading = panel.querySelector(
+                ".panel-heading h3"
+            );
+
+            return heading &&
+                heading.textContent.trim() === "DAILY MISSION";
+
+        });
+
+        if (!missionPanel) return;
+
+        const description = missionPanel.querySelector("p");
+        const progress = missionPanel.querySelector(".progress-fill");
+        const progressText = missionPanel.querySelector("small");
+
+        const match = mission.detail.match(/(\d+)\s*\/\s*(\d+)/);
+
+        if (description) {
+            description.textContent = "Reconoce 5 caracteres Hanzi";
+        }
+
+        if (match) {
+
+            const completed = Number(match[1]);
+            const total = Number(match[2]);
+
+            const percentage = total > 0
+                ? Math.min((completed / total) * 100, 100)
+                : 0;
+
+            if (progress) {
+                progress.style.width = `${percentage}%`;
+            }
+
+            if (progressText) {
+                progressText.textContent =
+                    `${completed} / ${total} COMPLETED`;
+            }
+
+        }
+
+    }
+
+    // =====================================
+    // 9. RENDER CAREER PATH
+    // =====================================
+
+    function renderCareerPath() {
+
+        const container = document.querySelector(
+            "#career .path-nodes"
+        );
+
+        if (!container) return;
+
+        container.replaceChildren();
+
+        // WELCOME NODE
+
+        const welcome = document.createElement("div");
+
+        welcome.className = "path-step left";
+
+        welcome.innerHTML = `
+            <div class="path-node completed">
+                <span>✓</span>
+            </div>
+
+            <div class="path-label">
+                <strong>Bienvenida</strong>
+                <small>Conoce tu entrenamiento</small>
             </div>
         `;
-    }
-}
 
-function updateFlashcard() {
-    isFlipped = false;
-    if (currentFC >= activeSessionPool.length) currentFC = 0;
-    renderFlashcardContent();
-    document.getElementById('fc-counter').innerText = `${currentFC + 1} / ${activeSessionPool.length}`;
-}
+        container.appendChild(welcome);
 
-function flipCard() {
-    playSound('click');
-    isFlipped = !isFlipped;
-    renderFlashcardContent();
-}
+        // ACTIVITY NODES
 
-function nextCard() {
-    playSound('click');
-    if (activeSessionPool.length === 0) return;
-    currentFC = (currentFC + 1) % activeSessionPool.length;
-    updateFlashcard();
-}
+        activities.forEach((activity, index) => {
 
-function prevCard() {
-    playSound('click');
-    if (activeSessionPool.length === 0) return;
-    currentFC = (currentFC - 1 + activeSessionPool.length) % activeSessionPool.length;
-    updateFlashcard();
-}
+            const completed =
+                career.completedActivities.includes(activity.id);
 
-// --------------------------------------------------------
-// 2. QUIZ
-// --------------------------------------------------------
-let quizIndex = 0;
+            const unlocked = isActivityUnlocked(index);
 
-function initQuiz() {
-    quizIndex = 0;
-    sessionCorrect = 0;
-    sessionTotal = 0;
-    comboCount = 0;
-    loadQuizQuestion();
-}
+            const node = document.createElement("div");
 
-function loadQuizQuestion() {
-    if (quizIndex >= activeSessionPool.length) {
-        finishSession();
-        return;
-    }
+            node.className =
+                `path-step ${index % 2 === 0 ? "right" : "left"}`;
 
-    const item = activeSessionPool[quizIndex];
-    document.getElementById('quiz-next-btn').style.display = 'none';
-    document.getElementById('quiz-breakdown').style.display = 'none';
+            const statusClass = completed
+                ? "completed"
+                : unlocked
+                    ? "current"
+                    : "locked";
 
-    document.getElementById('quiz-hanzi').innerText = item.hanzi;
-    document.getElementById('quiz-pinyin').innerHTML = `
-        ${item.pinyin} 
-        <button onclick="event.stopPropagation(); playVoice('${item.hanzi}')" style="background:none; border:none; cursor:pointer; font-size:1rem; color:var(--cyber-cyan);">🔊</button>
-    `;
+            const nodeText = completed
+                ? "✓"
+                : activity.hanzi;
 
-    let options = [item.meaning];
-    let distractors = vocabulary.filter(v => v.meaning !== item.meaning).sort(() => Math.random() - 0.5);
-    for (let i = 0; i < Math.min(3, distractors.length); i++) options.push(distractors[i].meaning);
-    options.sort(() => Math.random() - 0.5);
+            const label = activity.type === "review"
+                ? `Repaso ${index + 1}`
+                : `Hanzi ${String(
+                    activities
+                        .filter(item => item.type === "new")
+                        .indexOf(activity) + 1
+                ).padStart(3, "0")}`;
 
-    const grid = document.getElementById('quiz-options');
-    grid.innerHTML = '';
-    options.forEach(opt => {
-        const btn = document.createElement('div');
-        btn.className = 'matrix-button';
-        btn.innerText = opt;
-        btn.onclick = () => checkQuiz(btn, opt, item);
-        grid.appendChild(btn);
-    });
-}
+            const starsCount = (career.nodeStars && career.nodeStars[activity.id]) || (completed ? 1 : 0);
+            const starsDisplay = completed ? "⭐".repeat(starsCount) : "";
 
-function checkQuiz(btn, selected, item) {
-    const all = document.querySelectorAll('.matrix-button');
-    all.forEach(b => b.style.pointerEvents = 'none');
-    sessionTotal++;
+            node.innerHTML = `
+                <div class="path-node ${statusClass}">
+                    <span>${nodeText}</span>
+                </div>
 
-    if (selected === item.meaning) {
-        comboCount++;
-        playSound('correct', comboCount);
-        btn.classList.add('correct');
-        sessionCorrect++;
-
-        // Si acertó la palabra del turno, completar Misión Diaria 1
-        if (item.hanzi === dailyFocusWord.hanzi) {
-            completeDailyMission(1);
-        }
-    } else {
-        comboCount = 0;
-        playSound('wrong');
-        btn.classList.add('incorrect');
-        all.forEach(b => { if (b.innerText === item.meaning) b.classList.add('correct'); });
-    }
-
-    const popout = document.getElementById('quiz-breakdown');
-    let chips = item.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
-    popout.innerHTML = `<div class="telemetry-chips">${chips}</div><div style="font-size:0.72rem; color:var(--text-dim); margin-top:4px;">${item.summary}</div>`;
-    popout.style.display = 'block';
-
-    document.getElementById('quiz-next-btn').style.display = 'block';
-}
-
-function nextQuizQuestion() {
-    playSound('click');
-    quizIndex++;
-    loadQuizQuestion();
-}
-
-// --------------------------------------------------------
-// 3. ESCÁNER
-// --------------------------------------------------------
-let scannerPool = [];
-let scannerIndex = 0;
-let scannerLocked = false;
-
-function initScanner() {
-    const filtered = scannerScenarios.filter(s => s.topic === currentSector || currentSector === 'seguridad');
-    scannerPool = shuffleArray(filtered.length > 0 ? filtered : scannerScenarios).slice(0, BLOCK_SIZE);
-    scannerIndex = 0;
-    sessionCorrect = 0;
-    sessionTotal = 0;
-    loadScannerQuestion();
-}
-
-function loadScannerQuestion() {
-    if (scannerIndex >= scannerPool.length) {
-        finishSession();
-        return;
-    }
-
-    scannerLocked = false;
-    const item = scannerPool[scannerIndex];
-
-    document.getElementById('scanner-next-btn').style.display = 'none';
-    document.getElementById('scanner-breakdown').style.display = 'none';
-    document.getElementById('scanner-task').innerText = item.prompt;
-
-    const terminal = document.getElementById('scanner-alarm-display');
-    terminal.innerHTML = '';
-
-    item.tokens.forEach(tok => {
-        const span = document.createElement('span');
-        span.className = 'terminal-token';
-        span.innerText = tok.text;
-
-        if (tok.isTarget) {
-            span.onclick = () => clickScannerToken(span, tok.hanzi, item);
-        } else {
-            span.style.cursor = 'default';
-            span.style.color = '#475569';
-        }
-        terminal.appendChild(span);
-    });
-}
-
-function clickScannerToken(span, clickedHanzi, item) {
-    if (scannerLocked) return;
-
-    sessionTotal++;
-    if (clickedHanzi === item.targetHanzi) {
-        playSound('correct');
-        scannerLocked = true;
-        span.classList.add('success-hit');
-        sessionCorrect++;
-
-        playVoice(item.targetHanzi);
-
-        if (item.targetHanzi === "急停") triggerAchievement('ach_dedos_rapidos');
-
-        const vocabInfo = vocabulary.find(v => v.hanzi === item.targetHanzi);
-        const popout = document.getElementById('scanner-breakdown');
-
-        if (vocabInfo) {
-            let chips = vocabInfo.parts.map(p => `<div class="telemetry-chip"><strong>${p.char}</strong> ${p.desc}</div>`).join('');
-            popout.innerHTML = `
-                <div style="font-weight: 800; color: var(--cyber-cyan); margin-bottom: 4px;">${vocabInfo.hanzi} [${vocabInfo.pinyin}] - ${vocabInfo.meaning}</div>
-                <div class="telemetry-chips">${chips}</div>
-                <div style="font-size:0.72rem; color:var(--text-dim); margin-top:4px;">${vocabInfo.summary}</div>
+                <div class="path-label">
+                    <strong>${label} ${starsDisplay}</strong>
+                    <small>${activity.meaning} · ${activity.pinyin}</small>
+                    <span class="node-action">
+                        ${completed ? "REPETIR TEST ↺" :
+                            unlocked ? "COMENZAR →" : "BLOQUEADO"}
+                    </span>
+                </div>
             `;
-            popout.style.display = 'block';
+
+            if (unlocked) {
+
+                node.style.cursor = "pointer";
+
+                node.addEventListener("click", () => {
+                    openActivity(index);
+                });
+
+            }
+
+            container.appendChild(node);
+
+        });
+
+        // ASSESSMENT NODE
+
+        const assessment = document.createElement("div");
+
+        const allActivitiesCompleted =
+            getCompletedCount() === activities.length;
+
+        assessment.className = "path-step left";
+
+        const assessmentClass = career.assessmentPassed
+            ? "completed"
+            : allActivitiesCompleted
+                ? "current"
+                : "locked";
+
+        assessment.innerHTML = `
+            <div class="path-node assessment ${assessmentClass}">
+                <span>${career.assessmentPassed ? "✓" : "🏅"}</span>
+            </div>
+
+            <div class="path-label">
+                <strong>Evaluación eléctrica</strong>
+                <small>Demuestra lo aprendido</small>
+                <span class="node-action">
+                    ${career.assessmentPassed
+                        ? "APROBADA ✓"
+                        : allActivitiesCompleted
+                            ? "COMENZAR EVALUACIÓN →"
+                            : "BLOQUEADA"}
+                </span>
+            </div>
+        `;
+
+        if (allActivitiesCompleted && !career.assessmentPassed) {
+
+            assessment.style.cursor = "pointer";
+
+            assessment.addEventListener("click", openAssessment);
+
         }
 
-        document.getElementById('scanner-next-btn').style.display = 'block';
-    } else {
-        playSound('wrong');
-        span.classList.add('fail-hit');
-        setTimeout(() => span.classList.remove('fail-hit'), 400);
+        container.appendChild(assessment);
+
+        updateCareerOverview();
+
+        updateAreaStatus();
+
     }
-}
 
-function nextScannerQuestion() {
-    playSound('click');
-    scannerIndex++;
-    loadScannerQuestion();
-}
+    // =====================================
+    // 10. CAREER OVERVIEW
+    // =====================================
 
-// ARRANQUE
-loadUserData();
-enterLobby();
+    function updateCareerOverview() {
+
+        const completed = getCompletedCount();
+
+        const percentage = career.assessmentPassed
+            ? 100
+            : Math.round((completed / activities.length) * 100);
+
+        const progressFill = document.querySelector(
+            "#career .career-progress .progress-fill"
+        );
+
+        const progressText = document.querySelector(
+            "#career .career-progress-footer span:last-child"
+        );
+
+        const progressDescription = document.querySelector(
+            "#career .career-progress-info span"
+        );
+
+        const footerText = document.querySelector(
+            "#career .career-progress-footer span:first-child"
+        );
+
+        if (progressFill) {
+            progressFill.style.width = `${percentage}%`;
+        }
+
+        if (progressText) {
+            progressText.textContent = `${percentage}%`;
+        }
+
+        if (progressDescription) {
+
+            progressDescription.textContent =
+                career.assessmentPassed
+                    ? "Área completada"
+                    : completed === 0
+                        ? "En preparación"
+                        : "En progreso";
+
+        }
+
+        if (footerText) {
+
+            footerText.textContent =
+                career.assessmentPassed
+                    ? "¡Área eléctrica dominada!"
+                    : `${completed} de ${activities.length} actividades`;
+
+        }
+
+    }
+
+    // =====================================
+    // 11. UPDATE AREA UNLOCK
+    // =====================================
+
+    function updateAreaStatus() {
+
+        const areas = document.querySelectorAll(
+            "#career .path-area"
+        );
+
+        const electrical = areas[0];
+        const mechanical = areas[1];
+
+        if (!electrical || !mechanical) return;
+
+        if (career.assessmentPassed) {
+
+            mechanical.classList.remove("locked-area");
+
+            const status = mechanical.querySelector(".path-status");
+            const lockMessage = mechanical.querySelector(".path-lock-message");
+
+            if (status) status.textContent = "UNLOCKED";
+
+            if (lockMessage) {
+                lockMessage.textContent =
+                    "⚙️ ¡Área desbloqueada! Tu siguiente entrenamiento te espera.";
+            }
+
+            const electricalStatus =
+                electrical.querySelector(".path-status");
+
+            if (electricalStatus) {
+                electricalStatus.textContent = "COMPLETED";
+            }
+
+        }
+
+    }
+
+    // =====================================
+    // 12. OPEN ACTIVITY
+    // =====================================
+
+    function openActivity(index) {
+
+        if (!isActivityUnlocked(index)) return;
+
+        const activity = activities[index];
+
+        if (!activity) return;
+
+        currentActivity = activity;
+
+        renderLesson(activity);
+
+        navigateTo("level01");
+
+    }
+
+    // =====================================
+    // 13. RENDER LESSON (DATA SHEET -> TEST EN CALIENTE)
+    // =====================================
+
+    function renderLesson(activity) {
+
+        const card = document.querySelector("#level01 .recognition-card");
+        if (!card) return;
+
+        const isCompleted = career.completedActivities.includes(activity.id);
+        const currentStars = (career.nodeStars && career.nodeStars[activity.id]) || (isCompleted ? 1 : 0);
+
+        // MOMENTO A: DATA SHEET TÉCNICO (Sin presión de tiempo)
+        function renderDataSheet() {
+            const title = activity.type === "review"
+                ? "REPASO DE COMPONENTE"
+                : `DATA SHEET · HANZI ${String(
+                    activities.filter(item => item.type === "new").indexOf(activity) + 1
+                ).padStart(3, "0")}`;
+
+            const starBadges = isCompleted ? ` · ${"⭐".repeat(currentStars)}` : "";
+
+            card.innerHTML = `
+                <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:10px;">${title}${starBadges}</span>
+
+                <div class="recognition-hanzi">${activity.hanzi}</div>
+
+                <div style="background:rgba(39, 216, 232, 0.08); border:1px solid rgba(39, 216, 232, 0.2); border-radius:12px; padding:12px 14px; width:100%; max-width:330px; margin-bottom:14px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:10px; color:var(--muted); font-weight:bold;">SIGNIFICADO:</span>
+                        <strong style="color:var(--cyan); font-size:16px;">${activity.meaning}</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:10px; color:var(--muted); font-weight:bold;">PINYIN / TONO:</span>
+                        <span style="color:#ffffff; font-weight:bold; font-size:14px;">${activity.pinyin}</span>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; margin-top:6px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:10px; color:var(--muted);">EN PLANTA:</span>
+                        <span style="color:#ffffff; font-size:13px;"><strong>${activity.example}</strong> <small style="color:var(--muted);">(${activity.exampleMeaning})</small></span>
+                    </div>
+                </div>
+
+                <button id="btn-start-evaluation" class="reveal-button" type="button" style="background:#00f59b; color:#0b1424; font-weight:900; min-height:44px;">
+                    ${isCompleted ? "REPETIR TEST (MEJORAR ⭐)" : "PROBAR SISTEMA (TEST) ⚡"}
+                </button>
+            `;
+
+            document.getElementById("btn-start-evaluation").onclick = startHotTest;
+        }
+
+        // MOMENTO B: TEST EN CALIENTE (3 RONDAS SIN ACORDEÓN)
+        function startHotTest() {
+            let round = 1;
+            let errors = 0;
+            const startTime = Date.now();
+
+            function renderRound() {
+                if (round === 1) {
+                    // RONDA 1: Significado (3 opciones)
+                    const otherMeanings = activities
+                        .filter(a => a.meaning !== activity.meaning)
+                        .map(a => a.meaning);
+                    const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
+                    const opts = [activity.meaning, ...shuffled].sort(() => 0.5 - Math.random());
+
+                    card.innerHTML = `
+                        <span class="tag" style="border-color:#ffaa00; color:#ffaa00;">RONDA 1 / 3 · SIGNIFICADO</span>
+                        <div class="recognition-hanzi" style="width:120px; height:120px; font-size:70px; margin: 15px auto;">
+                            ${activity.hanzi}
+                        </div>
+                        <h3 style="font-size:15px; margin-bottom:14px;">¿Cuál es el significado técnico correcto?</h3>
+                        <div class="career-quiz-grid" id="round1-options"></div>
+                    `;
+
+                    const grid = card.querySelector("#round1-options");
+                    opts.forEach(opt => {
+                        const btn = document.createElement("button");
+                        btn.className = "cf-btn-option";
+                        btn.style.fontSize = "15px";
+                        btn.style.padding = "14px 10px";
+                        btn.textContent = opt;
+
+                        btn.onclick = () => {
+                            if (opt === activity.meaning) {
+                                if (navigator.vibrate) navigator.vibrate(40);
+                                btn.classList.add("btn-correct");
+                                setTimeout(() => { round = 2; renderRound(); }, 300);
+                            } else {
+                                if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
+                                btn.classList.add("btn-wrong");
+                                errors++;
+                                card.classList.add("shake-it");
+                                setTimeout(() => card.classList.remove("shake-it"), 300);
+                            }
+                        };
+                        grid.appendChild(btn);
+                    });
+
+                } else if (round === 2) {
+                    // RONDA 2: Pinyin y Tono (3 opciones)
+                    const otherPinyins = activities
+                        .filter(a => a.pinyin !== activity.pinyin)
+                        .map(a => a.pinyin);
+                    const shuffledP = otherPinyins.sort(() => 0.5 - Math.random()).slice(0, 2);
+                    const opts = [activity.pinyin, ...shuffledP].sort(() => 0.5 - Math.random());
+
+                    card.innerHTML = `
+                        <span class="tag" style="border-color:#a78bfa; color:#a78bfa;">RONDA 2 / 3 · LECTURA & TONO</span>
+                        <div class="recognition-hanzi" style="width:120px; height:120px; font-size:70px; margin: 15px auto;">
+                            ${activity.hanzi}
+                        </div>
+                        <h3 style="font-size:15px; margin-bottom:14px;">¿Cuál es la pronunciación (Pinyin)?</h3>
+                        <div class="career-quiz-grid" id="round2-options"></div>
+                    `;
+
+                    const grid = card.querySelector("#round2-options");
+                    opts.forEach(opt => {
+                        const btn = document.createElement("button");
+                        btn.className = "cf-btn-option";
+                        btn.style.fontSize = "17px";
+                        btn.style.padding = "14px 10px";
+                        btn.textContent = opt;
+
+                        btn.onclick = () => {
+                            if (opt === activity.pinyin) {
+                                if (navigator.vibrate) navigator.vibrate(40);
+                                btn.classList.add("btn-correct");
+                                setTimeout(() => { round = 3; renderRound(); }, 300);
+                            } else {
+                                if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
+                                btn.classList.add("btn-wrong");
+                                errors++;
+                                card.classList.add("shake-it");
+                                setTimeout(() => card.classList.remove("shake-it"), 300);
+                            }
+                        };
+                        grid.appendChild(btn);
+                    });
+
+                } else if (round === 3) {
+                    // RONDA 3: Ensamble del Componente
+                    const exampleChars = activity.example.split("");
+                    const mainChar = activity.hanzi;
+                    const targetChar = exampleChars.find(c => c !== mainChar) || mainChar;
+                    const dummyPool = ["气", "机", "线", "门", "开", "压", "力", "金", "水"].filter(c => c !== targetChar);
+                    const dummyOptions = dummyPool.sort(() => 0.5 - Math.random()).slice(0, 2);
+                    const blockOptions = [targetChar, ...dummyOptions].sort(() => 0.5 - Math.random());
+
+                    card.innerHTML = `
+                        <span class="tag" style="border-color:#00f59b; color:#00f59b;">RONDA 3 / 3 · ENSAMBLE DE PLANTA</span>
+                        <p style="color:var(--muted); font-size:11px; margin:12px 0 4px;">COMPLETA LA PIEZA TÉCNICA:</p>
+                        <h2 style="color:var(--cyan); margin-bottom:12px;">${activity.exampleMeaning}</h2>
+                        
+                        <div class="cf-slots-dock" style="margin: 15px auto;">
+                            <div class="cf-slot filled">${mainChar}</div>
+                            <div class="cf-slot empty" id="c-target-slot">_</div>
+                        </div>
+
+                        <p style="font-size:12px; color:var(--text); margin-bottom:12px;">Selecciona el carácter complementario:</p>
+                        <div style="display:flex; justify-content:center; gap:12px;" id="c-blocks-grid"></div>
+                    `;
+
+                    const bGrid = card.querySelector("#c-blocks-grid");
+                    blockOptions.forEach(char => {
+                        const b = document.createElement("button");
+                        b.className = "cf-part-btn";
+                        b.style.width = "64px";
+                        b.textContent = char;
+
+                        b.onclick = () => {
+                            if (char === targetChar) {
+                                if (navigator.vibrate) navigator.vibrate([50, 40, 90]);
+                                const slot = card.querySelector("#c-target-slot");
+                                slot.textContent = char;
+                                slot.classList.add("filled");
+                                slot.classList.remove("empty");
+                                setTimeout(finishTest, 400);
+                            } else {
+                                if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
+                                b.style.opacity = "0.2";
+                                b.style.pointerEvents = "none";
+                                errors++;
+                                card.classList.add("shake-it");
+                                setTimeout(() => card.classList.remove("shake-it"), 300);
+                            }
+                        };
+                        bGrid.appendChild(b);
+                    });
+                }
+            }
+
+            function finishTest() {
+                const totalSeconds = Math.round((Date.now() - startTime) / 1000);
+                
+                // Cálculo de estrellas:
+                // 3 Estrellas: 0 errores y <= 12s
+                // 2 Estrellas: <= 1 error
+                // 1 Estrella: > 1 error pero completado
+                let stars = 1;
+                if (errors === 0 && totalSeconds <= 12) {
+                    stars = 3;
+                } else if (errors <= 1) {
+                    stars = 2;
+                }
+
+                // Guardar mejor puntuación de estrellas
+                if (!career.nodeStars) career.nodeStars = {};
+                career.nodeStars[activity.id] = Math.max(career.nodeStars[activity.id] || 0, stars);
+
+                const starIcons = "⭐".repeat(stars);
+                const titleVerdict = stars === 3
+                    ? "¡MAESTRÍA OVERCLOCK!"
+                    : stars === 2
+                        ? "¡CALIBRACIÓN EXITOSA!"
+                        : "¡SISTEMA APROBADO!";
+
+                card.innerHTML = `
+                    <span class="tag" style="border-color:#ffc857; color:#ffc857;">TEST FINALIZADO</span>
+                    <div style="font-size:46px; margin: 15px 0;">${starIcons}</div>
+                    <h2 style="color:#ffffff; font-size:22px; margin-bottom:4px;">${titleVerdict}</h2>
+                    <p style="color:var(--muted); font-size:12px; margin-bottom:16px;">
+                        Tiempo total: <strong>${totalSeconds}s</strong> · Errores: <strong>${errors}</strong>
+                    </p>
+
+                    <button id="btn-save-and-return" class="reveal-button" style="margin-bottom:10px;">
+                        REGISTRAR AVANCE (+${activity.reward} XP) →
+                    </button>
+                    <button id="btn-retry-test" class="btn-secondary" style="width:100%; max-width:260px;">
+                        ↺ REPETIR PARA MEJORAR ⭐
+                    </button>
+                `;
+
+                document.getElementById("btn-save-and-return").onclick = () => {
+                    completeActivity(activity, stars);
+                    navigateTo("career");
+                };
+
+                document.getElementById("btn-retry-test").onclick = () => {
+                    renderLesson(activity);
+                };
+            }
+
+            renderRound();
+        }
+
+        renderDataSheet();
+        updateAssessmentVisibility();
+    }
+
+    // =====================================
+    // 14. COMPLETE ACTIVITY
+    // =====================================
+
+    function completeActivity(activity, stars) {
+
+        const isNewCompletion = !career.completedActivities.includes(activity.id);
+        const reward = isNewCompletion ? activity.reward : 15; // Bono de 15 XP por repetir
+
+        if (isNewCompletion) {
+            career.completedActivities.push(activity.id);
+        }
+
+        awardXP(reward);
+
+        registerActivity(
+            activity.type === "review"
+                ? "Repaso de Hanzi Calibrado"
+                : "Hanzi Dominado con Éxito",
+            `${activity.hanzi} (${activity.meaning}) completado con ${"⭐".repeat(stars || 1)}`,
+            reward
+        );
+
+        updateMissionProgress();
+        updateRanking();
+        updateProfile();
+        updateActivity();
+        renderCareerPath();
+        saveProgress();
+
+        console.log(`Activity finished: ${activity.id} with ${stars} stars`);
+    }    // =====================================
+    // 15. ASSESSMENT VISIBILITY
+    // =====================================
+
+    function updateAssessmentVisibility() {
+
+        const allCompleted =
+            getCompletedCount() === activities.length;
+
+        let assessmentPanel = document.getElementById(
+            "electricalAssessment"
+        );
+
+        if (!assessmentPanel) {
+
+            assessmentPanel = document.createElement("div");
+
+            assessmentPanel.id = "electricalAssessment";
+            assessmentPanel.className = "panel";
+
+            const card = document.querySelector(
+                "#level01 .recognition-card"
+            );
+
+            if (card) {
+                card.insertAdjacentElement(
+                    "afterend",
+                    assessmentPanel
+                );
+            }
+
+        }
+
+        assessmentPanel.style.display = "none";
+
+        if (!allCompleted || career.assessmentPassed) return;
+
+        assessmentPanel.style.display = "block";
+
+    }
+
+    // =====================================
+    // 16. OPEN ASSESSMENT
+    // =====================================
+
+    function openAssessment() {
+
+        if (getCompletedCount() !== activities.length) return;
+
+        navigateTo("level01");
+
+        const card = document.querySelector(
+            "#level01 .recognition-card"
+        );
+
+        if (card) {
+            card.style.display = "none";
+        }
+
+        const panel = document.getElementById(
+            "electricalAssessment"
+        );
+
+        if (!panel) return;
+
+        panel.style.display = "block";
+
+        renderAssessment();
+
+        panel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+    // =====================================
+    // 17. RENDER ASSESSMENT
+    // =====================================
+
+    function renderAssessment() {
+
+        const panel = document.getElementById(
+            "electricalAssessment"
+        );
+
+        if (!panel) return;
+
+        panel.innerHTML = `
+            <div class="panel-heading">
+                <h3>EVALUACIÓN ELÉCTRICA</h3>
+                <span>🏅</span>
+            </div>
+
+            <p>
+                Selecciona el significado correcto de cada carácter.
+                Necesitas 4 respuestas correctas de 5 para aprobar.
+            </p>
+
+            <div id="assessmentQuestions"></div>
+
+            <button id="submitAssessment"
+                    class="reveal-button"
+                    type="button">
+                ENVIAR EVALUACIÓN
+            </button>
+
+            <p id="assessmentResult"></p>
+        `;
+
+        const questionContainer = document.getElementById(
+            "assessmentQuestions"
+        );
+
+        assessmentQuestions.forEach((question, index) => {
+
+            const questionBox = document.createElement("div");
+
+            questionBox.className = "assessment-question";
+
+            const heading = document.createElement("h4");
+
+            heading.textContent =
+                `${index + 1}. ${question.question}`;
+
+            const select = document.createElement("select");
+
+            select.id = `assessmentAnswer${index}`;
+
+            select.innerHTML = `
+                <option value="">Selecciona una respuesta</option>
+            `;
+
+            question.options.forEach(option => {
+
+                const optionElement =
+                    document.createElement("option");
+
+                optionElement.value = option;
+                optionElement.textContent = option;
+
+                select.appendChild(optionElement);
+
+            });
+
+            questionBox.append(heading, select);
+
+            questionContainer.appendChild(questionBox);
+
+        });
+
+        document.getElementById(
+            "submitAssessment"
+        ).addEventListener("click", evaluateAssessment);
+
+    }
+
+    // =====================================
+    // 18. EVALUATE ASSESSMENT
+    // =====================================
+
+    function evaluateAssessment() {
+
+        const result = document.getElementById(
+            "assessmentResult"
+        );
+
+        const answers = assessmentQuestions.map((question, index) => {
+
+            const select = document.getElementById(
+                `assessmentAnswer${index}`
+            );
+
+            return select ? select.value : "";
+
+        });
+
+        if (answers.some(answer => !answer)) {
+
+            alert("Completa las 5 preguntas antes de enviar.");
+
+            return;
+
+        }
+
+        let correct = 0;
+
+        assessmentQuestions.forEach((question, index) => {
+
+            if (answers[index] === question.answer) {
+                correct++;
+            }
+
+        });
+
+        const percentage = Math.round(
+            (correct / assessmentQuestions.length) * 100
+        );
+
+        career.assessmentAttempts++;
+
+        if (percentage >= 80) {
+
+            career.assessmentPassed = true;
+
+            const reward = 100;
+
+            awardXP(reward);
+
+            registerActivity(
+                "Electrical Area Completed",
+                `Passed electrical assessment with ${percentage}%`,
+                reward
+            );
+
+            if (result) {
+                result.textContent =
+                    `¡APROBADO! ${correct}/5 respuestas correctas · ${percentage}% · +${reward} XP`;
+            }
+
+            updateRanking();
+
+            updateProfile();
+
+            updateActivity();
+
+            renderCareerPath();
+
+            saveProgress();
+
+            alert(
+                `¡Felicidades!\n\n` +
+                `Aprobaste con ${percentage}%.\n` +
+                `Ganaste ${reward} XP.\n\n` +
+                "¡El área de Mecánica está desbloqueada!"
+            );
+
+        } else {
+
+            if (result) {
+
+                result.textContent =
+                    `Todavía no aprobado: ${correct}/5 respuestas correctas (${percentage}%). Necesitas 80%.`;
+
+            }
+
+            saveProgress();
+
+            alert(
+                `Obtuviste ${percentage}%.\n\n` +
+                "Necesitas al menos 80% para desbloquear Mecánica. Puedes intentarlo nuevamente."
+            );
+
+        }
+
+    }
+
+    // =====================================
+    // 19. RETURN TO CAREER
+    // =====================================
+
+    function connectCareerBackButton() {
+
+        const buttons = document.querySelectorAll(
+            "#level01 .back-button"
+        );
+
+        buttons.forEach(button => {
+
+            if (button.dataset.careerConnected) return;
+
+            button.dataset.careerConnected = "true";
+
+            button.addEventListener("click", () => {
+
+                const card = document.querySelector(
+                    "#level01 .recognition-card"
+                );
+
+                if (card) {
+                    card.style.display = "block";
+                }
+
+                const panel = document.getElementById(
+                    "electricalAssessment"
+                );
+
+                if (panel) {
+                    panel.style.display = "none";
+                }
+
+            });
+
+        });
+
+    }
+
+    // =====================================
+    // 20. GLOBAL RANKING
+    // =====================================
+
+    function updateRanking() {
+
+        const individualList = document.getElementById(
+            "individualRankingList"
+        );
+
+        const teamList = document.getElementById(
+            "teamRankingList"
+        );
+
+        if (!individualList || !teamList) return;
+
+        const medals = ["🥇", "🥈", "🥉"];
+
+        const sortedPlayers = [...data.players].sort(
+            (a, b) => b.xp - a.xp
+        );
+
+        individualList.innerHTML = "";
+
+        sortedPlayers.forEach((player, index) => {
+
+            const row = document.createElement("div");
+
+            row.className = "team-row";
+
+            const position = medals[index] || `${index + 1}.`;
+
+            row.innerHTML = `
+                <span>${position} ${player.name}</span>
+                <strong>${formatNumber(player.xp)} XP</strong>
+            `;
+
+            individualList.appendChild(row);
+
+        });
+
+        const sortedTeams = data.teams.map(team => {
+
+            const members = data.players.filter(
+                player => player.team === team.name
+            );
+
+            const totalXP = members.reduce(
+                (total, player) => total + Number(player.xp || 0),
+                0
+            );
+
+            return {
+                name: team.name,
+                xp: totalXP,
+                members: members.length
+            };
+
+        }).sort((a, b) => b.xp - a.xp);
+
+        teamList.innerHTML = "";
+
+        sortedTeams.forEach((team, index) => {
+
+            const row = document.createElement("div");
+
+            row.className = "team-row";
+
+            const position = medals[index] || `${index + 1}.`;
+
+            row.innerHTML = `
+                <span>
+                    ${position} ${team.name}
+                    <small>(${team.members} players)</small>
+                </span>
+
+                <strong>${formatNumber(team.xp)} XP</strong>
+            `;
+
+            teamList.appendChild(row);
+
+        });
+
+    }
+
+    // =====================================
+    // 21. PLAYER PROFILE
+    // =====================================
+
+    function updateProfile() {
+
+        const player = data.player;
+
+        const profileSection = document.querySelector("#profile");
+
+        if (!profileSection) return;
+
+        const initials = profileSection.querySelector("#profileInitials");
+        const name = profileSection.querySelector("#profileName");
+        const xp = profileSection.querySelector("#profileXP");
+        const level = profileSection.querySelector("#profileLevel");
+        const streak = profileSection.querySelector("#profileStreak");
+        const completed = profileSection.querySelector("#profileCompleted");
+
+        if (initials) initials.textContent = player.initials;
+
+        if (name) name.textContent = player.name;
+
+        if (xp) xp.textContent = formatNumber(player.xp);
+
+        if (level) {
+            level.textContent = String(player.level).padStart(2, "0");
+        }
+
+        if (streak) {
+            streak.textContent = `${player.streak} Days`;
+        }
+
+        if (completed) {
+            completed.textContent = player.completed;
+        }
+
+        const missionContainer = profileSection.querySelector(
+            "#profileMissions"
+        );
+
+        if (missionContainer) {
+
+            missionContainer.replaceChildren();
+
+            data.missions.forEach(mission => {
+
+                const row = document.createElement("div");
+                row.className = "team-row";
+
+                const title = document.createElement("span");
+                title.textContent = mission.title;
+
+                const reward = document.createElement("strong");
+                reward.textContent = mission.xp;
+
+                row.append(title, reward);
+
+                missionContainer.appendChild(row);
+
+            });
+
+        }
+
+        const playerRecord = data.players.find(
+            item => item.initials === player.initials
+        );
+
+        const teamName = profileSection.querySelector("#profileTeam");
+        const teamXP = profileSection.querySelector("#profileTeamXP");
+
+        if (playerRecord) {
+
+            const team = data.teams.find(
+                item =>
+                    item.name.trim().toLowerCase() ===
+                    playerRecord.team.trim().toLowerCase()
+            );
+
+            if (teamName) {
+
+                teamName.textContent = team
+                    ? `${team.icon} ${team.name}`
+                    : `🏆 ${playerRecord.team}`;
+
+            }
+
+            if (teamXP) {
+
+                teamXP.textContent = team
+                    ? `${formatNumber(team.xp)} XP`
+                    : `${formatNumber(playerRecord.xp)} XP`;
+
+            }
+
+        }
+
+    }
+
+    // =====================================
+    // 22. ACTIVITY HISTORY
+    // =====================================
+
+    function updateActivity() {
+
+        const activityList = document.querySelector("#activityList");
+
+        if (!activityList) return;
+
+        activityList.replaceChildren();
+
+        data.activity.forEach(item => {
+
+            const row = document.createElement("div");
+            row.className = "team-row";
+
+            const information = document.createElement("div");
+
+            const title = document.createElement("strong");
+            title.textContent = `${item.icon} ${item.title}`;
+
+            const detail = document.createElement("p");
+            detail.textContent = item.detail;
+
+            information.append(title, detail);
+
+            const reward = document.createElement("strong");
+            reward.textContent = item.xp;
+
+            row.append(information, reward);
+
+            activityList.appendChild(row);
+
+        });
+
+    }
+
+    // =====================================
+    // 23. INITIALIZE
+    // =====================================
+
+    function initializeApplication() {
+
+        loadSavedProgress();
+
+        updateMissionProgress();
+
+        updateRanking();
+
+        updateProfile();
+
+        updateActivity();
+
+        renderCareerPath();
+
+        updateAssessmentVisibility();
+
+        connectCareerBackButton();
+
+        console.log("--------------------------------");
+        console.log("ZIDONG CORE 2.0: READY");
+        console.log("Career Progression: CONNECTED");
+        console.log("Hanzi Activities: CONNECTED");
+        console.log("Assessment System: CONNECTED");
+        console.log("Ranking: CONNECTED");
+        console.log("Profile: CONNECTED");
+        console.log("Activity: CONNECTED");
+        console.log("--------------------------------");
+
+    }
+
+    initializeApplication();
+
+})();
+
+
+/* =========================================
+   RANKING TABS
+========================================= */
+
+function showRankingTab(tab, button) {
+
+    const individual = document.getElementById("individualRanking");
+    const teams = document.getElementById("teamRanking");
+
+    if (!individual || !teams || !button) return;
+
+    document.querySelectorAll(".ranking-tab").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    if (tab === "individual") {
+
+        individual.style.display = "block";
+        teams.style.display = "none";
+
+    } else {
+
+        individual.style.display = "none";
+        teams.style.display = "block";
+
+    }
+
+}

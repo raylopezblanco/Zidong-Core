@@ -4,20 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0b1424">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Zidong Core · Industrial Hanzi PWA</title>
     
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="icon" type="image/png" href="icon-192.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header class="topbar">
-        <button onclick="if(window.debugBossFight) window.debugBossFight();" 
-                style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5); cursor:pointer;">
-            ⚡ TEST BOSS FIGHT
-        </button>    
-
         <div class="brand">
             <span class="brand-icon">龍</span>
             <div>
@@ -51,7 +49,7 @@
                     </div>
                 </div>
 
-                <div class="mode-card arcade-mode" onclick="navigateTo('arcade')">
+                <div class="mode-card arcade-mode" onclick="openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
                     <span class="mode-tag warning">ARCADE SIMULATOR</span>
                     <h3>CRITICAL FAIL</h3>
@@ -73,10 +71,10 @@
                 </div>
                 <p>Reconoce 5 caracteres Hanzi en Modo Carrera o Arcade.</p>
                 <div class="progress-bar-container">
-                    <div class="progress-fill" style="width: 60%;"></div>
+                    <div class="progress-fill" style="width: 0%;"></div>
                 </div>
                 <div class="mission-footer">
-                    <small>3 / 5 COMPLETED</small>
+                    <small>0 / 5 COMPLETED</small>
                 </div>
             </article>
         </section>
@@ -193,26 +191,102 @@
         <!-- CRITICAL FAIL -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
-                <div class="arcade-top-bar">
-                    <button class="btn-compact-back" onclick="navigateTo('dashboard')">← SALIR</button>
-                    <div class="arcade-station-tag">
-                        <span>ESTACIÓN</span>
-                        <strong>LÍNEA 04 · FIXTURE 02</strong>
+                <div id="cf-selector" class="cf-view-container">
+                    <div class="welcome">
+                        <span class="eyebrow">SISTEMA DE RESPUESTA A FALLAS</span>
+                        <h2>CRITICAL FAIL</h2>
+                        <p>Selecciona una operación de mantenimiento para intervenir la línea:</p>
                     </div>
-                    <div class="arcade-timer-badge" id="cf-timer-box">
-                        <span id="cf-timer">60</span>s
-                    </div>
-                </div>
 
-                <div class="arcade-viewport">
-                    <div class="hmi-alarm-banner">
-                        <span class="alarm-icon">⚠️</span>
-                        <div class="alarm-text">
-                            <strong>PARO CRÍTICO DE LÍNEA</strong>
-                            <small id="cf-alarm-sub">IDENTIFICA EL COMPONENTE EN CHINO</small>
+                    <div class="cf-levels-list">
+                        <div class="cf-level-card" onclick="startCriticalLevel(1)">
+                            <div class="cf-level-badge">LVL 01</div>
+                            <div class="cf-level-info">
+                                <h3>Reconocimiento de Señal</h3>
+                                <p>Reflejos rápidos · Identifica el Hanzi simple de sensores y actuadores</p>
+                            </div>
+                            <span class="cf-action-arrow">⚡ INICIAR</span>
+                        </div>
+
+                        <div class="cf-level-card" onclick="startCriticalLevel(2)">
+                            <div class="cf-level-badge lvl-badge-amber">LVL 02</div>
+                            <div class="cf-level-info">
+                                <h3>Ensamble de Refacciones</h3>
+                                <p>Crafteo rápido · Arma el componente usando los 5 bloques de Hanzi</p>
+                            </div>
+                            <span class="cf-action-arrow">⚡ INICIAR</span>
+                        </div>
+
+                        <div class="cf-level-card" onclick="startCriticalLevel(3)">
+                            <div class="cf-level-badge lvl-badge-purple">LVL 03</div>
+                            <div class="cf-level-info">
+                                <h3>Escáner de Mensaje HMI</h3>
+                                <p>Segmentación · Aísla la sección de la alarma dentro de la oración completa</p>
+                            </div>
+                            <span class="cf-action-arrow">⚡ INICIAR</span>
+                        </div>
+
+                        <div class="cf-level-card" onclick="startCriticalLevel(4)">
+                            <div class="cf-level-badge lvl-badge-red">LVL 04</div>
+                            <div class="cf-level-info">
+                                <h3>Acción Correctiva HMI</h3>
+                                <p>Diagnóstico de Piso · Lee la alarma real y ejecuta la solución técnica</p>
+                            </div>
+                            <span class="cf-action-arrow">⚡ INICIAR</span>
                         </div>
                     </div>
-                    <div class="cf-game-card" id="cf-game-container"></div>
+
+                    <button class="back-button" onclick="navigateTo('dashboard')">
+                        ← REGRESAR AL DASHBOARD
+                    </button>
+                </div>
+
+                <div id="cf-game-arena" class="cf-view-container" style="display:none;">
+                    <div class="cf-hud-bar">
+                        <div class="cf-hud-tag" id="cf-current-level-tag">CRITICAL LEVEL 01</div>
+                        <div class="cf-hud-group">
+                            <div class="cf-hud-box">
+                                <small>TIEMPO</small>
+                                <span id="cf-timer">60</span>s
+                            </div>
+                            <div class="cf-hud-box">
+                                <small>XP</small>
+                                <span id="cf-score">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cf-timer-track">
+                        <div id="cf-timer-bar" class="cf-timer-fill"></div>
+                    </div>
+
+                    <div id="cf-stage-content"></div>
+
+                    <button class="btn-secondary" style="margin-top:16px; width:100%;" onclick="exitCriticalFail()">
+                        ✕ ABANDONAR INTERVENCIÓN
+                    </button>
+                </div>
+
+                <div id="cf-result-screen" class="cf-view-container" style="display:none; text-align:center;">
+                    <div class="panel cf-result-panel">
+                        <span class="cf-result-icon">🏅</span>
+                        <h2>¡LÍNEA RESTABLECIDA!</h2>
+                        <p>Has completado la intervención técnica.</p>
+
+                        <div class="cf-score-reward">
+                            <small>EXPERIENCIA OBTENIDA</small>
+                            <h1 id="cf-final-score">+500 XP</h1>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button class="reveal-button" style="flex:1;" onclick="startCriticalLevel(currentLevel || 1)">
+                                REPETIR NIVEL
+                            </button>
+                            <button class="back-button" style="flex:1; margin-top:0;" onclick="exitCriticalFail()">
+                                SELECCIONAR NIVEL
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -224,7 +298,16 @@
                 <h2>Ranking de Ingenieros</h2>
                 <p>Rendimiento en planta y comisionamiento técnico.</p>
             </div>
-            <div class="ranking-list" id="rankingListContainer"></div>
+            <div class="ranking-tabs">
+                <button class="ranking-tab active" onclick="showRankingTab('individual', this)">👤 Individual</button>
+                <button class="ranking-tab" onclick="showRankingTab('team', this)">🏆 Equipos</button>
+            </div>
+            <div id="individualRanking">
+                <div class="ranking-list" id="individualRankingList"></div>
+            </div>
+            <div id="teamRanking" style="display:none;">
+                <div class="ranking-list" id="teamRankingList"></div>
+            </div>
         </section>
 
         <!-- PROFILE -->
@@ -239,10 +322,22 @@
                 <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
                 <div class="profile-stats-grid">
                     <div class="p-stat"><span id="profileXP">0</span><small>TOTAL XP</small></div>
-                    <div class="p-stat"><span id="profileStars">0</span><small>ESTRELLAS ⭐</small></div>
+                    <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
+                    <div class="p-stat"><span id="profileStreak">5 Días</span><small>RACHA</small></div>
                     <div class="p-stat"><span id="profileCompleted">0</span><small>HANZI DOMINADOS</small></div>
                 </div>
             </article>
+
+            <article class="daily-mission-card" style="margin-top:16px;">
+                <div class="mission-header">
+                    <div>
+                        <span class="eyebrow">ACTIVIDAD EN PLANTA</span>
+                        <h4>HISTORIAL</h4>
+                    </div>
+                </div>
+                <div id="activityList"></div>
+            </article>
+
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:20px;">
                 ← REGRESAR AL INICIO
             </button>
@@ -258,7 +353,7 @@
         <button class="nav-item" onclick="navigateTo('career')">
             <span class="nav-icon">🗺️</span><span class="nav-label">Learn</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('arcade')">
+        <button class="nav-item" onclick="openCriticalMode()">
             <span class="nav-icon">⚡</span><span class="nav-label">Play</span>
         </button>
         <button class="nav-item" onclick="navigateTo('leaderboard')">
@@ -266,27 +361,22 @@
         </button>
     </nav>
 
-    <!-- CARGA DE SCRIPTS PLANOS EN RAÍZ -->
+    <!-- SCRIPTS EN LA RAÍZ -->
     <script src="audio.js"></script>
     <script src="navigation.js"></script>
-    <script src="hanzi-lab.js"></script>
     <script src="mock-data.js"></script>
-    <script src="app.js"></script>
     <script src="critical-fail.js"></script>
-<!-- REGISTRO DEL SERVICE WORKER (PWA / INSTALACIÓN) -->
+    <script src="app.js"></script>
+
+    <!-- SERVICE WORKER REGISTRATION (PWA) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => {
-                        console.log('Zidong Core SW registrado con éxito en:', reg.scope);
-                    })
-                    .catch(err => {
-                        console.error('Error al registrar Service Worker:', err);
-                    });
+                    .then(reg => console.log('SW activo en:', reg.scope))
+                    .catch(err => console.error('Error al registrar SW:', err));
             });
         }
     </script>
-
 </body>
 </html>

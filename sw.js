@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zidong-core-v2-flat';
+const CACHE_NAME = 'zidong-core-v2-installable';
 const APP_SHELL = [
     './',
     './index.html',
@@ -14,7 +14,14 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', event => { 
-    event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))); 
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            // Se usa map individual para que si falta un archivo opcional no rompa la instalación
+            return Promise.allSettled(
+                APP_SHELL.map(url => cache.add(url))
+            );
+        })
+    ); 
     self.skipWaiting(); 
 });
 
@@ -28,7 +35,7 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => { 
-    if(event.request.method !== 'GET') return; 
+    if (event.request.method !== 'GET') return; 
     event.respondWith(
         caches.match(event.request).then(cached => cached || fetch(event.request))
     ); 

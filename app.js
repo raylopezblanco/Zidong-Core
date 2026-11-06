@@ -969,9 +969,69 @@
         });
     }
 
+// =====================================
+    // 21. PLAYER PROFILE & MEDALLAS
     // =====================================
-    // 21. PLAYER PROFILE
-    // =====================================
+
+    // Definición de medallas del sistema técnico
+    const MEDALS_DB = [
+        {
+            id: "badge_electric",
+            icon: "⚡",
+            name: "Comisionado Eléctrico",
+            desc: "Aprueba la evaluación del Área 01",
+            isUnlocked: () => Boolean(career.assessmentPassed)
+        },
+        {
+            id: "badge_first_hanzi",
+            icon: "🔌",
+            name: "Primer Circuito",
+            desc: "Domina tu primer Hanzi técnico",
+            isUnlocked: () => career.completedActivities.length >= 1
+        },
+        {
+            id: "badge_overclock",
+            icon: "⭐",
+            name: "Overclock 3 Estrellas",
+            desc: "Consigue 3 estrellas en cualquier nodo",
+            isUnlocked: () => Object.values(career.nodeStars || {}).some(stars => stars >= 3)
+        },
+        {
+            id: "badge_halfway",
+            icon: "🔧",
+            name: "Técnico de Celda",
+            desc: "Completa 4 o más actividades",
+            isUnlocked: () => career.completedActivities.length >= 4
+        },
+        {
+            id: "badge_full_area",
+            icon: "🏅",
+            name: "Ingeniero Maestro",
+            desc: "Completa todos los nodos de la línea",
+            isUnlocked: () => career.completedActivities.length >= activities.length
+        },
+        {
+            id: "badge_arcade",
+            icon: "⚠️",
+            name: "Intervención Crítica",
+            desc: "Acumula más de 1,500 XP en planta",
+            isUnlocked: () => (data.player?.xp || 0) >= 1500
+        },
+        {
+            id: "badge_dragon",
+            icon: "龍",
+            name: "Zìdòng Core",
+            desc: "Insignia oficial de la academia",
+            isUnlocked: () => true // Siempre disponible por defecto
+        },
+        {
+            id: "badge_robot",
+            icon: "🤖",
+            name: "Célula Robótica",
+            desc: "Próxima área de robótica",
+            isUnlocked: () => false // Bloqueada para futuros niveles
+        }
+    ];
 
     function updateProfile() {
         if (typeof data === "undefined" || !data.player) return;
@@ -990,8 +1050,65 @@
         if (name) name.textContent = player.name;
         if (xp) xp.textContent = formatNumber(player.xp);
         if (level) level.textContent = String(player.level).padStart(2, "0");
-        if (streak) streak.textContent = `${player.streak} Days`;
-        if (completed) completed.textContent = player.completed;
+        if (streak) streak.textContent = `${player.streak} Días`;
+        if (completed) completed.textContent = career.completedActivities.length;
+
+        // Cargar avatar equipado previamente (o iniciales por defecto)
+        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
+        applyAvatarIcon(savedIcon);
+
+        // Renderizar vitrina de medallas
+        renderBadgesGrid();
+    }
+
+    function applyAvatarIcon(icon) {
+        const profileAvatar = document.getElementById("profileAvatar");
+        const topAvatar = document.getElementById("topAvatar");
+
+        [profileAvatar, topAvatar].forEach(el => {
+            if (!el) return;
+            el.textContent = icon;
+            if (icon !== "RL") {
+                el.classList.add("custom-icon");
+            } else {
+                el.classList.remove("custom-icon");
+            }
+        });
+    }
+
+    function renderBadgesGrid() {
+        const container = document.getElementById("badgesContainer");
+        if (!container) return;
+
+        container.replaceChildren();
+        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || "RL";
+
+        MEDALS_DB.forEach(medal => {
+            const unlocked = medal.isUnlocked();
+            const isEquipped = currentEquipped === medal.icon;
+
+            const badgeEl = document.createElement("div");
+            badgeEl.className = `badge-item ${unlocked ? "" : "locked"} ${isEquipped ? "equipped" : ""}`;
+            badgeEl.title = unlocked ? `${medal.name}: ${medal.desc}` : `Bloqueada: ${medal.desc}`;
+
+            badgeEl.innerHTML = `
+                <span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span>
+                <span class="badge-title">${medal.name}</span>
+            `;
+
+            if (unlocked) {
+                badgeEl.onclick = () => {
+                    // Si ya está equipada, vuelve a poner las iniciales "RL"
+                    const newEquip = isEquipped ? "RL" : medal.icon;
+                    localStorage.setItem("zidong_equipped_badge", newEquip);
+                    if (triggerHaptic) triggerHaptic("success");
+                    renderBadgesGrid();
+                    applyAvatarIcon(newEquip);
+                };
+            }
+
+            container.appendChild(badgeEl);
+        });
     }
 
     // =====================================

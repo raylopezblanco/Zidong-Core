@@ -35,32 +35,41 @@
 
     <main class="app-shell">
 
-        <!-- DASHBOARD -->
+  <!-- DASHBOARD -->
         <section id="dashboard" class="page active">
             <div class="learning-modes">
+
+                <!-- CAREER MODE -->
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
                     <div class="mode-icon">🏆</div>
-                    <span class="mode-tag">STRUCTURED LEARNING</span>
-                    <h3>CAREER MODE</h3>
-                    <p>Start from zero and progress through every learning level.</p>
+                    <div class="mode-card-content">
+                        <span class="mode-tag">STRUCTURED LEARNING</span>
+                        <h3>CAREER MODE</h3>
+                        <p>Start from zero and progress through every learning level.</p>
+                    </div>
                     <div class="mode-action">
-                        <span>START YOUR JOURNEY</span>
+                        <span>START</span>
                         <span class="arrow">→</span>
                     </div>
                 </div>
 
+                <!-- CRITICAL FAIL -->
                 <div class="mode-card arcade-mode" onclick="openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
-                    <span class="mode-tag warning">ARCADE SIMULATOR</span>
-                    <h3>CRITICAL FAIL</h3>
-                    <p>Simulador contrarreloj de alarmas HMI y ensamble de piezas.</p>
+                    <div class="mode-card-content">
+                        <span class="mode-tag warning">ARCADE SIMULATOR</span>
+                        <h3>CRITICAL FAIL</h3>
+                        <p>Simulador contrarreloj de alarmas HMI y ensamble de piezas.</p>
+                    </div>
                     <div class="mode-action warning">
-                        <span>INTERVENIR LÍNEA</span>
+                        <span>LÍNEA</span>
                         <span class="arrow">⚡</span>
                     </div>
                 </div>
+
             </div>
 
+            <!-- DAILY MISSION -->
             <article class="daily-mission-card">
                 <div class="mission-header">
                     <div>

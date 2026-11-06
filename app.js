@@ -1021,11 +1021,12 @@
         }
     }
 
-    function syncCompanionWithEquipped() {
+   function syncCompanionWithEquipped() {
+        // Mantiene la imagen gráfica del Cyberdog intacta en el dashboard
         const avatarEl = document.getElementById("companionVisual");
-        const equipped = localStorage.getItem("zidong_equipped_badge");
-        if (avatarEl && equipped && equipped !== "RL") {
-            avatarEl.textContent = equipped;
+        if (avatarEl && avatarEl.tagName === "IMG") {
+            // Ya es la imagen del Cyberdog, no la reemplaza con texto
+            return;
         }
     }
 

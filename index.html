@@ -310,16 +310,19 @@
             </div>
         </section>
 
-        <!-- PROFILE -->
+<!-- PROFILE -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
                 <h2>Perfil de Especialista</h2>
             </div>
+            
             <article class="profile-card">
-                <div class="avatar-large" id="profileAvatar">RL</div>
+                <!-- Avatar equipado interactivo -->
+                <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">RL</div>
                 <h3 id="profileName">Raymundo Lopez</h3>
                 <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
+                
                 <div class="profile-stats-grid">
                     <div class="p-stat"><span id="profileXP">0</span><small>TOTAL XP</small></div>
                     <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
@@ -328,17 +331,23 @@
                 </div>
             </article>
 
-            <article class="daily-mission-card" style="margin-top:16px;">
+            <!-- VITRINA DE MEDALLAS / INSIGNIAS -->
+            <article class="daily-mission-card" style="margin-top:14px;">
                 <div class="mission-header">
                     <div>
-                        <span class="eyebrow">ACTIVIDAD EN PLANTA</span>
-                        <h4>HISTORIAL</h4>
+                        <span class="eyebrow">INSIGNIAS Y RANGOS</span>
+                        <h4>VITRINA DE MEDALLAS</h4>
                     </div>
+                    <small style="color:var(--muted); font-size:10px;">Toca una para equipar</small>
                 </div>
-                <div id="activityList"></div>
+                <p style="font-size:11px; margin-bottom:12px;">Desbloquea insignias completando áreas y retos para usarlas como insignia de avatar.</p>
+                
+                <div class="badges-grid" id="badgesContainer">
+                    <!-- Se generan dinámicamente con app.js -->
+                </div>
             </article>
 
-            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:20px;">
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:16px;">
                 ← REGRESAR AL INICIO
             </button>
         </section>

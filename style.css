@@ -38,7 +38,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
+    padding: 10px 16px;
     background: rgba(11, 20, 36, 0.95);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
@@ -54,10 +54,10 @@ body {
 }
 
 .brand-icon {
-    font-size: 22px;
+    font-size: 20px;
     background: linear-gradient(135deg, #10b981, #06b6d4);
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,7 +67,7 @@ body {
 }
 
 .brand h1 {
-    font-size: 14px;
+    font-size: 13.5px;
     letter-spacing: 1px;
     font-weight: 800;
     color: #fff;
@@ -75,7 +75,7 @@ body {
 }
 
 .brand small {
-    font-size: 8.5px;
+    font-size: 8px;
     color: var(--cyan);
     letter-spacing: 0.5px;
     font-weight: 700;
@@ -93,13 +93,13 @@ body {
 }
 
 .avatar {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: #2563eb;
     color: #fff;
     font-weight: 800;
-    font-size: 11px;
+    font-size: 10.5px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -107,11 +107,11 @@ body {
 
 .avatar.custom-icon {
     background: transparent;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .user-meta strong {
-    font-size: 11px;
+    font-size: 10.5px;
     color: #fff;
     display: block;
     line-height: 1.1;
@@ -128,9 +128,9 @@ body {
 /* APP SHELL */
 .app-shell {
     width: 100%;
-    max-width: 520px;
+    max-width: 500px;
     margin: 0 auto;
-    padding: 10px 14px 20px 14px;
+    padding: 8px 12px 20px 12px;
 }
 
 .page {
@@ -142,7 +142,95 @@ body {
 }
 
 /* ==========================================================================
-   DASHBOARD - COMPANION STAGE (ESTILO BRAWL STARS / CLASH ROYALE)
+   1. MODOS PRINCIPALES ARRIBA DEL ROBOT (2 COLUMNAS)
+   ========================================================================== */
+
+.main-modes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.mode-card {
+    position: relative;
+    padding: 10px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.12s ease;
+}
+
+.mode-card:active {
+    transform: scale(0.97);
+}
+
+.career-mode {
+    background: linear-gradient(145deg, #13423d, #0d2729);
+    border: 1px solid rgba(34, 197, 139, 0.45);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.arcade-mode {
+    background: linear-gradient(145deg, #44141a, #1f0a0d);
+    border: 1px solid rgba(255, 68, 68, 0.5);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.mode-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.mode-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.mode-tag {
+    font-size: 7.5px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.mode-tag.warning {
+    color: #ff7777;
+}
+
+.mode-card h3 {
+    font-size: 12.5px;
+    color: #fff;
+    margin: 0 0 2px 0;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.mode-card p {
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mode-action {
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.mode-action.warning {
+    color: var(--gold);
+}
+
+/* ==========================================================================
+   2. ROBOT / COMPANION CENTRAL (ABAJO DE LOS MODOS PRINCIPALES)
    ========================================================================== */
 
 .companion-stage {
@@ -150,38 +238,38 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 6px 0 8px;
+    padding: 4px 0 6px;
     position: relative;
 }
 
 .speech-bubble {
     background: rgba(17, 31, 53, 0.95);
     border: 1.5px solid var(--cyan);
-    border-radius: 14px;
-    padding: 8px 14px;
-    max-width: 280px;
+    border-radius: 12px;
+    padding: 6px 12px;
+    max-width: 270px;
     text-align: center;
     position: relative;
-    box-shadow: 0 4px 18px rgba(39, 216, 232, 0.2);
-    margin-bottom: 8px;
+    box-shadow: 0 4px 16px rgba(39, 216, 232, 0.2);
+    margin-bottom: 6px;
     animation: floatBubble 2.5s ease-in-out infinite;
 }
 
 .speech-bubble::after {
     content: "";
     position: absolute;
-    bottom: -7px;
+    bottom: -6px;
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 7px solid transparent;
-    border-right: 7px solid transparent;
-    border-top: 7px solid var(--cyan);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--cyan);
 }
 
 .speech-bubble span {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 700;
     color: #ffffff;
     line-height: 1.25;
@@ -201,7 +289,7 @@ body {
 }
 
 .companion-avatar {
-    font-size: 58px;
+    font-size: 52px;
     line-height: 1;
     z-index: 2;
     transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -213,118 +301,113 @@ body {
 }
 
 .podium-ring {
-    width: 96px;
-    height: 24px;
+    width: 90px;
+    height: 22px;
     background: radial-gradient(ellipse at center, rgba(39, 216, 232, 0.45) 0%, rgba(39, 133, 255, 0.1) 60%, transparent 80%);
     border-radius: 50%;
     border: 1.5px solid rgba(39, 216, 232, 0.5);
     margin-top: -10px;
-    box-shadow: 0 0 16px rgba(39, 216, 232, 0.4);
+    box-shadow: 0 0 14px rgba(39, 216, 232, 0.4);
 }
 
-/* BOTONES DE MODO DE JUEGO (REJILLA 2 COLUMNAS) */
-.brawl-menu-grid, .learning-modes {
+/* ==========================================================================
+   3. BOTONES SECUNDARIOS (DAILY REWARD & VS MODE)
+   ========================================================================== */
+
+.secondary-modes-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.mode-card {
-    position: relative;
-    padding: 12px 10px;
-    border-radius: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
     gap: 8px;
-    transition: transform 0.12s ease;
+    margin-top: 4px;
+    margin-bottom: 8px;
 }
 
-.mode-card:active {
+.sub-mode-card {
+    border-radius: 12px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.15s ease;
+    border: 1.5px solid transparent;
+}
+
+.sub-mode-card:active {
     transform: scale(0.97);
 }
 
-.career-mode {
-    background: linear-gradient(145deg, #13423d, #0d2729);
-    border: 1px solid rgba(34, 197, 139, 0.45);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+.daily-card {
+    background: linear-gradient(145deg, #2a1b12, #16100d);
+    border-color: rgba(255, 170, 0, 0.45);
 }
 
-.arcade-mode {
-    background: linear-gradient(145deg, #44141a, #1f0a0d);
-    border: 1px solid rgba(255, 68, 68, 0.5);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+.vs-card {
+    background: linear-gradient(145deg, #261435, #120b1b);
+    border-color: rgba(167, 139, 250, 0.45);
 }
 
-.mode-icon {
-    font-size: 24px;
-    line-height: 1;
-}
-
-.mode-card-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.mode-tag {
-    font-size: 8px;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    color: var(--cyan);
-    display: block;
+.sub-card-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     margin-bottom: 2px;
 }
 
-.mode-tag.warning {
-    color: #ff7777;
+.sub-card-icon {
+    font-size: 15px;
+    line-height: 1;
 }
 
-.mode-card h3 {
-    font-size: 13.5px;
-    color: #fff;
+.sub-card-tag {
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+}
+
+.sub-card-tag.gold {
+    color: var(--gold);
+}
+
+.sub-card-tag.purple {
+    color: var(--purple);
+}
+
+.sub-mode-card h4 {
+    font-size: 12px;
+    color: #ffffff;
+    font-weight: 800;
     margin: 0 0 2px 0;
     line-height: 1.1;
-    font-weight: 700;
 }
 
-.mode-card p {
+.sub-mode-card p {
+    font-size: 9px;
     color: var(--muted);
-    font-size: 9.5px;
-    line-height: 1.2;
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.mode-action {
-    color: #fff;
-    font-weight: 800;
-    font-size: 14px;
-}
+/* ==========================================================================
+   4. DAILY MISSION & BUILD STAMP
+   ========================================================================== */
 
-.mode-action.warning {
-    color: var(--gold);
-}
-
-/* DAILY MISSION */
 .daily-mission-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
 }
 
 .mission-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .eyebrow {
-    font-size: 8.5px;
+    font-size: 8px;
     font-weight: 800;
     letter-spacing: 1px;
     color: var(--cyan);
@@ -332,7 +415,7 @@ body {
 }
 
 .mission-header h4 {
-    font-size: 13px;
+    font-size: 12px;
     color: #fff;
     margin: 0;
 }
@@ -340,7 +423,7 @@ body {
 .mission-reward {
     color: var(--gold);
     font-weight: 800;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .progress-bar-container {
@@ -359,23 +442,22 @@ body {
 }
 
 .mission-footer small {
-    font-size: 9.5px;
+    font-size: 9px;
     color: var(--muted);
     font-weight: 700;
 }
 
-/* BUILD STAMP BAR */
 .build-stamp-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: rgba(17, 31, 53, 0.7);
     border: 1px dashed rgba(39, 216, 232, 0.3);
-    border-radius: 10px;
-    padding: 6px 12px;
-    margin-top: 6px;
+    border-radius: 8px;
+    padding: 5px 10px;
+    margin-top: 4px;
     font-family: monospace;
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--muted);
 }
 
@@ -393,11 +475,11 @@ body {
    ========================================================================== */
 
 .welcome {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .welcome h2 {
-    font-size: 18px;
+    font-size: 17px;
     color: #fff;
 }
 
@@ -409,44 +491,44 @@ body {
 .career-overview {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px;
-    margin-bottom: 16px;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 14px;
 }
 
 .career-overview-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .career-overview-top h3 {
-    font-size: 14px;
+    font-size: 13.5px;
     color: #fff;
 }
 
 .career-trophy {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .career-current-area {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     background: rgba(39, 216, 232, 0.08);
     border: 1px solid rgba(39, 216, 232, 0.2);
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-bottom: 12px;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
 }
 
 .career-current-area > span {
-    font-size: 24px;
+    font-size: 22px;
 }
 
 .career-current-area small {
-    font-size: 8.5px;
+    font-size: 8px;
     color: var(--cyan);
     font-weight: 800;
     letter-spacing: 0.5px;
@@ -454,14 +536,14 @@ body {
 }
 
 .career-current-area h2 {
-    font-size: 16px;
+    font-size: 15px;
     color: #fff;
     margin: 0;
 }
 
 .career-area-number {
     margin-left: auto;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 900;
     color: rgba(255, 255, 255, 0.15);
 }
@@ -469,13 +551,13 @@ body {
 .career-progress-info {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 10.5px;
     margin-bottom: 4px;
 }
 
 .career-progress {
     width: 100%;
-    height: 8px;
+    height: 7px;
     background: #0a111e;
     border-radius: 4px;
     overflow: hidden;
@@ -485,7 +567,7 @@ body {
 .career-progress-footer {
     display: flex;
     justify-content: space-between;
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--muted);
 }
 
@@ -493,67 +575,67 @@ body {
 .career-path {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     position: relative;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 
 .path-start {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .path-start-icon {
-    font-size: 32px;
+    font-size: 28px;
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .path-start h3 {
-    font-size: 14px;
+    font-size: 13.5px;
     color: #fff;
 }
 
 .path-start p {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--muted);
 }
 
 .path-area {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px;
+    border-radius: 14px;
+    padding: 12px;
 }
 
 .path-area-heading {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 16px;
-    padding-bottom: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .path-area-icon {
-    font-size: 22px;
+    font-size: 20px;
 }
 
 .path-area-heading h3 {
-    font-size: 14px;
+    font-size: 13px;
     color: #fff;
 }
 
 .path-area-heading p {
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--muted);
 }
 
 .path-status {
     margin-left: auto;
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 800;
-    padding: 3px 8px;
+    padding: 3px 7px;
     border-radius: 6px;
     background: rgba(0, 245, 155, 0.15);
     color: var(--green);
@@ -571,23 +653,23 @@ body {
 }
 
 .path-lock-message {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--muted);
     text-align: center;
-    padding: 10px;
+    padding: 8px;
 }
 
 .path-nodes {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     position: relative;
 }
 
 .path-step {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
 }
 
 .path-step.right {
@@ -596,16 +678,16 @@ body {
 }
 
 .path-node {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 900;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     transition: transform 0.1s ease;
 }
 
@@ -619,7 +701,7 @@ body {
     background: linear-gradient(135deg, #2563eb, #06b6d4);
     color: #fff;
     border: 2px solid var(--cyan);
-    box-shadow: 0 0 16px rgba(39, 216, 232, 0.5);
+    box-shadow: 0 0 14px rgba(39, 216, 232, 0.5);
     animation: pulseNode 1.8s infinite;
 }
 
@@ -635,33 +717,33 @@ body {
 }
 
 .path-node.assessment {
-    width: 60px;
-    height: 60px;
-    font-size: 26px;
+    width: 54px;
+    height: 54px;
+    font-size: 24px;
 }
 
 .path-label strong {
     display: block;
-    font-size: 13px;
+    font-size: 12.5px;
     color: #fff;
 }
 
 .path-label small {
     display: block;
-    font-size: 10.5px;
+    font-size: 10px;
     color: var(--muted);
     margin: 2px 0;
 }
 
 .node-action {
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 800;
     letter-spacing: 0.5px;
     color: var(--cyan);
 }
 
 /* ==========================================================================
-   LESSON / RECOGNITION / TESTS
+   LESSON / TESTS / ARCADE / RANKING / PROFILE
    ========================================================================== */
 
 .lesson-top-nav {
@@ -694,8 +776,8 @@ body {
 .recognition-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 20px 14px;
+    border-radius: 18px;
+    padding: 18px 12px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -703,18 +785,18 @@ body {
 }
 
 .recognition-hanzi {
-    font-size: 80px;
+    font-size: 76px;
     line-height: 1;
     font-family: "Noto Sans SC", sans-serif;
     color: #ffffff;
     margin: 10px 0;
-    text-shadow: 0 0 20px rgba(39, 216, 232, 0.4);
+    text-shadow: 0 0 18px rgba(39, 216, 232, 0.4);
 }
 
 .career-quiz-grid {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     max-width: 320px;
 }
@@ -723,7 +805,7 @@ body {
     background: var(--surface-light);
     border: 1.5px solid var(--border);
     color: #fff;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: 700;
     transition: all 0.15s ease;
@@ -758,17 +840,17 @@ body {
 .cf-slots-dock {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .cf-slot {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 900;
     border: 2px solid var(--border);
 }
@@ -786,19 +868,15 @@ body {
 }
 
 .cf-part-btn {
-    height: 52px;
-    border-radius: 12px;
+    height: 48px;
+    border-radius: 10px;
     background: var(--surface-light);
     border: 1.5px solid var(--border);
     color: #fff;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 900;
     cursor: pointer;
 }
-
-/* ==========================================================================
-   CRITICAL FAIL (ARCADE SIMULATOR)
-   ========================================================================== */
 
 .arcade-shell {
     padding-bottom: 20px;
@@ -807,18 +885,18 @@ body {
 .cf-levels-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
+    gap: 8px;
+    margin-bottom: 14px;
 }
 
 .cf-level-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 12px 14px;
+    border-radius: 12px;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     transition: transform 0.12s ease;
 }
@@ -828,13 +906,13 @@ body {
 }
 
 .cf-level-badge {
-    padding: 6px 10px;
+    padding: 5px 8px;
     background: rgba(39, 216, 232, 0.15);
     border: 1px solid var(--cyan);
     color: var(--cyan);
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 900;
-    border-radius: 8px;
+    border-radius: 6px;
     flex-shrink: 0;
 }
 
@@ -862,18 +940,18 @@ body {
 }
 
 .cf-level-info h3 {
-    font-size: 13.5px;
+    font-size: 13px;
     color: #fff;
     margin-bottom: 2px;
 }
 
 .cf-level-info p {
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--muted);
 }
 
 .cf-action-arrow {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
     color: var(--gold);
     flex-shrink: 0;
@@ -883,43 +961,43 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .cf-hud-tag {
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 800;
     color: var(--cyan);
 }
 
 .cf-hud-group {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .cf-hud-box {
     background: var(--surface-light);
     border: 1px solid var(--border);
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 11px;
     font-weight: 900;
     color: #fff;
 }
 
 .cf-hud-box small {
-    font-size: 8px;
+    font-size: 7.5px;
     color: var(--muted);
-    margin-right: 4px;
+    margin-right: 3px;
 }
 
 .cf-timer-track {
     width: 100%;
-    height: 7px;
+    height: 6px;
     background: #0a111e;
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .cf-timer-fill {
@@ -929,24 +1007,20 @@ body {
     transition: width 0.2s linear;
 }
 
-/* ==========================================================================
-   RANKING & TEAMS
-   ========================================================================== */
-
 .ranking-tabs {
     display: flex;
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .ranking-tab {
     flex: 1;
-    padding: 10px;
+    padding: 8px;
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 800;
     cursor: pointer;
 }
@@ -960,62 +1034,58 @@ body {
 .ranking-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .team-row {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 10px;
+    padding: 10px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: 12px;
     color: #fff;
 }
 
 .team-row strong {
     color: var(--cyan);
-    font-size: 13px;
+    font-size: 12px;
 }
-
-/* ==========================================================================
-   PROFILE & MEDAL VITRINE
-   ========================================================================== */
 
 .profile-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 20px 14px;
+    border-radius: 16px;
+    padding: 16px 12px;
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .avatar-large {
-    width: 68px;
-    height: 68px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: #2563eb;
     color: #fff;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 10px auto;
+    margin: 0 auto 8px auto;
     border: 2px solid var(--cyan);
-    box-shadow: 0 0 16px rgba(39, 216, 232, 0.4);
+    box-shadow: 0 0 14px rgba(39, 216, 232, 0.4);
 }
 
 .avatar-large.custom-icon {
     background: transparent;
-    font-size: 40px;
+    font-size: 36px;
 }
 
 .profile-card h3 {
-    font-size: 16px;
+    font-size: 15px;
     color: #fff;
     margin-bottom: 4px;
 }
@@ -1024,41 +1094,40 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
-    margin-top: 14px;
+    margin-top: 12px;
 }
 
 .p-stat {
     background: var(--surface-light);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 4px;
+    border-radius: 8px;
+    padding: 6px 3px;
 }
 
 .p-stat span {
     display: block;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
     color: var(--cyan);
 }
 
 .p-stat small {
-    font-size: 8px;
+    font-size: 7.5px;
     color: var(--muted);
     font-weight: 700;
 }
 
-/* VITRINA DE MEDALLAS EN PROFILE */
 .badges-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 6px;
 }
 
 .badge-item {
     background: var(--surface-light);
     border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 6px;
+    border-radius: 10px;
+    padding: 8px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1084,27 +1153,24 @@ body {
 }
 
 .badge-icon {
-    font-size: 26px;
-    margin-bottom: 4px;
+    font-size: 24px;
+    margin-bottom: 3px;
 }
 
 .badge-title {
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 700;
     color: #fff;
     line-height: 1.1;
 }
 
-/* ==========================================================================
-   BOTTOM NAVIGATION
-   ========================================================================== */
-
+/* BOTTOM NAVIGATION */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 56px;
+    height: 54px;
     background: rgba(11, 20, 36, 0.95);
     backdrop-filter: blur(10px);
     border-top: 1px solid var(--border);
@@ -1123,7 +1189,7 @@ body {
     align-items: center;
     gap: 2px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 700;
     flex: 1;
 }
@@ -1133,16 +1199,16 @@ body {
 }
 
 .nav-icon {
-    font-size: 18px;
+    font-size: 17px;
 }
 
 /* BOTONES GLOBALES */
 .reveal-button, .back-button, .btn-secondary {
     display: block;
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 800;
     border: none;
     cursor: pointer;
@@ -1168,145 +1234,15 @@ body {
 .panel {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
+    border-radius: 14px;
+    padding: 14px;
 }
 
 .tag {
     display: inline-block;
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 8.5px;
     font-weight: 800;
     border: 1px solid;
 }
-<!-- DASHBOARD (ESTRUCTURA REDISEÑADA) -->
-        <section id="dashboard" class="page active">
-
-            <!-- 1. BOTONES PRINCIPALES ARRIBA DEL ROBOT -->
-            <div class="main-modes-grid">
-                <!-- CAREER MODE -->
-                <div class="mode-card career-mode" onclick="navigateTo('career')">
-                    <div class="mode-icon">🏆</div>
-                    <div class="mode-card-content">
-                        <span class="mode-tag">ESTRUCTURADO</span>
-                        <h3>CAREER MODE</h3>
-                        <p>Nivel por nivel</p>
-                    </div>
-                    <div class="mode-action">
-                        <span class="arrow">→</span>
-                    </div>
-                </div>
-
-                <!-- SURVIVOR MODE (ANTES ARCADE) -->
-                <div class="mode-card arcade-mode" onclick="openCriticalMode()">
-                    <div class="mode-icon">⚠️</div>
-                    <div class="mode-card-content">
-                        <span class="mode-tag warning">CONTRARRELOJ</span>
-                        <h3>SURVIVOR MODE</h3>
-                        <p>Línea bajo ataque</p>
-                    </div>
-                    <div class="mode-action warning">
-                        <span class="arrow">⚡</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. ROBOT / COMPAÑERO EN EL CENTRO (ABAJO DE LOS BOTONES GRANDES) -->
-            <div class="companion-stage">
-                <!-- Burbuja interactiva -->
-                <div class="speech-bubble" id="companionBubble">
-                    <span id="companionText">¡Línea lista! Modo Survivor en espera. ⚡</span>
-                </div>
-
-                <!-- Robot en podio -->
-                <div class="companion-podium" onclick="interactWithCompanion()">
-                    <div class="companion-avatar" id="companionVisual">
-                        🤖
-                    </div>
-                    <div class="podium-ring"></div>
-                </div>
-            </div>
-
-            <!-- 3. BOTONES SECUNDARIOS (DAILY REWARD & VS MODE) -->
-            <div class="secondary-modes-grid">
-                <!-- DAILY REWARD -->
-                <div class="sub-mode-card daily-card" onclick="claimDailyReward()">
-                    <div class="sub-card-header">
-                        <span class="sub-card-icon">🎁</span>
-                        <strong class="sub-card-tag gold">DAILY</strong>
-                    </div>
-                    <h4>DAILY REWARD</h4>
-                    <p id="dailyRewardSubtitle">Claim your XP</p>
-                </div>
-
-                <!-- VS MODE (1v1 / VS MACHINE) -->
-                <div class="sub-mode-card vs-card" onclick="openVsMode()">
-                    <div class="sub-card-header">
-                        <span class="sub-card-icon">⚔️</span>
-                        <strong class="sub-card-tag purple">VS MODE</strong>
-                    </div>
-                    <h4>1v1 BATTLE</h4>
-                    <p>Vs Machine / Rival</p>
-                </div>
-            </div>
-
-            <!-- 4. DAILY MISSION COMPACTA -->
-            <article class="daily-mission-card">
-                <div class="mission-header">
-                    <div>
-                        <span class="eyebrow">DAILY MISSION</span>
-                        <h4>IN PROGRESS</h4>
-                    </div>
-                    <span class="mission-reward">+50 XP</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-fill" style="width: 0%;"></div>
-                </div>
-                <div class="mission-footer">
-                    <small>0 / 5 COMPLETED</small>
-                </div>
-            </article>
-
-            <!-- 5. MONITOR DE COMPILACIÓN -->
-            <div class="build-stamp-bar">
-                <span>⚡ BUILD ACTIVO:</span>
-                <strong id="buildTimestamp">Verificando versión...</strong>
-            </div>
-
-            <script>
-                (() => {
-                    const el = document.getElementById("buildTimestamp");
-                    fetch("app.js?t=" + Date.now(), { method: "HEAD" })
-                        .then(res => {
-                            const mod = res.headers.get("Last-Modified");
-                            const d = mod ? new Date(mod) : new Date(document.lastModified);
-                            if (el) {
-                                el.textContent = d.toLocaleString("es-MX", {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit",
-                                    hour12: true
-                                });
-                            }
-                        })
-                        .catch(() => {
-                            if (el) {
-                                const d = new Date(document.lastModified);
-                                el.textContent = d.toLocaleString("es-MX", {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit",
-                                    hour12: true
-                                });
-                            }
-                        });
-                })();
-            </script>
-        </section>

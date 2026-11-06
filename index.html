@@ -273,6 +273,20 @@
     <script src="mock-data.js"></script>
     <script src="app.js"></script>
     <script src="critical-fail.js"></script>
+<!-- REGISTRO DEL SERVICE WORKER (PWA / INSTALACIÓN) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        console.log('Zidong Core SW registrado con éxito en:', reg.scope);
+                    })
+                    .catch(err => {
+                        console.error('Error al registrar Service Worker:', err);
+                    });
+            });
+        }
+    </script>
 
 </body>
 </html>

@@ -1,79 +1,113 @@
-
 /* =========================================
    ZIDONG CORE 2.0
-   NAVIGATION SYSTEM
+   NAVIGATION SYSTEM & LIFECYCLE ROUTER
 ========================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    const navButtons = document.querySelectorAll(".nav-btn");
-    const pages = document.querySelectorAll(".page");
+(() => {
+    "use strict";
 
     function navigateTo(pageId) {
+        if (!pageId) return;
 
-        // 1. Ocultar todas las páginas
+        const pages = document.querySelectorAll(".page");
+        const navButtons = document.querySelectorAll(".nav-item, .nav-btn");
+
+        // 1. Ocultar todas las vistas
         pages.forEach(page => {
             page.classList.remove("active");
+            page.style.display = "none";
         });
 
-        // 2. Desactivar todos los botones
-        navButtons.forEach(button => {
-            button.classList.remove("active");
+        // 2. Desactivar botones de navegación inferior
+        navButtons.forEach(btn => {
+            btn.classList.remove("active");
         });
 
-        // 3. Buscar la página seleccionada
-        const selectedPage = document.getElementById(pageId);
-
-        if (!selectedPage) {
-            console.error("Página no encontrada:", pageId);
+        // 3. Obtener y mostrar la página seleccionada
+        const targetPage = document.getElementById(pageId);
+        if (!targetPage) {
+            console.warn(`[Navigation] Página no encontrada: #${pageId}`);
             return;
         }
 
-        // 4. Mostrar la página seleccionada
-        selectedPage.classList.add("active");
+        targetPage.classList.add("active");
+        targetPage.style.display = "block";
 
-        // 5. Activar el botón correspondiente
-        const selectedButton = document.querySelector(
-            `.nav-btn[data-page="${pageId}"]`
-        );
+        // 4. Activar el botón de barra inferior correspondiente (por data-page o función)
+        navButtons.forEach(btn => {
+            const attrPage = btn.dataset.page;
+            const onclickText = btn.getAttribute("onclick") || "";
+            if (attrPage === pageId || onclickText.includes(`'${pageId}'`) || onclickText.includes(`"${pageId}"`)) {
+                btn.classList.add("active");
+            }
+        });
 
-        if (selectedButton) {
-            selectedButton.classList.add("active");
-        }
-
-        // 6. Regresar inmediatamente al inicio
+        // 5. Scroll inmediato al inicio de la pantalla
         window.scrollTo({
             top: 0,
             left: 0,
             behavior: "instant"
         });
-
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
 
-        console.log("Navegación:", pageId);
-    }
-   // En navigation.js, justo después de mostrar la página:
-        if (pageId === "profile" && typeof updateProfile === "function") {
-           updateProfile();
+        // 6. Retroalimentación táctil y sonora al cambiar de pantalla
+        if (window.ZidongAudio && typeof window.ZidongAudio.playTap === "function") {
+            window.ZidongAudio.playTap();
         }
 
-    // 7. Hacer la función accesible desde otros archivos
+        // 7. Ciclo de vida dinámico: Actualizar componentes según la pantalla activa
+        switch (pageId) {
+            case "profile":
+                if (typeof window.updateProfile === "function") {
+                    window.updateProfile();
+                }
+                break;
+
+            case "career":
+                if (typeof window.renderCareerPath === "function") {
+                    window.renderCareerPath();
+                }
+                break;
+
+            case "leaderboard":
+            case "ranking":
+                if (typeof window.updateRanking === "function") {
+                    window.updateRanking();
+                }
+                break;
+
+            case "dashboard":
+                if (typeof window.updateMissionProgress === "function") {
+                    window.updateMissionProgress();
+                }
+                break;
+
+            case "arcade":
+            case "free":
+                if (typeof window.openCriticalMode === "function") {
+                    window.openCriticalMode();
+                }
+                break;
+        }
+
+        console.log(`[Navigation] Vista activa: ${pageId}`);
+    }
+
+    // Exponer globalmente para HTML y otros scripts
     window.navigateTo = navigateTo;
 
-    // 8. Detectar clics en la navegación inferior
-    navButtons.forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            const pageId = button.dataset.page;
-
-            navigateTo(pageId);
-
+    // Inicializar listeners al cargar el DOM
+    document.addEventListener("DOMContentLoaded", () => {
+        // Enlazar botones con data-page automáticamente
+        const navElements = document.querySelectorAll("[data-page]");
+        navElements.forEach(element => {
+            element.addEventListener("click", () => {
+                const target = element.dataset.page;
+                if (target) navigateTo(target);
+            });
         });
 
+        console.log("Zidong Navigation Router: READY");
     });
-
-    console.log("Zidong Core Navigation: READY");
-
-});
+})();

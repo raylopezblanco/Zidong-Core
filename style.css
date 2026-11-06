@@ -1180,3 +1180,133 @@ body {
     font-weight: 800;
     border: 1px solid;
 }
+<!-- DASHBOARD (ESTRUCTURA REDISEÑADA) -->
+        <section id="dashboard" class="page active">
+
+            <!-- 1. BOTONES PRINCIPALES ARRIBA DEL ROBOT -->
+            <div class="main-modes-grid">
+                <!-- CAREER MODE -->
+                <div class="mode-card career-mode" onclick="navigateTo('career')">
+                    <div class="mode-icon">🏆</div>
+                    <div class="mode-card-content">
+                        <span class="mode-tag">ESTRUCTURADO</span>
+                        <h3>CAREER MODE</h3>
+                        <p>Nivel por nivel</p>
+                    </div>
+                    <div class="mode-action">
+                        <span class="arrow">→</span>
+                    </div>
+                </div>
+
+                <!-- SURVIVOR MODE (ANTES ARCADE) -->
+                <div class="mode-card arcade-mode" onclick="openCriticalMode()">
+                    <div class="mode-icon">⚠️</div>
+                    <div class="mode-card-content">
+                        <span class="mode-tag warning">CONTRARRELOJ</span>
+                        <h3>SURVIVOR MODE</h3>
+                        <p>Línea bajo ataque</p>
+                    </div>
+                    <div class="mode-action warning">
+                        <span class="arrow">⚡</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ROBOT / COMPAÑERO EN EL CENTRO (ABAJO DE LOS BOTONES GRANDES) -->
+            <div class="companion-stage">
+                <!-- Burbuja interactiva -->
+                <div class="speech-bubble" id="companionBubble">
+                    <span id="companionText">¡Línea lista! Modo Survivor en espera. ⚡</span>
+                </div>
+
+                <!-- Robot en podio -->
+                <div class="companion-podium" onclick="interactWithCompanion()">
+                    <div class="companion-avatar" id="companionVisual">
+                        🤖
+                    </div>
+                    <div class="podium-ring"></div>
+                </div>
+            </div>
+
+            <!-- 3. BOTONES SECUNDARIOS (DAILY REWARD & VS MODE) -->
+            <div class="secondary-modes-grid">
+                <!-- DAILY REWARD -->
+                <div class="sub-mode-card daily-card" onclick="claimDailyReward()">
+                    <div class="sub-card-header">
+                        <span class="sub-card-icon">🎁</span>
+                        <strong class="sub-card-tag gold">DAILY</strong>
+                    </div>
+                    <h4>DAILY REWARD</h4>
+                    <p id="dailyRewardSubtitle">Claim your XP</p>
+                </div>
+
+                <!-- VS MODE (1v1 / VS MACHINE) -->
+                <div class="sub-mode-card vs-card" onclick="openVsMode()">
+                    <div class="sub-card-header">
+                        <span class="sub-card-icon">⚔️</span>
+                        <strong class="sub-card-tag purple">VS MODE</strong>
+                    </div>
+                    <h4>1v1 BATTLE</h4>
+                    <p>Vs Machine / Rival</p>
+                </div>
+            </div>
+
+            <!-- 4. DAILY MISSION COMPACTA -->
+            <article class="daily-mission-card">
+                <div class="mission-header">
+                    <div>
+                        <span class="eyebrow">DAILY MISSION</span>
+                        <h4>IN PROGRESS</h4>
+                    </div>
+                    <span class="mission-reward">+50 XP</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="mission-footer">
+                    <small>0 / 5 COMPLETED</small>
+                </div>
+            </article>
+
+            <!-- 5. MONITOR DE COMPILACIÓN -->
+            <div class="build-stamp-bar">
+                <span>⚡ BUILD ACTIVO:</span>
+                <strong id="buildTimestamp">Verificando versión...</strong>
+            </div>
+
+            <script>
+                (() => {
+                    const el = document.getElementById("buildTimestamp");
+                    fetch("app.js?t=" + Date.now(), { method: "HEAD" })
+                        .then(res => {
+                            const mod = res.headers.get("Last-Modified");
+                            const d = mod ? new Date(mod) : new Date(document.lastModified);
+                            if (el) {
+                                el.textContent = d.toLocaleString("es-MX", {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: true
+                                });
+                            }
+                        })
+                        .catch(() => {
+                            if (el) {
+                                const d = new Date(document.lastModified);
+                                el.textContent = d.toLocaleString("es-MX", {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: true
+                                });
+                            }
+                        });
+                })();
+            </script>
+        </section>

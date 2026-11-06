@@ -119,3 +119,9 @@ const ZidongAudio = (() => {
 })();
 
 window.ZidongAudio = ZidongAudio;
+// Desbloqueo forzado en el primer toque de pantalla
+document.addEventListener("pointerdown", () => {
+    if (window.ZidongAudio) {
+        window.ZidongAudio.playTap();
+    }
+}, { once: true });

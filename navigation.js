@@ -53,6 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("Navegación:", pageId);
     }
+   // En navigation.js, justo después de mostrar la página:
+        if (pageId === "profile" && typeof updateProfile === "function") {
+           updateProfile();
+        }
 
     // 7. Hacer la función accesible desde otros archivos
     window.navigateTo = navigateTo;

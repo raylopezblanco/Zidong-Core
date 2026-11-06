@@ -974,62 +974,49 @@
     // =====================================
 
     // Definición de medallas del sistema técnico
+// MEDALLAS DISPONIBLES EN VITRINA
     const MEDALS_DB = [
         {
             id: "badge_electric",
             icon: "⚡",
             name: "Comisionado Eléctrico",
-            desc: "Aprueba la evaluación del Área 01",
-            isUnlocked: () => true
+            desc: "Insignia desbloqueada: Especialista en potencia y señales",
+            isUnlocked: () => true // Desbloqueada de ejemplo
+        },
+        {
+            id: "badge_dragon",
+            icon: "龍",
+            name: "Dragón Zìdòng",
+            desc: "Insignia desbloqueada: Rango fundador de la academia",
+            isUnlocked: () => true // Desbloqueada de ejemplo
+        },
+        {
+            id: "badge_robot",
+            icon: "🤖",
+            name: "Maestro Robótico",
+            desc: "Insignia desbloqueada: Control de servomotores y celdas",
+            isUnlocked: () => true // Desbloqueada de ejemplo
+        },
+        {
+            id: "badge_overclock",
+            icon: "⭐",
+            name: "Overclock 3★",
+            desc: "Completa un test de planta en menos de 12 segundos",
+            isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3)
         },
         {
             id: "badge_first_hanzi",
             icon: "🔌",
             name: "Primer Circuito",
-            desc: "Domina tu primer Hanzi técnico",
-            isUnlocked: () => true
-        },
-        {
-            id: "badge_overclock",
-            icon: "⭐",
-            name: "Overclock 3 Estrellas",
-            desc: "Consigue 3 estrellas en cualquier nodo",
-            isUnlocked: () => Object.values(career.nodeStars || {}).some(stars => stars >= 3)
-        },
-        {
-            id: "badge_halfway",
-            icon: "🔧",
-            name: "Técnico de Celda",
-            desc: "Completa 4 o más actividades",
-            isUnlocked: () => career.completedActivities.length >= 4
-        },
-        {
-            id: "badge_full_area",
-            icon: "🏅",
-            name: "Ingeniero Maestro",
-            desc: "Completa todos los nodos de la línea",
-            isUnlocked: () => career.completedActivities.length >= activities.length
+            desc: "Domina tu primer componente técnico",
+            isUnlocked: () => career.completedActivities.length >= 1
         },
         {
             id: "badge_arcade",
             icon: "⚠️",
-            name: "Intervención Crítica",
-            desc: "Acumula más de 1,500 XP en planta",
+            name: "Rescate Crítico",
+            desc: "Supera 1,500 XP en simulaciones HMI",
             isUnlocked: () => (data.player?.xp || 0) >= 1500
-        },
-        {
-            id: "badge_dragon",
-            icon: "龍",
-            name: "Zìdòng Core",
-            desc: "Insignia oficial de la academia",
-            isUnlocked: () => true // Siempre disponible por defecto
-        },
-        {
-            id: "badge_robot",
-            icon: "🤖",
-            name: "Célula Robótica",
-            desc: "Próxima área de robótica",
-            isUnlocked: () => false // Bloqueada para futuros niveles
         }
     ];
 

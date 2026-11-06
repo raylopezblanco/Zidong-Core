@@ -705,27 +705,19 @@
         assessmentPanel.style.display = "block";
     }
 
-    // =====================================
+// =====================================
     // 16. OPEN ASSESSMENT
     // =====================================
 
     function openAssessment() {
-        navigateTo("level01");
+        // Navega directo a la pantalla dedicada de la evaluación
+        navigateTo("assessment");
 
-        const card = document.querySelector("#level01 .recognition-card");
-        if (card) card.style.display = "none";
-
-        let panel = document.getElementById("electricalAssessment");
-        if (!panel) {
-            updateAssessmentVisibility();
-            panel = document.getElementById("electricalAssessment");
-        }
-
+        const panel = document.getElementById("electricalAssessment");
         if (!panel) return;
+
         panel.style.display = "block";
         renderAssessment();
-
-        panel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     // =====================================

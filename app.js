@@ -8,7 +8,7 @@
 
     "use strict";
 
-    // Audio / Haptic helper unificado
+    // Audio / Haptic helper unificado (Web Audio + Haptics)
     function triggerHaptic(type) {
         if (type === "success") {
             if (navigator.vibrate) navigator.vibrate(40);
@@ -155,6 +155,17 @@
                 Object.assign(data.player, saved.player);
             }
 
+            if (Array.isArray(saved.activity) && typeof data !== "undefined") {
+                const demoActivities = [
+                    "you recognized 5 characters",
+                    "completed a training activity",
+                    "discovered new components"
+                ];
+                data.activity = saved.activity.filter(item => {
+                    return !demoActivities.includes(item.detail?.trim().toLowerCase());
+                });
+            }
+
             if (saved.career) {
                 career.completedActivities = Array.isArray(saved.career.completedActivities)
                     ? saved.career.completedActivities
@@ -162,6 +173,8 @@
                 career.assessmentPassed = Boolean(saved.career.assessmentPassed);
                 career.assessmentAttempts = Number(saved.career.assessmentAttempts || 0);
                 career.nodeStars = saved.career.nodeStars || {};
+            } else if (saved.completedLesson) {
+                career.completedActivities = ["hanzi_001"];
             }
         } catch (error) {
             console.error("Could not load saved progress:", error);
@@ -174,13 +187,15 @@
 
     function saveProgress() {
         if (typeof data === "undefined") return;
+
         const saved = {
             player: {
-                xp: data.player.xp,
-                level: data.player.level,
-                streak: data.player.streak,
-                completed: data.player.completed
+                xp: data.player?.xp || 0,
+                level: data.player?.level || 1,
+                streak: data.player?.streak || 1,
+                completed: data.player?.completed || 0
             },
+            activity: data.activity || [],
             career: {
                 completedActivities: career.completedActivities,
                 assessmentPassed: career.assessmentPassed,
@@ -207,7 +222,9 @@
     }
 
     function getNextActivityIndex() {
-        return activities.findIndex(activity => !career.completedActivities.includes(activity.id));
+        return activities.findIndex(activity => {
+            return !career.completedActivities.includes(activity.id);
+        });
     }
 
     function isActivityUnlocked(index) {
@@ -215,14 +232,25 @@
         return index <= nextIndex || nextIndex === -1;
     }
 
+    // =====================================
+    // 6. UPDATE XP
+    // =====================================
+
     function awardXP(reward) {
         if (typeof data === "undefined" || !data.player) return;
-        data.player.xp += reward;
-        data.player.completed += 1;
+        const player = data.player;
+        player.xp += reward;
+        player.completed += 1;
 
-        const playerRecord = data.players.find(item => item.initials === data.player.initials);
-        if (playerRecord) playerRecord.xp += reward;
+        if (Array.isArray(data.players)) {
+            const playerRecord = data.players.find(item => item.initials === player.initials);
+            if (playerRecord) playerRecord.xp += reward;
+        }
     }
+
+    // =====================================
+    // 7. REGISTER ACTIVITY
+    // =====================================
 
     function registerActivity(title, detail, reward) {
         if (typeof data === "undefined" || !Array.isArray(data.activity)) return;
@@ -705,12 +733,11 @@
         assessmentPanel.style.display = "block";
     }
 
-// =====================================
+    // =====================================
     // 16. OPEN ASSESSMENT
     // =====================================
 
     function openAssessment() {
-        // Navega directo a la pantalla dedicada de la evaluación
         navigateTo("assessment");
 
         const panel = document.getElementById("electricalAssessment");
@@ -721,7 +748,7 @@
     }
 
     // =====================================
-    // 17. RENDER ASSESSMENT (BOSS FIGHT / COMISIONAMIENTO)
+    // 17. RENDER ASSESSMENT (BOSS FIGHT / COMISIONAMIENTO CALIBRADO)
     // =====================================
 
     function renderAssessment() {
@@ -737,21 +764,30 @@
             const integrityColor = integrity >= 80 ? "#00f59b" : integrity >= 60 ? "#ffaa00" : "#ff4444";
 
             panel.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span class="tag" style="border-color:#ffc857; color:#ffc857;">CERTIFICACIÓN · PASO ${currentQ + 1} DE ${assessmentQuestions.length}</span>
-                    <strong style="color:${integrityColor}; font-size:14px; font-weight:900;">
-                        INTEGRIDAD: ${integrity}%
-                    </strong>
-                </div>
+                <div style="max-width:380px; margin: 0 auto; padding-bottom: 90px; box-sizing: border-box;">
+                    <!-- HUD SUPERIOR -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 4px;">
+                        <span class="tag" style="border-color:#ffc857; color:#ffc857; font-size:10px; margin:0;">
+                            PASO ${currentQ + 1} DE ${assessmentQuestions.length}
+                        </span>
+                        <strong style="color:${integrityColor}; font-size:13px; font-weight:900; letter-spacing:0.5px;">
+                            INTEGRIDAD: ${integrity}%
+                        </strong>
+                    </div>
 
-                <div style="width:100%; height:8px; background:#19273c; border-radius:4px; overflow:hidden; margin-bottom:18px;">
-                    <div style="width:${integrity}%; height:100%; background:${integrityColor}; transition:width 0.3s ease;"></div>
-                </div>
+                    <!-- BARRA DE INTEGRIDAD -->
+                    <div style="width:100%; height:7px; background:#142236; border-radius:4px; overflow:hidden; margin-bottom:14px; border:1px solid rgba(255,255,255,0.06);">
+                        <div style="width:${integrity}%; height:100%; background:${integrityColor}; transition:width 0.25s ease;"></div>
+                    </div>
 
-                <div style="background:#0e1726; border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:18px 14px; text-align:center; margin-bottom:16px;">
-                    <span style="font-size:11px; color:var(--muted); font-weight:bold; letter-spacing:1px; display:block; margin-bottom:6px;">VALIDACIÓN DE SEÑAL</span>
-                    <h2 style="font-size:22px; color:#ffffff; margin-bottom:12px;">${q.question}</h2>
-                    <div class="career-quiz-grid" id="boss-options-grid"></div>
+                    <!-- TARJETA PRINCIPAL DEL RETO -->
+                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:18px 14px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.35);">
+                        <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px; display:block; margin-bottom:6px;">VALIDACIÓN DE LÍNEA</span>
+                        <h2 style="font-size:20px; color:#ffffff; margin: 0 0 16px 0; font-weight:700;">${q.question}</h2>
+                        
+                        <!-- BOTONES DE OPCIONES -->
+                        <div id="boss-options-grid" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    </div>
                 </div>
             `;
 
@@ -760,29 +796,42 @@
 
             shuffledOptions.forEach(opt => {
                 const btn = document.createElement("button");
-                btn.className = "cf-btn-option";
+                btn.type = "button";
+                btn.style.width = "100%";
+                btn.style.minHeight = "46px";
+                btn.style.padding = "10px 14px";
+                btn.style.background = "var(--surface-light)";
+                btn.style.border = "1.5px solid var(--border)";
+                btn.style.borderRadius = "12px";
+                btn.style.color = "#ffffff";
                 btn.style.fontSize = "15px";
-                btn.style.padding = "14px 10px";
+                btn.style.fontWeight = "600";
+                btn.style.cursor = "pointer";
+                btn.style.transition = "transform 0.08s ease, background 0.15s, border-color 0.15s";
                 btn.textContent = opt;
 
                 btn.onclick = () => {
-                    const allBtns = grid.querySelectorAll(".cf-btn-option");
+                    const allBtns = grid.querySelectorAll("button");
                     allBtns.forEach(b => b.style.pointerEvents = "none");
 
                     if (opt === q.answer) {
                         triggerHaptic("success");
-                        btn.classList.add("btn-correct");
+                        btn.style.background = "rgba(0, 245, 155, 0.2)";
+                        btn.style.borderColor = "#00f59b";
+                        btn.style.color = "#00f59b";
                         correctCount++;
-                        setTimeout(() => nextStep(), 350);
+                        setTimeout(() => nextStep(), 320);
                     } else {
                         triggerHaptic("error");
-                        btn.classList.add("btn-wrong");
+                        btn.style.background = "rgba(255, 68, 68, 0.2)";
+                        btn.style.borderColor = "#ff4444";
+                        btn.style.color = "#ff4444";
                         integrity = Math.max(0, integrity - 20);
                         panel.classList.add("shake-it");
                         setTimeout(() => {
                             panel.classList.remove("shake-it");
                             nextStep();
-                        }, 400);
+                        }, 380);
                     }
                 };
                 grid.appendChild(btn);
@@ -821,18 +870,18 @@
                 saveProgress();
 
                 panel.innerHTML = `
-                    <div style="text-align:center; padding:20px 10px;">
-                        <span style="font-size:52px; display:block; margin-bottom:10px;">⚡</span>
+                    <div style="max-width:380px; margin:0 auto; padding: 20px 10px 90px; text-align:center;">
+                        <span style="font-size:48px; display:block; margin-bottom:8px;">⚡</span>
                         <span class="tag" style="border-color:#00f59b; color:#00f59b; margin-bottom:8px;">LÍNEA AUTORIZADA</span>
                         <h2 style="color:#ffffff; font-size:22px; margin: 8px 0 4px;">¡COMISIONAMIENTO EXITOSO!</h2>
                         <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">
-                            Integridad final: <strong style="color:#00f59b;">${integrity}%</strong> · Respuestas: <strong>${correctCount}/5</strong>
+                            Integridad: <strong style="color:#00f59b;">${integrity}%</strong> · Aciertos: <strong>${correctCount}/5</strong>
                         </p>
-                        <div style="background:rgba(0,245,155,0.1); border:1px solid rgba(0,245,155,0.3); border-radius:12px; padding:12px; margin-bottom:20px;">
-                            <strong style="color:#00f59b; display:block;">⚙️ ÁREA DE MECÁNICA DESBLOQUEADA</strong>
-                            <small style="color:var(--muted);">Has recibido +${reward} XP en tu perfil técnico</small>
+                        <div style="background:rgba(0,245,155,0.08); border:1px solid rgba(0,245,155,0.25); border-radius:12px; padding:12px; margin-bottom:18px;">
+                            <strong style="color:#00f59b; display:block; font-size:14px;">⚙️ ÁREA DE MECÁNICA DESBLOQUEADA</strong>
+                            <small style="color:var(--muted); font-size:11px;">Has recibido +${reward} XP en tu perfil</small>
                         </div>
-                        <button class="reveal-button" style="background:#00f59b; color:#0b1424; font-weight:900;" onclick="navigateTo('career')">
+                        <button class="reveal-button" style="background:#00f59b; color:#0b1424; font-weight:900; min-height:44px;" onclick="navigateTo('career')">
                             VER MAPA DE CARRERA →
                         </button>
                     </div>
@@ -841,20 +890,20 @@
                 triggerHaptic("error");
                 saveProgress();
                 panel.innerHTML = `
-                    <div style="text-align:center; padding:20px 10px;">
-                        <span style="font-size:52px; display:block; margin-bottom:10px;">⚠️</span>
+                    <div style="max-width:380px; margin:0 auto; padding: 20px 10px 90px; text-align:center;">
+                        <span style="font-size:48px; display:block; margin-bottom:8px;">⚠️</span>
                         <span class="tag" style="border-color:#ff4444; color:#ff4444; margin-bottom:8px;">FALLA DE INTEGRIDAD</span>
                         <h2 style="color:#ffffff; font-size:20px; margin: 8px 0 4px;">COMISIONAMIENTO RECHAZADO</h2>
-                        <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">
+                        <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">
                             Integridad: <strong style="color:#ff4444;">${integrity}%</strong> (Mínimo requerido: 80%)
                         </p>
-                        <p style="color:var(--muted); font-size:12px; margin-bottom:20px;">
+                        <p style="color:var(--muted); font-size:12px; margin-bottom:18px;">
                             La estación no superó las pruebas de seguridad. Repasa los componentes e inténtalo de nuevo.
                         </p>
-                        <button class="reveal-button" style="background:#ffaa00; color:#0b1424; font-weight:900; margin-bottom:10px;" onclick="renderAssessment()">
+                        <button class="reveal-button" style="background:#ffaa00; color:#0b1424; font-weight:900; min-height:44px; margin-bottom:10px;" onclick="renderAssessment()">
                             ↺ REPETIR COMISIONAMIENTO
                         </button>
-                        <button class="btn-secondary" style="width:100%; max-width:260px;" onclick="navigateTo('career')">
+                        <button class="btn-secondary" style="width:100%; max-width:260px; min-height:40px;" onclick="navigateTo('career')">
                             ← REGRESAR AL MAPA
                         </button>
                     </div>
@@ -865,7 +914,7 @@
         showQuestion();
     }
 
-// =====================================
+    // =====================================
     // 19. RETURN TO CAREER
     // =====================================
 
@@ -875,6 +924,7 @@
             card.style.display = "block";
         }
     }
+
     // =====================================
     // 20. GLOBAL RANKING
     // =====================================

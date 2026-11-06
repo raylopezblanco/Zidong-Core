@@ -1005,3 +1005,31 @@ button {
     font-weight: 900;
     color: var(--cyan);
 }
+/* =========================================
+   BUILD TIMESTAMP STAMP
+========================================= */
+
+.build-stamp-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(17, 31, 53, 0.7);
+    border: 1px dashed rgba(39, 216, 232, 0.3);
+    border-radius: 10px;
+    padding: 6px 12px;
+    margin-top: 10px;
+    font-family: monospace;
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.build-stamp-bar span {
+    color: var(--cyan);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.build-stamp-bar strong {
+    color: var(--gold);
+    font-weight: 700;
+}

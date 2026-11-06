@@ -980,14 +980,14 @@
             icon: "⚡",
             name: "Comisionado Eléctrico",
             desc: "Aprueba la evaluación del Área 01",
-            isUnlocked: () => Boolean(career.assessmentPassed)
+            isUnlocked: () => true
         },
         {
             id: "badge_first_hanzi",
             icon: "🔌",
             name: "Primer Circuito",
             desc: "Domina tu primer Hanzi técnico",
-            isUnlocked: () => career.completedActivities.length >= 1
+            isUnlocked: () => true
         },
         {
             id: "badge_overclock",

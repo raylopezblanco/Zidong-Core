@@ -35,7 +35,7 @@
 
     <main class="app-shell">
 
- <!-- DASHBOARD -->
+        <!-- DASHBOARD -->
         <section id="dashboard" class="page active">
             <div class="learning-modes">
 
@@ -87,11 +87,29 @@
                 </div>
             </article>
 
-            <!-- MONITOR DE COMPILACIÓN / BUILD INFO (AFUERA DE LAS TARJETAS) -->
+            <!-- MONITOR DE COMPILACIÓN / BUILD INFO -->
             <div class="build-stamp-bar">
                 <span>⚡ BUILD ACTIVO:</span>
-                <strong id="buildTimestamp">Verificando versión...</strong>
+                <strong id="buildTimestamp">Leyendo versión...</strong>
             </div>
+
+            <script>
+                (() => {
+                    const el = document.getElementById("buildTimestamp");
+                    if (el) {
+                        const d = new Date(document.lastModified);
+                        el.textContent = d.toLocaleString("es-MX", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true
+                        });
+                    }
+                })();
+            </script>
         </section>
 
         <!-- CAREER MODE -->
@@ -325,7 +343,7 @@
             </div>
         </section>
 
-<!-- PROFILE -->
+        <!-- PROFILE -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -333,7 +351,6 @@
             </div>
             
             <article class="profile-card">
-                <!-- Avatar equipado interactivo -->
                 <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">RL</div>
                 <h3 id="profileName">Raymundo Lopez</h3>
                 <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
@@ -385,7 +402,7 @@
         </button>
     </nav>
 
-    <!-- SCRIPTS EN LA RAÍZ -->
+    <!-- SCRIPTS EN RAÍZ -->
     <script src="audio.js"></script>
     <script src="navigation.js"></script>
     <script src="mock-data.js"></script>

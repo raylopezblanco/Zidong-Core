@@ -11,7 +11,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=2.2">
+    <link rel="stylesheet" href="style.css?v=2.3">
 </head>
 <body>
 
@@ -35,17 +35,46 @@
 
     <main class="app-shell">
 
-        <!-- DASHBOARD (ESTILO BRAWL / CLASH CON COMPAÑERO CENTRAL) -->
+        <!-- DASHBOARD (DISTRIBUCIÓN BRAWL / CLASH REDISEÑADA) -->
         <section id="dashboard" class="page active">
 
-            <!-- ARENA CENTRAL DEL AVATAR -->
-            <div class="companion-stage">
-                <!-- Globo de diálogo estilo Clippy -->
-                <div class="speech-bubble" id="companionBubble">
-                    <span id="companionText">¡Línea lista! Tócame para calibrar sensores. ⚡</span>
+            <!-- 1. MODOS PRINCIPALES ARRIBA DEL ROBOT -->
+            <div class="main-modes-grid">
+                <!-- CAREER MODE -->
+                <div class="mode-card career-mode" onclick="navigateTo('career')">
+                    <div class="mode-icon">🏆</div>
+                    <div class="mode-card-content">
+                        <span class="mode-tag">ESTRUCTURADO</span>
+                        <h3>CAREER MODE</h3>
+                        <p>Nivel por nivel</p>
+                    </div>
+                    <div class="mode-action">
+                        <span class="arrow">→</span>
+                    </div>
                 </div>
 
-                <!-- Avatar central interactivo sobre su podio -->
+                <!-- SURVIVOR MODE (ANTES ARCADE SIMULATOR) -->
+                <div class="mode-card arcade-mode" onclick="openCriticalMode()">
+                    <div class="mode-icon">⚠️</div>
+                    <div class="mode-card-content">
+                        <span class="mode-tag warning">CONTRARRELOJ</span>
+                        <h3>SURVIVOR MODE</h3>
+                        <p>Línea bajo ataque</p>
+                    </div>
+                    <div class="mode-action warning">
+                        <span class="arrow">⚡</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. ROBOT / COMPANION CENTRAL (ABAJO DE LOS BOTONES GRANDES) -->
+            <div class="companion-stage">
+                <!-- Burbuja interactiva -->
+                <div class="speech-bubble" id="companionBubble">
+                    <span id="companionText">¡Línea lista! Modo Survivor en espera. ⚡</span>
+                </div>
+
+                <!-- Robot en podio -->
                 <div class="companion-podium" onclick="interactWithCompanion()">
                     <div class="companion-avatar" id="companionVisual">
                         🤖
@@ -54,36 +83,30 @@
                 </div>
             </div>
 
-            <!-- MODOS DE JUEGO DISTRIBUIDOS A 2 COLUMNAS -->
-            <div class="brawl-menu-grid">
-                <!-- CAREER MODE -->
-                <div class="mode-card career-mode" onclick="navigateTo('career')">
-                    <div class="mode-icon">🏆</div>
-                    <div class="mode-card-content">
-                        <span class="mode-tag">ESTRUCTURADO</span>
-                        <h3>CARRERA</h3>
-                        <p>Nivel por nivel</p>
+            <!-- 3. BOTONES SECUNDARIOS (DAILY REWARD & VS MODE) -->
+            <div class="secondary-modes-grid">
+                <!-- DAILY REWARD -->
+                <div class="sub-mode-card daily-card" onclick="claimDailyReward()">
+                    <div class="sub-card-header">
+                        <span class="sub-card-icon">🎁</span>
+                        <strong class="sub-card-tag gold">DAILY</strong>
                     </div>
-                    <div class="mode-action">
-                        <span class="arrow">→</span>
-                    </div>
+                    <h4>DAILY REWARD</h4>
+                    <p id="dailyRewardSubtitle">Claim your XP</p>
                 </div>
 
-                <!-- CRITICAL FAIL -->
-                <div class="mode-card arcade-mode" onclick="openCriticalMode()">
-                    <div class="mode-icon">⚠️</div>
-                    <div class="mode-card-content">
-                        <span class="mode-tag warning">SIMULADOR</span>
-                        <h3>ARCADE</h3>
-                        <p>Alarmas HMI</p>
+                <!-- VS MODE (1v1 / VS MACHINE) -->
+                <div class="sub-mode-card vs-card" onclick="openVsMode()">
+                    <div class="sub-card-header">
+                        <span class="sub-card-icon">⚔️</span>
+                        <strong class="sub-card-tag purple">VS MODE</strong>
                     </div>
-                    <div class="mode-action warning">
-                        <span class="arrow">⚡</span>
-                    </div>
+                    <h4>1v1 BATTLE</h4>
+                    <p>Vs Machine / Rival</p>
                 </div>
             </div>
 
-            <!-- DAILY MISSION COMPACTA -->
+            <!-- 4. DAILY MISSION COMPACTA -->
             <article class="daily-mission-card">
                 <div class="mission-header">
                     <div>
@@ -100,7 +123,7 @@
                 </div>
             </article>
 
-            <!-- MONITOR DE COMPILACIÓN / BUILD INFO -->
+            <!-- 5. MONITOR DE COMPILACIÓN -->
             <div class="build-stamp-bar">
                 <span>⚡ BUILD ACTIVO:</span>
                 <strong id="buildTimestamp">Verificando versión...</strong>
@@ -252,13 +275,13 @@
             <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;"></div>
         </section>
 
-        <!-- CRITICAL FAIL -->
+        <!-- SURVIVOR MODE / CRITICAL FAIL -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
                     <div class="welcome">
                         <span class="eyebrow">SISTEMA DE RESPUESTA A FALLAS</span>
-                        <h2>CRITICAL FAIL</h2>
+                        <h2>SURVIVOR MODE</h2>
                         <p>Selecciona una operación de mantenimiento para intervenir la línea:</p>
                     </div>
 
@@ -307,7 +330,7 @@
 
                 <div id="cf-game-arena" class="cf-view-container" style="display:none;">
                     <div class="cf-hud-bar">
-                        <div class="cf-hud-tag" id="cf-current-level-tag">CRITICAL LEVEL 01</div>
+                        <div class="cf-hud-tag" id="cf-current-level-tag">SURVIVOR LEVEL 01</div>
                         <div class="cf-hud-group">
                             <div class="cf-hud-box">
                                 <small>TIEMPO</small>
@@ -405,9 +428,7 @@
                 </div>
                 <p style="font-size:11px; margin-bottom:12px;">Desbloquea insignias completando áreas y retos para usarlas como insignia de avatar.</p>
                 
-                <div class="badges-grid" id="badgesContainer">
-                    <!-- Se generan dinámicamente con app.js -->
-                </div>
+                <div class="badges-grid" id="badgesContainer"></div>
             </article>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:16px;">
@@ -434,11 +455,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=2.2"></script>
-    <script src="navigation.js?v=2.2"></script>
-    <script src="mock-data.js?v=2.2"></script>
-    <script src="critical-fail.js?v=2.2"></script>
-    <script src="app.js?v=2.2"></script>
+    <script src="audio.js?v=2.3"></script>
+    <script src="navigation.js?v=2.3"></script>
+    <script src="mock-data.js?v=2.3"></script>
+    <script src="critical-fail.js?v=2.3"></script>
+    <script src="app.js?v=2.3"></script>
 
     <!-- SERVICE WORKER REGISTRATION (PWA) -->
     <script>

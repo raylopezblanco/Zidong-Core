@@ -1,109 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Zidong Core 2.0</title>
-
-    <meta name="theme-color" content="#101C32">
-    <meta name="description" content="Chinese Learning System">
-
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1424">
+    <title>Zidong Core · Industrial Hanzi PWA</title>
+    
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="app-container">
-
     <!-- =========================================
-         TOP BAR
+         HEADER / TOPBAR
     ========================================== -->
+    <header class="topbar">
+        <!-- BOTÓN TEMPORAL DE PRUEBA RÁPIDA (Quitar al terminar pruebas) -->
+        <button onclick="if(window.debugBossFight) window.debugBossFight();" 
+                style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5); cursor:pointer;">
+            ⚡ TEST BOSS FIGHT
+        </button>    
 
-   <header class="topbar">
-    <!-- BOTÓN TEMPORAL DE PRUEBA RÁPIDA -->
-    <button onclick="window.debugBossFight()" 
-            style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5); cursor:pointer;">
-        ⚡ TEST BOSS FIGHT
-    </button>    
-
-    <div class="brand">
-        <span class="brand-icon">龍</span>
-        <div>
-            <h1>ZIDONG CORE</h1>
-            <small>CHINESE LEARNING SYSTEM</small>
+        <div class="brand">
+            <span class="brand-icon">龍</span>
+            <div>
+                <h1>ZIDONG CORE</h1>
+                <small>CHINESE LEARNING SYSTEM</small>
+            </div>
         </div>
-    </div>
-        
-       
+
+        <div class="user-chip" onclick="navigateTo('profile')">
+            <div class="avatar" id="topAvatar">RL</div>
+            <div class="user-meta">
+                <strong id="topUsername">Raymundo Lopez</strong>
+                <span class="status-dot"></span>
+            </div>
+        </div>
     </header>
 
 
-    <main id="main-content">
+    <!-- =========================================
+         MAIN APPLICATION CONTAINER
+    ========================================== -->
+    <main class="app-shell">
 
         <!-- =========================================
-             DASHBOARD
+             DASHBOARD / HOME
         ========================================== -->
-
         <section id="dashboard" class="page active">
 
             <div class="learning-modes">
 
-                <div class="mode-card career-mode"
-                     onclick="navigateTo('career')">
+                <div class="mode-card career-mode" onclick="navigateTo('career')">
                     <div class="mode-icon">🏆</div>
                     <span class="mode-tag">STRUCTURED LEARNING</span>
                     <h3>CAREER MODE</h3>
                     <p>
-                        Start from zero and progress
-                        through every learning level.
+                        Start from zero and progress through every learning level.
                     </p>
-                    <div class="mode-footer">
+                    <div class="mode-action">
                         <span>START YOUR JOURNEY</span>
-                        <strong>→</strong>
+                        <span class="arrow">→</span>
                     </div>
                 </div>
 
-                <!-- CRITICAL FAIL CARD (MODO ARCADE) -->
-                <div class="mode-card critical-fail-card"
-                     onclick="openCriticalMode()">
+                <div class="mode-card arcade-mode" onclick="navigateTo('arcade')">
                     <div class="mode-icon">⚠️</div>
-                    <span class="mode-tag pulse-tag">ARCADE SIMULATOR</span>
+                    <span class="mode-tag warning">ARCADE SIMULATOR</span>
                     <h3>CRITICAL FAIL</h3>
                     <p>
                         Simulador contrarreloj de alarmas HMI y ensamble de piezas.
                     </p>
-                    <div class="mode-footer">
+                    <div class="mode-action warning">
                         <span>INTERVENIR LÍNEA</span>
-                        <strong>⚡</strong>
+                        <span class="arrow">⚡</span>
                     </div>
                 </div>
 
             </div>
 
-
-            <!-- DAILY MISSION -->
-            <article class="panel">
-                <div class="panel-heading">
-                    <h3>DAILY MISSION</h3>
-                    <span class="tag">IN PROGRESS</span>
+            <!-- DAILY GOAL / QUICK STATS -->
+            <article class="daily-mission-card">
+                <div class="mission-header">
+                    <div>
+                        <span class="eyebrow">DAILY MISSION</span>
+                        <h4>IN PROGRESS</h4>
+                    </div>
+                    <span class="mission-reward">+50 XP</span>
                 </div>
-                <p>Reconoce 5 caracteres Hanzi</p>
-                <div class="progress-track">
-                    <div class="progress-fill"></div>
+                <p>Reconoce 5 caracteres Hanzi en Modo Carrera o Arcade.</p>
+                <div class="progress-bar-container">
+                    <div class="progress-fill" style="width: 60%;"></div>
                 </div>
-                <small>3 / 5 COMPLETED</small>
+                <div class="mission-footer">
+                    <small>3 / 5 COMPLETED</small>
+                </div>
             </article>
 
         </section>
 
 
         <!-- =========================================
-             CAREER MODE
+             CAREER MODE / MAPA DE NIVELES
         ========================================== -->
-
         <section id="career" class="page">
 
             <div class="welcome">
@@ -111,12 +111,6 @@
                 <h2>Tu camino de aprendizaje</h2>
                 <p>Avanza paso a paso y domina el chino industrial.</p>
             </div>
-
-            <button class="back-button"
-                    type="button"
-                    onclick="navigateTo('dashboard')">
-                ← BACK TO HOME
-            </button>
             
             <article class="career-overview">
                 <div class="career-overview-top">
@@ -170,66 +164,7 @@
                     </div>
 
                     <div class="path-nodes">
-                        <!-- BIENVENIDA -->
-                        <div class="path-step left">
-                            <div class="path-node completed"><span>✓</span></div>
-                            <div class="path-label">
-                                <strong>Bienvenida</strong>
-                                <small>Conoce tu entrenamiento</small>
-                            </div>
-                        </div>
-
-                        <!-- HANZI 001 -->
-                        <div class="path-step right">
-                            <div class="path-node current" onclick="navigateTo('level01')">
-                                <span>电</span>
-                            </div>
-                            <div class="path-label">
-                                <strong>Hanzi 001</strong>
-                                <small>Electricidad · diàn</small>
-                                <span class="node-action">COMENZAR →</span>
-                            </div>
-                        </div>
-
-                        <div class="path-step left">
-                            <div class="path-node locked"><span>机</span></div>
-                            <div class="path-label">
-                                <strong>Hanzi 002</strong>
-                                <small>Próximo carácter</small>
-                            </div>
-                        </div>
-
-                        <div class="path-step right">
-                            <div class="path-node locked"><span>线</span></div>
-                            <div class="path-label">
-                                <strong>Hanzi 003</strong>
-                                <small>Próximo carácter</small>
-                            </div>
-                        </div>
-
-                        <div class="path-step left">
-                            <div class="path-node locked"><span>力</span></div>
-                            <div class="path-label">
-                                <strong>Hanzi 004</strong>
-                                <small>Próximo carácter</small>
-                            </div>
-                        </div>
-
-                        <div class="path-step right">
-                            <div class="path-node locked"><span>控</span></div>
-                            <div class="path-label">
-                                <strong>Hanzi 005</strong>
-                                <small>Próximo carácter</small>
-                            </div>
-                        </div>
-
-                        <div class="path-step left">
-                            <div class="path-node assessment locked"><span>🏅</span></div>
-                            <div class="path-label">
-                                <strong>Evaluación eléctrica</strong>
-                                <small>Demuestra lo aprendido</small>
-                            </div>
-                        </div>
+                        <!-- Nodos inyectados dinámicamente por app.js -->
                     </div>
                 </div>
 
@@ -249,397 +184,176 @@
                 </div>
             </div>
 
-            <button class="back-button" onclick="navigateTo('dashboard')">
-                ← BACK TO HOME
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
+                ← REGRESAR AL DASHBOARD
             </button>
 
         </section>
 
 
         <!-- =========================================
-             LEVEL 01 - HANZI RECOGNITION
+             LESSON / NODO INDIVIDUAL (DATA SHEET + HOT TEST)
         ========================================== -->
-
         <section id="level01" class="page">
-
-            <!-- CABECERA COMPACTA DE RETO -->
             <div class="lesson-top-nav">
                 <button class="btn-compact-back" onclick="navigateTo('career')">
                     ← MAPA
                 </button>
                 <div class="lesson-hud-info">
                     <span class="eyebrow" style="font-size:9px;">ÁREA 01 · ELÉCTRICA</span>
-                    <strong style="font-size:13px; color:#ffffff;">ENTRENAMIENTO</strong>
+                    <strong style="color:var(--text); font-size:12px;">ENTRENAMIENTO</strong>
                 </div>
-                <span class="lesson-hud-badge">TEST</span>
+                <div class="lesson-quick-badge">TEST</div>
             </div>
 
-            <!-- TARJETA PRINCIPAL DEL RETO (CENTRAL, SIN SCROLL) -->
-            <div class="panel recognition-card">
-                <!-- Se inyecta dinámicamente con renderLesson() -->
+            <div class="recognition-card" id="lessonCard">
+                <!-- Se inyecta la Data Sheet o las rondas del Hot Test desde app.js -->
             </div>
-
         </section>
 
 
         <!-- =========================================
-             CRITICAL FAIL (REEMPLAZA FREE MODE)
+             EVALUACIÓN FINAL (BOSS FIGHT / COMISIONAMIENTO)
         ========================================== -->
-
-        <section id="free" class="page">
-
-            <!-- SELECTOR DE NIVELES -->
-            <div id="cf-selector" class="cf-view-container">
-
-                <div class="welcome">
-                    <span class="eyebrow">SISTEMA DE RESPUESTA A FALLAS</span>
-                    <h2>CRITICAL FAIL</h2>
-                    <p>Selecciona una operación de mantenimiento para intervenir la línea:</p>
-                </div>
-
-                <div class="cf-levels-list">
-
-                    <div class="cf-level-card" onclick="startCriticalLevel(1)">
-                        <div class="cf-level-badge">LVL 01</div>
-                        <div class="cf-level-info">
-                            <h3>Reconocimiento de Señal</h3>
-                            <p>Reflejos rápidos · Identifica el Hanzi simple de sensores y actuadores</p>
-                        </div>
-                        <span class="cf-action-arrow">⚡ INICIAR</span>
-                    </div>
-
-                    <div class="cf-level-card" onclick="startCriticalLevel(2)">
-                        <div class="cf-level-badge lvl-badge-amber">LVL 02</div>
-                        <div class="cf-level-info">
-                            <h3>Ensamble de Refacciones</h3>
-                            <p>Crafteo rápido · Arma el componente usando los 5 bloques de Hanzi</p>
-                        </div>
-                        <span class="cf-action-arrow">⚡ INICIAR</span>
-                    </div>
-
-                    <div class="cf-level-card" onclick="startCriticalLevel(3)">
-                        <div class="cf-level-badge lvl-badge-purple">LVL 03</div>
-                        <div class="cf-level-info">
-                            <h3>Escáner de Mensaje HMI</h3>
-                            <p>Segmentación · Aísla la sección de la alarma dentro de la oración completa</p>
-                        </div>
-                        <span class="cf-action-arrow">⚡ INICIAR</span>
-                    </div>
-
-                    <div class="cf-level-card" onclick="startCriticalLevel(4)">
-                        <div class="cf-level-badge lvl-badge-red">LVL 04</div>
-                        <div class="cf-level-info">
-                            <h3>Acción Correctiva HMI</h3>
-                            <p>Diagnóstico de Piso · Lee la alarma real y ejecuta la solución técnica</p>
-                        </div>
-                        <span class="cf-action-arrow">⚡ INICIAR</span>
-                    </div>
-
-                </div>
-
-                <button class="back-button" onclick="navigateTo('dashboard')">
-                    ← REGRESAR AL DASHBOARD
+        <section id="assessment" class="page">
+            <div class="lesson-top-nav">
+                <button class="btn-compact-back" onclick="navigateTo('career')">
+                    ← MAPA
                 </button>
-
+                <div class="lesson-hud-info">
+                    <span class="eyebrow" style="font-size:9px; color:#ffc857;">CERTIFICACIÓN ÁREA 01</span>
+                    <strong style="color:#ffffff; font-size:12px;">COMISIONAMIENTO</strong>
+                </div>
+                <div class="lesson-quick-badge" style="border-color:#ffc857; color:#ffc857;">BOSS</div>
             </div>
 
-            <!-- ARENA DE JUEGO ACTIVA -->
-            <div id="cf-game-arena" class="cf-view-container" style="display:none;">
-
-                <div class="cf-hud-bar">
-                    <div class="cf-hud-tag" id="cf-current-level-tag">CRITICAL LEVEL 01</div>
-                    <div class="cf-hud-group">
-                        <div class="cf-hud-box">
-                            <small>TIEMPO</small>
-                            <span id="cf-timer">60</span>s
-                        </div>
-                        <div class="cf-hud-box">
-                            <small>XP</small>
-                            <span id="cf-score">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Barra de Progreso de Tiempo -->
-                <div class="cf-timer-track">
-                    <div id="cf-timer-bar" class="cf-timer-fill"></div>
-                </div>
-
-                <!-- Contenedor Dinámico del Nivel -->
-                <div id="cf-stage-content"></div>
-
-                <button class="btn-secondary" style="margin-top:16px; width:100%;" onclick="exitCriticalFail()">
-                    ✕ ABANDONAR INTERVENCIÓN
-                </button>
-
+            <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;">
+                <!-- Inyectado dinámicamente por app.js -->
             </div>
-
-            <!-- PANTALLA DE RESULTADOS / VICTORIA -->
-            <div id="cf-result-screen" class="cf-view-container" style="display:none; text-align:center;">
-                <div class="panel cf-result-panel">
-                    <span class="cf-result-icon">🏅</span>
-                    <h2>¡LÍNEA RESTABLECIDA!</h2>
-                    <p>Has completado la intervención técnica.</p>
-
-                    <div class="cf-score-reward">
-                        <small>EXPERIENCIA OBTENIDA</small>
-                        <h1 id="cf-final-score">+500 XP</h1>
-                    </div>
-
-                    <div style="display:flex; gap:10px; margin-top:20px;">
-                        <button class="reveal-button" style="flex:1;" onclick="startCriticalLevel(currentLevel || 1)">
-                            REPETIR NIVEL
-                        </button>
-                        <button class="back-button" style="flex:1; margin-top:0;" onclick="exitCriticalFail()">
-                            SELECCIONAR NIVEL
-                        </button>
-                    </div>
-                </div>
-            </div>
-
         </section>
 
 
         <!-- =========================================
-             LEARNING CENTER
+             CRITICAL FAIL (ARCADE MODE)
         ========================================== -->
+        <section id="arcade" class="page">
+            <div class="arcade-shell">
+                <div class="arcade-top-bar">
+                    <button class="btn-compact-back" onclick="navigateTo('dashboard')">
+                        ← SALIR
+                    </button>
+                    <div class="arcade-station-tag">
+                        <span>ESTACIÓN</span>
+                        <strong>LÍNEA 04 · FIXTURE 02</strong>
+                    </div>
+                    <div class="arcade-timer-badge" id="cf-timer-box">
+                        <span id="cf-timer">60</span>s
+                    </div>
+                </div>
 
-        <section id="learning" class="page">
+                <div class="arcade-viewport">
+                    <div class="hmi-alarm-banner">
+                        <span class="alarm-icon">⚠️</span>
+                        <div class="alarm-text">
+                            <strong>PARO CRÍTICO DE LÍNEA</strong>
+                            <small id="cf-alarm-sub">IDENTIFICA EL COMPONENTE EN CHINO</small>
+                        </div>
+                    </div>
 
+                    <div class="cf-game-card" id="cf-game-container">
+                        <!-- Pantallas de inicio, rondas y game over inyectadas por critical-fail.js -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- =========================================
+             LEADERBOARD / RANKING
+        ========================================== -->
+        <section id="leaderboard" class="page">
             <div class="welcome">
-                <span class="eyebrow">LEARNING RESOURCES</span>
-                <h2>Learning Center</h2>
-                <p>Tu centro de aprendizaje chino.</p>
+                <span class="eyebrow">GLOBAL LINE STATS</span>
+                <h2>Ranking de Ingenieros</h2>
+                <p>Rendimiento en planta y comisionamiento técnico.</p>
             </div>
 
-            <div class="module-grid">
-                <div class="module-card">
-                    认识汉字
-                    <h3>Hanzi Recognition</h3>
-                </div>
-                <div class="module-card">
-                    🔍
-                    <h3>Character Analysis</h3>
-                </div>
-                <div class="module-card">
-                    📚
-                    <h3>Vocabulary</h3>
-                </div>
-                <div class="module-card" onclick="showHanziLab()">
-                    🧩
-                    <h3>Hanzi Lab</h3>
-                    <p>Explore character components</p>
-                </div>
-            </div>
-
-            <!-- HANZI LAB CONTENT -->
-            <div id="hanziLabContent" style="display:none;">
-                <button class="btn-secondary" onclick="hideHanziLab()">
-                    ← Back to Learning Center
-                </button>
-                <div class="lab-header">
-                    <span class="eyebrow">CHARACTER INTELLIGENCE SYSTEM</span>
-                    <h2>Hanzi Lab</h2>
-                    <p>Descubre cómo se construyen los caracteres chinos.</p>
-                </div>
-                <div class="hanzi-card">
-                    <span class="tag">CHARACTER ANALYSIS · 001</span>
-                    <div class="hanzi-main">缆</div>
-                    <h3>Cable</h3>
-                    <p class="hanzi-subtitle">Simplified Chinese Character</p>
-                </div>
-                <div class="panel">
-                    <div class="panel-heading">
-                        <h3>CHARACTER BREAKDOWN</h3>
-                        <span>🔬</span>
-                    </div>
-                    <p>Selecciona un componente para conocer su función.</p>
-                    <div class="component-grid">
-                        <button class="component-card" data-component="silk">
-                            <span>纟</span>
-                            <strong>Semantic</strong>
-                            <small>Thread / Fiber</small>
-                        </button>
-                        <button class="component-card" data-component="lan">
-                            <span>览</span>
-                            <strong>Phonetic</strong>
-                            <small>Sound clue</small>
-                        </button>
-                    </div>
-                    <div id="component-detail" class="component-detail">
-                        <h4>¿Cómo funciona?</h4>
-                        <p>Selecciona uno de los componentes para descubrir su función.</p>
-                    </div>
-                </div>
-            </div>
-
-        </section>
-
-
-        <!-- =========================================
-             CHALLENGES
-        ========================================== -->
-
-        <section id="challenges" class="page">
-            <div class="welcome">
-                <span class="eyebrow">COMPETITION SYSTEM</span>
-                <h2>Challenges</h2>
-                <p>Pon a prueba tus conocimientos de chino.</p>
-            </div>
-            <article class="panel">
-                <div class="panel-heading">
-                    <h3>DAILY CHALLENGES</h3>
-                    <span>⚔️</span>
-                </div>
-                <p>Completa desafíos y gana experiencia.</p>
-            </article>
-        </section>
-
-
-        <!-- =========================================
-             RANKING
-        ========================================== -->
-
-        <section id="ranking" class="page">
-            <div class="welcome">
-                <span class="eyebrow">GLOBAL LEADERBOARD</span>
-                <h2>Ranking</h2>
-                <p>Consulta el progreso de jugadores y equipos.</p>
-            </div>
-            <div class="ranking-tabs">
-                <button class="ranking-tab active" onclick="showRankingTab('individual', this)">
-                    👤 Individual
-                </button>
-                <button class="ranking-tab" onclick="showRankingTab('team', this)">
-                    🏆 Teams
-                </button>
-            </div>
-            <div id="individualRanking">
-                <article class="panel">
-                    <div class="panel-heading">
-                        <h3>TOP PLAYERS</h3>
-                        <span>🏆</span>
-                    </div>
-                    <div id="individualRankingList"></div>
-                </article>
-            </div>
-            <div id="teamRanking" style="display:none;">
-                <article class="panel">
-                    <div class="panel-heading">
-                        <h3>TOP TEAMS</h3>
-                        <span>⚔️</span>
-                    </div>
-                    <div id="teamRankingList"></div>
-                </article>
+            <div class="ranking-list" id="rankingListContainer">
+                <!-- Inyectado por app.js -->
             </div>
         </section>
 
 
         <!-- =========================================
-             PLAYER PROFILE
+             PERFIL / LOGROS
         ========================================== -->
-
         <section id="profile" class="page">
             <div class="welcome">
-                <span class="eyebrow">PLAYER ACCOUNT</span>
-                <h2>My Profile</h2>
-                <p>Tu información y progreso de aprendizaje.</p>
+                <span class="eyebrow">TECHNICAL PROFILE</span>
+                <h2>Perfil de Especialista</h2>
             </div>
-            <article class="panel">
-                <div class="panel-heading">
-                    <h3>PLAYER INFORMATION</h3>
-                    <span>♙</span>
-                </div>
-                <div class="team-row">
-                    <span id="profileInitials">RL</span>
-                    <strong id="profileName">Raymundo Lopez</strong>
-                </div>
-                <p>Learning System Member</p>
-                <div class="team-row">
-                    <span>Total XP</span>
-                    <strong id="profileXP">1,250</strong>
-                </div>
-                <div class="team-row">
-                    <span>Current Level</span>
-                    <strong id="profileLevel">05</strong>
-                </div>
-                <div class="team-row">
-                    <span>Learning Streak</span>
-                    <strong id="profileStreak">5 Days</strong>
-                </div>
-                <div class="team-row">
-                    <span>Completed Activities</span>
-                    <strong id="profileCompleted">18</strong>
+
+            <article class="profile-card">
+                <div class="avatar-large" id="profileAvatar">RL</div>
+                <h3 id="profileName">Raymundo Lopez</h3>
+                <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
+                
+                <div class="profile-stats-grid">
+                    <div class="p-stat">
+                        <span id="profileXP">0</span>
+                        <small>TOTAL XP</small>
+                    </div>
+                    <div class="p-stat">
+                        <span id="profileStars">0</span>
+                        <small>ESTRELLAS ⭐</small>
+                    </div>
+                    <div class="p-stat">
+                        <span id="profileCompleted">0</span>
+                        <small>HANZI DOMINADOS</small>
+                    </div>
                 </div>
             </article>
 
-            <article class="panel">
-                <div class="panel-heading">
-                    <h3>LEARNING MODES</h3>
-                    <span>📚</span>
-                </div>
-                <div class="team-row">
-                    <span>🎯 Career Mode</span>
-                    <strong>Linear Progression</strong>
-                </div>
-                <div class="team-row">
-                    <span>⚠️ Critical Fail</span>
-                    <strong>Arcade Simulator</strong>
-                </div>
-            </article>
-
-            <article class="panel">
-                <div class="panel-heading">
-                    <h3>MY MISSIONS</h3>
-                    <span>🎯</span>
-                </div>
-                <div id="profileMissions"></div>
-            </article>
-
-            <article class="panel">
-                <div class="panel-heading">
-                    <h3>MY RECENT ACTIVITY</h3>
-                    <span>📊</span>
-                </div>
-                <div id="activityList"></div>
-            </article>
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:20px;">
+                ← REGRESAR AL INICIO
+            </button>
         </section>
 
     </main>
 
 
     <!-- =========================================
-         BOTTOM NAVIGATION
+         BOTTOM NAVIGATION BAR (FIJA)
     ========================================== -->
-
     <nav class="bottom-nav">
-        <button class="nav-btn active" data-page="dashboard">
-            ⌂
-            <small>Home</small>
+        <button class="nav-item active" onclick="navigateTo('dashboard')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
         </button>
-        <button class="nav-btn" data-page="learning">
-            ▤
-            <small>Learn</small>
+        <button class="nav-item" onclick="navigateTo('career')">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Learn</span>
         </button>
-        <button class="nav-btn" data-page="challenges">
-            ⚔
-            <small>Play</small>
+        <button class="nav-item" onclick="navigateTo('arcade')">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-label">Play</span>
         </button>
-        <button class="nav-btn" data-page="ranking">
-            🏆
-            <small>Rank</small>
+        <button class="nav-item" onclick="navigateTo('leaderboard')">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-label">Rank</span>
         </button>
     </nav>
 
-</div>
 
-<!-- JAVASCRIPT FILES -->
-<script src="navigation.js"></script>
-<script src="audio.js"></script>
-<script src="hanzi-lab.js"></script>
-<script src="mock-data.js"></script>
+    <!-- =========================================
+         SCRIPTS (ORDEN DE EJECUCIÓN DIRECTO)
+    ========================================== -->
+    <script src="navigation.js"></script>
+    <script src="audio.js"></script>
+    <script src="hanzi-lab.js"></script>
+    <script src="mock-data.js"></script>
+    <script src="app.js"></script>
+    <script src="critical-fail.js"></script>
 
-<script src="app.js"></script>
-<script src="critical-fail.js"></script>
 </body>
 </html>

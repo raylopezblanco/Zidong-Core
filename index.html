@@ -22,33 +22,22 @@
          TOP BAR
     ========================================== -->
 
-    <header class="topbar">
-     <!-- BOTÓN TEMPORAL DE PRUEBA RÁPIDA -->
-        <button onclick="career.completedActivities = activities.map(a => a.id); openAssessment();" 
-                style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
-            ⚡ TEST BOSS FIGHT
-        </button>    
-        <div class="brand">
-            <span class="brand-icon">龍</span>
-            <div>
-                <h1>ZIDONG CORE</h1>
-                <small>CHINESE LEARNING SYSTEM</small>
-            </div>
+   <header class="topbar">
+    <!-- BOTÓN TEMPORAL DE PRUEBA RÁPIDA -->
+    <button onclick="window.debugBossFight()" 
+            style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5); cursor:pointer;">
+        ⚡ TEST BOSS FIGHT
+    </button>    
+
+    <div class="brand">
+        <span class="brand-icon">龍</span>
+        <div>
+            <h1>ZIDONG CORE</h1>
+            <small>CHINESE LEARNING SYSTEM</small>
         </div>
-        <!-- BOTÓN TEMPORAL DE PRUEBA RÁPIDA -->
-        <button onclick="career.completedActivities = activities.map(a => a.id); openAssessment();" 
-                style="position:fixed; bottom:70px; right:15px; z-index:9999; background:#ff4444; color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:bold; font-size:12px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
-            ⚡ TEST BOSS FIGHT
-        </button>
-
-        <button class="user-status profile-trigger"
-                type="button"
-                onclick="navigateTo('profile')">
-            <span class="profile-avatar">RL</span>
-            <span class="profile-name">Raymundo Lopez</span>
-            <span class="online-dot"></span>
-        </button>
-
+    </div>
+        
+       
     </header>
 
 

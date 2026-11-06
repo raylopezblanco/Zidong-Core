@@ -1,31 +1,35 @@
 /* =========================================
    ZIDONG CORE 2.0
-   APPLICATION ENGINE
-   CAREER PROGRESSION SYSTEM
+   APPLICATION ENGINE & CAREER SYSTEM
 ========================================= */
 
 (() => {
-
     "use strict";
 
     // Audio / Haptic helper unificado (Web Audio + Haptics)
     function triggerHaptic(type) {
         if (type === "success") {
             if (navigator.vibrate) navigator.vibrate(40);
-            if (window.ZidongAudio) window.ZidongAudio.playSuccess();
+            if (window.ZidongAudio && typeof window.ZidongAudio.playSuccess === "function") {
+                window.ZidongAudio.playSuccess();
+            }
         } else if (type === "error") {
             if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
-            if (window.ZidongAudio) window.ZidongAudio.playError();
+            if (window.ZidongAudio && typeof window.ZidongAudio.playError === "function") {
+                window.ZidongAudio.playError();
+            }
         } else if (type === "win") {
             if (navigator.vibrate) navigator.vibrate([60, 40, 100]);
-            if (window.ZidongAudio) window.ZidongAudio.playVictory();
+            if (window.ZidongAudio && typeof window.ZidongAudio.playVictory === "function") {
+                window.ZidongAudio.playVictory();
+            }
         }
     }
 
     const STORAGE_KEY = "zidong_core_progress";
 
     // =====================================
-    // 1. CAREER DATA
+    // 1. CAREER DATA (ÁREA 01: ELÉCTRICA)
     // =====================================
 
     const activities = [
@@ -155,17 +159,6 @@
                 Object.assign(data.player, saved.player);
             }
 
-            if (Array.isArray(saved.activity) && typeof data !== "undefined") {
-                const demoActivities = [
-                    "you recognized 5 characters",
-                    "completed a training activity",
-                    "discovered new components"
-                ];
-                data.activity = saved.activity.filter(item => {
-                    return !demoActivities.includes(item.detail?.trim().toLowerCase());
-                });
-            }
-
             if (saved.career) {
                 career.completedActivities = Array.isArray(saved.career.completedActivities)
                     ? saved.career.completedActivities
@@ -195,7 +188,6 @@
                 streak: data.player?.streak || 1,
                 completed: data.player?.completed || 0
             },
-            activity: data.activity || [],
             career: {
                 completedActivities: career.completedActivities,
                 assessmentPassed: career.assessmentPassed,
@@ -239,31 +231,17 @@
     function awardXP(reward) {
         if (typeof data === "undefined" || !data.player) return;
         const player = data.player;
-        player.xp += reward;
-        player.completed += 1;
+        player.xp = (player.xp || 0) + reward;
+        player.completed = (player.completed || 0) + 1;
 
         if (Array.isArray(data.players)) {
             const playerRecord = data.players.find(item => item.initials === player.initials);
-            if (playerRecord) playerRecord.xp += reward;
+            if (playerRecord) playerRecord.xp = (playerRecord.xp || 0) + reward;
         }
     }
 
     // =====================================
-    // 7. REGISTER ACTIVITY
-    // =====================================
-
-    function registerActivity(title, detail, reward) {
-        if (typeof data === "undefined" || !Array.isArray(data.activity)) return;
-        data.activity.unshift({
-            icon: "✓",
-            title: title,
-            detail: detail,
-            xp: `+${reward} XP`
-        });
-    }
-
-    // =====================================
-    // 8. DAILY MISSION
+    // 7. DAILY MISSION
     // =====================================
 
     function updateMissionProgress() {
@@ -284,7 +262,7 @@
     }
 
     // =====================================
-    // 9. RENDER CAREER PATH
+    // 8. RENDER CAREER PATH
     // =====================================
 
     function renderCareerPath() {
@@ -377,7 +355,7 @@
     }
 
     // =====================================
-    // 10. CAREER OVERVIEW
+    // 9. CAREER OVERVIEW
     // =====================================
 
     function updateCareerOverview() {
@@ -404,7 +382,7 @@
     }
 
     // =====================================
-    // 11. UPDATE AREA UNLOCK
+    // 10. UPDATE AREA UNLOCK
     // =====================================
 
     function updateAreaStatus() {
@@ -427,7 +405,7 @@
     }
 
     // =====================================
-    // 12. OPEN ACTIVITY
+    // 11. OPEN ACTIVITY
     // =====================================
 
     function openActivity(index) {
@@ -437,11 +415,13 @@
 
         currentActivity = activity;
         renderLesson(activity);
-        navigateTo("level01");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("level01");
+        }
     }
 
     // =====================================
-    // 13. RENDER LESSON (DATA SHEET -> TEST EN CALIENTE)
+    // 12. RENDER LESSON (DATA SHEET -> TEST EN CALIENTE)
     // =====================================
 
     function renderLesson(activity) {
@@ -476,7 +456,6 @@
                         <span style="color:#ffffff; font-weight:bold; font-size:15px;">${activity.pinyin}</span>
                     </div>
 
-                    <!-- REFACCIÓN / EN PLANTA -->
                     <div style="border-top:1px solid rgba(255,255,255,0.12); padding-top:8px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25); margin: 0 -14px -12px -14px; padding:10px 14px; border-radius:0 0 13px 13px;">
                         <div>
                             <span style="font-size:9px; color:#ffc857; font-weight:900; letter-spacing:1px; display:block;">REFACCIÓN / EN PLANTA</span>
@@ -670,7 +649,9 @@
 
                 document.getElementById("btn-save-and-return").onclick = () => {
                     completeActivity(activity, stars);
-                    navigateTo("career");
+                    if (typeof window.navigateTo === "function") {
+                        window.navigateTo("career");
+                    }
                 };
 
                 document.getElementById("btn-retry-test").onclick = () => {
@@ -686,7 +667,7 @@
     }
 
     // =====================================
-    // 14. COMPLETE ACTIVITY
+    // 13. COMPLETE ACTIVITY
     // =====================================
 
     function completeActivity(activity, stars) {
@@ -698,22 +679,15 @@
         }
 
         awardXP(reward);
-        registerActivity(
-            activity.type === "review" ? "Repaso de Hanzi Calibrado" : "Hanzi Dominado con Éxito",
-            `${activity.hanzi} (${activity.meaning}) completado con ${"⭐".repeat(stars || 1)}`,
-            reward
-        );
-
         updateMissionProgress();
         updateRanking();
         updateProfile();
-        updateActivity();
         renderCareerPath();
         saveProgress();
     }
 
     // =====================================
-    // 15. ASSESSMENT VISIBILITY
+    // 14. ASSESSMENT VISIBILITY
     // =====================================
 
     function updateAssessmentVisibility() {
@@ -734,11 +708,13 @@
     }
 
     // =====================================
-    // 16. OPEN ASSESSMENT
+    // 15. OPEN ASSESSMENT (BOSS FIGHT)
     // =====================================
 
     function openAssessment() {
-        navigateTo("assessment");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("assessment");
+        }
 
         const panel = document.getElementById("electricalAssessment");
         if (!panel) return;
@@ -748,7 +724,7 @@
     }
 
     // =====================================
-    // 17. RENDER ASSESSMENT (BOSS FIGHT / COMISIONAMIENTO CALIBRADO)
+    // 16. RENDER ASSESSMENT
     // =====================================
 
     function renderAssessment() {
@@ -765,7 +741,6 @@
 
             panel.innerHTML = `
                 <div style="max-width:380px; margin: 0 auto; padding-bottom: 90px; box-sizing: border-box;">
-                    <!-- HUD SUPERIOR -->
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 4px;">
                         <span class="tag" style="border-color:#ffc857; color:#ffc857; font-size:10px; margin:0;">
                             PASO ${currentQ + 1} DE ${assessmentQuestions.length}
@@ -775,17 +750,14 @@
                         </strong>
                     </div>
 
-                    <!-- BARRA DE INTEGRIDAD -->
                     <div style="width:100%; height:7px; background:#142236; border-radius:4px; overflow:hidden; margin-bottom:14px; border:1px solid rgba(255,255,255,0.06);">
                         <div style="width:${integrity}%; height:100%; background:${integrityColor}; transition:width 0.25s ease;"></div>
                     </div>
 
-                    <!-- TARJETA PRINCIPAL DEL RETO -->
                     <div style="background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:18px 14px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.35);">
                         <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px; display:block; margin-bottom:6px;">VALIDACIÓN DE LÍNEA</span>
                         <h2 style="font-size:20px; color:#ffffff; margin: 0 0 16px 0; font-weight:700;">${q.question}</h2>
                         
-                        <!-- BOTONES DE OPCIONES -->
                         <div id="boss-options-grid" style="display:flex; flex-direction:column; gap:10px;"></div>
                     </div>
                 </div>
@@ -857,15 +829,8 @@
                 const reward = 100;
                 awardXP(reward);
 
-                registerActivity(
-                    "Área Eléctrica Certificada",
-                    `Comisionamiento aprobado con ${integrity}% de integridad`,
-                    reward
-                );
-
                 updateRanking();
                 updateProfile();
-                updateActivity();
                 renderCareerPath();
                 saveProgress();
 
@@ -915,18 +880,7 @@
     }
 
     // =====================================
-    // 19. RETURN TO CAREER
-    // =====================================
-
-    function connectCareerBackButton() {
-        const card = document.querySelector("#level01 .recognition-card");
-        if (card) {
-            card.style.display = "block";
-        }
-    }
-
-    // =====================================
-    // 20. GLOBAL RANKING
+    // 17. GLOBAL RANKING
     // =====================================
 
     function updateRanking() {
@@ -936,7 +890,7 @@
         if (!individualList || !teamList) return;
 
         const medals = ["🥇", "🥈", "🥉"];
-        const sortedPlayers = [...data.players].sort((a, b) => b.xp - a.xp);
+        const sortedPlayers = [...data.players].sort((a, b) => (b.xp || 0) - (a.xp || 0));
 
         individualList.innerHTML = "";
         sortedPlayers.forEach((player, index) => {
@@ -950,52 +904,52 @@
             individualList.appendChild(row);
         });
 
-        const sortedTeams = data.teams.map(team => {
-            const members = data.players.filter(player => player.team === team.name);
-            const totalXP = members.reduce((total, player) => total + Number(player.xp || 0), 0);
-            return { name: team.name, xp: totalXP, members: members.length };
-        }).sort((a, b) => b.xp - a.xp);
+        if (Array.isArray(data.teams)) {
+            const sortedTeams = data.teams.map(team => {
+                const members = data.players.filter(player => player.team === team.name);
+                const totalXP = members.reduce((total, player) => total + Number(player.xp || 0), 0);
+                return { name: team.name, xp: totalXP, members: members.length };
+            }).sort((a, b) => b.xp - a.xp);
 
-        teamList.innerHTML = "";
-        sortedTeams.forEach((team, index) => {
-            const row = document.createElement("div");
-            row.className = "team-row";
-            const position = medals[index] || `${index + 1}.`;
-            row.innerHTML = `
-                <span>${position} ${team.name} <small>(${team.members} players)</small></span>
-                <strong>${formatNumber(team.xp)} XP</strong>
-            `;
-            teamList.appendChild(row);
-        });
+            teamList.innerHTML = "";
+            sortedTeams.forEach((team, index) => {
+                const row = document.createElement("div");
+                row.className = "team-row";
+                const position = medals[index] || `${index + 1}.`;
+                row.innerHTML = `
+                    <span>${position} ${team.name} <small>(${team.members} players)</small></span>
+                    <strong>${formatNumber(team.xp)} XP</strong>
+                `;
+                teamList.appendChild(row);
+            });
+        }
     }
 
-// =====================================
-    // 21. PLAYER PROFILE & MEDALLAS
+    // =====================================
+    // 18. PLAYER PROFILE & VITRINA DE MEDALLAS
     // =====================================
 
-    // Definición de medallas del sistema técnico
-// MEDALLAS DISPONIBLES EN VITRINA
     const MEDALS_DB = [
         {
             id: "badge_electric",
             icon: "⚡",
             name: "Comisionado Eléctrico",
             desc: "Insignia desbloqueada: Especialista en potencia y señales",
-            isUnlocked: () => true // Desbloqueada de ejemplo
+            isUnlocked: () => true
         },
         {
             id: "badge_dragon",
             icon: "龍",
             name: "Dragón Zìdòng",
             desc: "Insignia desbloqueada: Rango fundador de la academia",
-            isUnlocked: () => true // Desbloqueada de ejemplo
+            isUnlocked: () => true
         },
         {
             id: "badge_robot",
             icon: "🤖",
             name: "Maestro Robótico",
             desc: "Insignia desbloqueada: Control de servomotores y celdas",
-            isUnlocked: () => true // Desbloqueada de ejemplo
+            isUnlocked: () => true
         },
         {
             id: "badge_overclock",
@@ -1016,37 +970,9 @@
             icon: "⚠️",
             name: "Rescate Crítico",
             desc: "Supera 1,500 XP en simulaciones HMI",
-            isUnlocked: () => (data.player?.xp || 0) >= 1500
+            isUnlocked: () => (typeof data !== "undefined" && (data.player?.xp || 0) >= 1500)
         }
     ];
-
-    function updateProfile() {
-        if (typeof data === "undefined" || !data.player) return;
-        const player = data.player;
-        const profileSection = document.querySelector("#profile");
-        if (!profileSection) return;
-
-        const initials = profileSection.querySelector("#profileInitials");
-        const name = profileSection.querySelector("#profileName");
-        const xp = profileSection.querySelector("#profileXP");
-        const level = profileSection.querySelector("#profileLevel");
-        const streak = profileSection.querySelector("#profileStreak");
-        const completed = profileSection.querySelector("#profileCompleted");
-
-        if (initials) initials.textContent = player.initials;
-        if (name) name.textContent = player.name;
-        if (xp) xp.textContent = formatNumber(player.xp);
-        if (level) level.textContent = String(player.level).padStart(2, "0");
-        if (streak) streak.textContent = `${player.streak} Días`;
-        if (completed) completed.textContent = career.completedActivities.length;
-
-        // Cargar avatar equipado previamente (o iniciales por defecto)
-        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
-        applyAvatarIcon(savedIcon);
-
-        // Renderizar vitrina de medallas
-        renderBadgesGrid();
-    }
 
     function applyAvatarIcon(icon) {
         const profileAvatar = document.getElementById("profileAvatar");
@@ -1085,10 +1011,9 @@
 
             if (unlocked) {
                 badgeEl.onclick = () => {
-                    // Si ya está equipada, vuelve a poner las iniciales "RL"
                     const newEquip = isEquipped ? "RL" : medal.icon;
                     localStorage.setItem("zidong_equipped_badge", newEquip);
-                    if (triggerHaptic) triggerHaptic("success");
+                    triggerHaptic("success");
                     renderBadgesGrid();
                     applyAvatarIcon(newEquip);
                 };
@@ -1098,35 +1023,28 @@
         });
     }
 
-    // =====================================
-    // 22. ACTIVITY HISTORY
-    // =====================================
+    function updateProfile() {
+        const player = (typeof data !== "undefined" && data.player) ? data.player : { xp: 0, level: 5, streak: 5 };
+        const profileSection = document.querySelector("#profile");
+        if (!profileSection) return;
 
-    function updateActivity() {
-        if (typeof data === "undefined" || !Array.isArray(data.activity)) return;
-        const activityList = document.querySelector("#activityList");
-        if (!activityList) return;
+        const xp = profileSection.querySelector("#profileXP");
+        const level = profileSection.querySelector("#profileLevel");
+        const streak = profileSection.querySelector("#profileStreak");
+        const completed = profileSection.querySelector("#profileCompleted");
 
-        activityList.replaceChildren();
-        data.activity.forEach(item => {
-            const row = document.createElement("div");
-            row.className = "team-row";
-            const information = document.createElement("div");
-            const title = document.createElement("strong");
-            title.textContent = `${item.icon} ${item.title}`;
-            const detail = document.createElement("p");
-            detail.textContent = item.detail;
-            information.append(title, detail);
+        if (xp) xp.textContent = formatNumber(player.xp);
+        if (level) level.textContent = String(player.level).padStart(2, "0");
+        if (streak) streak.textContent = `${player.streak} Días`;
+        if (completed) completed.textContent = career.completedActivities.length;
 
-            const reward = document.createElement("strong");
-            reward.textContent = item.xp;
-            row.append(information, reward);
-            activityList.appendChild(row);
-        });
+        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
+        applyAvatarIcon(savedIcon);
+        renderBadgesGrid();
     }
 
     // =====================================
-    // 23. INITIALIZE & BOOTSTRAP
+    // 19. INITIALIZE
     // =====================================
 
     function initializeApplication() {
@@ -1134,23 +1052,29 @@
         updateMissionProgress();
         updateRanking();
         updateProfile();
-        updateActivity();
         renderCareerPath();
         updateAssessmentVisibility();
-        connectCareerBackButton();
+
+        const card = document.querySelector("#level01 .recognition-card");
+        if (card) card.style.display = "block";
 
         console.log("--------------------------------");
         console.log("ZIDONG CORE 2.0: SYSTEM ONLINE");
         console.log("--------------------------------");
     }
 
-    // DISPARADOR DE PRUEBA RÁPIDA (GLOBAL)
+    // EXPOSICIÓN GLOBAL PARA ROUTER Y NAVEGACIÓN
+    window.updateProfile = updateProfile;
+    window.renderBadgesGrid = renderBadgesGrid;
+    window.renderCareerPath = renderCareerPath;
+    window.updateRanking = updateRanking;
+    window.updateMissionProgress = updateMissionProgress;
+
     window.debugBossFight = () => {
         career.completedActivities = activities.map(a => a.id);
         openAssessment();
     };
 
-    // ARRANQUE AUTOMÁTICO AL CARGAR EL DOM
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initializeApplication);
     } else {
@@ -1178,32 +1102,4 @@ function showRankingTab(tab, button) {
         individual.style.display = "none";
         teams.style.display = "block";
     }
-   // =====================================
-    // 24. BUILD TIMESTAMP MONITOR
-    // =====================================
-
-    function displayBuildTimestamp() {
-        const stampElement = document.getElementById("buildTimestamp");
-        if (!stampElement) return;
-
-        // document.lastModified obtiene la fecha/hora exacta del archivo entregado por GitHub Pages
-        const modDate = new Date(document.lastModified);
-        
-        // Formato claro en español: dd/mm/aaaa, hh:mm:ss am/pm
-        const formatted = modDate.toLocaleString("es-MX", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true
-        });
-
-        stampElement.textContent = formatted;
-        console.log(`[Zidong System] Última compilación en caché: ${formatted}`);
-    }
-
-    // Asegurar que se ejecute al arrancar
-    displayBuildTimestamp();
 }

@@ -11,11 +11,11 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=10.0">
+    <link rel="stylesheet" href="style.css?v=12.0">
 </head>
 <body>
 
-    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN DE 6 SEGUNDOS (SIN BOTÓN OMITIR, GLOBO DE DIÁLOGO) -->
+    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN DE 6 SEGUNDOS (CON GLOBO DE DIÁLOGO) -->
     <div id="oberonSplashScreen" class="splash-screen-overlay">
         <div class="splash-content-box">
             <span class="eyebrow splash-eyebrow">SISTEMA ESPACIAL OBERON</span>
@@ -249,7 +249,7 @@
             </button>
         </section>
 
-        <!-- 3. CLASIFICATORIA DE PLANTA (LEADERBOARD ONLINE-READY) -->
+        <!-- 3. CLASIFICATORIA DE PLANTA (LEADERBOARD) -->
         <section id="leaderboard" class="page">
             <div class="welcome">
                 <span class="eyebrow">CLASIFICATORIA INDUSTRIAL GLOBAL</span>
@@ -257,7 +257,6 @@
                 <p>Compara tu rendimiento en planta y acumulación de XP en tiempo real:</p>
             </div>
 
-            <!-- TARJETA DESTACADA DE TU USUARIO -->
             <div class="lb-my-card" id="leaderboardMyRankBox"></div>
 
             <div class="lb-table-wrapper">
@@ -288,7 +287,7 @@
             </button>
         </section>
 
-        <!-- 5. LABORATORIO (LAB) -->
+        <!-- 5. LABORATORIO (LAB) CON FILTROS POR MUNDO -->
         <section id="hanziLab" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
@@ -343,7 +342,6 @@
         <!-- 7. ARENA 1V1 CON 3 MECÁNICAS POR NIVEL -->
         <section id="vsBattle" class="page">
             
-            <!-- SELECTOR DE DIFICULTAD CON NOMBRES CHIDOS -->
             <div id="vsDifficultySelector" style="display:block;">
                 <div class="welcome">
                     <span class="eyebrow">SISTEMA DE ENTRENAMIENTO 1V1</span>
@@ -388,7 +386,6 @@
                 </button>
             </div>
 
-            <!-- ARENA EN CURSO -->
             <div id="vsBattleArenaContainer" style="display:none;">
                 <div class="lesson-top-nav">
                     <button class="btn-compact-back" onclick="openVsMode()">← NIVELES</button>
@@ -430,7 +427,6 @@
                 </div>
             </div>
 
-            <!-- POPUP / PANTALLA ROJA DE DERROTA CONTRA LA IA -->
             <div id="vsDefeatScreen" style="display:none; text-align:center;">
                 <div class="panel collapse-panel">
                     <div class="avatar" id="vsDefeatRivalAvatar" style="width:64px; height:64px; font-size:36px; margin:0 auto 10px auto; background:rgba(0,0,0,0.4); border:2px solid #ff4444;">🤖</div>
@@ -465,7 +461,6 @@
                         <p>Solo en chino técnico HMI. Despeja tantas alarmas como puedas. Cada acierto te otorga <strong>+3 segundos extra</strong> de tiempo. 1 error = Colapso.</p>
                     </div>
 
-                    <!-- BOTÓN SIN EL LETRERO REDUNDANTE -->
                     <div class="survivor-banner-action" onclick="startCriticalLevel()">
                         <div class="survivor-banner-icon">⚡</div>
                         <div>
@@ -480,7 +475,6 @@
                     </button>
                 </div>
 
-                <!-- ARENA SURVIVOR EN CURSO -->
                 <div id="cf-game-arena" class="cf-view-container" style="display:none;">
                     <div class="cf-hud-bar">
                         <div class="cf-hud-tag">
@@ -509,7 +503,6 @@
                     </button>
                 </div>
 
-                <!-- PANTALLA ROJA DE COLAPSO TOTAL -->
                 <div id="cf-collapse-screen" class="cf-view-container" style="display:none; text-align:center;">
                     <div class="panel collapse-panel">
                         <span class="collapse-icon">💥</span>
@@ -580,7 +573,6 @@
                     <div class="p-stat"><span id="profileWorldsUnlocked">5 / 5</span><small>MUNDOS</small></div>
                 </div>
 
-                <!-- SECCIÓN DE PROGRESO DETALLADO EN LOS 5 MUNDOS -->
                 <div class="profile-worlds-progress-shelf">
                     <div class="shelf-header">
                         <span class="eyebrow" style="color:var(--cyan);">ESTADO DE LOS 5 MUNDOS</span>
@@ -589,7 +581,6 @@
                     <div class="world-progress-list" id="profileWorldsProgressList"></div>
                 </div>
 
-                <!-- RÉCORDS DESTACADOS DE PLANTA (SURVIVOR Y 1V1) -->
                 <div class="profile-records-shelf">
                     <div class="record-row">
                         <span class="rec-label">🚨 Alarmas retiradas en Survivor:</span>
@@ -602,7 +593,6 @@
                 </div>
             </article>
 
-            <!-- VITRINA DE MEDALLAS (INCLUYE MEDALLAS DE MODO CARRERA) -->
             <article class="daily-mission-card" style="margin-top:14px;">
                 <div class="mission-header">
                     <div>
@@ -620,7 +610,7 @@
             </button>
         </section>
 
-        <!-- MODAL ESTÉTICO DE DAILY REWARD (COFRE HOLOGRÁFICO) -->
+        <!-- MODAL ESTÉTICO DE DAILY REWARD -->
         <div id="dailyRewardModal" class="modal-backdrop" style="display:none;" onclick="closeRewardModal(event)">
             <div class="modal-card reward-modal-card" onclick="event.stopPropagation()">
                 <div class="reward-glow-ring"></div>
@@ -695,7 +685,7 @@
 
     </main>
 
-    <!-- BARRA INFERIOR AMPLIADA: HOME, LAB, RANKING, RANGOS -->
+    <!-- BARRA INFERIOR: HOME, LAB, RANKING, RANGOS -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>

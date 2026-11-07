@@ -1,5 +1,10 @@
 /* ==========================================================================
-   ZIDONG CORE 4.0 - APPLICATION ENGINE & INFINITE WORLDS (CANDY CRUSH STYLE)
+   ZIDONG CORE 5.0 - APPLICATION ENGINE
+   - 5 Mundos desbloqueados por defecto
+   - Modificación de nombre 1 SOLA VEZ con advertencia estricta
+   - Diálogo troll del Cyberdog con el nombre ("Mejor te hubieras puesto Chilaquil...")
+   - Panel emergente rojo de derrota en 1v1 dicho por la IA
+   - Nuevos logros Xbox y medallas bloqueadas/desbloqueables
    ========================================================================== */
 
 (() => {
@@ -18,10 +23,10 @@
         }
     }
 
-    const STORAGE_KEY = "zidong_core_progress_v4";
+    const STORAGE_KEY = "zidong_core_progress_v5";
 
     // =====================================
-    // 1. MUNDOS INFINITOS TIPO CANDY CRUSH
+    // 1. LOS 5 MUNDOS TOTALMENTE DESBLOQUEADOS
     // =====================================
     const WORLDS_CONFIG = [
         {
@@ -60,7 +65,7 @@
             subtitle: "Presión, Cilindros y Válvulas",
             icon: "💨",
             color: "#00f59b",
-            unlocked: false,
+            unlocked: true,
             activities: [
                 { id: "h_011", hanzi: "气", pinyin: "qì", meaning: "Aire / Gas", example: "气缸 (qìgāng) Cilindro", reward: 70 },
                 { id: "h_012", hanzi: "压", pinyin: "yā", meaning: "Presión", example: "气压 (qìyā) Presión Bar", reward: 70 },
@@ -75,7 +80,7 @@
             subtitle: "Celdas Fanuc, Trayectorias y AGVs",
             icon: "🤖",
             color: "#a78bfa",
-            unlocked: false,
+            unlocked: true,
             activities: [
                 { id: "h_016", hanzi: "手", pinyin: "shǒu", meaning: "Brazo / Gripper", example: "机械手 (jīxièshǒu) Robot", reward: 80 },
                 { id: "h_017", hanzi: "车", pinyin: "chē", meaning: "Carro / AGV", example: "导引车 (dǎoyǐnchē) AGV", reward: 80 },
@@ -90,7 +95,7 @@
             subtitle: "Cámaras, Iluminación y Lentes",
             icon: "👁️",
             color: "#ff7777",
-            unlocked: false,
+            unlocked: true,
             activities: [
                 { id: "h_021", hanzi: "光", pinyin: "guāng", meaning: "Luz / Óptica", example: "光源 (guāngyuán) Estroboscopio", reward: 90 },
                 { id: "h_022", hanzi: "镜", pinyin: "jìng", meaning: "Lente / Cámara", example: "镜头 (jìngtóu) Objetivo", reward: 90 },
@@ -101,7 +106,7 @@
         }
     ];
 
-    // BANCO COMPLETO DEL LABORATORIO (CATEGORIZADO POR MUNDO)
+    // BANCO DEL LABORATORIO
     const LAB_COMPONENTS = [
         { hanzi: "电", pinyin: "diàn", es: "Electricidad", cat: "world_1", catName: "⚡ Eléctrica", part: "电缆 (Cable)" },
         { hanzi: "机", pinyin: "jī", es: "Máquina / Motor", cat: "world_1", catName: "⚡ Eléctrica", part: "电机 (Motor)" },
@@ -140,23 +145,59 @@
         { id: 10, name: "Maestro de Programación", minXP: 10000, icon: "👑", desc: "Dominio absoluto de la línea y Cero Downtime" }
     ];
 
-    // VITRINA DE MEDALLAS
+    // MEDALLAS (INCLUYENDO DERROTADOR DE IA Y SOLUCIONADOR DE FALLAS BÁSICO)
     const MEDALS_DB = [
-        { id: "b_practicante", icon: "🔰", name: "Practicante de Automatización", desc: "Bienvenida oficial a planta Zìdòng", isUnlocked: () => true },
-        { id: "b_electric", icon: "⚡", name: "Comisionado Eléctrico", desc: "Especialista en potencia y señales", isUnlocked: () => true },
-        { id: "b_dragon", icon: "龍", name: "Dragón Zìdòng", desc: "Fundador de la academia técnica", isUnlocked: () => true },
-        { id: "b_robot", icon: "🤖", name: "Operador Especializado", desc: "Manejo de celdas y servos", isUnlocked: () => true },
-        { id: "b_overclock", icon: "⭐", name: "Overclock 3★", desc: "Test aprobado en menos de 12 segundos", isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3) },
-        { id: "b_survivor", icon: "🚨", name: "Héroe de Mantenimiento", desc: "Resuelve una alarma crítica en Survivor", isUnlocked: () => localStorage.getItem("zidong_survivor_won") === "true" }
+        {
+            id: "b_practicante",
+            icon: "🔰",
+            name: "Practicante de Automatización",
+            desc: "Insignia oficial de bienvenida a planta Zìdòng",
+            isUnlocked: () => true
+        },
+        {
+            id: "b_ai_slayer",
+            icon: "🤖",
+            name: "Derrotador de IA",
+            desc: "Vence a la IA en el duelo 1v1 Battle al menos 1 vez",
+            isUnlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1
+        },
+        {
+            id: "b_troubleshooter",
+            icon: "🛠️",
+            name: "Solucionador de Fallas Básico",
+            desc: "Supera al menos 1 emergencia real en Survivor Mode",
+            isUnlocked: () => Number(localStorage.getItem("zidong_survivor_wins") || 0) >= 1
+        },
+        {
+            id: "b_electric",
+            icon: "⚡",
+            name: "Comisionado Eléctrico",
+            desc: "Especialista en potencia y señales",
+            isUnlocked: () => true
+        },
+        {
+            id: "b_dragon",
+            icon: "龍",
+            name: "Dragón Zìdòng",
+            desc: "Fundador de la academia técnica",
+            isUnlocked: () => true
+        },
+        {
+            id: "b_overclock",
+            icon: "⭐",
+            name: "Overclock 3★",
+            desc: "Test aprobado en menos de 12 segundos",
+            isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3)
+        }
     ];
 
     // LOGROS TIPO XBOX
     const XBOX_ACHIEVEMENTS = [
         { id: "ach_welcome", title: "Técnico en Planta", desc: "Inicia tu primer turno e interactúa con el Cyberdog.", score: 50, icon: "🤖", unlocked: () => true },
+        { id: "ach_worlds", title: "Explorador de Planta", desc: "Visita los 5 mundos industriales disponibles.", score: 100, icon: "🗺️", unlocked: () => true },
         { id: "ach_first_circuit", title: "Primer Circuito Energizado", desc: "Domina tu primer componente eléctrico.", score: 100, icon: "⚡", unlocked: () => career.completedActivities.length >= 1 },
-        { id: "ach_overclock", title: "Calibración Overclock", desc: "Consigue 3 estrellas ⭐⭐⭐ en cualquier test.", score: 150, icon: "⭐", unlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3) },
-        { id: "ach_survivor", title: "Héroe de Mantenimiento", desc: "Supera una alarma crítica HMI.", score: 150, icon: "🚨", unlocked: () => localStorage.getItem("zidong_survivor_won") === "true" },
-        { id: "ach_duel_master", title: "Duelo de Alta Velocidad", desc: "Vence a un rival en la arena 1v1.", score: 200, icon: "⚔️", unlocked: () => localStorage.getItem("zidong_vs_won") === "true" }
+        { id: "ach_survivor_hero", title: "Ingeniero de Choque", desc: "Resuelve con éxito una alarma crítica HMI.", score: 150, icon: "🚨", unlocked: () => Number(localStorage.getItem("zidong_survivor_wins") || 0) >= 1 },
+        { id: "ach_ai_tamer", title: "Domador de Servocontroladores", desc: "Derrota a la IA 1 vez en Duelo 1v1.", score: 200, icon: "⚔️", unlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 }
     ];
 
     // =====================================
@@ -168,32 +209,40 @@
         nodeStars: { "h_001": 3 }
     };
 
+    let currentUserData = {
+        name: "Raymundo Lopez",
+        initials: "RL",
+        xp: 1850,
+        level: 5,
+        streak: 5
+    };
+
     function loadSavedProgress() {
         try {
-            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            if (!saved) return;
-            if (saved.player && typeof data !== "undefined" && data.player) {
-                Object.assign(data.player, saved.player);
+            const savedName = localStorage.getItem("zidong_user_name");
+            if (savedName) {
+                currentUserData.name = savedName;
+                currentUserData.initials = getInitials(savedName);
             }
-            if (saved.career) {
-                career.completedActivities = saved.career.completedActivities || ["h_001"];
-                career.assessmentPassed = Boolean(saved.career.assessmentPassed);
-                career.nodeStars = saved.career.nodeStars || { "h_001": 3 };
+
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (saved) {
+                if (saved.player) Object.assign(currentUserData, saved.player);
+                if (saved.career) {
+                    career.completedActivities = saved.career.completedActivities || ["h_001"];
+                    career.assessmentPassed = Boolean(saved.career.assessmentPassed);
+                    career.nodeStars = saved.career.nodeStars || { "h_001": 3 };
+                }
             }
         } catch (e) {
-            console.error("Error al cargar progreso:", e);
+            console.error("Error al cargar:", e);
         }
     }
 
     function saveProgress() {
         try {
             const saved = {
-                player: {
-                    xp: data.player?.xp || 1850,
-                    level: data.player?.level || 5,
-                    streak: data.player?.streak || 5,
-                    completed: career.completedActivities.length
-                },
+                player: currentUserData,
                 career: {
                     completedActivities: career.completedActivities,
                     assessmentPassed: career.assessmentPassed,
@@ -206,10 +255,14 @@
         }
     }
 
+    function getInitials(name) {
+        const parts = name.trim().split(" ");
+        if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+        return name.slice(0, 2).toUpperCase();
+    }
+
     function awardXP(reward) {
-        if (typeof data === "undefined" || !data.player) return;
-        data.player.xp = (data.player.xp || 1850) + reward;
-        data.player.completed = career.completedActivities.length;
+        currentUserData.xp += reward;
         renderRanksSection();
         updateProfile();
         saveProgress();
@@ -227,7 +280,62 @@
     }
 
     // =====================================
-    // 3. RENDER CAREER MUNDOS (CANDY CRUSH STYLE)
+    // 3. EDICIÓN DE NOMBRE (SOLO 1 VEZ CON ADVERTENCIA)
+    // =====================================
+    window.editUserNameOnce = () => {
+        const alreadyChanged = localStorage.getItem("zidong_name_changed") === "true";
+        if (alreadyChanged) {
+            triggerHaptic("error");
+            alert(`🔒 No puedes modificar tu nombre de nuevo.\nEl sistema ya registró tu identidad oficial como: "${currentUserData.name}".`);
+            return;
+        }
+
+        const warningMsg = `⚠️ ¡ATENCIÓN! REGLA DE PLANTA:\n\nSolo tienes permitido modificar tu nombre UNA SOLA VEZ en el sistema.\n\nPiénsalo bien: tal y como lo escribas ahora, así serás conocido por el resto de tu carrera técnica.\n\n¿Deseas continuar?`;
+        
+        if (!confirm(warningMsg)) return;
+
+        const newName = prompt("Escribe tu nombre y apellido técnico definitivo:", currentUserData.name);
+        if (!newName || newName.trim().length < 3) {
+            alert("Operación cancelada: El nombre debe tener al menos 3 caracteres.");
+            return;
+        }
+
+        const cleanName = newName.trim();
+        currentUserData.name = cleanName;
+        currentUserData.initials = getInitials(cleanName);
+        localStorage.setItem("zidong_user_name", cleanName);
+        localStorage.setItem("zidong_name_changed", "true");
+
+        triggerHaptic("win");
+        updateUserDisplay();
+        updateProfile();
+        saveProgress();
+
+        alert(`✅ Nombre registrado con éxito: "${cleanName}".\nEste cambio ha quedado bloqueado permanentemente.`);
+    };
+
+    function updateUserDisplay() {
+        const topU = document.getElementById("topUsername");
+        const topA = document.getElementById("topAvatar");
+        const profU = document.getElementById("profileName");
+        const profA = document.getElementById("profileAvatar");
+        const editNotice = document.getElementById("nameEditNotice");
+
+        if (topU) topU.textContent = currentUserData.name;
+        if (topA && !topA.classList.contains("custom-icon")) topA.textContent = currentUserData.initials;
+        if (profU) profU.textContent = currentUserData.name;
+        if (profA && !profA.classList.contains("custom-icon")) profA.textContent = currentUserData.initials;
+
+        const isLocked = localStorage.getItem("zidong_name_changed") === "true";
+        if (editNotice) {
+            editNotice.innerHTML = isLocked 
+                ? "🔒 Nombre oficial bloqueado (ya utilizado)" 
+                : "✏️ Toca aquí para editar nombre <strong style='color:#ffaa00;'>(1 sola vez)</strong>";
+        }
+    }
+
+    // =====================================
+    // 4. MUNDOS INFINITOS EN CAREER
     // =====================================
     function renderCareerPath() {
         const container = document.getElementById("careerWorldsContainer");
@@ -237,7 +345,7 @@
 
         WORLDS_CONFIG.forEach((world, wIdx) => {
             const worldCard = document.createElement("div");
-            worldCard.className = `career-world-block ${world.unlocked ? "world-unlocked" : "world-locked"}`;
+            worldCard.className = "career-world-block world-unlocked";
 
             worldCard.innerHTML = `
                 <div class="world-header" style="border-left: 4px solid ${world.color};">
@@ -246,7 +354,7 @@
                         <span class="world-tag" style="color:${world.color};">${world.title}</span>
                         <h3>${world.subtitle}</h3>
                     </div>
-                    <span class="world-status-badge">${world.unlocked ? "ACTIVO" : "BLOQUEADO"}</span>
+                    <span class="world-status-badge">DESBLOQUEADO</span>
                 </div>
                 <div class="world-nodes-stream" id="stream_${world.id}"></div>
             `;
@@ -254,26 +362,23 @@
             const stream = worldCard.querySelector(`#stream_${world.id}`);
             world.activities.forEach((act, aIdx) => {
                 const isCompleted = career.completedActivities.includes(act.id);
-                const stars = (career.nodeStars && career.nodeStars[act.id]) || (isCompleted ? 1 : 0);
+                const stars = (career.nodeStars && career.nodeStars[act.id]) || (isCompleted ? 3 : 0);
                 const nodeEl = document.createElement("div");
                 nodeEl.className = `path-step ${aIdx % 2 === 0 ? "left" : "right"}`;
 
                 nodeEl.innerHTML = `
-                    <div class="path-node ${isCompleted ? "completed" : world.unlocked ? "current" : "locked"}">
+                    <div class="path-node ${isCompleted ? "completed" : "current"}">
                         <span>${isCompleted ? "✓" : act.hanzi}</span>
                     </div>
                     <div class="path-label">
                         <strong>Nivel 0${wIdx * 5 + aIdx + 1} · ${act.meaning} ${isCompleted ? "⭐".repeat(stars) : ""}</strong>
                         <small>${act.example}</small>
-                        <span class="node-action">${isCompleted ? "REPETIR TEST ↺" : world.unlocked ? "INICIAR ⚡" : "BLOQUEADO"}</span>
+                        <span class="node-action">${isCompleted ? "REPETIR TEST ↺" : "INICIAR ⚡"}</span>
                     </div>
                 `;
 
-                if (world.unlocked) {
-                    nodeEl.style.cursor = "pointer";
-                    nodeEl.onclick = () => openActivity(act);
-                }
-
+                nodeEl.style.cursor = "pointer";
+                nodeEl.onclick = () => openActivity(act);
                 stream.appendChild(nodeEl);
             });
 
@@ -282,9 +387,7 @@
     }
 
     function openActivity(act) {
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("level01");
-        }
+        if (typeof window.navigateTo === "function") window.navigateTo("level01");
         renderLesson(act);
     }
 
@@ -322,7 +425,7 @@
 
     function startSingleTest(activity) {
         const card = document.querySelector("#level01 .recognition-card");
-        const allMeanings = ["Electricidad", "Máquina", "Línea / Cable", "Fuerza / Potencia", "Control", "Eje / Flecha", "Presión", "Cilindro"];
+        const allMeanings = ["Electricidad", "Máquina", "Línea / Cable", "Fuerza / Potencia", "Control", "Eje / Flecha", "Presión", "Cilindro", "Aire", "Válvula"];
         const wrongOpts = allMeanings.filter(m => m !== activity.meaning).sort(() => 0.5 - Math.random()).slice(0, 2);
         const options = [activity.meaning, ...wrongOpts].sort(() => 0.5 - Math.random());
 
@@ -373,7 +476,7 @@
     }
 
     // =====================================
-    // 4. LABORATORIO CON CATEGORÍAS & BUSCADOR
+    // 5. LABORATORIO CON CATEGORÍAS & BUSCADOR
     // =====================================
     let currentLabCategory = "all";
 
@@ -403,10 +506,7 @@
             `;
             card.onclick = () => {
                 triggerHaptic("success");
-                alert(`🔬 ${comp.hanzi} (${comp.pinyin})
-Significado: ${comp.es}
-Aplicación: ${comp.part}
-Categoría: ${comp.catName}`);
+                alert(`🔬 ${comp.hanzi} (${comp.pinyin})\nSignificado: ${comp.es}\nAplicación: ${comp.part}\nCategoría: ${comp.catName}`);
             };
             container.appendChild(card);
         });
@@ -432,7 +532,7 @@ Categoría: ${comp.catName}`);
     };
 
     // =====================================
-    // 5. ESCALAFÓN DE RANGOS
+    // 6. ESCALAFÓN DE RANGOS
     // =====================================
     function renderRanksSection() {
         const container = document.getElementById("ranksLadderContainer");
@@ -440,8 +540,7 @@ Categoría: ${comp.catName}`);
         const profileRankBadge = document.getElementById("profileRankBadge");
         if (!container) return;
 
-        const currentXP = (typeof data !== "undefined" && data.player?.xp) ? data.player.xp : 1850;
-        const current = getCurrentRank(currentXP);
+        const current = getCurrentRank(currentUserData.xp);
 
         if (headerBadge) headerBadge.textContent = `${current.icon} ${current.name}`;
         if (profileRankBadge) profileRankBadge.textContent = `${current.icon} ${current.name} (Rango ${current.id}/10)`;
@@ -449,7 +548,7 @@ Categoría: ${comp.catName}`);
         container.replaceChildren();
 
         INDUSTRIAL_RANKS.forEach(rank => {
-            const isReached = currentXP >= rank.minXP;
+            const isReached = currentUserData.xp >= rank.minXP;
             const isCurrent = rank.id === current.id;
 
             const card = document.createElement("div");
@@ -473,12 +572,13 @@ Categoría: ${comp.catName}`);
     }
 
     // =====================================
-    // 6. ARENA 1V1 (CERO MULTISELECCIÓN & SALTO INMEDIATO EN ERROR)
+    // 7. ARENA 1V1 (CON POPUP ROJO DE DERROTA DE LA IA)
     // =====================================
     let vsTimer = null;
     let vsTimeLeft = 20;
     let myVsPoints = 0;
     let rivalVsPoints = 0;
+    let currentRival = { name: "Servo-Bot IA v4", avatar: "🤖" };
 
     window.openVsMode = () => {
         stopVsSession();
@@ -488,13 +588,16 @@ Categoría: ${comp.catName}`);
         }
 
         const rivals = [
-            { name: "Servo-Bot IA v4", avatar: "🤖" },
+            { name: "Servo-Bot IA v4.2", avatar: "🤖" },
             { name: "Ing. Chen Wei", avatar: "👨‍💻" },
             { name: "PLC Omron Test", avatar: "⚙️" }
         ];
-        const rival = rivals[Math.floor(Math.random() * rivals.length)];
-        document.getElementById("vsRivalName").textContent = rival.name;
-        document.getElementById("vsRivalAvatar").textContent = rival.avatar;
+        currentRival = rivals[Math.floor(Math.random() * rivals.length)];
+        document.getElementById("vsRivalName").textContent = currentRival.name;
+        document.getElementById("vsRivalAvatar").textContent = currentRival.avatar;
+
+        document.getElementById("vsBattleArenaContainer").style.display = "block";
+        document.getElementById("vsDefeatScreen").style.display = "none";
 
         myVsPoints = 0;
         rivalVsPoints = 0;
@@ -553,7 +656,6 @@ Categoría: ${comp.catName}`);
             btn.textContent = opt;
 
             btn.onclick = () => {
-                // BLOQUEO INMEDIATO DE TODAS LAS OPCIONES (CERO MULTISELECCIÓN)
                 const allButtons = grid.querySelectorAll("button");
                 allButtons.forEach(b => b.style.pointerEvents = "none");
 
@@ -564,7 +666,6 @@ Categoría: ${comp.catName}`);
                     document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsQuestion, 260);
                 } else {
-                    // FALLASTE: SUENA ERROR, NO SUMA PUNTOS, PENALIZA 3 SEGUNDOS Y SALTA
                     triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
@@ -579,19 +680,30 @@ Categoría: ${comp.catName}`);
     function finishVsBattle() {
         stopVsSession();
         const win = myVsPoints >= rivalVsPoints;
+
         if (win) {
             triggerHaptic("win");
             awardXP(120);
-            localStorage.setItem("zidong_vs_won", "true");
-            alert(`🏆 ¡VICTORIA! Superaste al rival con ${myVsPoints} vs ${rivalVsPoints} PTS (+120 XP)`);
+            const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
+            localStorage.setItem("zidong_vs_wins", currentWins);
+            alert(`🏆 ¡VICTORIA ÉPICA! Superaste al rival con ${myVsPoints} vs ${rivalVsPoints} PTS (+120 XP)`);
+            renderAchievements();
+            renderBadgesGrid();
+            if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         } else {
+            // MOSTRAR PANTALLA ROJA DE DERROTA DICTADA POR LA IA
             triggerHaptic("error");
-            alert(`💀 DERROTA: El rival anotó ${rivalVsPoints} PTS vs tus ${myVsPoints} PTS.`);
-        }
-        renderAchievements();
-        renderRanksSection();
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("dashboard");
+            if (window.ZidongAudio && window.ZidongAudio.playLineCollapse) {
+                window.ZidongAudio.playLineCollapse();
+            }
+
+            document.getElementById("vsBattleArenaContainer").style.display = "none";
+            const defeatScreen = document.getElementById("vsDefeatScreen");
+            defeatScreen.style.display = "block";
+
+            document.getElementById("vsDefeatRivalAvatar").textContent = currentRival.avatar;
+            document.getElementById("vsDefeatRivalName").textContent = currentRival.name;
+            document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${currentRival.name}: ${rivalVsPoints} PTS`;
         }
     }
 
@@ -603,17 +715,19 @@ Categoría: ${comp.catName}`);
     window.stopVsSession = stopVsSession;
 
     // =====================================
-    // 7. COMPANION (SOLO CAMBIA AL TOCAR)
+    // 8. COMPANION (CON DIÁLOGO TROLL PERSONALIZADO)
     // =====================================
-    const COMPANION_MESSAGES = [
-        "¡Línea lista! Modo Survivor en espera. ⚡",
-        "Tip de planta: 电 (diàn) representa potencia en gabinetes.",
-        "Sensores fotoeléctricos calibrados. Cero falso rechazo. 👁️",
-        "Modo 1v1 listo: ¿Podrás ganarle al Servocontrolador IA? ⚔️",
-        "Presión neumática en 6 bar. Cilindros en posición HOME. 💨",
-        "Alerta HMI: Revisa siempre el paro de emergencia antes de resetear. ⚠️",
-        "¡Gran racha técnico! Estás a poco de certificar Área 02. 🏅"
-    ];
+    function getCompanionMessages() {
+        const name = currentUserData.name || "Colega";
+        return [
+            `${name}... ¡qué nombre tan feo! Mejor te hubieras puesto Chilaquil, va más de acuerdo con tu cara jajaja 🐶🔥`,
+            `¡Línea lista! Modo Survivor en espera sin segundas oportunidades. ⚡`,
+            `Tip de planta: 电 (diàn) representa potencia en gabinetes principales.`,
+            `Sensores fotoeléctricos calibrados. Cero falso rechazo en AOI. 👁️`,
+            `Alerta HMI: Revisa siempre el paro de emergencia antes de resetear. ⚠️`,
+            `Presión neumática en 6 bar. Cilindros en posición HOME. 💨`
+        ];
+    }
 
     let lastMsgIndex = -1;
     function interactWithCompanion() {
@@ -622,16 +736,17 @@ Categoría: ${comp.catName}`);
 
         triggerHaptic("success");
 
+        const messages = getCompanionMessages();
         let nextIndex;
         do {
-            nextIndex = Math.floor(Math.random() * COMPANION_MESSAGES.length);
+            nextIndex = Math.floor(Math.random() * messages.length);
         } while (nextIndex === lastMsgIndex);
         lastMsgIndex = nextIndex;
 
         if (bubbleText) {
             bubbleText.style.opacity = "0";
             setTimeout(() => {
-                bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
+                bubbleText.textContent = messages[nextIndex];
                 bubbleText.style.opacity = "1";
             }, 120);
         }
@@ -643,7 +758,7 @@ Categoría: ${comp.catName}`);
     }
 
     // =====================================
-    // 8. MEDALLAS & PERFIL
+    // 9. MEDALLAS & LOGROS
     // =====================================
     function renderBadgesGrid() {
         const container = document.getElementById("badgesContainer");
@@ -682,32 +797,29 @@ Categoría: ${comp.catName}`);
         [profileAvatar, topAvatar].forEach(el => {
             if (!el) return;
             el.textContent = icon;
-            if (icon !== "RL") el.classList.add("custom-icon");
+            if (icon !== "RL" && icon !== currentUserData.initials) el.classList.add("custom-icon");
             else el.classList.remove("custom-icon");
         });
     }
 
     function updateProfile() {
-        const player = (typeof data !== "undefined" && data.player) ? data.player : { xp: 1850, level: 5, streak: 5 };
         const xp = document.getElementById("profileXP");
         const level = document.getElementById("profileLevel");
         const streak = document.getElementById("profileStreak");
         const completed = document.getElementById("profileCompleted");
 
-        if (xp) xp.textContent = Number(player.xp || 1850).toLocaleString("en-US");
+        if (xp) xp.textContent = Number(currentUserData.xp).toLocaleString("en-US");
         if (level) level.textContent = "05";
         if (streak) streak.textContent = "5 Días";
         if (completed) completed.textContent = career.completedActivities.length;
 
-        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
+        const savedIcon = localStorage.getItem("zidong_equipped_badge") || currentUserData.initials;
         applyAvatarIcon(savedIcon);
+        updateUserDisplay();
         renderBadgesGrid();
         renderRanksSection();
     }
 
-    // =====================================
-    // 9. LOGROS XBOX & MISIONES MODAL
-    // =====================================
     function renderAchievements() {
         const container = document.getElementById("achievementsListContainer");
         const totalScoreEl = document.getElementById("totalGamerscore");
@@ -772,19 +884,19 @@ Categoría: ${comp.catName}`);
     // =====================================
     function initializeApplication() {
         loadSavedProgress();
+        updateUserDisplay();
         renderCareerPath();
         renderLabComponents();
         renderRanksSection();
         renderAchievements();
         updateProfile();
 
-        // Sonido de inicio suave estilo Zelda
         if (window.ZidongAudio) {
             window.ZidongAudio.startDashboardZelda();
         }
 
         console.log("--------------------------------");
-        console.log("ZIDONG CORE 4.0: SYSTEM READY");
+        console.log("ZIDONG CORE 5.0: SYSTEM READY");
         console.log("--------------------------------");
     }
 

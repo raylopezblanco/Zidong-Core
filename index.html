@@ -11,11 +11,11 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=4.0">
+    <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 <body>
 
-    <!-- TOPBAR CON CONTROLES Y RANGO -->
+    <!-- TOPBAR -->
     <header class="topbar">
         <div class="brand">
             <span class="brand-icon">龍</span>
@@ -42,17 +42,17 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD -->
-        <section id="dashboard" class="page active">
+        <!-- 1. DASHBOARD (BLOQUEADO ESTRICTAMENTE SIN SCROLL) -->
+        <section id="dashboard" class="page active dashboard-no-scroll">
 
-            <!-- MODOS PRINCIPALES -->
+            <!-- MODOS PRINCIPALES ARRIBA -->
             <div class="main-modes-grid">
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
                     <div class="mode-icon">🏆</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">MAPA INFINITO</span>
+                        <span class="mode-tag">5 MUNDOS LIBRES</span>
                         <h3>CAREER MODE</h3>
-                        <p>5 Mundos de Planta</p>
+                        <p>Eléctrica, Servos, AGVs...</p>
                     </div>
                     <div class="mode-action">
                         <span class="arrow">→</span>
@@ -64,7 +64,7 @@
                     <div class="mode-card-content">
                         <span class="mode-tag warning">MUERTE SÚBITA</span>
                         <h3>SURVIVOR MODE</h3>
-                        <p>Cero errores permitidos</p>
+                        <p>1 error = Colapso total</p>
                     </div>
                     <div class="mode-action warning">
                         <span class="arrow">⚡</span>
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <!-- COMPANION CILÍNDRICO -->
+            <!-- COMPANION CILÍNDRICO DE LUZ CON DIÁLOGO TROLL -->
             <div class="companion-stage">
                 <div class="speech-bubble" id="companionBubble">
                     <span id="companionText">¡Línea lista! Tócame para recibir un reporte. ⚡</span>
@@ -82,7 +82,7 @@
                     <div class="tube-ring top-ring"></div>
                     <div class="tube-chamber">
                         <div class="energy-beam"></div>
-                        <img src="cyberdog.gif?v=6" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        <img src="cyberdog.gif?v=7" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
                     </div>
                     <div class="tube-ring bottom-ring"></div>
                 </div>
@@ -126,7 +126,7 @@
                 </div>
             </article>
 
-            <!-- MONITOR DE COMPILACIÓN -->
+            <!-- MONITOR DE COMPILACIÓN AL RAS DE PANTALLA -->
             <div class="build-stamp-bar">
                 <span>⚡ BUILD ACTIVO:</span>
                 <strong id="buildTimestamp">Verificando versión...</strong>
@@ -169,25 +169,22 @@
             </script>
         </section>
 
-        <!-- 2. CAREER MODE (MUNDOS INFINITOS TIPO CANDY CRUSH) -->
+        <!-- 2. CAREER MODE (LOS 5 MUNDOS DESBLOQUEADOS) -->
         <section id="career" class="page">
             <div class="welcome">
                 <span class="eyebrow">ZIDONG SAGA · INFINITE CAREER PATH</span>
                 <h2>Mundos de Manufactura</h2>
-                <p>Avanza nivel por nivel por todas las ramas de automatización:</p>
+                <p>Explora cualquiera de las 5 ramas de automatización a tu propio ritmo:</p>
             </div>
 
-            <!-- CONTENEDOR DE MUNDOS -->
-            <div id="careerWorldsContainer" class="career-worlds-stream">
-                <!-- Se pobla dinámicamente -->
-            </div>
+            <div id="careerWorldsContainer" class="career-worlds-stream"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
                 ← REGRESAR AL DASHBOARD
             </button>
         </section>
 
-        <!-- 3. LABORATORIO (LAB) CON FILTROS POR MUNDO Y BUSCADOR -->
+        <!-- 3. LABORATORIO (LAB) -->
         <section id="hanziLab" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
@@ -195,7 +192,6 @@
                 <p>Banco técnico clasificado por ramas de ingeniería:</p>
             </div>
 
-            <!-- PESTAÑAS DE CATEGORÍAS RÁPIDAS -->
             <div class="lab-category-tabs">
                 <button class="lab-tab-btn active" onclick="filterLabCategory('all', this)">Todos</button>
                 <button class="lab-tab-btn" onclick="filterLabCategory('world_1', this)">⚡ Eléctrica</button>
@@ -231,7 +227,7 @@
             </button>
         </section>
 
-        <!-- 5. SISTEMA DE LOGROS TIPO XBOX -->
+        <!-- 5. SISTEMA DE LOGROS XBOX -->
         <section id="achievementsPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">XBOX-STYLE ACHIEVEMENTS</span>
@@ -255,49 +251,75 @@
             </button>
         </section>
 
-        <!-- 6. ARENA 1V1 (CON MARIO CASTLE Y TIC-TAC) -->
+        <!-- 6. ARENA 1V1 (CON DERROTA ROJA DICHA POR LA IA) -->
         <section id="vsBattle" class="page">
-            <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('dashboard')">← DASHBOARD</button>
-                <div class="lesson-hud-info">
-                    <span class="eyebrow" style="color:var(--purple); font-size:9px;">DUELO 1V1 INDUSTRIAL</span>
-                    <strong style="color:#ffffff; font-size:12px;">BOWSER's CASTLE RUSH</strong>
+            <div id="vsBattleArenaContainer">
+                <div class="lesson-top-nav">
+                    <button class="btn-compact-back" onclick="navigateTo('dashboard')">← DASHBOARD</button>
+                    <div class="lesson-hud-info">
+                        <span class="eyebrow" style="color:var(--purple); font-size:9px;">DUELO 1V1 INDUSTRIAL</span>
+                        <strong style="color:#ffffff; font-size:12px;">BOWSER's CASTLE RUSH</strong>
+                    </div>
+                    <div class="lesson-quick-badge" style="border-color:var(--purple); color:var(--purple);">1v1</div>
                 </div>
-                <div class="lesson-quick-badge" style="border-color:var(--purple); color:var(--purple);">1v1</div>
-            </div>
 
-            <div class="panel" style="text-align:center; margin-bottom:12px; background:linear-gradient(180deg, rgba(167, 139, 250, 0.15) 0%, rgba(17, 31, 53, 0.95) 100%);">
-                <div style="display:flex; justify-content:space-around; align-items:center; margin: 8px 0 14px 0;">
-                    <div>
-                        <div class="avatar" style="width:48px; height:48px; font-size:18px; margin:0 auto 4px auto; border:2px solid var(--cyan);">RL</div>
-                        <strong style="font-size:12px; color:#fff;">Tú</strong>
-                        <small id="vsMyScore" style="display:block; color:var(--cyan); font-weight:800; font-size:14px;">0 PTS</small>
+                <div class="panel" style="text-align:center; margin-bottom:12px; background:linear-gradient(180deg, rgba(167, 139, 250, 0.15) 0%, rgba(17, 31, 53, 0.95) 100%);">
+                    <div style="display:flex; justify-content:space-around; align-items:center; margin: 8px 0 14px 0;">
+                        <div>
+                            <div class="avatar" id="vsMyAvatar" style="width:48px; height:48px; font-size:18px; margin:0 auto 4px auto; border:2px solid var(--cyan);">RL</div>
+                            <strong style="font-size:12px; color:#fff;">Tú</strong>
+                            <small id="vsMyScore" style="display:block; color:var(--cyan); font-weight:800; font-size:14px;">0 PTS</small>
+                        </div>
+
+                        <div style="font-size:24px; font-weight:900; color:var(--gold);">VS</div>
+
+                        <div>
+                            <div class="avatar" id="vsRivalAvatar" style="width:48px; height:48px; font-size:24px; margin:0 auto 4px auto; background:transparent; border:2px solid var(--purple);">🤖</div>
+                            <strong id="vsRivalName" style="font-size:12px; color:#fff;">Servo-Bot IA</strong>
+                            <small id="vsRivalScore" style="display:block; color:var(--purple); font-weight:800; font-size:14px;">0 PTS</small>
+                        </div>
                     </div>
 
-                    <div style="font-size:24px; font-weight:900; color:var(--gold);">VS</div>
-
-                    <div>
-                        <div class="avatar" id="vsRivalAvatar" style="width:48px; height:48px; font-size:24px; margin:0 auto 4px auto; background:transparent; border:2px solid var(--purple);">🤖</div>
-                        <strong id="vsRivalName" style="font-size:12px; color:#fff;">Servo-Bot IA</strong>
-                        <small id="vsRivalScore" style="display:block; color:var(--purple); font-weight:800; font-size:14px;">0 PTS</small>
+                    <div class="cf-timer-track">
+                        <div id="vsTimerBar" class="cf-timer-fill" style="background:linear-gradient(90deg, #a78bfa, #27d8e8); width:100%;"></div>
                     </div>
+                    <span style="font-size:11px; color:var(--muted);">⏱️ Tiempo: <strong id="vsSeconds">20</strong>s <small>(Tic-Tac + Mario Castle)</small></span>
                 </div>
 
-                <div class="cf-timer-track">
-                    <div id="vsTimerBar" class="cf-timer-fill" style="background:linear-gradient(90deg, #a78bfa, #27d8e8); width:100%;"></div>
+                <div class="recognition-card" id="vsStageCard">
+                    <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO SIN SEGUNDA OPORTUNIDAD</span>
+                    <h1 id="vsHanziDisplay" style="font-size:72px; color:#fff; margin:10px 0; font-family:'Noto Sans SC';">电</h1>
+                    <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">Si fallas, pierdes 3 segundos y saltas a la siguiente:</p>
+                    <div class="career-quiz-grid" id="vsOptionsGrid"></div>
                 </div>
-                <span style="font-size:11px; color:var(--muted);">⏱️ Tiempo: <strong id="vsSeconds">20</strong>s <small>(Tic-Tac + Mario Castle)</small></span>
             </div>
 
-            <div class="recognition-card" id="vsStageCard">
-                <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO SIN SEGUNDA OPORTUNIDAD</span>
-                <h1 id="vsHanziDisplay" style="font-size:72px; color:#fff; margin:10px 0; font-family:'Noto Sans SC';">电</h1>
-                <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">Si fallas, pierdes 3 segundos y saltas a la siguiente:</p>
-                <div class="career-quiz-grid" id="vsOptionsGrid"></div>
+            <!-- POPUP / PANTALLA ROJA DE DERROTA CONTRA LA IA -->
+            <div id="vsDefeatScreen" style="display:none; text-align:center;">
+                <div class="panel collapse-panel">
+                    <div class="avatar" id="vsDefeatRivalAvatar" style="width:64px; height:64px; font-size:36px; margin:0 auto 10px auto; background:rgba(0,0,0,0.4); border:2px solid #ff4444;">🤖</div>
+                    <span class="tag" style="border-color:#ff4444; color:#ff4444; margin-bottom:8px;">MENSAJE DE LA IA RIVAL</span>
+                    <h1 class="collapse-title" style="font-size:22px; margin:8px 0;">¡SIGUE ESTUDIANDO, NO SABES NADA! 🤖💀</h1>
+                    <p class="collapse-subtitle" style="font-size:13px; color:#ffc857;">La máquina superó tu tiempo de respuesta en planta.</p>
+
+                    <div class="collapse-reason-box" style="text-align:center;">
+                        <small>MARCADOR FINAL DEL DUELO:</small>
+                        <strong id="vsDefeatScores" style="color:#ffffff; font-size:13px;">0 PTS vs 200 PTS</strong>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button class="reveal-button" style="background:#ffaa00; flex:1;" onclick="openVsMode()">
+                            ⚔️ REVANCHA 1V1
+                        </button>
+                        <button class="back-button" style="flex:1; margin-top:0;" onclick="navigateTo('dashboard')">
+                            SALIR AL DASHBOARD
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- 7. SURVIVOR MODE (SUDDEN DEATH + PANTALLA ROJA DE COLAPSO) -->
+        <!-- 7. SURVIVOR MODE (MUERTE SÚBITA) -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
@@ -312,7 +334,7 @@
                             <div class="cf-level-badge">LVL 01</div>
                             <div class="cf-level-info">
                                 <h3>Paro de Emergencia E-Stop</h3>
-                                <p>Procedimiento de rearme rápido tras activación de hongo de seguridad</p>
+                                <p>Procedimiento de rearme rápido tras activación de hongo</p>
                             </div>
                             <span class="cf-action-arrow">⚡ INTERVENIR</span>
                         </div>
@@ -438,7 +460,7 @@
             <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-        <!-- 9. PROFILE CON MEDALLAS Y ESCALAFÓN -->
+        <!-- 9. PROFILE CON EDICIÓN DE NOMBRE (1 SOLA VEZ) Y MEDALLAS -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -447,8 +469,17 @@
             
             <article class="profile-card">
                 <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">RL</div>
-                <h3 id="profileName">Raymundo Lopez</h3>
-                <span id="profileRankBadge" class="tag" style="border-color:#00f59b; color:#00f59b; margin-top:2px;">
+                
+                <!-- NOMBRE EDITABLE 1 SOLA VEZ -->
+                <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
+                    <h3 id="profileName">Raymundo Lopez</h3>
+                    <button class="edit-name-btn" onclick="editUserNameOnce()" title="Editar nombre (1 sola vez)">✏️</button>
+                </div>
+                <small id="nameEditNotice" class="name-edit-hint" onclick="editUserNameOnce()">
+                    ✏️ Toca aquí para editar nombre <strong style="color:#ffaa00;">(1 sola vez)</strong>
+                </small>
+
+                <span id="profileRankBadge" class="tag" style="border-color:#00f59b; color:#00f59b; margin-top:6px;">
                     ⚡ Técnico Jr (Rango 5/10)
                 </span>
                 
@@ -469,7 +500,7 @@
                     </div>
                     <small style="color:var(--muted); font-size:10px;">Toca una para equipar</small>
                 </div>
-                <p style="font-size:11px; margin-bottom:12px;">Equipa tus medallas para personalizar tu avatar:</p>
+                <p style="font-size:11px; margin-bottom:12px;">Equipa tus medallas para personalizar tu avatar (desbloquea en Survivor y 1v1):</p>
                 <div class="badges-grid" id="badgesContainer"></div>
             </article>
 
@@ -554,11 +585,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=4.0"></script>
-    <script src="navigation.js?v=4.0"></script>
-    <script src="mock-data.js?v=4.0"></script>
-    <script src="critical-fail.js?v=4.0"></script>
-    <script src="app.js?v=4.0"></script>
+    <script src="audio.js?v=5.0"></script>
+    <script src="navigation.js?v=5.0"></script>
+    <script src="mock-data.js?v=5.0"></script>
+    <script src="critical-fail.js?v=5.0"></script>
+    <script src="app.js?v=5.0"></script>
 
     <!-- PWA SERVICE WORKER -->
     <script>

@@ -1,10 +1,10 @@
 /* ==========================================================================
-   ZIDONG AUDIO ENGINE 4.0 (SYNTHESIZED & WEB AUDIO API)
-   - Sin archivos externos MP3
+   ZIDONG AUDIO ENGINE 5.0 (WEB AUDIO API)
+   - Pausa automática en segundo plano / pantalla minimizada (visibilitychange)
    - Melodía Zelda Ocarina para Inicio / Dashboard
-   - Melodía Aventura para Career Mode
-   - Melodía Castillo Bowser Mario Bros ("tututututut...") + Tic-Tac para 1v1
-   - Manejo estricto de parada al salir de pantalla (Cero sonidos fantasma)
+   - Melodía Bowser Castle Mario Bros ("tututututut...") + Tic-Tac para 1v1
+   - Melodía Aventura para Career
+   - Sonidos de acierto, error y colapso
    ========================================================================== */
 
 (() => {
@@ -15,6 +15,7 @@
     let ocarinaInterval = null;
     let careerInterval = null;
     let isMuted = false;
+    let activePage = "dashboard";
 
     function getAudioContext() {
         if (!audioCtx) {
@@ -31,7 +32,7 @@
 
     // SONIDO ACIERTO
     function playSuccess() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -54,9 +55,9 @@
         osc.stop(now + 0.3);
     }
 
-    // SONIDO ERROR / FALLA SUAVE
+    // SONIDO ERROR
     function playError() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -78,9 +79,9 @@
         osc.stop(now + 0.24);
     }
 
-    // SONIDO COLAPSO LÍNEA (SURVIVOR PERDIDO)
+    // SONIDO COLAPSO LÍNEA / DERROTA
     function playLineCollapse() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -104,7 +105,7 @@
 
     // SONIDO VICTORIA
     function playVictory() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -128,9 +129,9 @@
         });
     }
 
-    // TIC-TAC DE RELOJ SINTETIZADO (1V1)
+    // TIC-TAC DE RELOJ
     function playClockTick(isTock = false) {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -152,24 +153,16 @@
         osc.stop(now + 0.045);
     }
 
-    // 1. MELODÍA TIPO ZELDA OCARINA (DASHBOARD)
-    // Zelda's Lullaby / Song of Time arpegio con onda sine y vibrato dulce
+    // 1. ZELDA OCARINA
     const ZELDA_NOTES = [
-        { f: 440, d: 0.35 },   // A4
-        { f: 523.25, d: 0.35 },// C5
-        { f: 587.33, d: 0.75 },// D5
-        { f: 440, d: 0.35 },   // A4
-        { f: 523.25, d: 0.35 },// C5
-        { f: 587.33, d: 0.75 },// D5
-        { f: 659.25, d: 0.35 },// E5
-        { f: 587.33, d: 0.35 },// D5
-        { f: 523.25, d: 0.35 },// C5
-        { f: 493.88, d: 0.35 },// B4
-        { f: 523.25, d: 0.75 } // C5
+        { f: 440, d: 0.35 }, { f: 523.25, d: 0.35 }, { f: 587.33, d: 0.75 },
+        { f: 440, d: 0.35 }, { f: 523.25, d: 0.35 }, { f: 587.33, d: 0.75 },
+        { f: 659.25, d: 0.35 }, { f: 587.33, d: 0.35 }, { f: 523.25, d: 0.35 },
+        { f: 493.88, d: 0.35 }, { f: 523.25, d: 0.75 }
     ];
 
     function playZeldaOcarina() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -182,7 +175,6 @@
             osc.type = "sine";
             osc.frequency.setValueAtTime(n.f, now);
 
-            // Vibrato sutil tipo ocarina
             const lfo = ctx.createOscillator();
             const lfoGain = ctx.createGain();
             lfo.frequency.setValueAtTime(5, now);
@@ -205,15 +197,12 @@
         });
     }
 
-    // 2. MELODÍA CASTILLO DE MARIO BROS ("tututututut..." TEMA DE CASTILLO)
-    // Clásico bajo cromático staccato tenso: D# - D - C# - C...
-    const MARIO_CASTLE_RIFF = [
-        155.56, 155.56, 146.83, 146.83, 138.59, 138.59, 130.81, 130.81
-    ];
+    // 2. MARIO BROS CASTILLO (tututututut...)
+    const MARIO_CASTLE_RIFF = [155.56, 155.56, 146.83, 146.83, 138.59, 138.59, 130.81, 130.81];
     let castleStep = 0;
 
     function playMarioCastleBeat() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -237,17 +226,15 @@
         osc.stop(now + 0.18);
     }
 
-    // 3. MELODÍA DE AVENTURA PARA CAREER MODE
+    // 3. CAREER AMBIENCE
     const CAREER_CHORDS = [
-        [329.63, 392.00, 493.88], // Em
-        [293.66, 369.99, 440.00], // D
-        [261.63, 329.63, 392.00], // C
-        [246.94, 311.13, 369.99]  // Bm
+        [329.63, 392.00, 493.88], [293.66, 369.99, 440.00],
+        [261.63, 329.63, 392.00], [246.94, 311.13, 369.99]
     ];
     let careerChordIdx = 0;
 
     function playCareerAmbience() {
-        if (isMuted) return;
+        if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
@@ -274,7 +261,6 @@
         });
     }
 
-    // CONTROLADORES DE DETENCIÓN ESTRICTA (CERO SONIDOS FANTASMA)
     function stopAllMusic() {
         clearInterval(marioInterval);
         clearInterval(ocarinaInterval);
@@ -286,22 +272,31 @@
     }
 
     function startDashboardZelda() {
+        activePage = "dashboard";
         stopAllMusic();
-        playZeldaOcarina();
-        ocarinaInterval = setInterval(playZeldaOcarina, 7000);
+        if (!isMuted && !document.hidden) {
+            playZeldaOcarina();
+            ocarinaInterval = setInterval(playZeldaOcarina, 7000);
+        }
     }
 
     function start1v1MarioCastle() {
+        activePage = "vsBattle";
         stopAllMusic();
-        castleStep = 0;
-        playMarioCastleBeat();
-        marioInterval = setInterval(playMarioCastleBeat, 240); // Rápido estilo 8-bit tutututut
+        if (!isMuted && !document.hidden) {
+            castleStep = 0;
+            playMarioCastleBeat();
+            marioInterval = setInterval(playMarioCastleBeat, 240);
+        }
     }
 
     function startCareerAmbience() {
+        activePage = "career";
         stopAllMusic();
-        playCareerAmbience();
-        careerInterval = setInterval(playCareerAmbience, 3600);
+        if (!isMuted && !document.hidden) {
+            playCareerAmbience();
+            careerInterval = setInterval(playCareerAmbience, 3600);
+        }
     }
 
     function toggleMute() {
@@ -312,10 +307,25 @@
             if (btn) btn.textContent = "🔈";
         } else {
             if (btn) btn.textContent = "🔊";
-            startDashboardZelda();
+            if (activePage === "dashboard") startDashboardZelda();
+            else if (activePage === "vsBattle") start1v1MarioCastle();
+            else if (activePage === "career") startCareerAmbience();
         }
         return isMuted;
     }
+
+    // PAUSA AUTOMÁTICA AL MINIMIZAR / SEGUNDO PLANO
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            stopAllMusic();
+        } else {
+            if (!isMuted) {
+                if (activePage === "dashboard") startDashboardZelda();
+                else if (activePage === "vsBattle") start1v1MarioCastle();
+                else if (activePage === "career") startCareerAmbience();
+            }
+        }
+    });
 
     window.ZidongAudio = {
         playSuccess,

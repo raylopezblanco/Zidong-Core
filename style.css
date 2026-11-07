@@ -1966,3 +1966,101 @@ body {
     line-height: 1.25;
     display: block;
 }
+
+
+/* ==========================================================================
+   ESTILOS V5: ZERO SCROLL EN DASHBOARD & EDICIÓN DE NOMBRE
+   ========================================================================== */
+
+/* PANTALLA DASHBOARD: CERO SCROLL, AJUSTE EXACTO A LA ALTURA VERTICAL */
+@media (max-height: 900px) {
+    .dashboard-no-scroll {
+        height: calc(100vh - 56px - 54px - 14px);
+        max-height: calc(100vh - 56px - 54px - 14px);
+        overflow: hidden !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-bottom: 2px;
+    }
+
+    .dashboard-no-scroll .companion-stage {
+        padding: 0;
+        margin: -2px 0;
+    }
+
+    .dashboard-no-scroll .tube-chamber {
+        height: 175px;
+        width: 165px;
+    }
+
+    .dashboard-no-scroll .companion-img {
+        max-height: 170px;
+        width: 155px;
+    }
+
+    .dashboard-no-scroll .speech-bubble {
+        min-height: 38px;
+        height: 38px;
+        margin-bottom: 4px;
+        padding: 2px 10px;
+    }
+
+    .dashboard-no-scroll .speech-bubble span {
+        font-size: 10.5px;
+        line-height: 1.15;
+    }
+
+    .dashboard-no-scroll .main-modes-grid {
+        margin-bottom: 2px;
+    }
+
+    .dashboard-no-scroll .secondary-modes-grid {
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+
+    .dashboard-no-scroll .daily-mission-card {
+        padding: 6px 10px;
+        margin-bottom: 4px;
+    }
+
+    .dashboard-no-scroll .build-stamp-bar {
+        padding: 4px 8px;
+        margin-top: 2px;
+        font-size: 8.5px;
+    }
+}
+
+/* EDICIÓN DE NOMBRE EN PROFILE */
+.edit-name-btn {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--cyan);
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.12s ease;
+}
+
+.edit-name-btn:active {
+    transform: scale(0.9);
+}
+
+.name-edit-hint {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    margin: 4px auto 0 auto;
+    cursor: pointer;
+    text-align: center;
+}
+
+.name-edit-hint:hover {
+    color: var(--cyan);
+}

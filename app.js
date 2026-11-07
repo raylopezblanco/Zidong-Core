@@ -1,6 +1,6 @@
 /* ==========================================================================
-   ZIDONG CORE 3.0
-   APPLICATION ENGINE, CAREER SYSTEM, 1V1 DUEL & XBOX ACHIEVEMENTS
+   ZIDONG CORE 3.1
+   APPLICATION ENGINE, CAREER SYSTEM, 1V1 DUEL WITH CLOCK TICK & INDUSTRIAL RANKS
    ========================================================================== */
 
 (() => {
@@ -13,7 +13,7 @@
                 window.ZidongAudio.playSuccess();
             }
         } else if (type === "error") {
-            if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
+            if (navigator.vibrate) navigator.vibrate([60, 40]);
             if (window.ZidongAudio && typeof window.ZidongAudio.playError === "function") {
                 window.ZidongAudio.playError();
             }
@@ -118,7 +118,34 @@
         { hanzi: "急", pinyin: "jí", es: "Emergencia", cat: "Seguridad", part: "急停 (E-Stop)" }
     ];
 
-    // LOGROS TIPO XBOX (ACHIEVEMENTS CON GAMERSCORE G)
+    // SISTEMA DE 10 RANGOS INDUSTRIALES
+    const INDUSTRIAL_RANKS = [
+        { id: 1, name: "Becario", minXP: 0, icon: "📋", desc: "Familiarización con la línea y simbología básica" },
+        { id: 2, name: "Practicante", minXP: 300, icon: "🔰", desc: "Apoyo en cambio de herramentales y verificación visual" },
+        { id: 3, name: "Operador", minXP: 700, icon: "⚙️", desc: "Operación de estaciones automatizadas y monitoreo de ciclo" },
+        { id: 4, name: "Operador Especializado", minXP: 1200, icon: "🛠️", desc: "Ajuste de parámetros y reseteo de fallas comunes de alimentador" },
+        { id: 5, name: "Técnico Jr", minXP: 1800, icon: "⚡", desc: "Diagnóstico eléctrico de señales I/O y relevadores" },
+        { id: 6, name: "Técnico Sr", minXP: 2600, icon: "🔧", desc: "Mantenimiento correctivo a servocontroladores y neumática" },
+        { id: 7, name: "Ingeniero Jr", minXP: 3600, icon: "💻", desc: "Comisionamiento de sub-estaciones y comunicación PLC" },
+        { id: 8, name: "Ingeniero Full", minXP: 5000, icon: "🚀", desc: "Optimización de tiempo de ciclo y programación de rutinas" },
+        { id: 9, name: "Ingeniero Sr", minXP: 7000, icon: "🏅", desc: "Arquitectura de celdas robóticas y enlace SCADA" },
+        { id: 10, name: "Maestro de Programación", minXP: 10000, icon: "👑", desc: "Dominio absoluto de la línea y resolución de fallas críticas" }
+    ];
+
+    function getCurrentRank(xp = 0) {
+        let current = INDUSTRIAL_RANKS[0];
+        for (let i = INDUSTRIAL_RANKS.length - 1; i >= 0; i--) {
+            if (xp >= INDUSTRIAL_RANKS[i].minXP) {
+                current = INDUSTRIAL_RANKS[i];
+                break;
+            }
+        }
+        const nextIndex = INDUSTRIAL_RANKS.findIndex(r => r.id === current.id) + 1;
+        const next = INDUSTRIAL_RANKS[nextIndex] || null;
+        return { current, next };
+    }
+
+    // LOGROS TIPO XBOX (ACHIEVEMENTS)
     const XBOX_ACHIEVEMENTS = [
         {
             id: "ach_welcome",
@@ -159,6 +186,52 @@
             score: 200,
             icon: "⚔️",
             unlocked: () => localStorage.getItem("zidong_vs_won") === "true"
+        }
+    ];
+
+    // VITRINA DE MEDALLAS / INSIGNIAS RESTAURADA
+    const MEDALS_DB = [
+        {
+            id: "badge_practicante",
+            icon: "🔰",
+            name: "Practicante de Automatización",
+            desc: "Insignia oficial de bienvenida a planta Zìdòng",
+            isUnlocked: () => true
+        },
+        {
+            id: "badge_electric",
+            icon: "⚡",
+            name: "Comisionado Eléctrico",
+            desc: "Especialista en potencia, cables y señales de control",
+            isUnlocked: () => true
+        },
+        {
+            id: "badge_dragon",
+            icon: "龍",
+            name: "Dragón Zìdòng",
+            desc: "Rango fundador del sistema de aprendizaje industrial",
+            isUnlocked: () => true
+        },
+        {
+            id: "badge_robot",
+            icon: "🤖",
+            name: "Operador Especializado",
+            desc: "Manejo de celdas automatizadas y servomotores",
+            isUnlocked: () => true
+        },
+        {
+            id: "badge_overclock",
+            icon: "⭐",
+            name: "Overclock 3★",
+            desc: "Completa un test de planta en menos de 12 segundos",
+            isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3)
+        },
+        {
+            id: "badge_survivor",
+            icon: "🚨",
+            name: "Héroe de Mantenimiento",
+            desc: "Resuelve una alarma crítica HMI en Survivor Mode",
+            isUnlocked: () => localStorage.getItem("zidong_survivor_won") === "true"
         }
     ];
 
@@ -277,6 +350,9 @@
             const playerRecord = data.players.find(item => item.initials === player.initials);
             if (playerRecord) playerRecord.xp = (playerRecord.xp || 0) + reward;
         }
+
+        renderRanksSection();
+        updateProfile();
     }
 
     function updateMissionProgress() {
@@ -880,7 +956,49 @@
     };
 
     // =====================================
-    // 4. SISTEMA DE LOGROS TIPO XBOX (ACHIEVEMENTS)
+    // 4. ESCALAFÓN DE RANGOS INDUSTRIALES
+    // =====================================
+
+    function renderRanksSection() {
+        const container = document.getElementById("ranksLadderContainer");
+        const headerBadge = document.getElementById("topRankBadge");
+        const profileRankBadge = document.getElementById("profileRankBadge");
+        if (!container) return;
+
+        const currentXP = (typeof data !== "undefined" && data.player?.xp) ? data.player.xp : 1850;
+        const { current, next } = getCurrentRank(currentXP);
+
+        if (headerBadge) headerBadge.textContent = `${current.icon} ${current.name}`;
+        if (profileRankBadge) profileRankBadge.textContent = `${current.icon} ${current.name} (Rango ${current.id}/10)`;
+
+        container.replaceChildren();
+
+        INDUSTRIAL_RANKS.forEach(rank => {
+            const isReached = currentXP >= rank.minXP;
+            const isCurrent = rank.id === current.id;
+
+            const card = document.createElement("div");
+            card.className = `rank-ladder-card ${isReached ? "reached" : "locked"} ${isCurrent ? "current-rank" : ""}`;
+
+            card.innerHTML = `
+                <div class="rank-icon-box">${rank.icon}</div>
+                <div class="rank-info-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>${rank.id}. ${rank.name}</strong>
+                        <span class="rank-xp-req">${rank.minXP} XP</span>
+                    </div>
+                    <small>${rank.desc}</small>
+                </div>
+                <div class="rank-status-tag">
+                    ${isCurrent ? "<span class='badge-current'>ACTUAL</span>" : isReached ? "✓" : "🔒"}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // =====================================
+    // 5. SISTEMA DE LOGROS TIPO XBOX (ACHIEVEMENTS)
     // =====================================
 
     function renderAchievements() {
@@ -916,7 +1034,81 @@
     }
 
     // =====================================
-    // 5. COMPANION INTERACTION (SOLO AL TOCAR - NUNCA EN AUTOMÁTICO)
+    // 6. VITRINA DE MEDALLAS / INSIGNIAS EN PROFILE
+    // =====================================
+
+    function renderBadgesGrid() {
+        const container = document.getElementById("badgesContainer");
+        if (!container) return;
+
+        container.replaceChildren();
+        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || "RL";
+
+        MEDALS_DB.forEach(medal => {
+            const unlocked = medal.isUnlocked();
+            const isEquipped = currentEquipped === medal.icon;
+
+            const badgeEl = document.createElement("div");
+            badgeEl.className = `badge-item ${unlocked ? "" : "locked"} ${isEquipped ? "equipped" : ""}`;
+            badgeEl.title = unlocked ? `${medal.name}: ${medal.desc}` : `Bloqueada: ${medal.desc}`;
+
+            badgeEl.innerHTML = `
+                <span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span>
+                <span class="badge-title">${medal.name}</span>
+            `;
+
+            if (unlocked) {
+                badgeEl.onclick = () => {
+                    const newEquip = isEquipped ? "RL" : medal.icon;
+                    localStorage.setItem("zidong_equipped_badge", newEquip);
+                    triggerHaptic("success");
+                    renderBadgesGrid();
+                    applyAvatarIcon(newEquip);
+                };
+            }
+
+            container.appendChild(badgeEl);
+        });
+    }
+
+    function applyAvatarIcon(icon) {
+        const profileAvatar = document.getElementById("profileAvatar");
+        const topAvatar = document.getElementById("topAvatar");
+
+        [profileAvatar, topAvatar].forEach(el => {
+            if (!el) return;
+            el.textContent = icon;
+            if (icon !== "RL") {
+                el.classList.add("custom-icon");
+            } else {
+                el.classList.remove("custom-icon");
+            }
+        });
+    }
+
+    function updateProfile() {
+        const player = (typeof data !== "undefined" && data.player) ? data.player : { xp: 1850, level: 5, streak: 5 };
+        const profileSection = document.querySelector("#profile");
+        if (!profileSection) return;
+
+        const xp = profileSection.querySelector("#profileXP");
+        const level = profileSection.querySelector("#profileLevel");
+        const streak = profileSection.querySelector("#profileStreak");
+        const completed = profileSection.querySelector("#profileCompleted");
+
+        if (xp) xp.textContent = formatNumber(player.xp);
+        if (level) level.textContent = String(player.level).padStart(2, "0");
+        if (streak) streak.textContent = `${player.streak} Días`;
+        if (completed) completed.textContent = career.completedActivities.length;
+
+        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
+        applyAvatarIcon(savedIcon);
+        renderBadgesGrid();
+        renderRanksSection();
+    }
+
+    // =====================================
+    // 7. COMPANION INTERACTION (SOLO AL TOCAR)
     // =====================================
 
     const COMPANION_MESSAGES = [
@@ -961,10 +1153,8 @@
         }
     }
 
-    // ELIMINADO setInterval AUTOMÁTICO: El texto SOLO cambia al tocar el tubo del Cyberdog.
-
     // =====================================
-    // 6. ARENA 1V1 BATTLE
+    // 8. ARENA 1V1 BATTLE (CON TIC-TAC DE RELOJ REAL)
     // =====================================
 
     let vsTimer = null;
@@ -1006,6 +1196,12 @@
             document.getElementById("vsSeconds").textContent = vsTimeLeft;
             if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
 
+            // SONIDO TIC-TAC DE RELOJ SINTETIZADO (CADA SEGUNDO)
+            if (window.ZidongAudio && window.ZidongAudio.playClockTick) {
+                window.ZidongAudio.playClockTick(vsTimeLeft % 2 === 0);
+            }
+
+            // IA rival anota puntos aleatoriamente simulando velocidad
             if (Math.random() > 0.65) {
                 rivalVsPoints += 50;
                 document.getElementById("vsRivalScore").textContent = `${rivalVsPoints} PTS`;
@@ -1067,6 +1263,7 @@
             alert(`⚠️ DERROTA: El rival anotó ${rivalVsPoints} PTS frente a tus ${myVsPoints} PTS.`);
         }
         renderAchievements();
+        renderRanksSection();
         saveProgress();
         if (typeof window.navigateTo === "function") {
             window.navigateTo("dashboard");
@@ -1074,7 +1271,7 @@
     }
 
     // =====================================
-    // 7. MODAL DE MISIONES DIARIAS
+    // 9. MODAL DE MISIONES DIARIAS
     // =====================================
 
     window.toggleDailyMissionsModal = () => {
@@ -1116,7 +1313,7 @@
     };
 
     // =====================================
-    // 8. INITIALIZE APPLICATION
+    // 10. INITIALIZE APPLICATION
     // =====================================
 
     function initializeApplication() {
@@ -1124,11 +1321,13 @@
         updateMissionProgress();
         renderCareerPath();
         renderLabComponents();
+        renderRanksSection();
         renderAchievements();
+        updateProfile();
         updateAssessmentVisibility();
 
         console.log("--------------------------------");
-        console.log("ZIDONG CORE 3.0: SYSTEM READY");
+        console.log("ZIDONG CORE 3.1: SYSTEM READY");
         console.log("--------------------------------");
     }
 

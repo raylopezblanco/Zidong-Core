@@ -11,11 +11,11 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=3.1">
 </head>
 <body>
 
-    <!-- TOPBAR (SIN PUNTO VERDE) -->
+    <!-- TOPBAR (CON MÚSICA AMBIENTAL Y RANGO TÉCNICO) -->
     <header class="topbar">
         <div class="brand">
             <span class="brand-icon">龍</span>
@@ -25,10 +25,19 @@
             </div>
         </div>
 
-        <div class="user-chip" onclick="navigateTo('profile')" title="Ver mi perfil técnico">
-            <div class="avatar" id="topAvatar">RL</div>
-            <div class="user-meta">
-                <strong id="topUsername">Raymundo Lopez</strong>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <!-- BOTÓN MÚSICA DE FONDO RELAJANTE -->
+            <button id="musicToggleBtn" class="audio-btn" onclick="ZidongAudio.toggleBackgroundMusic()" title="Música ambiental relajante">
+                🔈
+            </button>
+
+            <!-- CHIP DE USUARIO CON RANGO -->
+            <div class="user-chip" onclick="navigateTo('profile')" title="Ver mi perfil y escalafón">
+                <div class="avatar" id="topAvatar">RL</div>
+                <div class="user-meta">
+                    <strong id="topUsername">Raymundo Lopez</strong>
+                    <span id="topRankBadge" class="user-rank-subtag">⚡ Técnico Jr</span>
+                </div>
             </div>
         </div>
     </header>
@@ -67,9 +76,9 @@
                 </div>
             </div>
 
-            <!-- CÁPSULA CILÍNDRICA DE LUZ (BURBUJA DE ALTURA FIJA QUE NUNCA DESFASA) -->
+            <!-- CÁPSULA CILÍNDRICA DE LUZ (BURBUJA CON ALTURA FIJA QUE NUNCA DESFASA) -->
             <div class="companion-stage">
-                <!-- Burbuja interactiva con altura fija para evitar saltos de pantalla -->
+                <!-- Burbuja interactiva (SOLO cambia al tocar al perro) -->
                 <div class="speech-bubble" id="companionBubble">
                     <span id="companionText">¡Línea lista! Tócame para recibir un reporte. ⚡</span>
                 </div>
@@ -97,7 +106,7 @@
                     <p id="dailyRewardSubtitle">Claim your XP</p>
                 </div>
 
-                <!-- 1V1 BATTLE -->
+                <!-- 1V1 BATTLE (CON TIC-TAC) -->
                 <div class="sub-mode-card vs-card" onclick="openVsMode()">
                     <div class="sub-card-header">
                         <span class="sub-card-icon">⚔️</span>
@@ -251,7 +260,7 @@
             </button>
         </section>
 
-        <!-- 3. LABORATORIO INDUSTRIAL / GLOSARIO (EN REEMPLAZO DEL DUPLICADO LEARN) -->
+        <!-- 3. LABORATORIO INDUSTRIAL / GLOSARIO DE PARTES -->
         <section id="hanziLab" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
@@ -263,43 +272,23 @@
                 <input type="text" id="labSearchInput" placeholder="🔍 Buscar sensor, motor, cable, válvula..." oninput="filterLabComponents(this.value)">
             </div>
 
-            <div class="components-grid" id="labComponentsContainer">
-                <!-- Se llena dinámicamente con app.js -->
-            </div>
+            <div class="components-grid" id="labComponentsContainer"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
                 ← REGRESAR AL DASHBOARD
             </button>
         </section>
 
-        <!-- 4. PLAY ARENA (CONSOLA DE JUEGOS: SURVIVOR + 1V1 DUEL) -->
-        <section id="playArena" class="page">
+        <!-- 4. ESCALAFÓN DE 10 RANGOS (EN LUGAR DE PLAY DUPLICADO) -->
+        <section id="ranksLadderPage" class="page">
             <div class="welcome">
-                <span class="eyebrow">INDUSTRIAL SIMULATORS</span>
-                <h2>Arena de Operaciones</h2>
-                <p>Pon a prueba tus reflejos en tiempo real bajo condiciones de falla.</p>
+                <span class="eyebrow">CAREER PROGRESSION</span>
+                <h2>Escalafón de Planta</h2>
+                <p>Asciende desde <strong>Becario</strong> hasta <strong>Maestro de Programación</strong> ganando XP.</p>
             </div>
 
-            <div class="play-hub-grid">
-                <div class="play-hero-card survivor-hero" onclick="openCriticalMode()">
-                    <span class="play-badge warning">EMERGENCIA EN PLANTA</span>
-                    <h2>SURVIVOR MODE</h2>
-                    <p>Intervención de alarmas críticas HMI a contrarreloj. Diagnostica y restablece la línea antes de que se detenga la producción.</p>
-                    <div class="play-hero-footer">
-                        <span>⚡ 4 Niveles de Mantenimiento</span>
-                        <strong>ENTRAR AHORA →</strong>
-                    </div>
-                </div>
-
-                <div class="play-hero-card duel-hero" onclick="openVsMode()">
-                    <span class="play-badge purple">DUELO 1V1 TÉCNICO</span>
-                    <h2>1v1 LINE DUEL</h2>
-                    <p>Desafío directo de 20 segundos contra la IA del Servocontrolador o tus compañeros por el récord de puntos en turno.</p>
-                    <div class="play-hero-footer">
-                        <span>⚔️ Recompensa: +120 XP</span>
-                        <strong>BATALLA RÁPIDA →</strong>
-                    </div>
-                </div>
+            <div class="ranks-ladder-list" id="ranksLadderContainer">
+                <!-- Se pobla dinámicamente con app.js -->
             </div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
@@ -307,7 +296,7 @@
             </button>
         </section>
 
-        <!-- 5. SISTEMA DE LOGROS TIPO XBOX (ACHIEVEMENTS CON GAMERSCORE G) -->
+        <!-- 5. SISTEMA DE LOGROS TIPO XBOX (ACHIEVEMENTS) -->
         <section id="achievementsPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">XBOX-STYLE ACHIEVEMENTS</span>
@@ -315,26 +304,23 @@
                 <p>Desbloquea insignias de ingeniería y acumula Gamerscore <strong>G</strong>.</p>
             </div>
 
-            <!-- GAMERSCORE INDUSTRIAL BANNER -->
             <div class="gamerscore-banner">
                 <div class="g-symbol">G</div>
                 <div>
                     <span class="g-label">GAMERSCORE INDUSTRIAL</span>
                     <h1 id="totalGamerscore">650 G</h1>
                 </div>
-                <span class="g-rank-badge">RANGO: ESPECIALISTA</span>
+                <span class="g-rank-badge">PLANTA FOXCONN</span>
             </div>
 
-            <div class="achievements-list" id="achievementsListContainer">
-                <!-- Se pobla dinámicamente -->
-            </div>
+            <div class="achievements-list" id="achievementsListContainer"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
                 ← REGRESAR AL DASHBOARD
             </button>
         </section>
 
-        <!-- 6. ARENA 1V1 BATTLE (DUELO JUGABLE) -->
+        <!-- 6. ARENA 1V1 BATTLE (CON RELOJ TIC-TAC) -->
         <section id="vsBattle" class="page">
             <div class="lesson-top-nav">
                 <button class="btn-compact-back" onclick="navigateTo('dashboard')">← DASHBOARD</button>
@@ -365,7 +351,7 @@
                 <div class="cf-timer-track">
                     <div id="vsTimerBar" class="cf-timer-fill" style="background:linear-gradient(90deg, #a78bfa, #27d8e8); width:100%;"></div>
                 </div>
-                <span style="font-size:11px; color:var(--muted);">Tiempo restante: <strong id="vsSeconds">20</strong>s</span>
+                <span style="font-size:11px; color:var(--muted);">⏱️ Tiempo: <strong id="vsSeconds">20</strong>s <small>(Tic-Tac activo)</small></span>
             </div>
 
             <div class="recognition-card" id="vsStageCard">
@@ -376,7 +362,7 @@
             </div>
         </section>
 
-        <!-- 7. SURVIVOR MODE / CRITICAL FAIL -->
+        <!-- 7. SURVIVOR MODE (CRITICAL FAIL) -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
@@ -505,7 +491,7 @@
             <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;"></div>
         </section>
 
-        <!-- 10. PROFILE -->
+        <!-- 10. PROFILE CON MEDALLAS RESTAURADAS Y RANGO -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -515,7 +501,9 @@
             <article class="profile-card">
                 <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">RL</div>
                 <h3 id="profileName">Raymundo Lopez</h3>
-                <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
+                <span id="profileRankBadge" class="tag" style="border-color:#00f59b; color:#00f59b; margin-top:2px;">
+                    ⚡ Técnico Jr (Rango 5/10)
+                </span>
                 
                 <div class="profile-stats-grid">
                     <div class="p-stat"><span id="profileXP">1,850</span><small>TOTAL XP</small></div>
@@ -525,7 +513,7 @@
                 </div>
             </article>
 
-            <!-- VITRINA DE MEDALLAS / INSIGNIAS -->
+            <!-- VITRINA DE MEDALLAS / INSIGNIAS RESTAURADA -->
             <article class="daily-mission-card" style="margin-top:14px;">
                 <div class="mission-header">
                     <div>
@@ -534,7 +522,7 @@
                     </div>
                     <small style="color:var(--muted); font-size:10px;">Toca una para equipar</small>
                 </div>
-                <p style="font-size:11px; margin-bottom:12px;">Desbloquea insignias completando áreas y retos para usarlas como insignia de avatar.</p>
+                <p style="font-size:11px; margin-bottom:12px;">Equipa tus medallas de planta para personalizar tu avatar:</p>
                 
                 <div class="badges-grid" id="badgesContainer"></div>
             </article>
@@ -555,7 +543,7 @@
                     <button class="modal-close-btn" onclick="toggleDailyMissionsModal()">✕</button>
                 </div>
                 
-                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra y subir tu Gamerscore:</p>
+                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra y ascender de rango:</p>
 
                 <div class="missions-checklist" id="missionsListContainer">
                     <div class="mission-item done">
@@ -603,7 +591,7 @@
 
     </main>
 
-    <!-- FIXED BOTTOM NAV (HOME, LAB, PLAY, LOGROS) -->
+    <!-- FIXED BOTTOM NAV (HOME, LAB, RANGOS, LOGROS) -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
@@ -611,8 +599,8 @@
         <button class="nav-item" onclick="navigateTo('hanziLab')">
             <span class="nav-icon">⚙️</span><span class="nav-label">Lab</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('playArena')">
-            <span class="nav-icon">🎮</span><span class="nav-label">Play</span>
+        <button class="nav-item" onclick="navigateTo('ranksLadderPage')">
+            <span class="nav-icon">📈</span><span class="nav-label">Rangos</span>
         </button>
         <button class="nav-item" onclick="navigateTo('achievementsPage')">
             <span class="nav-icon">🏆</span><span class="nav-label">Logros</span>
@@ -620,11 +608,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=3.0"></script>
-    <script src="navigation.js?v=3.0"></script>
-    <script src="mock-data.js?v=3.0"></script>
-    <script src="critical-fail.js?v=3.0"></script>
-    <script src="app.js?v=3.0"></script>
+    <script src="audio.js?v=3.1"></script>
+    <script src="navigation.js?v=3.1"></script>
+    <script src="mock-data.js?v=3.1"></script>
+    <script src="critical-fail.js?v=3.1"></script>
+    <script src="app.js?v=3.1"></script>
 
     <!-- SERVICE WORKER REGISTRATION (PWA) -->
     <script>

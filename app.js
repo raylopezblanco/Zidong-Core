@@ -1,10 +1,12 @@
 /* ==========================================================================
-   ZIDONG CORE 8.0 - SISTEMA INDUSTRIAL INTEGRAL
-   - 4 Fases por Hanzi (Significado, Pinyin, Palabra compuesta, Identificar en Alarma)
-   - Boss Checkpoint cada 5 niveles con repaso y escaneo múltiple de alarmas
-   - 1v1 con 3 Niveles (Simulador de Enlace, Servocontrolador Overclock, Protocolo Centinela IA)
-   - Récords de 1v1 y Alarmas Retiradas en Survivor registrados en Profile
-   - Lore: Mundo Eléctrico (Voltaria), Mundo Mecánico (Kinetix), etc.
+   ZIDONG CORE 9.0 - SISTEMA INDUSTRIAL INTEGRAL
+   - 4 Fases por Hanzi
+   - Boss Checkpoint con secuencia ordenada de palabras en español (sin Hanzi en la pista)
+   - Survivor experto: solo chino, 18s + 3s por acierto, sin pistas/glosario
+   - 1v1 con 3 dificultades y récords en perfil
+   - Batería de energía XP en Home
+   - 5 Mundos con vocabulario ampliado y separado
+   - Medallas de carrera demostrativas
    ========================================================================== */
 
 (() => {
@@ -23,176 +25,79 @@
         }
     }
 
-    const STORAGE_KEY = "zidong_core_progress_v8";
+    const STORAGE_KEY = "zidong_core_progress_v9";
 
     // =====================================
-    // 1. BASE DE DATOS DEMOSTRATIVA DE MUNDOS Y HANZI
+    // 1. LOS 5 MUNDOS DE MANUFACTURA (VOCABULARIO AMPLIADO Y SEPARADO)
     // =====================================
     const WORLDS_CONFIG = [
         {
             id: "world_1",
             title: "MUNDO ELÉCTRICO",
-            subtitle: "Planeta Voltaria · Redes y Gabinetes I/O",
+            subtitle: "Planeta Voltaria · Potencia y Señales",
             planetName: "Planeta Voltaria",
             icon: "⚡",
             color: "#27d8e8",
             planetClass: "planet-electric",
             unlocked: true,
             activities: [
-                {
-                    id: "h_001",
-                    hanzi: "电",
-                    pinyin: "diàn",
-                    meaning: "Electricidad",
-                    compound: "电缆",
-                    compoundPinyin: "diànlǎn",
-                    compoundMeaning: "Cable eléctrico",
-                    alarmSentence: "ALM-01: 2号站电缆断开停机",
-                    alarmPrompt: "Identifica el Hanzi de ELECTRICIDAD (电) dentro de la alarma de pantalla:",
-                    alarmTarget: "电",
-                    reward: 80
-                },
-                {
-                    id: "h_002",
-                    hanzi: "机",
-                    pinyin: "jī",
-                    meaning: "Máquina",
-                    compound: "电机",
-                    compoundPinyin: "diànjī",
-                    compoundMeaning: "Motor eléctrico",
-                    alarmSentence: "ALM-02: 伺服电机堵转故障报警",
-                    alarmPrompt: "Identifica el Hanzi de MÁQUINA / MOTOR (机) dentro de la alarma:",
-                    alarmTarget: "机",
-                    reward: 80
-                },
-                {
-                    id: "h_003",
-                    hanzi: "线",
-                    pinyin: "xiàn",
-                    meaning: "Línea / Cable",
-                    compound: "电线",
-                    compoundPinyin: "diànxiàn",
-                    compoundMeaning: "Cableado de control",
-                    alarmSentence: "ALM-03: 控制电线接触不良警报",
-                    alarmPrompt: "Identifica el Hanzi de LÍNEA / CABLE (线) en el mensaje HMI:",
-                    alarmTarget: "线",
-                    reward: 80
-                },
-                {
-                    id: "h_004",
-                    hanzi: "力",
-                    pinyin: "lì",
-                    meaning: "Fuerza / Potencia",
-                    compound: "动力",
-                    compoundPinyin: "dònglì",
-                    compoundMeaning: "Potencia motriz",
-                    alarmSentence: "ALM-04: 主轴动力不足警告",
-                    alarmPrompt: "Identifica el Hanzi de FUERZA / POTENCIA (力) en la alarma:",
-                    alarmTarget: "力",
-                    reward: 80
-                },
-                {
-                    id: "h_005",
-                    hanzi: "控",
-                    pinyin: "kòng",
-                    meaning: "Control / Mando",
-                    compound: "控制",
-                    compoundPinyin: "kòngzhì",
-                    compoundMeaning: "Controlador PLC",
-                    alarmSentence: "ALM-05: PLC控制器通讯中断",
-                    alarmPrompt: "Identifica el Hanzi de CONTROL (控) en la alarma de red:",
-                    alarmTarget: "控",
-                    reward: 80
-                }
+                { id: "w1_01", hanzi: "电", pinyin: "diàn", meaning: "Electricidad", compound: "电缆", compoundMeaning: "Cable eléctrico", alarmSentence: "ALM-01: 2号站电缆断开停机", alarmTarget: "电", reward: 80 },
+                { id: "w1_02", hanzi: "机", pinyin: "jī", meaning: "Máquina / Motor", compound: "电机", compoundMeaning: "Motor eléctrico", alarmSentence: "ALM-02: 伺服电机堵转故障报警", alarmTarget: "机", reward: 80 },
+                { id: "w1_03", hanzi: "线", pinyin: "xiàn", meaning: "Línea / Cable", compound: "电线", compoundMeaning: "Cableado de control", alarmSentence: "ALM-03: 控制电线接触不良警报", alarmTarget: "线", reward: 80 },
+                { id: "w1_04", hanzi: "力", pinyin: "lì", meaning: "Fuerza / Potencia", compound: "动力", compoundMeaning: "Potencia motriz", alarmSentence: "ALM-04: 主轴动力不足警告", alarmTarget: "力", reward: 80 },
+                { id: "w1_05", hanzi: "控", pinyin: "kòng", meaning: "Control / PLC", compound: "控制", compoundMeaning: "Controlador PLC", alarmSentence: "ALM-05: PLC控制器通讯中断", alarmTarget: "控", reward: 80 },
+                { id: "w1_06", hanzi: "源", pinyin: "yuán", meaning: "Fuente / Origen", compound: "电源", compoundMeaning: "Fuente 24V", alarmSentence: "ALM-06: 24V电源过载保护触发", alarmTarget: "源", reward: 80 },
+                { id: "w1_07", hanzi: "缆", pinyin: "lǎn", meaning: "Cable blindado", compound: "光缆", compoundMeaning: "Cable de fibra", alarmSentence: "ALM-07: 通讯光缆信号丢失", alarmTarget: "缆", reward: 80 },
+                { id: "w1_08", hanzi: "路", pinyin: "lù", meaning: "Circuito / Vía", compound: "短路", compoundMeaning: "Cortocircuito", alarmSentence: "ALM-08: 驱动电路发生短路", alarmTarget: "路", reward: 80 }
             ],
             boss: {
                 id: "boss_world_1",
-                name: "CHECKPOINT: COMISIONAMIENTO VOLTARIA",
-                desc: "Repaso integral de los 5 niveles anteriores y escaneo múltiple de alarmas",
-                reward: 250
+                name: "CHECKPOINT: VOLTARIA",
+                badgeId: "badge_voltaria",
+                badgeName: "Conquistador de Voltaria",
+                badgeIcon: "⚡",
+                // Secuencia en orden español que se debe pulsar en la alarma combinada
+                sequence: [
+                    { esName: "Cable", targetHanzi: "缆" },
+                    { esName: "Motor", targetHanzi: "机" },
+                    { esName: "Electricidad", targetHanzi: "电" }
+                ],
+                alarmSentence: "ALM-CHECK: 1号电缆磨损导致电机主电路短路停机",
+                reward: 350
             }
         },
         {
             id: "world_2",
             title: "MUNDO MECÁNICO",
-            subtitle: "Planeta Kinetix · Servos y Ejes Cinemáticos",
+            subtitle: "Planeta Kinetix · Servos y Cinemática",
             planetName: "Planeta Kinetix",
             icon: "⚙️",
             color: "#ffc857",
             planetClass: "planet-mechanical",
             unlocked: true,
             activities: [
-                {
-                    id: "h_006",
-                    hanzi: "轴",
-                    pinyin: "zhóu",
-                    meaning: "Eje / Flecha",
-                    compound: "伺服轴",
-                    compoundPinyin: "sìfú zhóu",
-                    compoundMeaning: "Eje servo Z",
-                    alarmSentence: "ALM-06: Z轴原点复位超时",
-                    alarmPrompt: "Identifica el Hanzi de EJE (轴) dentro de la alarma:",
-                    alarmTarget: "轴",
-                    reward: 100
-                },
-                {
-                    id: "h_007",
-                    hanzi: "转",
-                    pinyin: "zhuǎn",
-                    meaning: "Giro / Rotación",
-                    compound: "转速",
-                    compoundPinyin: "zhuànsù",
-                    compoundMeaning: "Velocidad RPM",
-                    alarmSentence: "ALM-07: 主轴转速异常超限",
-                    alarmPrompt: "Identifica el Hanzi de GIRO (转) en la pantalla:",
-                    alarmTarget: "转",
-                    reward: 100
-                },
-                {
-                    id: "h_008",
-                    hanzi: "合",
-                    pinyin: "hé",
-                    meaning: "Cierre / Acople",
-                    compound: "离合器",
-                    compoundPinyin: "líhéqì",
-                    compoundMeaning: "Embrague de banda",
-                    alarmSentence: "ALM-08: 离合器分离故障",
-                    alarmPrompt: "Identifica el Hanzi de ACOPLE (合) en la falla mecánica:",
-                    alarmTarget: "合",
-                    reward: 100
-                },
-                {
-                    id: "h_009",
-                    hanzi: "紧",
-                    pinyin: "jǐn",
-                    meaning: "Ajuste / Apriete",
-                    compound: "紧固",
-                    compoundPinyin: "jǐngù",
-                    compoundMeaning: "Sujeción de husillo",
-                    alarmSentence: "ALM-09: 夹具紧固不到位",
-                    alarmPrompt: "Identifica el Hanzi de APRIETE / SUJECIÓN (紧) en la alarma:",
-                    alarmTarget: "紧",
-                    reward: 100
-                },
-                {
-                    id: "h_010",
-                    hanzi: "位",
-                    pinyin: "wèi",
-                    meaning: "Posición",
-                    compound: "原位",
-                    compoundPinyin: "yuánwèi",
-                    compoundMeaning: "Posición HOME",
-                    alarmSentence: "ALM-10: 机械臂未在原位",
-                    alarmPrompt: "Identifica el Hanzi de POSICIÓN (位) en la HMI:",
-                    alarmTarget: "位",
-                    reward: 100
-                }
+                { id: "w2_01", hanzi: "轴", pinyin: "zhóu", meaning: "Eje / Flecha", compound: "伺服轴", compoundMeaning: "Eje servo Z", alarmSentence: "ALM-11: Z轴原点复位超时", alarmTarget: "轴", reward: 100 },
+                { id: "w2_02", hanzi: "转", pinyin: "zhuǎn", meaning: "Giro / Rotación", compound: "转速", compoundMeaning: "Velocidad RPM", alarmSentence: "ALM-12: 主轴转速异常超限", alarmTarget: "转", reward: 100 },
+                { id: "w2_03", hanzi: "合", pinyin: "hé", meaning: "Cierre / Acople", compound: "离合器", compoundMeaning: "Embrague de banda", alarmSentence: "ALM-13: 离合器分离故障", alarmTarget: "合", reward: 100 },
+                { id: "w2_04", hanzi: "紧", pinyin: "jǐn", meaning: "Ajuste / Apriete", compound: "紧固", compoundMeaning: "Sujeción de husillo", alarmSentence: "ALM-14: 夹具紧固不到位", alarmTarget: "紧", reward: 100 },
+                { id: "w2_05", hanzi: "位", pinyin: "wèi", meaning: "Posición / Home", compound: "原位", compoundMeaning: "Posición HOME", alarmSentence: "ALM-15: 机械臂未在原位", alarmTarget: "位", reward: 100 },
+                { id: "w2_06", hanzi: "轮", pinyin: "lún", meaning: "Rueda / Polea", compound: "齿轮", compoundMeaning: "Engranaje", alarmSentence: "ALM-16: 传动齿轮磨损报警", alarmTarget: "轮", reward: 100 },
+                { id: "w2_07", hanzi: "杆", pinyin: "gān", meaning: "Vástago / Barra", compound: "丝杆", compoundMeaning: "Tornillo de bolas", alarmSentence: "ALM-17: 滚珠丝杆润滑不足", alarmTarget: "杆", reward: 100 },
+                { id: "w2_08", hanzi: "齿", pinyin: "chǐ", meaning: "Diente / Engrane", compound: "齿条", compoundMeaning: "Cremallera", alarmSentence: "ALM-18: 齿条咬合卡死警告", alarmTarget: "齿", reward: 100 }
             ],
             boss: {
                 id: "boss_world_2",
-                name: "CHECKPOINT: COMISIONAMIENTO KINETIX",
-                desc: "Repaso integral de los componentes mecánicos y escaneo cinemático",
-                reward: 300
+                name: "CHECKPOINT: KINETIX",
+                badgeId: "badge_kinetix",
+                badgeName: "Engranaje de Kinetix",
+                badgeIcon: "⚙️",
+                sequence: [
+                    { esName: "Eje", targetHanzi: "轴" },
+                    { esName: "Posición", targetHanzi: "位" },
+                    { esName: "Giro", targetHanzi: "转" }
+                ],
+                alarmSentence: "ALM-CHECK: 进给轴未在原位即开始旋转导致联轴器卡死",
+                reward: 400
             }
         },
         {
@@ -205,77 +110,28 @@
             planetClass: "planet-pneumatic",
             unlocked: true,
             activities: [
-                {
-                    id: "h_011",
-                    hanzi: "气",
-                    pinyin: "qì",
-                    meaning: "Aire / Gas",
-                    compound: "气缸",
-                    compoundPinyin: "qìgāng",
-                    compoundMeaning: "Cilindro neumático",
-                    alarmSentence: "ALM-11: 顶升气缸动作超时",
-                    alarmPrompt: "Identifica el Hanzi de AIRE / NEUMÁTICA (气):",
-                    alarmTarget: "气",
-                    reward: 120
-                },
-                {
-                    id: "h_012",
-                    hanzi: "压",
-                    pinyin: "yā",
-                    meaning: "Presión",
-                    compound: "气压",
-                    compoundPinyin: "qìyā",
-                    compoundMeaning: "Presión Bar",
-                    alarmSentence: "ALM-12: 主管路气压不足报警",
-                    alarmPrompt: "Identifica el Hanzi de PRESIÓN (压):",
-                    alarmTarget: "压",
-                    reward: 120
-                },
-                {
-                    id: "h_013",
-                    hanzi: "阀",
-                    pinyin: "fá",
-                    meaning: "Válvula",
-                    compound: "电磁阀",
-                    compoundPinyin: "diàncífá",
-                    compoundMeaning: "Solenoide neumático",
-                    alarmSentence: "ALM-13: 换向电磁阀无响应",
-                    alarmPrompt: "Identifica el Hanzi de VÁLVULA (阀):",
-                    alarmTarget: "阀",
-                    reward: 120
-                },
-                {
-                    id: "h_014",
-                    hanzi: "管",
-                    pinyin: "guǎn",
-                    meaning: "Manguera / Tubo",
-                    compound: "气管",
-                    compoundPinyin: "qìguǎn",
-                    compoundMeaning: "Tubo de aire",
-                    alarmSentence: "ALM-14: 供气管路破损警报",
-                    alarmPrompt: "Identifica el Hanzi de TUBO / MANGUERA (管):",
-                    alarmTarget: "管",
-                    reward: 120
-                },
-                {
-                    id: "h_015",
-                    hanzi: "漏",
-                    pinyin: "lòu",
-                    meaning: "Fuga",
-                    compound: "漏气",
-                    compoundPinyin: "lòuqì",
-                    compoundMeaning: "Fuga de aire",
-                    alarmSentence: "ALM-15: 检测到真空吸盘漏气",
-                    alarmPrompt: "Identifica el Hanzi de FUGA (漏):",
-                    alarmTarget: "漏",
-                    reward: 120
-                }
+                { id: "w3_01", hanzi: "气", pinyin: "qì", meaning: "Aire / Neumática", compound: "气缸", compoundMeaning: "Cilindro neumático", alarmSentence: "ALM-21: 顶升气缸动作超时", alarmTarget: "气", reward: 120 },
+                { id: "w3_02", hanzi: "压", pinyin: "yā", meaning: "Presión Bar", compound: "气压", compoundMeaning: "Presión de aire", alarmSentence: "ALM-22: 主管路气压不足报警", alarmTarget: "压", reward: 120 },
+                { id: "w3_03", hanzi: "阀", pinyin: "fá", meaning: "Válvula / Solenoide", compound: "电磁阀", compoundMeaning: "Solenoide neumático", alarmSentence: "ALM-23: 换向电磁阀无响应", alarmTarget: "阀", reward: 120 },
+                { id: "w3_04", hanzi: "管", pinyin: "guǎn", meaning: "Tubo / Manguera", compound: "气管", compoundMeaning: "Manguera de aire", alarmSentence: "ALM-24: 供气管路破损警报", alarmTarget: "管", reward: 120 },
+                { id: "w3_05", hanzi: "漏", pinyin: "lòu", meaning: "Fuga de aire", compound: "漏气", compoundMeaning: "Fuga neumática", alarmSentence: "ALM-25: 检测到真空吸盘漏气", alarmTarget: "漏", reward: 120 },
+                { id: "w3_06", hanzi: "塞", pinyin: "sāi", meaning: "Tapón / Pistón", compound: "活塞", compoundMeaning: "Pistón neumático", alarmSentence: "ALM-26: 气缸活塞密封损坏", alarmTarget: "塞", reward: 120 },
+                { id: "w3_07", hanzi: "缸", pinyin: "gāng", meaning: "Cilindro / Cámara", compound: "气缸", compoundMeaning: "Cilindro de agarre", alarmSentence: "ALM-27: 夹紧气缸未到位", alarmTarget: "缸", reward: 120 },
+                { id: "w3_08", hanzi: "排", pinyin: "pái", meaning: "Escape / Purga", compound: "排气", compoundMeaning: "Escape de aire", alarmSentence: "ALM-28: 节流排气消音器堵塞", alarmTarget: "排", reward: 120 }
             ],
             boss: {
                 id: "boss_world_3",
-                name: "CHECKPOINT: COMISIONAMIENTO AETHEL",
-                desc: "Verificación de válvulas, estanqueidad y cilindros",
-                reward: 350
+                name: "CHECKPOINT: AETHEL",
+                badgeId: "badge_aethel",
+                badgeName: "Maestro Neumático",
+                badgeIcon: "💨",
+                sequence: [
+                    { esName: "Presión", targetHanzi: "压" },
+                    { esName: "Válvula", targetHanzi: "阀" },
+                    { esName: "Fuga", targetHanzi: "漏" }
+                ],
+                alarmSentence: "ALM-CHECK: 供气气压突降, 确认电磁阀密封圈漏气",
+                reward: 450
             }
         },
         {
@@ -288,232 +144,140 @@
             planetClass: "planet-robotics",
             unlocked: true,
             activities: [
-                {
-                    id: "h_016",
-                    hanzi: "手",
-                    pinyin: "shǒu",
-                    meaning: "Brazo / Gripper",
-                    compound: "机械手",
-                    compoundPinyin: "jīxièshǒu",
-                    compoundMeaning: "Robot manipulador",
-                    alarmSentence: "ALM-16: 机械手碰撞急停",
-                    alarmPrompt: "Identifica el Hanzi de BRAZO ROBOT (手):",
-                    alarmTarget: "手",
-                    reward: 150
-                },
-                {
-                    id: "h_017",
-                    hanzi: "车",
-                    pinyin: "chē",
-                    meaning: "Carro / AGV",
-                    compound: "导引车",
-                    compoundPinyin: "dǎoyǐnchē",
-                    compoundMeaning: "Carro AGV autónomo",
-                    alarmSentence: "ALM-17: 4号自动导引车偏离磁条",
-                    alarmPrompt: "Identifica el Hanzi de CARRO / AGV (车):",
-                    alarmTarget: "车",
-                    reward: 150
-                },
-                {
-                    id: "h_018",
-                    hanzi: "点",
-                    pinyin: "diǎn",
-                    meaning: "Punto / Coordenada",
-                    compound: "示教点",
-                    compoundPinyin: "shìjiàodiǎn",
-                    compoundMeaning: "Punto Teach Point",
-                    alarmSentence: "ALM-18: 示教点数据校验错误",
-                    alarmPrompt: "Identifica el Hanzi de PUNTO (点):",
-                    alarmTarget: "点",
-                    reward: 150
-                },
-                {
-                    id: "h_019",
-                    hanzi: "速",
-                    pinyin: "sù",
-                    meaning: "Velocidad",
-                    compound: "减速",
-                    compoundPinyin: "jiǎnsù",
-                    compoundMeaning: "Reductor de velocidad",
-                    alarmSentence: "ALM-19: 减速机油温过高",
-                    alarmPrompt: "Identifica el Hanzi de VELOCIDAD (速):",
-                    alarmTarget: "速",
-                    reward: 150
-                },
-                {
-                    id: "h_020",
-                    hanzi: "避",
-                    pinyin: "bì",
-                    meaning: "Evadir / Obstáculo",
-                    compound: "避障",
-                    compoundPinyin: "bìzhàng",
-                    compoundMeaning: "Sensor Lidar de evasión",
-                    alarmSentence: "ALM-20: 激光避障雷达被遮挡",
-                    alarmPrompt: "Identifica el Hanzi de EVASIÓN (避):",
-                    alarmTarget: "避",
-                    reward: 150
-                }
+                { id: "w4_01", hanzi: "手", pinyin: "shǒu", meaning: "Brazo / Gripper", compound: "机械手", compoundMeaning: "Robot manipulador", alarmSentence: "ALM-31: 机械手碰撞急停", alarmTarget: "手", reward: 150 },
+                { id: "w4_02", hanzi: "车", pinyin: "chē", meaning: "Carro / AGV", compound: "导引车", compoundMeaning: "Carro AGV autónomo", alarmSentence: "ALM-32: 4号自动导引车偏离磁条", alarmTarget: "车", reward: 150 },
+                { id: "w4_03", hanzi: "点", pinyin: "diǎn", meaning: "Punto / Coordenada", compound: "示教点", compoundMeaning: "Teach Point", alarmSentence: "ALM-33: 示教点数据校验错误", alarmTarget: "点", reward: 150 },
+                { id: "w4_04", hanzi: "速", pinyin: "sù", meaning: "Velocidad", compound: "减速", compoundMeaning: "Reductor de velocidad", alarmSentence: "ALM-34: 减速机油温过高", alarmTarget: "速", reward: 150 },
+                { id: "w4_05", hanzi: "避", pinyin: "bì", meaning: "Evadir / Obstáculo", compound: "避障", compoundMeaning: "Sensor Lidar", alarmSentence: "ALM-35: 激光避障雷达被遮挡", alarmTarget: "避", reward: 150 },
+                { id: "w4_06", hanzi: "停", pinyin: "tíng", meaning: "Parada / Stop", compound: "暂停", compoundMeaning: "Pausa en celda", alarmSentence: "ALM-36: 机器人进入安全暂停", alarmTarget: "停", reward: 150 },
+                { id: "w4_07", hanzi: "臂", pinyin: "bì", meaning: "Brazo articulado", compound: "手臂", compoundMeaning: "Brazo Fanuc", alarmSentence: "ALM-37: 关节手臂力矩超限", alarmTarget: "臂", reward: 150 },
+                { id: "w4_08", hanzi: "夹", pinyin: "jiā", meaning: "Pinza / Sujetar", compound: "夹爪", compoundMeaning: "Pinza neumática", alarmSentence: "ALM-38: 末端夹爪零件掉落", alarmTarget: "夹", reward: 150 }
             ],
             boss: {
                 id: "boss_world_4",
-                name: "CHECKPOINT: COMISIONAMIENTO MACHINA",
-                desc: "Sincronización de flotas AGV y celdas Fanuc",
-                reward: 400
+                name: "CHECKPOINT: MACHINA",
+                badgeId: "badge_machina",
+                badgeName: "Arquitecto de Machina",
+                badgeIcon: "🤖",
+                sequence: [
+                    { esName: "Carro (AGV)", targetHanzi: "车" },
+                    { esName: "Brazo", targetHanzi: "手" },
+                    { esName: "Evadir", targetHanzi: "避" }
+                ],
+                alarmSentence: "ALM-CHECK: 导引车靠近机械手取料工位, 触发避障急停",
+                reward: 500
             }
         },
         {
             id: "world_5",
             title: "MUNDO VISIÓN AOI",
-            subtitle: "Planeta Lumina · Óptica y Cámaras",
+            subtitle: "Planeta Lumina · Óptica e Inspección",
             planetName: "Planeta Lumina",
             icon: "👁️",
             color: "#ff7777",
             planetClass: "planet-vision",
             unlocked: true,
             activities: [
-                {
-                    id: "h_021",
-                    hanzi: "光",
-                    pinyin: "guāng",
-                    meaning: "Luz / Óptica",
-                    compound: "光源",
-                    compoundPinyin: "guāngyuán",
-                    compoundMeaning: "Lámpara estroboscópica",
-                    alarmSentence: "ALM-21: 视觉光源亮度不足",
-                    alarmPrompt: "Identifica el Hanzi de LUZ / ÓPTICA (光):",
-                    alarmTarget: "光",
-                    reward: 180
-                },
-                {
-                    id: "h_022",
-                    hanzi: "镜",
-                    pinyin: "jìng",
-                    meaning: "Lente / Cámara",
-                    compound: "镜头",
-                    compoundPinyin: "jìngtóu",
-                    compoundMeaning: "Lente de enfoque",
-                    alarmSentence: "ALM-22: 工业镜头污损检测失败",
-                    alarmPrompt: "Identifica el Hanzi de LENTE (镜):",
-                    alarmTarget: "镜",
-                    reward: 180
-                },
-                {
-                    id: "h_023",
-                    hanzi: "视",
-                    pinyin: "shì",
-                    meaning: "Visión",
-                    compound: "视觉",
-                    compoundPinyin: "shìjué",
-                    compoundMeaning: "Sistema de visión",
-                    alarmSentence: "ALM-23: AOI视觉比对未通过",
-                    alarmPrompt: "Identifica el Hanzi de VISIÓN (视):",
-                    alarmTarget: "视",
-                    reward: 180
-                },
-                {
-                    id: "h_024",
-                    hanzi: "检",
-                    pinyin: "jiǎn",
-                    meaning: "Inspección",
-                    compound: "检测",
-                    compoundPinyin: "jiǎncè",
-                    compoundMeaning: "Test de calidad",
-                    alarmSentence: "ALM-24: 焊点尺寸检测异常",
-                    alarmPrompt: "Identifica el Hanzi de INSPECCIÓN (检):",
-                    alarmTarget: "检",
-                    reward: 180
-                },
-                {
-                    id: "h_025",
-                    hanzi: "错",
-                    pinyin: "cuò",
-                    meaning: "Falso / Error",
-                    compound: "误检",
-                    compoundPinyin: "wùjiǎn",
-                    compoundMeaning: "Falso rechazo en línea",
-                    alarmSentence: "ALM-25: 发生连续误检停线",
-                    alarmPrompt: "Identifica el Hanzi de ERROR (错/误):",
-                    alarmTarget: "错",
-                    reward: 180
-                }
+                { id: "w5_01", hanzi: "光", pinyin: "guāng", meaning: "Luz / Lámpara", compound: "光源", compoundMeaning: "Lámpara estroboscópica", alarmSentence: "ALM-41: 视觉光源亮度不足", alarmTarget: "光", reward: 180 },
+                { id: "w5_02", hanzi: "镜", pinyin: "jìng", meaning: "Lente / Cámara", compound: "镜头", compoundMeaning: "Lente de enfoque", alarmSentence: "ALM-42: 工业镜头污损检测失败", alarmTarget: "镜", reward: 180 },
+                { id: "w5_03", hanzi: "视", pinyin: "shì", meaning: "Visión / Detección", compound: "视觉", compoundMeaning: "Sistema de visión", alarmSentence: "ALM-43: AOI视觉比对未通过", alarmTarget: "视", reward: 180 },
+                { id: "w5_04", hanzi: "检", pinyin: "jiǎn", meaning: "Inspección / Test", compound: "检测", compoundMeaning: "Test de calidad", alarmSentence: "ALM-44: 焊点尺寸检测异常", alarmTarget: "检", reward: 180 },
+                { id: "w5_05", hanzi: "错", pinyin: "cuò", meaning: "Falso / Error", compound: "误检", compoundMeaning: "Falso rechazo en línea", alarmSentence: "ALM-45: 发生连续误检停线", alarmTarget: "错", reward: 180 },
+                { id: "w5_06", hanzi: "焦", pinyin: "jiāo", meaning: "Enfoque / Foco", compound: "对焦", compoundMeaning: "Autoenfoque", alarmSentence: "ALM-46: 工业相机对焦失败", alarmTarget: "焦", reward: 180 },
+                { id: "w5_07", hanzi: "色", pinyin: "sè", meaning: "Color / Pigmento", compound: "颜色", compoundMeaning: "Color de PCB", alarmSentence: "ALM-47: 阻焊颜色识别超差", alarmTarget: "色", reward: 180 },
+                { id: "w5_08", hanzi: "像", pinyin: "xiàng", meaning: "Imagen / Cuadro", compound: "图像", compoundMeaning: "Captura de imagen", alarmSentence: "ALM-48: 图像采集卡掉帧报警", alarmTarget: "像", reward: 180 }
             ],
             boss: {
                 id: "boss_world_5",
-                name: "CHECKPOINT: COMISIONAMIENTO LUMINA",
-                desc: "Ajuste de parámetros ópticos y cero falso rechazo",
-                reward: 500
+                name: "CHECKPOINT: LUMINA",
+                badgeId: "badge_lumina",
+                badgeName: "Ojo de Lumina",
+                badgeIcon: "👁️",
+                sequence: [
+                    { esName: "Luz", targetHanzi: "光" },
+                    { esName: "Lente", targetHanzi: "镜" },
+                    { esName: "Inspección", targetHanzi: "检" }
+                ],
+                alarmSentence: "ALM-CHECK: 环形光源闪烁导致镜头曝光过度, 焊点检测失败",
+                reward: 600
             }
         }
     ];
 
-    // BANCO DEL LABORATORIO
+    // BANCO COMPLETO DEL LABORATORIO (CATEGORIZADO POR PLANETA)
     const LAB_COMPONENTS = [
         { hanzi: "电", pinyin: "diàn", es: "Electricidad", cat: "world_1", catName: "⚡ Voltaria", part: "电缆 (Cable)" },
         { hanzi: "机", pinyin: "jī", es: "Máquina / Motor", cat: "world_1", catName: "⚡ Voltaria", part: "电机 (Motor)" },
         { hanzi: "线", pinyin: "xiàn", es: "Línea / Cable", cat: "world_1", catName: "⚡ Voltaria", part: "电线 (Cableado)" },
         { hanzi: "力", pinyin: "lì", es: "Fuerza / Potencia", cat: "world_1", catName: "⚡ Voltaria", part: "动力 (Potencia)" },
         { hanzi: "控", pinyin: "kòng", es: "Control / PLC", cat: "world_1", catName: "⚡ Voltaria", part: "控制 (Control)" },
-        
+        { hanzi: "源", pinyin: "yuán", es: "Fuente de poder", cat: "world_1", catName: "⚡ Voltaria", part: "电源 (Fuente 24V)" },
+        { hanzi: "缆", pinyin: "lǎn", es: "Cable blindado", cat: "world_1", catName: "⚡ Voltaria", part: "光缆 (Fibra)" },
+        { hanzi: "路", pinyin: "lù", es: "Circuito", cat: "world_1", catName: "⚡ Voltaria", part: "短路 (Corto)" },
+
         { hanzi: "轴", pinyin: "zhóu", es: "Eje / Flecha", cat: "world_2", catName: "⚙️ Kinetix", part: "伺服轴 (Eje Z)" },
         { hanzi: "转", pinyin: "zhuǎn", es: "Giro / RPM", cat: "world_2", catName: "⚙️ Kinetix", part: "转速 (Velocidad)" },
         { hanzi: "合", pinyin: "hé", es: "Acople", cat: "world_2", catName: "⚙️ Kinetix", part: "离合器 (Embrague)" },
         { hanzi: "紧", pinyin: "jǐn", es: "Sujeción", cat: "world_2", catName: "⚙️ Kinetix", part: "紧固 (Tornillería)" },
         { hanzi: "位", pinyin: "wèi", es: "Posición", cat: "world_2", catName: "⚙️ Kinetix", part: "原位 (Home)" },
+        { hanzi: "轮", pinyin: "lún", es: "Rueda / Polea", cat: "world_2", catName: "⚙️ Kinetix", part: "齿轮 (Engrane)" },
+        { hanzi: "杆", pinyin: "gān", es: "Tornillo de bolas", cat: "world_2", catName: "⚙️ Kinetix", part: "丝杆 (Husillo)" },
+        { hanzi: "齿", pinyin: "chǐ", es: "Diente de engrane", cat: "world_2", catName: "⚙️ Kinetix", part: "齿条 (Cremallera)" },
 
         { hanzi: "气", pinyin: "qì", es: "Neumática", cat: "world_3", catName: "💨 Aethel", part: "气缸 (Cilindro)" },
         { hanzi: "压", pinyin: "yā", es: "Presión Bar", cat: "world_3", catName: "💨 Aethel", part: "气压 (Regulador)" },
         { hanzi: "阀", pinyin: "fá", es: "Válvula", cat: "world_3", catName: "💨 Aethel", part: "电磁阀 (Solenoide)" },
+        { hanzi: "管", pinyin: "guǎn", es: "Tubo de aire", cat: "world_3", catName: "💨 Aethel", part: "气管 (Manguera)" },
+        { hanzi: "漏", pinyin: "lòu", es: "Fuga de aire", cat: "world_3", catName: "💨 Aethel", part: "漏气 (Fuga)" },
 
         { hanzi: "手", pinyin: "shǒu", es: "Brazo Robot", cat: "world_4", catName: "🤖 Machina", part: "机械手 (Fanuc)" },
         { hanzi: "车", pinyin: "chē", es: "Carro AGV", cat: "world_4", catName: "🤖 Machina", part: "导引车 (AGV)" },
+        { hanzi: "点", pinyin: "diǎn", es: "Punto Teach", cat: "world_4", catName: "🤖 Machina", part: "示教点 (Punto)" },
+        { hanzi: "速", pinyin: "sù", es: "Velocidad", cat: "world_4", catName: "🤖 Machina", part: "减速 (Reductor)" },
+        { hanzi: "避", pinyin: "bì", es: "Evasión Lidar", cat: "world_4", catName: "🤖 Machina", part: "避障 (Sensor)" },
 
         { hanzi: "光", pinyin: "guāng", es: "Sensor Óptico", cat: "world_5", catName: "👁️ Lumina", part: "光源 (Lámpara)" },
-        { hanzi: "视", pinyin: "shì", es: "Visión Cámara", cat: "world_5", catName: "👁️ Lumina", part: "视觉 (AOI)" }
+        { hanzi: "镜", pinyin: "jìng", es: "Lente cámara", cat: "world_5", catName: "👁️ Lumina", part: "镜头 (Lente)" },
+        { hanzi: "视", pinyin: "shì", es: "Visión AOI", cat: "world_5", catName: "👁️ Lumina", part: "视觉 (AOI)" },
+        { hanzi: "检", pinyin: "jiǎn", es: "Inspección", cat: "world_5", catName: "👁️ Lumina", part: "检测 (Test)" },
+        { hanzi: "错", pinyin: "cuò", es: "Falso rechazo", cat: "world_5", catName: "👁️ Lumina", part: "误检 (Rechazo)" }
     ];
 
-    // RANGOS PROFESIONALES HASTA 45,000 XP
+    // RANGOS PROFESIONALES (0 A 45,000 XP)
     const INDUSTRIAL_RANKS = [
-        { id: 1, name: "Becario", minXP: 0, icon: "📋", desc: "Familiarización con la línea y simbología" },
-        { id: 2, name: "Practicante", minXP: 800, icon: "🔰", desc: "Apoyo en cambio de herramentales y verificación visual" },
-        { id: 3, name: "Operador", minXP: 2000, icon: "⚙️", desc: "Operación de estaciones automatizadas en Voltaria" },
-        { id: 4, name: "Operador Especializado", minXP: 4000, icon: "🛠️", desc: "Calibración de husillos y reseteo de fallas de alimentador" },
-        { id: 5, name: "Técnico Jr", minXP: 7000, icon: "⚡", desc: "Diagnóstico eléctrico de señales I/O y relevadores" },
-        { id: 6, name: "Técnico Sr", minXP: 11000, icon: "🔧", desc: "Mantenimiento preventivo a servomotores y líneas neumáticas" },
-        { id: 7, name: "Ingeniero Jr", minXP: 16000, icon: "💻", desc: "Comisionamiento de sub-estaciones PLC y bus Profinet" },
-        { id: 8, name: "Ingeniero Full", minXP: 22000, icon: "🚀", desc: "Optimización de tiempo de ciclo SMT y celdas Kinetix" },
-        { id: 9, name: "Ingeniero Sr", minXP: 30000, icon: "🏅", desc: "Arquitectura de celdas robóticas y enlace SCADA global" },
-        { id: 10, name: "Maestro de Programación", minXP: 45000, icon: "👑", desc: "Guardián Supremo de OBERON: Cero Downtime en planta" }
+        { id: 1, name: "Becario", minXP: 0, maxXP: 800, icon: "📋", desc: "Familiarización con la línea y simbología" },
+        { id: 2, name: "Practicante", minXP: 800, maxXP: 2000, icon: "🔰", desc: "Apoyo en cambio de herramentales y verificación visual" },
+        { id: 3, name: "Operador", minXP: 2000, maxXP: 4000, icon: "⚙️", desc: "Operación de estaciones automatizadas en Voltaria" },
+        { id: 4, name: "Operador Especializado", minXP: 4000, maxXP: 7000, icon: "🛠️", desc: "Calibración de husillos y reseteo de fallas" },
+        { id: 5, name: "Técnico Jr", minXP: 7000, maxXP: 11000, icon: "⚡", desc: "Diagnóstico eléctrico de señales I/O y relevadores" },
+        { id: 6, name: "Técnico Sr", minXP: 11000, maxXP: 16000, icon: "🔧", desc: "Mantenimiento preventivo a servomotores y neumática" },
+        { id: 7, name: "Ingeniero Jr", minXP: 16000, maxXP: 22000, icon: "💻", desc: "Comisionamiento de sub-estaciones PLC y buses" },
+        { id: 8, name: "Ingeniero Full", minXP: 22000, maxXP: 30000, icon: "🚀", desc: "Optimización de tiempo de ciclo SMT y celdas Kinetix" },
+        { id: 9, name: "Ingeniero Sr", minXP: 30000, maxXP: 45000, icon: "🏅", desc: "Arquitectura de celdas robóticas y enlace SCADA" },
+        { id: 10, name: "Maestro de Programación", minXP: 45000, maxXP: 99999, icon: "👑", desc: "Guardián Supremo de OBERON: Cero Downtime" }
     ];
 
-    // MEDALLAS
+    // MEDALLAS (INCLUYENDO MEDALLAS DE MODO CARRERA)
     const MEDALS_DB = [
         { id: "b_practicante", icon: "🔰", name: "Practicante de Automatización", desc: "Insignia oficial de bienvenida a OBERON", isUnlocked: () => true },
-        { id: "b_ai_slayer", icon: "🤖", name: "Derrotador de IA", desc: "Vence a la IA en el duelo 1v1 Battle al menos 1 vez", isUnlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 },
-        { id: "b_troubleshooter", icon: "🛠️", name: "Solucionador de Fallas Básico", desc: "Supera al menos 1 emergencia en Survivor Mode", isUnlocked: () => Number(localStorage.getItem("zidong_survivor_wins") || 0) >= 1 },
-        { id: "b_electric", icon: "⚡", name: "Comisionado Eléctrico", desc: "Especialista en potencia y señales", isUnlocked: () => true },
-        { id: "b_dragon", icon: "龍", name: "Dragón Zìdòng", desc: "Fundador de la academia técnica", isUnlocked: () => true },
-        { id: "b_overclock", icon: "⭐", name: "Overclock 3★", desc: "Test aprobado en menos de 12 segundos", isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3) }
-    ];
-
-    // LOGROS XBOX
-    const XBOX_ACHIEVEMENTS = [
-        { id: "ach_welcome", title: "Bienvenido a OBERON", desc: "Supera el protocolo de inicialización de 10s.", score: 100, icon: "🪐", unlocked: () => true },
-        { id: "ach_first_circuit", title: "Primer Circuito Energizado", desc: "Domina tu primer componente eléctrico.", score: 100, icon: "⚡", unlocked: () => career.completedActivities.length >= 1 },
-        { id: "ach_voltaria", title: "Maestría en Voltaria", desc: "Domina 3 componentes de potencia eléctrica.", score: 150, icon: "🔌", unlocked: () => career.completedActivities.filter(id => id.startsWith("h_00")).length >= 3 },
-        { id: "ach_kinetix", title: "Cinemática de Kinetix", desc: "Calibra un servomotor en Kinetix.", score: 150, icon: "⚙️", unlocked: () => career.completedActivities.some(id => ["h_006", "h_007", "h_008"].includes(id)) },
-        { id: "ach_survivor_hero", title: "Ingeniero de Choque (18s)", desc: "Despeja alarmas en Survivor bajo 18 segundos.", score: 200, icon: "🚨", unlocked: () => Number(localStorage.getItem("zidong_survivor_wins") || 0) >= 1 },
-        { id: "ach_ai_tamer", title: "Cerebro de Silicio Vencido", desc: "Derrota a la IA en Duelo 1v1 Battle.", score: 200, icon: "⚔️", unlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 },
-        { id: "ach_ai_master", title: "Pesadilla de la IA", desc: "Derrota a la máquina 3 veces en 1v1.", score: 300, icon: "👑", unlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 3 },
-        { id: "ach_technician", title: "Rango Técnico Jr Alcanzado", desc: "Acumula más de 7,000 XP en tu historial.", score: 150, icon: "📈", unlocked: () => currentUserData.xp >= 7000 }
+        { id: "badge_voltaria", icon: "⚡", name: "Conquistador de Voltaria", desc: "Supera el Boss Checkpoint del Mundo Eléctrico", isUnlocked: () => Boolean(career.bossBeaten && career.bossBeaten["boss_world_1"]) },
+        { id: "badge_kinetix", icon: "⚙️", name: "Engranaje de Kinetix", desc: "Supera el Boss Checkpoint del Mundo Mecánico", isUnlocked: () => Boolean(career.bossBeaten && career.bossBeaten["boss_world_2"]) },
+        { id: "badge_aethel", icon: "💨", name: "Maestro Neumático", desc: "Supera el Boss Checkpoint del Mundo Neumático", isUnlocked: () => Boolean(career.bossBeaten && career.bossBeaten["boss_world_3"]) },
+        { id: "badge_machina", icon: "🤖", name: "Arquitecto de Machina", desc: "Supera el Boss Checkpoint del Mundo Robótico", isUnlocked: () => Boolean(career.bossBeaten && career.bossBeaten["boss_world_4"]) },
+        { id: "badge_lumina", icon: "👁️", name: "Ojo de Lumina", desc: "Supera el Boss Checkpoint del Mundo Visión AOI", isUnlocked: () => Boolean(career.bossBeaten && career.bossBeaten["boss_world_5"]) },
+        { id: "b_ai_slayer", icon: "⚔️", name: "Derrotador de IA", desc: "Vence a la IA en el duelo 1v1 Battle", isUnlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 },
+        { id: "b_troubleshooter", icon: "🚨", name: "Solucionador de Fallas", desc: "Retira al menos 1 alarma en Survivor Mode", isUnlocked: () => Number(localStorage.getItem("zidong_survivor_wins") || 0) >= 1 },
+        { id: "b_overclock", icon: "⭐", name: "Overclock 3★", desc: "Consigue 3 estrellas en cualquier test", isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3) }
     ];
 
     // =====================================
     // 2. ESTADO DEL USUARIO (DEFAULT: New user)
     // =====================================
     const career = {
-        completedActivities: ["h_001"],
+        completedActivities: ["w1_01"],
         assessmentPassed: false,
-        nodeStars: { "h_001": 3 }
+        nodeStars: { "w1_01": 3 },
+        bossBeaten: {}
     };
 
     let currentUserData = {
@@ -543,9 +307,10 @@
                     currentUserData.streak = saved.player.streak || 5;
                 }
                 if (saved.career) {
-                    career.completedActivities = saved.career.completedActivities || ["h_001"];
+                    career.completedActivities = saved.career.completedActivities || ["w1_01"];
                     career.assessmentPassed = Boolean(saved.career.assessmentPassed);
-                    career.nodeStars = saved.career.nodeStars || { "h_001": 3 };
+                    career.nodeStars = saved.career.nodeStars || { "w1_01": 3 };
+                    career.bossBeaten = saved.career.bossBeaten || {};
                 }
             }
         } catch (e) {
@@ -560,7 +325,8 @@
                 career: {
                     completedActivities: career.completedActivities,
                     assessmentPassed: career.assessmentPassed,
-                    nodeStars: career.nodeStars
+                    nodeStars: career.nodeStars,
+                    bossBeaten: career.bossBeaten
                 }
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
@@ -577,6 +343,7 @@
 
     function awardXP(reward) {
         currentUserData.xp += reward;
+        updateEnergyBatteryDisplay();
         renderRanksSection();
         updateProfile();
         saveProgress();
@@ -594,30 +361,43 @@
     }
 
     // =====================================
-    // 3. EDICIÓN DE NOMBRE (1 SOLA VEZ)
+    // 3. BATERÍA DE ENERGÍA XP EN HOME
+    // =====================================
+    function updateEnergyBatteryDisplay() {
+        const fill = document.getElementById("homeBatteryFill");
+        const valText = document.getElementById("homeBatteryXpValue");
+        const rankText = document.getElementById("homeBatteryRank");
+        const pctText = document.getElementById("homeBatteryPercent");
+
+        const curRank = getCurrentRank(currentUserData.xp);
+        const xpInLevel = Math.max(0, currentUserData.xp - curRank.minXP);
+        const levelRange = Math.max(1, curRank.maxXP - curRank.minXP);
+        const pct = Math.min(100, Math.max(5, Math.round((xpInLevel / levelRange) * 100)));
+
+        if (fill) fill.style.width = `${pct}%`;
+        if (valText) valText.textContent = `${Number(currentUserData.xp).toLocaleString("en-US")} XP`;
+        if (rankText) rankText.textContent = `Rango 0${curRank.id}: ${curRank.name}`;
+        if (pctText) pctText.textContent = `${pct}% de carga`;
+    }
+
+    // =====================================
+    // 4. EDICIÓN DE NOMBRE (1 SOLA VEZ)
     // =====================================
     window.editUserNameOnce = () => {
         const alreadyChanged = localStorage.getItem("zidong_name_changed") === "true";
         if (alreadyChanged) {
             triggerHaptic("error");
-            alert(`🔒 No puedes modificar tu nombre de nuevo.
-El sistema OBERON ya registró tu firma oficial como: "${currentUserData.name}".`);
+            alert(`🔒 No puedes modificar tu nombre de nuevo.\nEl sistema ya registró tu identidad como: "${currentUserData.name}".`);
             return;
         }
 
-        const warningMsg = `⚠️ ¡ATENCIÓN! PROTOCOLO OBERON:
-
-Solo tienes permitido registrar tu nombre UNA SOLA VEZ en la terminal.
-
-Piénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 planetas.
-
-¿Deseas continuar?`;
+        const warningMsg = `⚠️ ¡ATENCIÓN! REGLA DE PLANTA:\n\nSolo tienes permitido modificar tu nombre UNA SOLA VEZ en el sistema.\n\nPiénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 mundos.\n\n¿Deseas continuar?`;
         
         if (!confirm(warningMsg)) return;
 
-        const newName = prompt("Escribe tu nombre y apellido técnico definitivo:", currentUserData.name);
+        const newName = prompt("Escribe tu nombre y apellido definitivo:", currentUserData.name);
         if (!newName || newName.trim().length < 2) {
-            alert("Operación cancelada: El nombre es muy corto.");
+            alert("Operación cancelada: Nombre no válido.");
             return;
         }
 
@@ -632,8 +412,7 @@ Piénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 plan
         updateProfile();
         saveProgress();
 
-        alert(`✅ Identidad registrada con éxito: "${cleanName}".
-Firma biométrica bloqueada permanentemente.`);
+        alert(`✅ Nombre registrado con éxito: "${cleanName}".\nEste cambio ha quedado bloqueado permanentemente.`);
     };
 
     function updateUserDisplay() {
@@ -657,7 +436,57 @@ Firma biométrica bloqueada permanentemente.`);
     }
 
     // =====================================
-    // 4. CAREER MODE EN MENÚ PLANETARIO COMPACTO
+    // 5. COMPANION (DIÁLOGO CHILAQUIL EXACTO & CURIOSIDADES EN MÁXIMO 3 LÍNEAS)
+    // =====================================
+    function getCompanionMessages() {
+        const rawName = (currentUserData.name || "New user").trim();
+        const isChilaquil = rawName.toLowerCase() === "chilaquil";
+
+        const chilaquilMessage = isChilaquil
+            ? `Chilaquil... ¡jajaja te la creíste! Ahora sí te queda con ganas ese nombre 🐶🌶️`
+            : `${rawName}... te quedaría mejor Chilaquil 🐶🔥`;
+
+        return [
+            chilaquilMessage,
+            `En 线 (cable), el radical izquierdo 纟 significa seda/fibra. Indica siempre el material. 🧵`,
+            `En 机 (máquina), 木 es madera y 几 es mesa: el concepto original de telar industrial. ⚙️`,
+            `El carácter 电 (diàn) originalmente era el dibujo de un rayo cayendo de las nubes. ⚡`,
+            `En chino no hay conjugaciones de verbos enredadas. Solo pones partículas como 了. 💡`,
+            `El radical 钅 (metal) está en herramientas: 铁 (hierro), 钻 (broca), 钉 (perno). 🛠️`,
+            `¡Terminal OBERON en línea! Modo Survivor experto sin pistas: +3s por alarma retirada. 🚨`
+        ];
+    }
+
+    let lastMsgIndex = -1;
+    function interactWithCompanion() {
+        const bubbleText = document.getElementById("companionText");
+        const dogImg = document.getElementById("companionVisual");
+
+        triggerHaptic("success");
+
+        const messages = getCompanionMessages();
+        let nextIndex;
+        do {
+            nextIndex = Math.floor(Math.random() * messages.length);
+        } while (nextIndex === lastMsgIndex);
+        lastMsgIndex = nextIndex;
+
+        if (bubbleText) {
+            bubbleText.style.opacity = "0";
+            setTimeout(() => {
+                bubbleText.textContent = messages[nextIndex];
+                bubbleText.style.opacity = "1";
+            }, 120);
+        }
+
+        if (dogImg) {
+            dogImg.style.transform = "scale(0.92) translateY(4px)";
+            setTimeout(() => { dogImg.style.transform = "scale(1) translateY(0)"; }, 180);
+        }
+    }
+
+    // =====================================
+    // 6. MENÚ DE PLANETAS Y NIVELES (CAREER MODE)
     // =====================================
     function renderCareerPlanetsMenu() {
         const container = document.getElementById("careerPlanetsGrid");
@@ -665,23 +494,29 @@ Firma biométrica bloqueada permanentemente.`);
 
         container.replaceChildren();
 
-        WORLDS_CONFIG.forEach((world, wIdx) => {
+        WORLDS_CONFIG.forEach((world) => {
             const planetCard = document.createElement("div");
             planetCard.className = `planet-menu-item ${world.planetClass}`;
 
+            const totalAct = world.activities.length;
+            const completedInWorld = world.activities.filter(a => career.completedActivities.includes(a.id)).length;
+
             planetCard.innerHTML = `
                 <div class="planet-sphere-wrapper">
-                    <div class="planet-sphere" style="box-shadow: 0 0 25px ${world.color}88, inset -8px -8px 18px rgba(0,0,0,0.8), inset 6px 6px 14px rgba(255,255,255,0.4);">
+                    <div class="planet-sphere">
                         <span class="planet-core-icon">${world.icon}</span>
                     </div>
-                    <div class="planet-orbit-ring" style="border-color:${world.color}66;"></div>
+                    <div class="planet-orbit-ring" style="border-color:${world.color}88;"></div>
                 </div>
 
                 <div class="planet-menu-meta">
                     <span class="planet-tag" style="color:${world.color};">${world.title}</span>
                     <h4>${world.planetName}</h4>
                     <p>${world.subtitle}</p>
-                    <span class="planet-enter-badge">EXPLORAR PLANETA →</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                        <span class="planet-enter-badge">EXPLORAR MUNDO →</span>
+                        <small style="color:${world.color}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
+                    </div>
                 </div>
             `;
 
@@ -707,7 +542,7 @@ Firma biométrica bloqueada permanentemente.`);
         if (!stream) return;
         stream.replaceChildren();
 
-        // 5 Niveles continuos
+        // NIVELES DEL MUNDO
         world.activities.forEach((act, aIdx) => {
             const isCompleted = career.completedActivities.includes(act.id);
             const stars = (career.nodeStars && career.nodeStars[act.id]) || (isCompleted ? 3 : 0);
@@ -730,19 +565,19 @@ Firma biométrica bloqueada permanentemente.`);
             stream.appendChild(nodeEl);
         });
 
-        // BOSS CHECKPOINT AL FINAL (NIVEL 6)
+        // BOSS CHECKPOINT
         if (world.boss) {
-            const bossCompleted = career.assessmentPassed;
+            const isBossBeaten = Boolean(career.bossBeaten && career.bossBeaten[world.boss.id]);
             const bossNode = document.createElement("div");
             bossNode.className = "path-step left";
             bossNode.innerHTML = `
-                <div class="path-node assessment ${bossCompleted ? "completed" : "current"}" style="border-color:${world.color};">
-                    <span>${bossCompleted ? "✓" : "🏅"}</span>
+                <div class="path-node assessment ${isBossBeaten ? "completed" : "current"}" style="border-color:${world.color};">
+                    <span>${isBossBeaten ? "✓" : "🏅"}</span>
                 </div>
                 <div class="path-label">
                     <strong style="color:${world.color};">${world.boss.name}</strong>
-                    <small>${world.boss.desc}</small>
-                    <span class="node-action" style="color:${world.color};">INICIAR CHECKPOINT FINAL →</span>
+                    <small>Secuencia en orden español · Escáner combinado</small>
+                    <span class="node-action" style="color:${world.color};">${isBossBeaten ? "CERTIFICADO ✓" : "INICIAR CHECKPOINT FINAL →"}</span>
                 </div>
             `;
             bossNode.style.cursor = "pointer";
@@ -751,37 +586,35 @@ Firma biométrica bloqueada permanentemente.`);
         }
     }
 
-    // =====================================
-    // 5. APRENDIZAJE EN 4 FASES POR HANZI
-    // =====================================
     function openActivity(act) {
         if (typeof window.navigateTo === "function") window.navigateTo("level01");
         startHanzi4Phases(act);
     }
 
+    // =====================================
+    // 7. PEDAGOGÍA EN 4 FASES POR HANZI
+    // =====================================
     function startHanzi4Phases(act) {
         const card = document.querySelector("#level01 .recognition-card");
         if (!card) return;
 
-        let phase = 1;
-
         // FASE 1: SIGNIFICADO
         function renderPhase1() {
-            const allMeanings = ["Electricidad", "Máquina", "Línea / Cable", "Fuerza / Potencia", "Control", "Eje / Flecha", "Presión", "Cilindro", "Aire", "Válvula"];
+            const allMeanings = ["Electricidad", "Máquina / Motor", "Línea / Cable", "Fuerza / Potencia", "Control / PLC", "Eje / Flecha", "Presión Bar", "Cilindro neumático", "Aire / Neumática", "Válvula solenoide"];
             const wrongOpts = allMeanings.filter(m => m !== act.meaning).sort(() => 0.5 - Math.random()).slice(0, 2);
             const options = [act.meaning, ...wrongOpts].sort(() => 0.5 - Math.random());
 
             card.innerHTML = `
                 <div class="phase-stepper-bar">
                     <span class="step-dot active">1. Significado</span>
-                    <span class="step-dot">2. Pinyin</span>
+                    <span class="step-dot">2. Pronunciación</span>
                     <span class="step-dot">3. Compuesta</span>
                     <span class="step-dot">4. Alarma HMI</span>
                 </div>
 
-                <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin:8px 0 4px 0;">FASE 1 DE 4 · IDENTIFICACIÓN</span>
+                <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin:6px 0 4px 0;">FASE 1 DE 4 · IDENTIFICACIÓN</span>
                 <div class="recognition-hanzi">${act.hanzi}</div>
-                <h3 style="font-size:14px; margin-bottom:12px; color:#fff;">¿Cuál es el significado técnico de este carácter?</h3>
+                <h3 style="font-size:13.5px; margin-bottom:12px; color:#fff;">¿Cuál es el significado técnico de este carácter?</h3>
                 <div class="career-quiz-grid" id="phaseQuizGrid"></div>
             `;
 
@@ -800,7 +633,7 @@ Firma biométrica bloqueada permanentemente.`);
                     if (opt === act.meaning) {
                         triggerHaptic("success");
                         btn.classList.add("btn-correct");
-                        setTimeout(() => { phase = 2; renderPhase2(); }, 350);
+                        setTimeout(renderPhase2, 350);
                     } else {
                         triggerHaptic("error");
                         btn.classList.add("btn-wrong");
@@ -811,9 +644,9 @@ Firma biométrica bloqueada permanentemente.`);
             });
         }
 
-        // FASE 2: CÓMO SE DICE (PINYIN Y TONO)
+        // FASE 2: PRONUNCIACIÓN / PINYIN
         function renderPhase2() {
-            const dummyPinyins = ["diàn", "jī", "xiàn", "lì", "kòng", "zhóu", "zhuǎn", "qì", "fá", "shǒu"].filter(p => p !== act.pinyin);
+            const dummyPinyins = ["diàn", "jī", "xiàn", "lì", "kòng", "zhóu", "zhuǎn", "qì", "fá", "shǒu", "guāng", "jìng"].filter(p => p !== act.pinyin);
             const shuffledP = dummyPinyins.sort(() => 0.5 - Math.random()).slice(0, 2);
             const options = [act.pinyin, ...shuffledP].sort(() => 0.5 - Math.random());
 
@@ -825,9 +658,9 @@ Firma biométrica bloqueada permanentemente.`);
                     <span class="step-dot">4. Alarma HMI</span>
                 </div>
 
-                <span class="tag" style="border-color:#a78bfa; color:#a78bfa; margin:8px 0 4px 0;">FASE 2 DE 4 · LECTURA FONÉTICA</span>
+                <span class="tag" style="border-color:#a78bfa; color:#a78bfa; margin:6px 0 4px 0;">FASE 2 DE 4 · LECTURA FONÉTICA</span>
                 <div class="recognition-hanzi">${act.hanzi}</div>
-                <h3 style="font-size:14px; margin-bottom:12px; color:#fff;">¿Cómo se pronuncia en mandarín técnico?</h3>
+                <h3 style="font-size:13.5px; margin-bottom:12px; color:#fff;">¿Cómo se pronuncia en mandarín técnico?</h3>
                 <div class="career-quiz-grid" id="phaseQuizGrid"></div>
             `;
 
@@ -846,7 +679,7 @@ Firma biométrica bloqueada permanentemente.`);
                     if (opt === act.pinyin) {
                         triggerHaptic("success");
                         btn.classList.add("btn-correct");
-                        setTimeout(() => { phase = 3; renderPhase3(); }, 350);
+                        setTimeout(renderPhase3, 350);
                     } else {
                         triggerHaptic("error");
                         btn.classList.add("btn-wrong");
@@ -857,11 +690,11 @@ Firma biométrica bloqueada permanentemente.`);
             });
         }
 
-        // FASE 3: FORMAR LA PALABRA COMPUESTA (ENSAMBLE TÉCNICO)
+        // FASE 3: PALABRA COMPUESTA (ENSAMBLE TÉCNICO)
         function renderPhase3() {
             const chars = act.compound.split("");
             const targetChar = chars.find(c => c !== act.hanzi) || act.hanzi;
-            const dummyPool = ["缆", "箱", "压", "电", "机", "线", "阀", "器", "门", "轴"].filter(c => c !== targetChar);
+            const dummyPool = ["缆", "箱", "压", "电", "机", "线", "阀", "器", "门", "轴", "气", "光", "头"].filter(c => c !== targetChar);
             const blockOptions = [targetChar, ...dummyPool.sort(() => 0.5 - Math.random()).slice(0, 2)].sort(() => 0.5 - Math.random());
 
             card.innerHTML = `
@@ -872,8 +705,8 @@ Firma biométrica bloqueada permanentemente.`);
                     <span class="step-dot">4. Alarma HMI</span>
                 </div>
 
-                <span class="tag" style="border-color:#ffaa00; color:#ffaa00; margin:8px 0 4px 0;">FASE 3 DE 4 · PALABRA COMPUESTA</span>
-                <p style="font-size:11px; color:var(--muted); margin:4px 0;">FORMA EL TÉRMINO DE PLANTA:</p>
+                <span class="tag" style="border-color:#ffaa00; color:#ffaa00; margin:6px 0 4px 0;">FASE 3 DE 4 · PALABRA COMPUESTA</span>
+                <p style="font-size:10.5px; color:var(--muted); margin:4px 0;">FORMA EL TÉRMINO DE PLANTA:</p>
                 <h2 style="color:var(--cyan); margin: 4px 0 12px 0;">${act.compoundMeaning}</h2>
 
                 <div class="cf-slots-dock" style="margin-bottom:14px;">
@@ -898,7 +731,7 @@ Firma biométrica bloqueada permanentemente.`);
                         slot.textContent = char;
                         slot.classList.add("filled");
                         slot.classList.remove("empty");
-                        setTimeout(() => { phase = 4; renderPhase4(); }, 400);
+                        setTimeout(renderPhase4, 400);
                     } else {
                         triggerHaptic("error");
                         b.style.opacity = "0.2";
@@ -919,9 +752,9 @@ Firma biométrica bloqueada permanentemente.`);
                     <span class="step-dot active">4. Escáner HMI</span>
                 </div>
 
-                <span class="tag" style="border-color:#00f59b; color:#00f59b; margin:8px 0 4px 0;">FASE 4 DE 4 · ESCÁNER EN PISO</span>
-                <p style="font-size:12px; color:#ffffff; font-weight:700; margin:8px 0 12px 0;">
-                    ${act.alarmPrompt}
+                <span class="tag" style="border-color:#00f59b; color:#00f59b; margin:6px 0 4px 0;">FASE 4 DE 4 · ESCÁNER EN PISO</span>
+                <p style="font-size:12px; color:#ffffff; font-weight:700; margin:6px 0 10px 0;">
+                    Identifica el componente <strong style="color:var(--cyan);">"${act.meaning}"</strong> dentro del texto de la alarma HMI:
                 </p>
 
                 <div class="hmi-alarm-scanner-box">
@@ -932,8 +765,8 @@ Firma biométrica bloqueada permanentemente.`);
                     <div class="hmi-tokens-container" id="alarmTokensGrid"></div>
                 </div>
 
-                <p style="font-size:10px; color:var(--muted); margin-top:8px;">
-                    Toca el carácter exacto dentro de la oración para autorizar el rearme.
+                <p style="font-size:10px; color:var(--muted); margin-top:6px;">
+                    Toca el carácter exacto en la alarma para autorizar el rearme.
                 </p>
             `;
 
@@ -958,8 +791,8 @@ Firma biométrica bloqueada permanentemente.`);
                         awardXP(act.reward);
 
                         setTimeout(() => {
-                            alert(`🌟 ¡NIVEL Y 4 FASES COMPLETADAS! (+${act.reward} XP)\nHas dominado "${act.hanzi}" (${act.meaning}).`);
-                            if (typeof window.navigateTo === "function") window.navigateTo("career");
+                            alert(`🌟 ¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado las 4 fases de "${act.hanzi}" (${act.meaning}).`);
+                            if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
                         }, 400);
                     } else {
                         triggerHaptic("error");
@@ -975,70 +808,38 @@ Firma biométrica bloqueada permanentemente.`);
     }
 
     // =====================================
-    // 6. BOSS CHECKPOINT (REPASO DE LOS 5 NIVELES ANTERIORES)
+    // 8. BOSS CHECKPOINT CON SECUENCIA EN ORDEN (SIN HANZI EN LA PISTA)
     // =====================================
     function startBossCheckpoint(world) {
         if (typeof window.navigateTo === "function") window.navigateTo("level01");
         const card = document.querySelector("#level01 .recognition-card");
-        if (!card) return;
+        if (!card || !world.boss) return;
 
-        let qIdx = 0;
-        const questions = world.activities;
+        const boss = world.boss;
+        const sequence = boss.sequence; // Array de { esName: "Cable", targetHanzi: "缆" }
+        let currentStepIndex = 0;
 
-        function renderBossStep() {
-            if (qIdx < questions.length) {
-                const act = questions[qIdx];
-                card.innerHTML = `
-                    <span class="tag" style="border-color:${world.color}; color:${world.color}; margin-bottom:8px;">
-                        ${world.boss.name} · REPASO ${qIdx + 1}/5
-                    </span>
-                    <div class="recognition-hanzi" style="font-size:64px;">${act.hanzi}</div>
-                    <h3 style="font-size:14px; margin-bottom:12px; color:#fff;">¿Cuál es la refacción o palabra compuesta?</h3>
-                    <div class="career-quiz-grid" id="bossQuizGrid"></div>
-                `;
+        function renderBossSequenceView() {
+            // Generar los chips de secuencia en orden español
+            const chipsHtml = sequence.map((s, idx) => {
+                let statusClass = "seq-target-chip";
+                if (idx < currentStepIndex) statusClass += " done-step";
+                else if (idx === currentStepIndex) statusClass += " active-step";
+                return `<span class="${statusClass}">${idx + 1}. ${s.esName}</span>`;
+            }).join("");
 
-                const dummyCompounds = ["电缆 (Cable)", "电机 (Motor)", "控制 (PLC)", "伺服轴 (Eje)", "气缸 (Cilindro)", "视觉 (AOI)"];
-                const wrong = dummyCompounds.filter(c => !c.startsWith(act.compound)).sort(() => 0.5 - Math.random()).slice(0, 2);
-                const opts = [`${act.compound} (${act.compoundMeaning})`, ...wrong].sort(() => 0.5 - Math.random());
-
-                const grid = card.querySelector("#bossQuizGrid");
-                opts.forEach(opt => {
-                    const btn = document.createElement("button");
-                    btn.className = "cf-btn-option";
-                    btn.style.fontSize = "13px";
-                    btn.style.padding = "12px 10px";
-                    btn.textContent = opt;
-
-                    btn.onclick = () => {
-                        if (opt.startsWith(act.compound)) {
-                            triggerHaptic("success");
-                            btn.classList.add("btn-correct");
-                            qIdx++;
-                            setTimeout(renderBossStep, 350);
-                        } else {
-                            triggerHaptic("error");
-                            btn.classList.add("btn-wrong");
-                        }
-                    };
-                    grid.appendChild(btn);
-                });
-            } else {
-                // FASE 4 DEL BOSS: ESCÁNER COMBINADO DE TODAS LAS ALARMAS
-                renderBossPhase4Combined(world);
-            }
-        }
-
-        function renderBossPhase4Combined(world) {
-            const multiAlarms = [
-                "ALM-99: 1号主电机过载, 导致伺服轴原位丢失并造成气缸低气压停机"
-            ];
+            const currentTarget = sequence[currentStepIndex];
 
             card.innerHTML = `
                 <span class="tag" style="border-color:${world.color}; color:${world.color}; margin-bottom:8px;">
-                    ${world.boss.name} · FASE FINAL DE CERTIFICACIÓN
+                    ${boss.name} · SECUENCIA EN ORDEN
                 </span>
-                <p style="font-size:12px; color:#fff; font-weight:700; margin:6px 0 12px 0;">
-                    Identifica el Hanzi de MOTOR (机) dentro de la alarma combinada:
+                
+                <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">SELECCIONA EN ESTE ORDEN EXACTO:</p>
+                <div class="boss-target-sequence-shelf">${chipsHtml}</div>
+
+                <p style="font-size:12.5px; color:#ffffff; font-weight:800; margin:6px 0 12px 0;">
+                    Toca en la alarma el Hanzi que corresponde a: <strong style="color:var(--gold); font-size:14px;">"${currentTarget.esName}"</strong>
                 </p>
 
                 <div class="hmi-alarm-scanner-box">
@@ -1048,68 +849,77 @@ Firma biométrica bloqueada permanentemente.`);
                     </div>
                     <div class="hmi-tokens-container" id="bossTokensGrid"></div>
                 </div>
+
+                <p style="font-size:10px; color:var(--muted); margin-top:4px;">
+                    Paso ${currentStepIndex + 1} de ${sequence.length}. No hay pistas en caracteres chinos.
+                </p>
             `;
 
             const tokensGrid = card.querySelector("#bossTokensGrid");
-            multiAlarms[0].split("").forEach(c => {
+            boss.alarmSentence.split("").forEach(c => {
                 const b = document.createElement("button");
                 b.className = "hmi-char-token";
                 b.textContent = c;
 
                 b.onclick = () => {
-                    if (c === "机") {
-                        triggerHaptic("win");
+                    if (c === currentTarget.targetHanzi) {
+                        triggerHaptic("success");
                         b.classList.add("token-hit");
-                        career.assessmentPassed = true;
-                        awardXP(world.boss.reward);
+                        currentStepIndex++;
 
-                        setTimeout(() => {
-                            alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${world.boss.reward} XP)\nHas certificado el ${world.title} (${world.planetName}).`);
-                            if (typeof window.navigateTo === "function") window.navigateTo("career");
-                        }, 400);
+                        if (currentStepIndex >= sequence.length) {
+                            // BOSS SUPERADO
+                            triggerHaptic("win");
+                            if (!career.bossBeaten) career.bossBeaten = {};
+                            career.bossBeaten[boss.id] = true;
+                            awardXP(boss.reward);
+
+                            setTimeout(() => {
+                                alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`);
+                                renderBadgesGrid();
+                                if (typeof window.navigateTo === "function") window.navigateTo("career");
+                            }, 450);
+                        } else {
+                            setTimeout(renderBossSequenceView, 350);
+                        }
                     } else {
                         triggerHaptic("error");
                         b.classList.add("token-miss");
                         setTimeout(() => b.classList.remove("token-miss"), 300);
+                        alert(`⚠️ ¡Orden incorrecto! Debes identificar primero: "${currentTarget.esName}".`);
                     }
                 };
                 tokensGrid.appendChild(b);
             });
         }
 
-        renderBossStep();
+        renderBossSequenceView();
     }
 
     // =====================================
-    // 7. ARENA 1V1 CON 3 NIVELES DE DIFICULTAD
+    // 9. ARENA 1V1 CON 3 NIVELES DE DIFICULTAD
     // =====================================
     const VS_DIFFICULTIES = {
         EASY: {
             name: "Simulador de Enlace",
             badge: "FÁCIL",
-            prob: 0.55,
+            prob: 0.50,
             points: 50,
-            rate: 2200,
-            winBonus: 80,
-            desc: "Rival estándar de calibración con velocidad moderada"
+            winBonus: 80
         },
         MEDIUM: {
             name: "Servocontrolador Overclock",
             badge: "MEDIO",
             prob: 0.70,
             points: 75,
-            rate: 1700,
-            winBonus: 120,
-            desc: "IA de planta con alta cadencia de respuesta"
+            winBonus: 120
         },
         HARD: {
             name: "Protocolo Centinela IA",
             badge: "EXPERTO",
-            prob: 0.85,
+            prob: 0.90, // Casi perfecto
             points: 100,
-            rate: 1200,
-            winBonus: 200,
-            desc: "Velocidad extrema: Requiere racha PERFECT para ganar"
+            winBonus: 200
         }
     };
 
@@ -1167,7 +977,7 @@ Firma biométrica bloqueada permanentemente.`);
                 window.ZidongAudio.playClockTick(vsTimeLeft % 2 === 0);
             }
 
-            // IA anota según la dificultad seleccionada
+            // IA anota según dificultad
             if (Math.random() < diff.prob) {
                 rivalVsPoints += diff.points;
                 document.getElementById("vsRivalScore").textContent = `${rivalVsPoints} PTS`;
@@ -1228,7 +1038,7 @@ Firma biométrica bloqueada permanentemente.`);
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
         const win = myVsPoints >= rivalVsPoints;
 
-        // Registrar récord en localStorage por dificultad
+        // Registrar récord en localStorage
         const recordKey = `zidong_vs_best_${selectedVsDiffKey.toLowerCase()}`;
         const prevBest = Number(localStorage.getItem(recordKey) || 0);
         if (myVsPoints > prevBest) {
@@ -1241,7 +1051,6 @@ Firma biométrica bloqueada permanentemente.`);
             const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
             localStorage.setItem("zidong_vs_wins", currentWins);
             alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-            renderAchievements();
             renderBadgesGrid();
             updateProfile();
             if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
@@ -1268,57 +1077,7 @@ Firma biométrica bloqueada permanentemente.`);
     window.stopVsSession = stopVsSession;
 
     // =====================================
-    // 8. CURIOSIDADES GRAMATICALES TÉCNICAS DEL CYBERDOG
-    // =====================================
-    function getCompanionMessages() {
-        const rawName = (currentUserData.name || "New user").trim();
-        const isChilaquil = rawName.toLowerCase() === "chilaquil";
-
-        const chilaquilMessage = isChilaquil
-            ? `Chilaquil... ¡jajaja te la creíste! Ahora te falta la salsa verde y la crema 🐶🌶️`
-            : `${rawName}... te quedaría mejor Chilaquil 🐶🔥`;
-
-        return [
-            chilaquilMessage,
-            `Dato de Hanzi: 线 (cable) tiene el radical 纟 a la izquierda, que significa 'fibra/seda'. En chino, el lado izquierdo suele dar la pista del material. 🧵`,
-            `¿Sabías que un solo Hanzi pueden ser 3 juntos? En 机 (máquina), 木 es madera y 几 es mesa: el concepto original de telar industrial. ⚙️`,
-            `Curiosidad técnica: El carácter 电 (diàn) originalmente era el dibujo de un rayo cayendo de las nubes en tormenta. ⚡`,
-            `Regla de oro: En chino no hay conjugaciones de verbos enredadas como en español. Solo pones partículas como 了 para pasado. 💡`,
-            `Tip de piso: El radical 钅 (jīn) indica metal en herramientas: 铁 (hierro), 钻 (broca), 钉 (perno de fijación). 🛠️`,
-            `¡Terminal OBERON en línea! Modo Survivor con +3 segundos por alarma retirada. 🚨`
-        ];
-    }
-
-    let lastMsgIndex = -1;
-    function interactWithCompanion() {
-        const bubbleText = document.getElementById("companionText");
-        const dogImg = document.getElementById("companionVisual");
-
-        triggerHaptic("success");
-
-        const messages = getCompanionMessages();
-        let nextIndex;
-        do {
-            nextIndex = Math.floor(Math.random() * messages.length);
-        } while (nextIndex === lastMsgIndex);
-        lastMsgIndex = nextIndex;
-
-        if (bubbleText) {
-            bubbleText.style.opacity = "0";
-            setTimeout(() => {
-                bubbleText.textContent = messages[nextIndex];
-                bubbleText.style.opacity = "1";
-            }, 120);
-        }
-
-        if (dogImg) {
-            dogImg.style.transform = "scale(0.92) translateY(4px)";
-            setTimeout(() => { dogImg.style.transform = "scale(1) translateY(0)"; }, 180);
-        }
-    }
-
-    // =====================================
-    // 9. LABORATORIO (LAB)
+    // 10. LABORATORIO
     // =====================================
     let currentLabCategory = "all";
 
@@ -1348,10 +1107,7 @@ Firma biométrica bloqueada permanentemente.`);
             `;
             card.onclick = () => {
                 triggerHaptic("success");
-                alert(`🔬 ${comp.hanzi} (${comp.pinyin})
-Significado: ${comp.es}
-Aplicación: ${comp.part}
-Planeta: ${comp.catName}`);
+                alert(`🔬 ${comp.hanzi} (${comp.pinyin})\nSignificado: ${comp.es}\nAplicación: ${comp.part}\nMundo: ${comp.catName}`);
             };
             container.appendChild(card);
         });
@@ -1377,7 +1133,7 @@ Planeta: ${comp.catName}`);
     };
 
     // =====================================
-    // 10. ESCALAFÓN DE RANGOS
+    // 11. ESCALAFÓN Y PERFIL
     // =====================================
     function renderRanksSection() {
         const container = document.getElementById("ranksLadderContainer");
@@ -1388,7 +1144,7 @@ Planeta: ${comp.catName}`);
         const current = getCurrentRank(currentUserData.xp);
 
         if (headerBadge) headerBadge.textContent = `${current.icon} ${current.name}`;
-        if (profileRankBadge) profileRankBadge.textContent = `${current.icon} ${current.name} (Rango ${current.id}/10)`;
+        if (profileRankBadge) profileRankBadge.textContent = `${current.icon} ${current.name} (Rango 0${current.id}/10)`;
 
         container.replaceChildren();
 
@@ -1416,16 +1172,11 @@ Planeta: ${comp.catName}`);
         });
     }
 
-    // =====================================
-    // 11. PERFIL CON RÉCORDS DE 1V1 Y SURVIVOR
-    // =====================================
     function updateProfile() {
-        const xp = document.getElementById("profileXP");
         const level = document.getElementById("profileLevel");
         const streak = document.getElementById("profileStreak");
         const completed = document.getElementById("profileCompleted");
 
-        if (xp) xp.textContent = Number(currentUserData.xp).toLocaleString("en-US");
         if (level) level.textContent = "05";
         if (streak) streak.textContent = "5 Días";
         if (completed) completed.textContent = career.completedActivities.length;
@@ -1434,7 +1185,7 @@ Planeta: ${comp.catName}`);
         const bestAlarms = localStorage.getItem("zidong_survivor_best_cleared") || "0";
         const totalAlarms = localStorage.getItem("zidong_survivor_total_cleared") || "0";
         const profBestEl = document.getElementById("profileSurvivorBest");
-        if (profBestEl) profBestEl.textContent = `${bestAlarms} Alarmas (Total: ${totalAlarms})`;
+        if (profBestEl) profBestEl.textContent = `${bestAlarms} Alarmas (Total retiradas: ${totalAlarms})`;
 
         // Récords 1v1
         const bestEasy = localStorage.getItem("zidong_vs_best_easy") || "0";
@@ -1449,11 +1200,38 @@ Planeta: ${comp.catName}`);
             `;
         }
 
-        const savedIcon = localStorage.getItem("zidong_equipped_badge") || currentUserData.initials;
-        applyAvatarIcon(savedIcon);
-        updateUserDisplay();
+        renderProfileWorldsProgress();
         renderBadgesGrid();
         renderRanksSection();
+        updateUserDisplay();
+        updateEnergyBatteryDisplay();
+    }
+
+    // Progreso detallado de los 5 mundos en el Profile
+    function renderProfileWorldsProgress() {
+        const container = document.getElementById("profileWorldsProgressList");
+        if (!container) return;
+
+        container.replaceChildren();
+
+        WORLDS_CONFIG.forEach(world => {
+            const total = world.activities.length;
+            const done = world.activities.filter(a => career.completedActivities.includes(a.id)).length;
+            const pct = Math.round((done / total) * 100);
+
+            const row = document.createElement("div");
+            row.className = "world-prog-row";
+            row.innerHTML = `
+                <div class="world-prog-title">
+                    <span style="color:${world.color};">${world.icon} ${world.title}</span>
+                    <strong style="color:#fff;">${done}/${total} (${pct}%)</strong>
+                </div>
+                <div class="world-prog-track">
+                    <div class="world-prog-fill" style="width:${pct}%; background:${world.color};"></div>
+                </div>
+            `;
+            container.appendChild(row);
+        });
     }
 
     function renderBadgesGrid() {
@@ -1498,38 +1276,7 @@ Planeta: ${comp.catName}`);
         });
     }
 
-    function renderAchievements() {
-        const container = document.getElementById("achievementsListContainer");
-        const totalScoreEl = document.getElementById("totalGamerscore");
-        if (!container) return;
-
-        container.replaceChildren();
-        let totalG = 0;
-
-        XBOX_ACHIEVEMENTS.forEach(ach => {
-            const isUnlocked = ach.unlocked();
-            if (isUnlocked) totalG += ach.score;
-
-            const card = document.createElement("div");
-            card.className = `achieve-card ${isUnlocked ? "unlocked" : "locked"}`;
-            card.innerHTML = `
-                <div class="achieve-icon">${isUnlocked ? ach.icon : "🔒"}</div>
-                <div class="achieve-details">
-                    <strong>${ach.title}</strong>
-                    <small>${ach.desc}</small>
-                </div>
-                <div class="achieve-score">
-                    <span>${ach.score}</span>
-                    <strong>G</strong>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-
-        if (totalScoreEl) totalScoreEl.textContent = `${totalG} G`;
-    }
-
-    // DAILY REWARD MODAL ESTÉTICO
+    // DAILY REWARD MODAL
     window.claimDailyReward = () => {
         const lastClaim = localStorage.getItem("zidong_last_daily_claim");
         const today = new Date().toDateString();
@@ -1581,8 +1328,8 @@ Planeta: ${comp.catName}`);
         if (e.target.id === "dailyMissionsModal") window.toggleDailyMissionsModal();
     };
 
-    // SPLASH SCREEN 10s
-    function checkFirstTimeSplash() {
+    // SPLASH SCREEN 6 SEGUNDOS (SIN BOTÓN OMITIR)
+    function checkSplash6Seconds() {
         const hasLoaded = sessionStorage.getItem("oberon_splash_done");
         const splash = document.getElementById("oberonSplashScreen");
         if (!splash) return;
@@ -1593,28 +1340,28 @@ Planeta: ${comp.catName}`);
         }
 
         splash.style.display = "flex";
-        let progress = 0;
+        let elapsed = 0;
         const bar = document.getElementById("splashLoadingFill");
         const statusText = document.getElementById("splashStatusText");
 
         const steps = [
             "Conectando al enlace cuántico de OBERON...",
             "Sincronizando telemetría de Voltaria y Kinetix...",
-            "Calibrando cilindros neumáticos de Aethel...",
-            "Inicializando algoritmos de visión en Lumina...",
-            "Conexión neural establecida. Sistema seguro."
+            "Cargando atmósfera de presión en Aethel...",
+            "Inicializando celdas y visión en Lumina...",
+            "¡Conexión neural lista! Buen turno técnico."
         ];
 
-        const splashTimer = setInterval(() => {
-            progress += 1;
-            if (bar) bar.style.width = `${progress * 10}%`;
+        const timer = setInterval(() => {
+            elapsed += 1;
+            if (bar) bar.style.width = `${(elapsed / 6) * 100}%`;
             if (statusText) {
-                const stepIdx = Math.min(Math.floor(progress / 2), steps.length - 1);
-                statusText.textContent = steps[stepIdx];
+                const sIdx = Math.min(Math.floor(elapsed / 1.5), steps.length - 1);
+                statusText.textContent = steps[sIdx];
             }
 
-            if (progress >= 10) {
-                clearInterval(splashTimer);
+            if (elapsed >= 6) {
+                clearInterval(timer);
                 sessionStorage.setItem("oberon_splash_done", "true");
                 setTimeout(() => {
                     splash.style.opacity = "0";
@@ -1622,30 +1369,24 @@ Planeta: ${comp.catName}`);
                 }, 200);
             }
         }, 1000);
-
-        window.skipSplashLoading = () => {
-            clearInterval(splashTimer);
-            sessionStorage.setItem("oberon_splash_done", "true");
-            splash.style.display = "none";
-        };
     }
 
+    // INICIALIZACIÓN
     function initializeApplication() {
         loadSavedProgress();
         updateUserDisplay();
         renderCareerPlanetsMenu();
         renderLabComponents();
         renderRanksSection();
-        renderAchievements();
         updateProfile();
-        checkFirstTimeSplash();
+        checkSplash6Seconds();
 
         if (window.ZidongAudio) {
             window.ZidongAudio.switchTrack("dashboard");
         }
 
         console.log("--------------------------------");
-        console.log("ZIDONG CORE 8.0: ONLINE");
+        console.log("ZIDONG CORE 9.0: SISTEMA OBERON");
         console.log("--------------------------------");
     }
 

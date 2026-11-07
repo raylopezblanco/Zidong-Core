@@ -11,36 +11,35 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=8.0">
+    <link rel="stylesheet" href="style.css?v=9.0">
 </head>
 <body>
 
-    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN DE 10 SEGUNDOS (SISTEMA OBERON) -->
+    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN DE 6 SEGUNDOS (SIN BOTÓN OMITIR, GLOBO DE DIÁLOGO) -->
     <div id="oberonSplashScreen" class="splash-screen-overlay">
         <div class="splash-content-box">
-            <span class="eyebrow" style="color:var(--cyan); letter-spacing:2px;">SISTEMA ESPACIAL OBERON</span>
+            <span class="eyebrow splash-eyebrow">SISTEMA ESPACIAL OBERON</span>
             
+            <!-- GLOBO DE DIÁLOGO DEL PERRO EN LA CARGA -->
+            <div class="splash-speech-bubble">
+                <span class="splash-bubble-text">"¡Bienvenido al sistema espacial OBERON! Nuestra misión es hacer que no colapse." 🚀</span>
+            </div>
+
+            <!-- CYBERDOG EN SU CÁPSULA -->
             <div class="stasis-tube splash-tube">
                 <div class="tube-ring top-ring"></div>
                 <div class="tube-chamber">
                     <div class="energy-beam"></div>
-                    <img src="cyberdog.gif?v=10" alt="Cyberdog Companion" class="companion-img">
+                    <img src="cyberdog.gif?v=11" alt="Cyberdog Companion" class="companion-img">
                 </div>
                 <div class="tube-ring bottom-ring"></div>
             </div>
-
-            <h2 class="splash-title">¡BIENVENIDO A OBERON!</h2>
-            <p class="splash-mission-text">
-                "Nuestra misión es hacer que la red de planetas industriales no colapse."
-            </p>
 
             <div class="splash-progress-track">
                 <div id="splashLoadingFill" class="splash-progress-fill"></div>
             </div>
 
-            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v4.8...</small>
-            
-            <button class="skip-splash-btn" onclick="skipSplashLoading()">OMITIR ESPERA →</button>
+            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v5.2...</small>
         </div>
     </div>
 
@@ -54,12 +53,12 @@
             </div>
         </div>
 
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div class="topbar-actions">
             <button id="musicToggleBtn" class="audio-btn" onclick="ZidongAudio.toggleMute()" title="Activar/Silenciar sonido">
                 🔊
             </button>
 
-            <div class="user-chip" onclick="navigateTo('profile')" title="Ver perfil y medallas">
+            <div class="user-chip" onclick="navigateTo('profile')" title="Ver perfil y mundos">
                 <div class="avatar" id="topAvatar">NU</div>
                 <div class="user-meta">
                     <strong id="topUsername">New user</strong>
@@ -71,17 +70,38 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD (ALINEACIÓN EXACTA Y SIN SCROLL) -->
+        <!-- 1. DASHBOARD (HOME) -->
         <section id="dashboard" class="page active dashboard-no-scroll">
 
-            <!-- MODOS PRINCIPALES ARRIBA (SIMÉTRICOS Y CENTRADOS) -->
+            <!-- BARRA DE ENERGÍA / BATERÍA XP DE PLANTA (ARRIBA DE LOS MODOS) -->
+            <div class="home-energy-battery" onclick="navigateTo('profile')" title="Energía técnica acumulada (XP)">
+                <div class="battery-head-shell">
+                    <div class="battery-terminal-node"></div>
+                    <div class="battery-body">
+                        <div class="battery-level-fill" id="homeBatteryFill" style="width: 45%;"></div>
+                        <div class="battery-inner-shine"></div>
+                    </div>
+                </div>
+                <div class="battery-info-text">
+                    <div class="battery-title-row">
+                        <span class="battery-label">⚡ ENERGÍA XP EN LÍNEA:</span>
+                        <strong id="homeBatteryXpValue" class="battery-xp-val">1,850 XP</strong>
+                    </div>
+                    <div class="battery-sub-row">
+                        <small id="homeBatteryRank">Rango 05: Técnico Jr</small>
+                        <small id="homeBatteryPercent" class="battery-pct-tag">45% de carga</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODOS PRINCIPALES ARRIBA (CENTRADOS, SIMÉTRICOS) -->
             <div class="main-modes-grid home-top-grid">
                 <div class="mode-card career-mode hero-career" onclick="navigateTo('career')">
                     <div class="mode-icon">🪐</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">5 MUNDOS OBERON</span>
+                        <span class="mode-tag">5 MUNDOS LIBRES</span>
                         <h3>CAREER MODE</h3>
-                        <p>Voltaria, Kinetix, Aethel...</p>
+                        <p>Eléctrico, Mecánico, etc.</p>
                     </div>
                     <div class="mode-action">
                         <span class="arrow">→</span>
@@ -91,9 +111,9 @@
                 <div class="mode-card arcade-mode hero-survivor" onclick="openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag warning">ENDLESS (+3s)</span>
+                        <span class="mode-tag warning">MODO EXPERTO (18s)</span>
                         <h3>SURVIVOR MODE</h3>
-                        <p>18s · Suspenso y reflejos</p>
+                        <p>Endless (+3s) · Chino puro</p>
                     </div>
                     <div class="mode-action warning">
                         <span class="arrow">⚡</span>
@@ -101,17 +121,17 @@
                 </div>
             </div>
 
-            <!-- COMPANION CILÍNDRICO DE LUZ CON CURIOSIDADES GRAMATICALES -->
+            <!-- COMPANION CILÍNDRICO DE LUZ CON GLOBO ESTÁNDAR COMPLETO (HASTA 3 LÍNEAS) -->
             <div class="companion-stage home-companion-stage">
-                <div class="speech-bubble" id="companionBubble">
-                    <span id="companionText">¡Terminal OBERON lista! Tócame para recibir un reporte técnico. ⚡</span>
+                <div class="speech-bubble dialog-balloon" id="companionBubble">
+                    <span id="companionText">¡Terminal OBERON lista! Tócame para recibir curiosidades del idioma chino. ⚡</span>
                 </div>
 
                 <div class="stasis-tube" onclick="interactWithCompanion()">
                     <div class="tube-ring top-ring"></div>
                     <div class="tube-chamber">
                         <div class="energy-beam"></div>
-                        <img src="cyberdog.gif?v=10" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        <img src="cyberdog.gif?v=11" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
                     </div>
                     <div class="tube-ring bottom-ring"></div>
                 </div>
@@ -198,14 +218,15 @@
             </script>
         </section>
 
-        <!-- 2. CAREER MODE (MUNDOS INDUSTRIALES DE OBERON) -->
+        <!-- 2. CAREER MODE (MUNDOS INDUSTRIALES CON ICONOS DE PLANETAS ANIMADOS) -->
         <section id="career" class="page">
             <div class="welcome">
                 <span class="eyebrow">SISTEMA ESPACIAL OBERON</span>
                 <h2>Mundos de Manufactura</h2>
-                <p>Nuestra misión es hacer que la red industrial no colapse:</p>
+                <p>Selecciona un mundo para explorar sus componentes y resolver alarmas:</p>
             </div>
 
+            <!-- GRID COMPACTO DE PLANETAS 3D CON MOVIMIENTO -->
             <div id="careerPlanetsGrid" class="planets-menu-grid"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
@@ -213,10 +234,10 @@
             </button>
         </section>
 
-        <!-- VISTA DESGLOSADA DEL PLANETA SELECCIONADO -->
+        <!-- VISTA DESGLOSADA DEL MUNDO SELECCIONADO -->
         <section id="worldDetailsView" class="page">
             <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('career')">← PLANETAS</button>
+                <button class="btn-compact-back" onclick="navigateTo('career')">← MUNDOS</button>
                 <div class="lesson-hud-info">
                     <span class="eyebrow" id="selectedWorldTitle" style="font-size:9px;">MUNDO SELECCIONADO</span>
                     <strong id="selectedWorldSubtitle" style="color:var(--text); font-size:12px;">NIVELES DE PLANTA</strong>
@@ -224,14 +245,15 @@
                 <div class="lesson-quick-badge" id="selectedWorldIcon">🪐</div>
             </div>
 
+            <!-- LISTA DE NIVELES DEL MUNDO -->
             <div id="selectedWorldStream" class="world-nodes-stream" style="margin-top:14px;"></div>
 
             <button class="back-button" onclick="navigateTo('career')" style="margin-top: 24px; margin-bottom: 20px;">
-                ← REGRESAR A PLANETAS
+                ← REGRESAR A MUNDOS
             </button>
         </section>
 
-        <!-- 3. LABORATORIO (LAB) -->
+        <!-- 3. LABORATORIO (LAB) CON FILTRADO POR MUNDO -->
         <section id="hanziLab" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
@@ -301,7 +323,7 @@
         <!-- 6. ARENA 1V1 CON SELECTOR DE 3 DIFICULTADES -->
         <section id="vsBattle" class="page">
             
-            <!-- SELECTOR DE DIFICULTAD CON NOMBRES CHIDOS -->
+            <!-- SELECTOR DE DIFICULTAD -->
             <div id="vsDifficultySelector" style="display:block;">
                 <div class="welcome">
                     <span class="eyebrow">SISTEMA DE ENTRENAMIENTO 1V1</span>
@@ -413,14 +435,14 @@
             </div>
         </section>
 
-        <!-- 7. SURVIVOR MODE (18s & +3s POR CADA ALARMA RETIRADA) -->
+        <!-- 7. SURVIVOR MODE (EXPERTO: CHINO PURO, SIN TRADUCCIÓN, 18s & +3s) -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
                     <div class="welcome">
                         <span class="eyebrow">MODO SOBREVIVENCIA · ALARMAS DE PLANTA</span>
-                        <h2>SURVIVOR MODE (18s)</h2>
-                        <p>Despeja tantas alarmas de HMI como puedas. Cada acierto te otorga <strong>+3 segundos extra</strong> de tiempo. 1 error = Colapso total.</p>
+                        <h2>SURVIVOR MODE (EXPERTO)</h2>
+                        <p>Solo en chino técnico HMI. Despeja tantas alarmas como puedas. Cada acierto te otorga <strong>+3 segundos extra</strong> de tiempo. 1 error = Colapso.</p>
                     </div>
 
                     <div class="survivor-banner-action" onclick="startCriticalLevel()">
@@ -428,7 +450,7 @@
                         <div>
                             <span class="tag" style="border-color:#ff4444; color:#ff4444;">PROTOCOLO CONTINUO</span>
                             <h3 style="color:#fff; margin:2px 0;">INICIAR INTERVENCIÓN CRÍTICA</h3>
-                            <small style="color:var(--muted);">Música de suspenso activa · 18 segundos iniciales</small>
+                            <small style="color:var(--muted);">18 segundos iniciales · Sin pistas</small>
                         </div>
                         <span class="arrow" style="font-size:20px; color:#ff4444; margin-left:auto;">→</span>
                     </div>
@@ -496,7 +518,7 @@
             </div>
         </section>
 
-        <!-- 8. LESSON CONTAINER (4 FASES Y BOSS) -->
+        <!-- 8. LESSON CONTAINER (4 FASES Y BOSS CHECKPOINT) -->
         <section id="level01" class="page">
             <div class="lesson-top-nav">
                 <button class="btn-compact-back" onclick="navigateTo('worldDetailsView')">← NIVELES</button>
@@ -509,7 +531,7 @@
             <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-        <!-- 9. PROFILE CON RÉCORDS DE 1V1 Y ALARMAS RETIRADAS EN SURVIVOR -->
+        <!-- 9. PROFILE CON PROGRESO EN MUNDOS, RÉCORDS Y MEDALLAS DE CARRERA -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -532,10 +554,19 @@
                 </span>
                 
                 <div class="profile-stats-grid">
-                    <div class="p-stat"><span id="profileXP">1,850</span><small>TOTAL XP</small></div>
                     <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
                     <div class="p-stat"><span id="profileStreak">5 Días</span><small>RACHA</small></div>
                     <div class="p-stat"><span id="profileCompleted">5</span><small>HANZI DOMINADOS</small></div>
+                    <div class="p-stat"><span id="profileWorldsUnlocked">5 / 5</span><small>MUNDOS</small></div>
+                </div>
+
+                <!-- SECCIÓN DE PROGRESO DETALLADO EN LOS 5 MUNDOS -->
+                <div class="profile-worlds-progress-shelf">
+                    <div class="shelf-header">
+                        <span class="eyebrow" style="color:var(--cyan);">ESTADO DE LOS 5 MUNDOS</span>
+                        <small style="color:var(--muted); font-size:9.5px;">Calibración en curso</small>
+                    </div>
+                    <div class="world-progress-list" id="profileWorldsProgressList"></div>
                 </div>
 
                 <!-- RÉCORDS DESTACADOS DE PLANTA (SURVIVOR Y 1V1) -->
@@ -555,7 +586,7 @@
                 </div>
             </article>
 
-            <!-- VITRINA DE MEDALLAS -->
+            <!-- VITRINA DE MEDALLAS (INCLUYE MEDALLAS DE MODO CARRERA) -->
             <article class="daily-mission-card" style="margin-top:14px;">
                 <div class="mission-header">
                     <div>
@@ -564,7 +595,7 @@
                     </div>
                     <small style="color:var(--muted); font-size:10px;">Toca una para equipar</small>
                 </div>
-                <p style="font-size:11px; margin-bottom:12px;">Equipa tus medallas para personalizar tu avatar (desbloquea en Survivor y 1v1):</p>
+                <p style="font-size:11px; margin-bottom:12px;">Medallas de Carrera, Duelo 1v1 y Survivor para personalizar tu avatar:</p>
                 <div class="badges-grid" id="badgesContainer"></div>
             </article>
 
@@ -648,7 +679,7 @@
 
     </main>
 
-    <!-- BARRA INFERIOR (HOME, LAB, RANGOS, LOGROS) -->
+    <!-- BARRA INFERIOR AMPLIADA Y MÁS CÓMODA -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
@@ -665,11 +696,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=8.0"></script>
-    <script src="navigation.js?v=8.0"></script>
-    <script src="mock-data.js?v=8.0"></script>
-    <script src="critical-fail.js?v=8.0"></script>
-    <script src="app.js?v=8.0"></script>
+    <script src="audio.js?v=9.0"></script>
+    <script src="navigation.js?v=9.0"></script>
+    <script src="mock-data.js?v=9.0"></script>
+    <script src="critical-fail.js?v=9.0"></script>
+    <script src="app.js?v=9.0"></script>
 
     <!-- PWA SERVICE WORKER -->
     <script>

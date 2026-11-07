@@ -2364,3 +2364,345 @@ body {
     padding: 2px 0 !important;
     margin: 0 !important;
 }
+
+
+/* ==========================================================================
+   ESTILOS V8: ALINEACIÓN SIMÉTRICA HOME, 4 FASES & HMI SCANNER
+   ========================================================================== */
+
+/* 1. CORRECCIÓN Y CENTRADO DE ALINEACIÓN EN HOME (SIMETRÍA EXACTA) */
+.home-top-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+    margin-bottom: 4px !important;
+}
+
+.home-top-grid .mode-card {
+    height: 74px !important;
+    min-height: 74px !important;
+    padding: 10px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+}
+
+.home-top-grid .mode-card-content {
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+.home-top-grid .mode-card-content h3 {
+    font-size: 13px !important;
+    margin: 1px 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.home-top-grid .mode-card-content p {
+    font-size: 9px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* 2. ALINEACIÓN IDÉNTICA EN MENÚS SECUNDARIOS */
+.home-secondary-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+}
+
+.home-secondary-grid .sub-mode-card {
+    height: 64px !important;
+    min-height: 64px !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+/* 3. STEPPER DE LAS 4 FASES DE APRENDIZAJE */
+.phase-stepper-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto 10px auto;
+    gap: 4px;
+}
+
+.step-dot {
+    flex: 1;
+    font-size: 9px;
+    font-weight: 800;
+    text-align: center;
+    padding: 4px 2px;
+    border-radius: 6px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--muted);
+}
+
+.step-dot.active {
+    background: rgba(39, 216, 232, 0.2);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 8px rgba(39, 216, 232, 0.35);
+}
+
+.step-dot.done {
+    background: rgba(0, 245, 155, 0.2);
+    border-color: var(--green);
+    color: var(--green);
+}
+
+/* 4. ESCÁNER DE ALARMAS HMI REALES (FASE 4) */
+.hmi-alarm-scanner-box {
+    background: #060b13;
+    border: 1.5px solid #27d8e8;
+    border-radius: 12px;
+    padding: 10px;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: inset 0 0 16px rgba(39, 216, 232, 0.2), 0 0 14px rgba(0, 0, 0, 0.7);
+    margin-bottom: 10px;
+}
+
+.hmi-screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(39, 216, 232, 0.25);
+    margin-bottom: 8px;
+}
+
+.hmi-screen-header small {
+    font-size: 8.5px;
+    font-family: monospace;
+    color: var(--cyan);
+    letter-spacing: 1px;
+}
+
+.alarm-led-red {
+    color: #ff4444;
+    font-size: 12px;
+    animation: ledBlink 1s infinite;
+}
+
+@keyframes ledBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+.hmi-tokens-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    padding: 4px;
+}
+
+.hmi-char-token {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    font-family: "Noto Sans SC", sans-serif;
+    padding: 5px 9px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s, border-color 0.15s;
+}
+
+.hmi-char-token:active {
+    transform: scale(0.92);
+}
+
+.hmi-char-token.token-hit {
+    background: rgba(0, 245, 155, 0.35) !important;
+    border-color: var(--green) !important;
+    color: var(--green) !important;
+    box-shadow: 0 0 12px var(--green);
+}
+
+.hmi-char-token.token-miss {
+    background: rgba(255, 68, 68, 0.35) !important;
+    border-color: var(--red) !important;
+    color: var(--red) !important;
+}
+
+/* 5. SELECTOR DE 3 DIFICULTADES EN 1V1 */
+.vs-diff-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.vs-diff-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.12s ease, border-color 0.15s;
+}
+
+.vs-diff-card:active {
+    transform: scale(0.98);
+}
+
+.diff-icon-box {
+    font-size: 26px;
+    line-height: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--surface-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+}
+
+.diff-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.diff-badge {
+    font-size: 8px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    margin-bottom: 2px;
+}
+
+.diff-badge.green { background: rgba(0, 245, 155, 0.15); color: var(--green); border: 1px solid var(--green); }
+.diff-badge.gold { background: rgba(255, 200, 87, 0.15); color: var(--gold); border: 1px solid var(--gold); }
+.diff-badge.red { background: rgba(255, 68, 68, 0.15); color: var(--red); border: 1px solid var(--red); }
+
+.diff-meta h3 {
+    font-size: 13.5px;
+    color: #fff;
+    margin: 2px 0;
+}
+
+.diff-meta p {
+    font-size: 10px;
+    color: var(--muted);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.diff-action {
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--cyan);
+}
+
+/* 6. SURVIVOR BANNER EN MENÚ */
+.survivor-banner-action {
+    background: linear-gradient(135deg, #3d1217, #1c080b);
+    border: 1.5px solid rgba(255, 68, 68, 0.6);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(255, 68, 68, 0.25);
+    margin-top: 10px;
+    transition: transform 0.12s ease;
+}
+
+.survivor-banner-action:active {
+    transform: scale(0.98);
+}
+
+.survivor-banner-icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 68, 68, 0.5);
+}
+
+/* BONUS DE TIEMPO GLOW (+3s) */
+.time-bonus-glow {
+    animation: bonusGlow 0.4s ease;
+}
+
+@keyframes bonusGlow {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 16px #00f59b; border-color: #00f59b; color: #00f59b; }
+}
+
+/* 7. RÉCORDS EN PROFILE */
+.profile-records-shelf {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.record-row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 8px;
+}
+
+.record-row:last-child {
+    margin-bottom: 0;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.rec-label {
+    font-size: 9.5px;
+    font-weight: 800;
+    color: var(--muted);
+}
+
+.rec-val {
+    font-size: 12.5px;
+    color: var(--cyan);
+    font-weight: 900;
+}
+
+.rec-sublist {
+    font-size: 11px;
+    color: #fff;
+    margin-top: 2px;
+}
+
+.rec-sublist strong {
+    color: var(--gold);
+}

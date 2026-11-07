@@ -7,25 +7,24 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Zidong Core · Sistema Espacial OBERON</title>
+    <title>Zidong Core · Sistema Industrial OBERON</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=7.0">
+    <link rel="stylesheet" href="style.css?v=8.0">
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA / SPLASH SCREEN DE 10 SEGUNDOS (SISTEMA OBERON) -->
+    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN DE 10 SEGUNDOS (SISTEMA OBERON) -->
     <div id="oberonSplashScreen" class="splash-screen-overlay">
         <div class="splash-content-box">
             <span class="eyebrow" style="color:var(--cyan); letter-spacing:2px;">SISTEMA ESPACIAL OBERON</span>
             
-            <!-- EL CYBERDOG EN SU CÁPSULA DURANTE LA CARGA -->
             <div class="stasis-tube splash-tube">
                 <div class="tube-ring top-ring"></div>
                 <div class="tube-chamber">
                     <div class="energy-beam"></div>
-                    <img src="cyberdog.gif?v=9" alt="Cyberdog Companion" class="companion-img">
+                    <img src="cyberdog.gif?v=10" alt="Cyberdog Companion" class="companion-img">
                 </div>
                 <div class="tube-ring bottom-ring"></div>
             </div>
@@ -72,15 +71,15 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD (ESPACIOS AMPLIADOS HACIA ARRIBA, CENTRADO Y SIN SCROLL) -->
+        <!-- 1. DASHBOARD (ALINEACIÓN EXACTA Y SIN SCROLL) -->
         <section id="dashboard" class="page active dashboard-no-scroll">
 
-            <!-- MODOS PRINCIPALES ARRIBA (CENTRADOS Y CON MAYOR PRESENCIA) -->
+            <!-- MODOS PRINCIPALES ARRIBA (SIMÉTRICOS Y CENTRADOS) -->
             <div class="main-modes-grid home-top-grid">
                 <div class="mode-card career-mode hero-career" onclick="navigateTo('career')">
                     <div class="mode-icon">🪐</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">5 PLANETAS OBERON</span>
+                        <span class="mode-tag">5 MUNDOS OBERON</span>
                         <h3>CAREER MODE</h3>
                         <p>Voltaria, Kinetix, Aethel...</p>
                     </div>
@@ -92,9 +91,9 @@
                 <div class="mode-card arcade-mode hero-survivor" onclick="openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag warning">MUERTE SÚBITA (18s)</span>
+                        <span class="mode-tag warning">ENDLESS (+3s)</span>
                         <h3>SURVIVOR MODE</h3>
-                        <p>Suspenso · Cero errores</p>
+                        <p>18s · Suspenso y reflejos</p>
                     </div>
                     <div class="mode-action warning">
                         <span class="arrow">⚡</span>
@@ -112,7 +111,7 @@
                     <div class="tube-ring top-ring"></div>
                     <div class="tube-chamber">
                         <div class="energy-beam"></div>
-                        <img src="cyberdog.gif?v=9" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        <img src="cyberdog.gif?v=10" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
                     </div>
                     <div class="tube-ring bottom-ring"></div>
                 </div>
@@ -135,11 +134,11 @@
                         <strong class="sub-card-tag purple">VS MODE</strong>
                     </div>
                     <h4>1v1 BATTLE</h4>
-                    <p>IA Difícil · Mario Castle</p>
+                    <p>3 Dificultades · Mario Castle</p>
                 </div>
             </div>
 
-            <!-- DAILY MISSION (ALINEADA Y COMPACTA) -->
+            <!-- DAILY MISSION (PEGADA Y COMPACTA) -->
             <article class="daily-mission-card tight-mission" onclick="toggleDailyMissionsModal()" title="Toca para ver el desglose de misiones">
                 <div class="mission-header">
                     <div>
@@ -199,15 +198,14 @@
             </script>
         </section>
 
-        <!-- 2. CAREER MODE (SISTEMA ESPACIAL OBERON - 5 PLANETAS ORBITALES 3D) -->
+        <!-- 2. CAREER MODE (MUNDOS INDUSTRIALES DE OBERON) -->
         <section id="career" class="page">
             <div class="welcome">
                 <span class="eyebrow">SISTEMA ESPACIAL OBERON</span>
-                <h2>Planetas de Manufactura</h2>
+                <h2>Mundos de Manufactura</h2>
                 <p>Nuestra misión es hacer que la red industrial no colapse:</p>
             </div>
 
-            <!-- GRID COMPACTO DE PLANETAS 3D -->
             <div id="careerPlanetsGrid" class="planets-menu-grid"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
@@ -238,16 +236,16 @@
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
                 <h2>Laboratorio de Componentes</h2>
-                <p>Banco técnico clasificado por planetas de ingeniería:</p>
+                <p>Banco técnico clasificado por mundos de ingeniería:</p>
             </div>
 
             <div class="lab-category-tabs">
                 <button class="lab-tab-btn active" onclick="filterLabCategory('all', this)">Todos</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_1', this)">⚡ Voltaria</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_2', this)">⚙️ Kinetix</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_3', this)">💨 Aethel</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_4', this)">🤖 Machina</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_5', this)">👁️ Lumina</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_1', this)">⚡ Eléctrico</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_2', this)">⚙️ Mecánico</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_3', this)">💨 Neumático</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_4', this)">🤖 Robótica</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_5', this)">👁️ Visión AOI</button>
             </div>
 
             <div class="lab-search-box">
@@ -261,7 +259,7 @@
             </button>
         </section>
 
-        <!-- 4. ESCALAFÓN DE 10 RANGOS (HASTA 45,000 XP) -->
+        <!-- 4. ESCALAFÓN DE 10 RANGOS -->
         <section id="ranksLadderPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">CAREER PROGRESSION</span>
@@ -276,7 +274,7 @@
             </button>
         </section>
 
-        <!-- 5. SISTEMA DE LOGROS XBOX (1,500 G EN TOTAL) -->
+        <!-- 5. SISTEMA DE LOGROS XBOX -->
         <section id="achievementsPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">XBOX-STYLE ACHIEVEMENTS</span>
@@ -300,13 +298,60 @@
             </button>
         </section>
 
-        <!-- 6. ARENA 1V1 (IA DIFÍCIL CON DERROTA DE LA MÁQUINA) -->
+        <!-- 6. ARENA 1V1 CON SELECTOR DE 3 DIFICULTADES -->
         <section id="vsBattle" class="page">
-            <div id="vsBattleArenaContainer">
+            
+            <!-- SELECTOR DE DIFICULTAD CON NOMBRES CHIDOS -->
+            <div id="vsDifficultySelector" style="display:block;">
+                <div class="welcome">
+                    <span class="eyebrow">SISTEMA DE ENTRENAMIENTO 1V1</span>
+                    <h2>Duelo de Velocidad HMI</h2>
+                    <p>Selecciona el nivel de adversario para la arena de 20 segundos:</p>
+                </div>
+
+                <div class="vs-diff-list">
+                    <div class="vs-diff-card" onclick="start1v1WithDifficulty('EASY')">
+                        <div class="diff-icon-box">⚙️</div>
+                        <div class="diff-meta">
+                            <span class="diff-badge green">FÁCIL · PROTOCOLO SERIAL</span>
+                            <h3>Simulador de Enlace</h3>
+                            <p>Velocidad moderada · Ideal para memorizar reflejos (+80 XP)</p>
+                        </div>
+                        <span class="diff-action">DESAFIAR →</span>
+                    </div>
+
+                    <div class="vs-diff-card" onclick="start1v1WithDifficulty('MEDIUM')">
+                        <div class="diff-icon-box">🤖</div>
+                        <div class="diff-meta">
+                            <span class="diff-badge gold">MEDIO · BUS PROFINET</span>
+                            <h3>Servocontrolador Overclock</h3>
+                            <p>Cadencia rápida · IA de planta agresiva (+120 XP)</p>
+                        </div>
+                        <span class="diff-action">DESAFIAR →</span>
+                    </div>
+
+                    <div class="vs-diff-card" onclick="start1v1WithDifficulty('HARD')">
+                        <div class="diff-icon-box">⚡</div>
+                        <div class="diff-meta">
+                            <span class="diff-badge red">EXPERTO · TIEMPO REAL</span>
+                            <h3>Protocolo Centinela IA</h3>
+                            <p>Velocidad letal: Requiere racha PERFECT para ganar (+200 XP)</p>
+                        </div>
+                        <span class="diff-action">DESAFIAR →</span>
+                    </div>
+                </div>
+
+                <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 16px;">
+                    ← REGRESAR AL DASHBOARD
+                </button>
+            </div>
+
+            <!-- ARENA EN CURSO -->
+            <div id="vsBattleArenaContainer" style="display:none;">
                 <div class="lesson-top-nav">
-                    <button class="btn-compact-back" onclick="navigateTo('dashboard')">← DASHBOARD</button>
+                    <button class="btn-compact-back" onclick="openVsMode()">← DIFICULTAD</button>
                     <div class="lesson-hud-info">
-                        <span class="eyebrow" style="color:var(--purple); font-size:9px;">DUELO 1V1 INDUSTRIAL</span>
+                        <span class="eyebrow" id="vsDiffBadge" style="color:var(--purple); font-size:9px;">DIFICULTAD</span>
                         <strong style="color:#ffffff; font-size:12px;">BOWSER's CASTLE RUSH</strong>
                     </div>
                     <div class="lesson-quick-badge" style="border-color:var(--purple); color:var(--purple);">1v1</div>
@@ -324,7 +369,7 @@
 
                         <div>
                             <div class="avatar" id="vsRivalAvatar" style="width:48px; height:48px; font-size:24px; margin:0 auto 4px auto; background:transparent; border:2px solid var(--purple);">🤖</div>
-                            <strong id="vsRivalName" style="font-size:12px; color:#fff;">Servo-Bot IA</strong>
+                            <strong id="vsRivalName" style="font-size:12px; color:#fff;">Servocontrolador</strong>
                             <small id="vsRivalScore" style="display:block; color:var(--purple); font-weight:800; font-size:14px;">0 PTS</small>
                         </div>
                     </div>
@@ -332,11 +377,11 @@
                     <div class="cf-timer-track">
                         <div id="vsTimerBar" class="cf-timer-fill" style="background:linear-gradient(90deg, #a78bfa, #27d8e8); width:100%;"></div>
                     </div>
-                    <span style="font-size:11px; color:var(--muted);">⏱️ Tiempo: <strong id="vsSeconds">20</strong>s <small>(Tic-Tac + Mario Castle)</small></span>
+                    <span style="font-size:11px; color:var(--muted);">⏱️ Tiempo: <strong id="vsSeconds">20</strong>s <small>(Tic-Tac activo)</small></span>
                 </div>
 
                 <div class="recognition-card" id="vsStageCard">
-                    <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO EXPERTO (HAZ PERFECT PARA GANAR)</span>
+                    <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO SIN SEGUNDA OPORTUNIDAD</span>
                     <h1 id="vsHanziDisplay" style="font-size:72px; color:#fff; margin:10px 0; font-family:'Noto Sans SC';">电</h1>
                     <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">Si fallas, pierdes 3 segundos y saltas a la siguiente:</p>
                     <div class="career-quiz-grid" id="vsOptionsGrid"></div>
@@ -358,7 +403,7 @@
 
                     <div style="display:flex; gap:10px; margin-top:20px;">
                         <button class="reveal-button" style="background:#ffaa00; flex:1;" onclick="openVsMode()">
-                            ⚔️ REVANCHA 1V1
+                            ⚔️ PROBAR OTRA DIFICULTAD
                         </button>
                         <button class="back-button" style="flex:1; margin-top:0;" onclick="navigateTo('dashboard')">
                             SALIR AL DASHBOARD
@@ -368,65 +413,39 @@
             </div>
         </section>
 
-        <!-- 7. SURVIVOR MODE (18 SEGUNDOS & SUSPENSO TOTAL) -->
+        <!-- 7. SURVIVOR MODE (18s & +3s POR CADA ALARMA RETIRADA) -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
                     <div class="welcome">
-                        <span class="eyebrow">SISTEMA DE RESPUESTA A FALLAS CRÍTICAS</span>
+                        <span class="eyebrow">MODO SOBREVIVENCIA · ALARMAS DE PLANTA</span>
                         <h2>SURVIVOR MODE (18s)</h2>
-                        <p>1 solo intento de intervención bajo reloj de 18 segundos. Si te equivocas, la línea colapsa.</p>
+                        <p>Despeja tantas alarmas de HMI como puedas. Cada acierto te otorga <strong>+3 segundos extra</strong> de tiempo. 1 error = Colapso total.</p>
                     </div>
 
-                    <div class="cf-levels-list">
-                        <div class="cf-level-card" onclick="startCriticalLevel(1)">
-                            <div class="cf-level-badge">LVL 01</div>
-                            <div class="cf-level-info">
-                                <h3>Paro de Emergencia E-Stop</h3>
-                                <p>Procedimiento de rearme rápido tras activación de hongo</p>
-                            </div>
-                            <span class="cf-action-arrow">⚡ INTERVENIR</span>
+                    <div class="survivor-banner-action" onclick="startCriticalLevel()">
+                        <div class="survivor-banner-icon">⚡</div>
+                        <div>
+                            <span class="tag" style="border-color:#ff4444; color:#ff4444;">PROTOCOLO CONTINUO</span>
+                            <h3 style="color:#fff; margin:2px 0;">INICIAR INTERVENCIÓN CRÍTICA</h3>
+                            <small style="color:var(--muted);">Música de suspenso activa · 18 segundos iniciales</small>
                         </div>
-
-                        <div class="cf-level-card" onclick="startCriticalLevel(2)">
-                            <div class="cf-level-badge lvl-badge-amber">LVL 02</div>
-                            <div class="cf-level-info">
-                                <h3>Baja Presión Neumática</h3>
-                                <p>Regulador por debajo de 0.5 MPa en celda de actuadores</p>
-                            </div>
-                            <span class="cf-action-arrow">⚡ INTERVENIR</span>
-                        </div>
-
-                        <div class="cf-level-card" onclick="startCriticalLevel(3)">
-                            <div class="cf-level-badge lvl-badge-purple">LVL 03</div>
-                            <div class="cf-level-info">
-                                <h3>Pérdida de Señal Óptica AOI</h3>
-                                <p>Falla en sensor fotoeléctrico de alimentación de PCBs</p>
-                            </div>
-                            <span class="cf-action-arrow">⚡ INTERVENIR</span>
-                        </div>
-
-                        <div class="cf-level-card" onclick="startCriticalLevel(4)">
-                            <div class="cf-level-badge lvl-badge-red">LVL 04</div>
-                            <div class="cf-level-info">
-                                <h3>Sobrecarga en Servocontrolador</h3>
-                                <p>Alarma de corriente en drive de Eje Z de montaje</p>
-                            </div>
-                            <span class="cf-action-arrow">⚡ INTERVENIR</span>
-                        </div>
+                        <span class="arrow" style="font-size:20px; color:#ff4444; margin-left:auto;">→</span>
                     </div>
 
-                    <button class="back-button" onclick="navigateTo('dashboard')">
+                    <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:16px;">
                         ← REGRESAR AL DASHBOARD
                     </button>
                 </div>
 
-                <!-- ARENA SURVIVOR -->
+                <!-- ARENA SURVIVOR EN CURSO -->
                 <div id="cf-game-arena" class="cf-view-container" style="display:none;">
                     <div class="cf-hud-bar">
-                        <div class="cf-hud-tag" id="cf-current-level-tag">SURVIVOR LEVEL 04</div>
+                        <div class="cf-hud-tag">
+                            ALARMAS RETIRADAS: <strong id="cf-cleared-count" style="color:#00f59b; font-size:14px;">0</strong>
+                        </div>
                         <div class="cf-hud-group">
-                            <div class="cf-hud-box">
+                            <div class="cf-hud-box" id="cf-timer-box">
                                 <small>TIEMPO</small>
                                 <span id="cf-timer">18</span>s
                             </div>
@@ -456,13 +475,17 @@
                         <p class="collapse-subtitle">Llama a alguien que sí sepa... 💀</p>
 
                         <div class="collapse-reason-box">
-                            <small>REPORTE DE INCIDENCIA EN PLANTA:</small>
-                            <strong id="cf-collapse-reason">Acción errónea ejecutada en tablero.</strong>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-size:10px; color:#ffaa00; font-weight:800;">ALARMAS RETIRADAS EN ESTA SESIÓN:</span>
+                                <strong id="cf-collapse-cleared-count" style="color:#00f59b; font-size:13px;">0</strong>
+                            </div>
+                            <small id="cf-collapse-reason">Acción errónea ejecutada en tablero.</small>
+                            <span id="cf-collapse-score" style="display:block; margin-top:4px; color:var(--gold); font-size:12px; font-weight:900;">+0 XP</span>
                         </div>
 
-                        <div style="display:flex; gap:10px; margin-top:20px;">
-                            <button class="reveal-button" style="background:#ffaa00; flex:1;" onclick="startCriticalLevel(1)">
-                                ↺ REINTENTAR LÍNEA
+                        <div style="display:flex; gap:10px; margin-top:16px;">
+                            <button class="reveal-button" style="background:#ffaa00; flex:1;" onclick="startCriticalLevel()">
+                                ↺ REINTENTAR OTRA LÍNEA
                             </button>
                             <button class="back-button" style="flex:1; margin-top:0;" onclick="exitCriticalFail()">
                                 SALIR AL MENÚ
@@ -470,46 +493,23 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- PANTALLA VICTORIA SURVIVOR -->
-                <div id="cf-result-screen" class="cf-view-container" style="display:none; text-align:center;">
-                    <div class="panel cf-result-panel">
-                        <span class="cf-result-icon">🏅</span>
-                        <h2>¡LÍNEA RESTABLECIDA!</h2>
-                        <p>Has evitado el paro de producción en tiempo récord.</p>
-
-                        <div class="cf-score-reward">
-                            <small>EXPERIENCIA OBTENIDA</small>
-                            <h1 id="cf-final-score">+500 XP</h1>
-                        </div>
-
-                        <div style="display:flex; gap:10px; margin-top:20px;">
-                            <button class="reveal-button" style="flex:1;" onclick="startCriticalLevel(1)">
-                                SIGUIENTE INTERVENCIÓN
-                            </button>
-                            <button class="back-button" style="flex:1; margin-top:0;" onclick="exitCriticalFail()">
-                                SALIR
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
-        <!-- 8. LESSON CONTAINER -->
+        <!-- 8. LESSON CONTAINER (4 FASES Y BOSS) -->
         <section id="level01" class="page">
             <div class="lesson-top-nav">
                 <button class="btn-compact-back" onclick="navigateTo('worldDetailsView')">← NIVELES</button>
                 <div class="lesson-hud-info">
-                    <span class="eyebrow" style="font-size:9px;">CALIBRACIÓN DE COMPONENTE</span>
-                    <strong style="color:var(--text); font-size:12px;">TEST EN LÍNEA</strong>
+                    <span class="eyebrow" style="font-size:9px;">CALIBRACIÓN INDUSTRIAL</span>
+                    <strong style="color:var(--text); font-size:12px;">4 FASES POR HANZI</strong>
                 </div>
-                <div class="lesson-quick-badge">TEST</div>
+                <div class="lesson-quick-badge">NIVEL</div>
             </div>
             <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-        <!-- 9. PROFILE CON EDICIÓN DE NOMBRE (1 SOLA VEZ) Y MEDALLAS -->
+        <!-- 9. PROFILE CON RÉCORDS DE 1V1 Y ALARMAS RETIRADAS EN SURVIVOR -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -536,6 +536,22 @@
                     <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
                     <div class="p-stat"><span id="profileStreak">5 Días</span><small>RACHA</small></div>
                     <div class="p-stat"><span id="profileCompleted">5</span><small>HANZI DOMINADOS</small></div>
+                </div>
+
+                <!-- RÉCORDS DESTACADOS DE PLANTA (SURVIVOR Y 1V1) -->
+                <div class="profile-records-shelf">
+                    <div class="record-row">
+                        <span class="rec-label">🚨 Alarmas retiradas en Survivor:</span>
+                        <strong id="profileSurvivorBest" class="rec-val">0 Alarmas (Total: 0)</strong>
+                    </div>
+                    <div class="record-row">
+                        <span class="rec-label">⚔️ Récords Duelo 1v1 Battle:</span>
+                        <div id="profileVsRecords" class="rec-sublist">
+                            <span>Fácil: <strong>0</strong> pts</span> · 
+                            <span>Medio: <strong>0</strong> pts</span> · 
+                            <span>Experto: <strong>0</strong> pts</span>
+                        </div>
+                    </div>
                 </div>
             </article>
 
@@ -599,8 +615,8 @@
                     <div class="mission-item">
                         <div class="mission-check">○</div>
                         <div class="mission-details">
-                            <strong>2. Dominio Planetario</strong>
-                            <small>Aprobar 1 nivel en los Planetas OBERON</small>
+                            <strong>2. Dominio en Mundos</strong>
+                            <small>Completar las 4 fases de un Hanzi técnico</small>
                         </div>
                         <span class="mission-reward-tag">+30 XP</span>
                     </div>
@@ -608,8 +624,8 @@
                     <div class="mission-item">
                         <div class="mission-check">○</div>
                         <div class="mission-details">
-                            <strong>3. Intervención Crítica (18s)</strong>
-                            <small>Solucionar 1 alarma HMI en Survivor Mode</small>
+                            <strong>3. Intervención Crítica</strong>
+                            <small>Despejar al menos 1 alarma en Survivor Mode</small>
                         </div>
                         <span class="mission-reward-tag">+40 XP</span>
                     </div>
@@ -618,7 +634,7 @@
                         <div class="mission-check">○</div>
                         <div class="mission-details">
                             <strong>4. Victoria en Duelo 1v1</strong>
-                            <small>Derrotar a la IA Experta en 1v1 Battle</small>
+                            <small>Derrotar a la IA en 1v1 Battle</small>
                         </div>
                         <span class="mission-reward-tag">+50 XP</span>
                     </div>
@@ -649,11 +665,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=7.0"></script>
-    <script src="navigation.js?v=7.0"></script>
-    <script src="mock-data.js?v=7.0"></script>
-    <script src="critical-fail.js?v=7.0"></script>
-    <script src="app.js?v=7.0"></script>
+    <script src="audio.js?v=8.0"></script>
+    <script src="navigation.js?v=8.0"></script>
+    <script src="mock-data.js?v=8.0"></script>
+    <script src="critical-fail.js?v=8.0"></script>
+    <script src="app.js?v=8.0"></script>
 
     <!-- PWA SERVICE WORKER -->
     <script>

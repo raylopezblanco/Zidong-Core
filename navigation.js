@@ -53,7 +53,7 @@
 
         if (pageId === "dashboard") {
             navButtons[0]?.classList.add("active");
-        } else if (pageId === "career" || pageId === "worldDetailsView") {
+        } else if (pageId === "hanziLab") {
             navButtons[1]?.classList.add("active");
         } else if (pageId === "leaderboard") {
             navButtons[2]?.classList.add("active");

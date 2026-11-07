@@ -695,13 +695,13 @@
 
     </main>
 
-    <!-- BARRA INFERIOR AMPLIADA: HOME, MUNDOS, CLASIFICATORIA (RANKING), RANGOS -->
+    <!-- BARRA INFERIOR AMPLIADA: HOME, LAB, RANKING, RANGOS -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('career')">
-            <span class="nav-icon">🪐</span><span class="nav-label">Mundos</span>
+        <button class="nav-item" onclick="navigateTo('hanziLab')">
+            <span class="nav-icon">⚙️</span><span class="nav-label">Lab</span>
         </button>
         <button class="nav-item" onclick="navigateTo('leaderboard')">
             <span class="nav-icon">🏆</span><span class="nav-label">Ranking</span>
@@ -711,12 +711,17 @@
         </button>
     </nav>
 
-    <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=10.0"></script>
-    <script src="navigation.js?v=10.0"></script>
-    <script src="mock-data.js?v=10.0"></script>
-    <script src="critical-fail.js?v=10.0"></script>
-    <script src="app.js?v=10.0"></script>
+    <!-- SCRIPTS MODULARES EN RAÍZ -->
+    <script src="audio.js?v=11.0"></script>
+    <script src="navigation.js?v=11.0"></script>
+    <script src="companion-phrases.js?v=11.0"></script>
+    <script src="medals-data.js?v=11.0"></script>
+    <script src="achievements-data.js?v=11.0"></script>
+    <script src="worlds-data.js?v=11.0"></script>
+    <script src="industrial-ranks.js?v=11.0"></script>
+    <script src="mock-data.js?v=11.0"></script>
+    <script src="critical-fail.js?v=11.0"></script>
+    <script src="app.js?v=11.0"></script>
 
     <!-- PWA SERVICE WORKER -->
     <script>

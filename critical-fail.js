@@ -1,9 +1,9 @@
 /* ==========================================================================
-   ZIDONG CORE 10.0 - SURVIVOR MODE (EXPERTO PURO)
-   - Sin traducción de la alarma y sin glosario (Modo Avanzado)
-   - Inicia en 18s y cada acierto suma +3s
-   - Cero segundas oportunidades: 1 error = Colapso total
-   - Registro de alarmas retiradas en el perfil
+   ZIDONG CORE 11.0 - SURVIVOR MODE (OPCIONES ALEATORIAS & EXPERTO)
+   - Opciones mezcladas aleatoriamente (nunca siempre la opción A)
+   - Sin traducción ni glosario
+   - 18s iniciales + 3s de bonificación por cada acierto
+   - 1 error = Colapso total de la línea
    ========================================================================== */
 
 (() => {
@@ -15,73 +15,66 @@
     let score = 0;
     let currentAlarmIndex = 0;
 
-    // BANCO EXPERTO: SOLO CÓDIGO Y TEXTO NATIVO HMI EN CHINO (SIN TRADUCCIÓN NI GLOSARIO)
     const INDUSTRIAL_ALARMS_BANK = [
         {
             code: "ALM-0412",
             hmiText: "伺服驱动器过载",
-            options: [
-                "Revisar lubricación del husillo y resetear térmico",
+            correctAnswer: "Revisar lubricación del husillo y resetear térmico",
+            distractors: [
                 "Subir la velocidad del PLC al 150%",
                 "Desconectar el cable de tierra física",
                 "Acelerar el conveyor principal"
-            ],
-            correct: 0
+            ]
         },
         {
             code: "ALM-0105",
             hmiText: "急停按钮被按下",
-            options: [
-                "Girar botón tipo hongo y presionar Reset en tablero",
+            correctAnswer: "Girar botón tipo hongo y presionar Reset en tablero",
+            distractors: [
                 "Cambiar los fusibles de la fuente 24V",
                 "Reemplazar el cilindro neumático",
                 "Puentea el relevador de seguridad con cable"
-            ],
-            correct: 0
+            ]
         },
         {
             code: "ALM-0220",
             hmiText: "气压不足, 低于0.5MPa",
-            options: [
-                "Verificar la válvula reguladora de aire y compresor",
+            correctAnswer: "Verificar la válvula reguladora de aire y compresor",
+            distractors: [
                 "Calibrar la cámara de visión artificial AOI",
                 "Purgar la pasta de soldadura de la plantilla",
                 "Apagar los sensores de vacío"
-            ],
-            correct: 0
+            ]
         },
         {
             code: "ALM-0330",
             hmiText: "光电传感器信号丢失",
-            options: [
-                "Limpiar lente óptico del sensor y alinear reflector",
+            correctAnswer: "Limpiar lente óptico del sensor y alinear reflector",
+            distractors: [
                 "Incrementar la temperatura del horno de reflujo",
                 "Cambiar la dirección de giro de la banda",
                 "Forzar la entrada digital permanentemente en 1"
-            ],
-            correct: 0
+            ]
         },
         {
             code: "ALM-0518",
             hmiText: "电机堵转警报",
-            options: [
-                "Inspeccionar obstrucción mecánica en rodamientos",
+            correctAnswer: "Inspeccionar obstrucción mecánica en rodamientos",
+            distractors: [
                 "Aumentar el límite de torque en variador al máximo",
                 "Desactivar el freno de seguridad de la celda",
                 "Ignorar alarma y pulsar arranque continuo"
-            ],
-            correct: 0
+            ]
         },
         {
             code: "ALM-0604",
             hmiText: "安全门互锁断开",
-            options: [
-                "Cerrar la guarda y rearmar el cerrojo magnético",
+            correctAnswer: "Cerrar la guarda y rearmar el cerrojo magnético",
+            distractors: [
                 "Desmontar el switch de seguridad de la puerta",
                 "Acelerar el robot para compensar el tiempo",
                 "Cambiar el lenguaje de la HMI a chino mandarín"
-            ],
-            correct: 0
+            ]
         }
     ];
 
@@ -139,7 +132,17 @@
         const alarm = INDUSTRIAL_ALARMS_BANK[currentAlarmIndex % INDUSTRIAL_ALARMS_BANK.length];
         currentAlarmIndex++;
 
-        // MODO EXPERTO: SOLO CÓDIGO Y TEXTO HMI EN CHINO (SIN TRADUCCIÓN NI GLOSARIO)
+        // MEZCLA ALEATORIA REAL DE OPCIONES (NUNCA SIEMPRE LA A)
+        const combined = [
+            { text: alarm.correctAnswer, isCorrect: true },
+            ...alarm.distractors.map(d => ({ text: d, isCorrect: false }))
+        ];
+        // Algoritmo Fisher-Yates de barajado aleatorio
+        for (let i = combined.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [combined[i], combined[j]] = [combined[j], combined[i]];
+        }
+
         stage.innerHTML = `
             <div style="background:rgba(255, 68, 68, 0.12); border:1.5px solid var(--red); border-radius:16px; padding:16px 14px; text-align:center; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -154,19 +157,21 @@
         `;
 
         const grid = stage.querySelector("#cf-options-grid");
-        alarm.options.forEach((opt, idx) => {
+        const letterTags = ["A", "B", "C", "D"];
+
+        combined.forEach((optObj, idx) => {
             const btn = document.createElement("button");
             btn.className = "cf-btn-option";
             btn.style.fontSize = "12.5px";
             btn.style.padding = "11px 10px";
             btn.style.textAlign = "left";
-            btn.textContent = `${idx + 1}. ${opt}`;
+            btn.textContent = `${letterTags[idx]}. ${optObj.text}`;
 
             btn.onclick = () => {
                 const allButtons = grid.querySelectorAll("button");
                 allButtons.forEach(b => b.style.pointerEvents = "none");
 
-                if (idx === alarm.correct) {
+                if (optObj.isCorrect) {
                     if (window.ZidongAudio && window.ZidongAudio.playSuccess) window.ZidongAudio.playSuccess();
                     btn.classList.add("btn-correct");
                     

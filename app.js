@@ -1392,17 +1392,14 @@
         const profBestEl = document.getElementById("profileSurvivorBest");
         if (profBestEl) profBestEl.textContent = `${bestAlarms} Alarmas (Total retiradas: ${totalAlarms})`;
 
-        // Récords 1v1
-        const bestEasy = localStorage.getItem("zidong_vs_best_easy") || "0";
-        const bestMed = localStorage.getItem("zidong_vs_best_medium") || "0";
-        const bestHard = localStorage.getItem("zidong_vs_best_hard") || "0";
+        // Récords 1v1 con formato idéntico al de Survivor
+        const bestEasy = Number(localStorage.getItem("zidong_vs_best_easy") || 0);
+        const bestMed = Number(localStorage.getItem("zidong_vs_best_medium") || 0);
+        const bestHard = Number(localStorage.getItem("zidong_vs_best_hard") || 0);
+        const maxScoreOverall = Math.max(bestEasy, bestMed, bestHard);
         const profVsEl = document.getElementById("profileVsRecords");
         if (profVsEl) {
-            profVsEl.innerHTML = `
-                <span>Fácil: <strong>${bestEasy}</strong> pts</span> · 
-                <span>Medio: <strong>${bestMed}</strong> pts</span> · 
-                <span>Experto: <strong>${bestHard}</strong> pts</span>
-            `;
+            profVsEl.textContent = `${maxScoreOverall} Puntos (Fácil: ${bestEasy} · Medio: ${bestMed} · Experto: ${bestHard})`;
         }
 
         renderProfileWorldsProgress();

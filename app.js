@@ -1,7 +1,7 @@
-/* =========================================
+/* ==========================================================================
    ZIDONG CORE 2.0
-   APPLICATION ENGINE & CAREER SYSTEM
-========================================= */
+   APPLICATION ENGINE, CAREER SYSTEM & COMPANION ENGINE
+   ========================================================================== */
 
 (() => {
     "use strict";
@@ -923,8 +923,6 @@
                 el.classList.remove("custom-icon");
             }
         });
-
-        syncCompanionWithEquipped();
     }
 
     function renderBadgesGrid() {
@@ -982,23 +980,25 @@
     }
 
     // =====================================
-    // 19. COMPANION INTERACTION ENGINE
+    // 19. COMPANION INTERACTION ENGINE (DINÁMICO & ROTATIVO)
     // =====================================
 
     const COMPANION_MESSAGES = [
-        "¡Estación lista! ¿Listo para certificar el siguiente Hanzi?",
-        "Tip de planta: 电 (diàn) representa la energía en gabinetes.",
-        "Alerta: Si hay paro de emergencia, presiona Reset en HMI.",
-        "¡Excelente racha! Estás a poco de desbloquear Mecánica.",
-        "¿Probaste ya el contrarreloj de Critical Fail?",
-        "Todo sistema calibrado. Sensores y servomotores al 100%."
+        "¡Línea lista! Modo Survivor en espera. ⚡",
+        "Tip de planta: 电 (diàn) representa la potencia en gabinetes.",
+        "Sensores fotoeléctricos calibrados. Cero falso rechazo. 👁️",
+        "Modo 1v1 listo: ¿Podrás ganarle al Servocontrolador IA? ⚔️",
+        "Presión neumática en 6 bar. Cilindros en posición HOME. 💨",
+        "Alerta HMI: Revisa siempre el paro de emergencia antes de resetear. ⚠️",
+        "¡Gran racha técnico! Estás a poco de certificar Área 02. 🏅",
+        "Intervención de emergencia: Cada segundo cuenta en la línea."
     ];
 
     let lastMsgIndex = -1;
 
     function interactWithCompanion() {
         const bubbleText = document.getElementById("companionText");
-        const avatarEl = document.getElementById("companionVisual");
+        const dogImg = document.getElementById("companionVisual");
 
         triggerHaptic("success");
 
@@ -1010,28 +1010,65 @@
         lastMsgIndex = nextIndex;
 
         if (bubbleText) {
-            bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
+            bubbleText.style.opacity = "0";
+            setTimeout(() => {
+                bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
+                bubbleText.style.opacity = "1";
+            }, 120);
         }
 
-        if (avatarEl) {
-            avatarEl.style.transform = "scale(1.22) translateY(-6px)";
+        if (dogImg) {
+            dogImg.style.transform = "scale(0.92) translateY(4px)";
             setTimeout(() => {
-                avatarEl.style.transform = "scale(1) translateY(0)";
+                dogImg.style.transform = "scale(1) translateY(0)";
             }, 180);
         }
     }
 
-   function syncCompanionWithEquipped() {
-        // Mantiene la imagen gráfica del Cyberdog intacta en el dashboard
-        const avatarEl = document.getElementById("companionVisual");
-        if (avatarEl && avatarEl.tagName === "IMG") {
-            // Ya es la imagen del Cyberdog, no la reemplaza con texto
-            return;
+    // Rotación automática de frases cada 6 segundos si no se interactúa
+    setInterval(() => {
+        const bubbleText = document.getElementById("companionText");
+        const dashboard = document.getElementById("dashboard");
+        if (bubbleText && dashboard && dashboard.classList.contains("active")) {
+            let nextIndex = Math.floor(Math.random() * COMPANION_MESSAGES.length);
+            bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
         }
-    }
+    }, 6000);
 
     // =====================================
-    // 20. INITIALIZE
+    // 20. BOTONES SECUNDARIOS (DAILY & VS)
+    // =====================================
+
+    window.claimDailyReward = () => {
+        const lastClaim = localStorage.getItem("zidong_last_daily_claim");
+        const today = new Date().toDateString();
+
+        if (lastClaim === today) {
+            triggerHaptic("error");
+            alert("¡Recompensa diaria ya reclamada hoy! Vuelve mañana.");
+            return;
+        }
+
+        awardXP(100);
+        localStorage.setItem("zidong_last_daily_claim", today);
+        triggerHaptic("win");
+
+        const sub = document.getElementById("dailyRewardSubtitle");
+        if (sub) sub.textContent = "¡Reclamado hoy! ✓";
+
+        alert("🎁 ¡Has recibido +100 XP por tu bono diario!");
+        updateProfile();
+        saveProgress();
+    };
+
+    window.openVsMode = () => {
+        triggerHaptic("success");
+        alert("⚔️ MODO VS: Desafío contra el Servocontrolador IA. ¡Supera su tiempo!");
+        openCriticalMode();
+    };
+
+    // =====================================
+    // 21. INITIALIZE
     // =====================================
 
     function initializeApplication() {
@@ -1041,7 +1078,6 @@
         updateProfile();
         renderCareerPath();
         updateAssessmentVisibility();
-        syncCompanionWithEquipped();
 
         const card = document.querySelector("#level01 .recognition-card");
         if (card) card.style.display = "block";
@@ -1057,7 +1093,6 @@
     window.updateRanking = updateRanking;
     window.updateMissionProgress = updateMissionProgress;
     window.interactWithCompanion = interactWithCompanion;
-    window.syncCompanionWithEquipped = syncCompanionWithEquipped;
 
     window.debugBossFight = () => {
         career.completedActivities = activities.map(a => a.id);
@@ -1091,37 +1126,4 @@ function showRankingTab(tab, button) {
         individual.style.display = "none";
         teams.style.display = "block";
     }
-// =====================================
-    // 26. DAILY REWARD & VS MODE HANDLERS
-    // =====================================
-
-    window.claimDailyReward = () => {
-        const lastClaim = localStorage.getItem("zidong_last_daily_claim");
-        const today = new Date().toDateString();
-
-        if (lastClaim === today) {
-            triggerHaptic("error");
-            alert("¡Recompensa diaria ya reclamada hoy! Vuelve mañana.");
-            return;
-        }
-
-        // Entregar 100 XP gratis
-        awardXP(100);
-        localStorage.setItem("zidong_last_daily_claim", today);
-        triggerHaptic("win");
-
-        const sub = document.getElementById("dailyRewardSubtitle");
-        if (sub) sub.textContent = "¡Reclamado hoy! ✓";
-
-        alert("🎁 ¡Has recibido +100 XP por tu bono diario!");
-        updateProfile();
-        saveProgress();
-    };
-
-    window.openVsMode = () => {
-        triggerHaptic("success");
-        // Por ahora lanza el desafío contrarreloj contra el Bot de la máquina
-        alert("⚔️ MODO VS: Desafío contra el Servocontrolador IA. ¡Supera su tiempo!");
-        openCriticalMode();
-    };   
 }

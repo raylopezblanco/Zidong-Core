@@ -1,106 +1,67 @@
-/* =========================================
-   ZIDONG CORE 2.0
-   NAVIGATION SYSTEM & LIFECYCLE ROUTER
-========================================= */
+/* ==========================================================================
+   ZIDONG NAVIGATION ENGINE 4.0
+   - Enrutamiento limpio y seguro
+   - Cancela pruebas y detiene audios fantasma al salir de cualquier pantalla
+   ========================================================================== */
 
 (() => {
     "use strict";
 
-    function navigateTo(pageId) {
-        if (!pageId) return;
-
-        const pages = document.querySelectorAll(".page");
-        const navButtons = document.querySelectorAll(".nav-item, .nav-btn");
-
-        pages.forEach(page => {
-            page.classList.remove("active");
-            page.style.display = "none";
-        });
-
-        navButtons.forEach(btn => {
-            btn.classList.remove("active");
-        });
-
-        const targetPage = document.getElementById(pageId);
-        if (!targetPage) {
-            console.warn(`[Navigation] Página no encontrada: #${pageId}`);
-            return;
+    window.navigateTo = (pageId) => {
+        // 1. Detener sesiones activas y relojes para evitar que sigan sonando de fondo
+        if (typeof window.stopSurvivorSession === "function") {
+            window.stopSurvivorSession();
+        }
+        if (typeof window.stopVsSession === "function") {
+            window.stopVsSession();
         }
 
-        targetPage.classList.add("active");
-        targetPage.style.display = "block";
-
-        navButtons.forEach(btn => {
-            const attrPage = btn.dataset.page;
-            const onclickText = btn.getAttribute("onclick") || "";
-            if (attrPage === pageId || onclickText.includes(`'${pageId}'`) || onclickText.includes(`"${pageId}"`)) {
-                btn.classList.add("active");
+        // 2. Gestionar música según la pantalla de destino
+        if (window.ZidongAudio) {
+            if (pageId === "dashboard") {
+                window.ZidongAudio.startDashboardZelda();
+            } else if (pageId === "vsBattle") {
+                window.ZidongAudio.start1v1MarioCastle();
+            } else if (pageId === "career" || pageId === "level01" || pageId === "assessment") {
+                window.ZidongAudio.startCareerAmbience();
+            } else {
+                window.ZidongAudio.stopAllMusic();
             }
-        });
-
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "instant"
-        });
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-
-        if (window.ZidongAudio && typeof window.ZidongAudio.playTap === "function") {
-            window.ZidongAudio.playTap();
         }
 
-        switch (pageId) {
-            case "profile":
-                if (typeof window.updateProfile === "function") {
-                    window.updateProfile();
-                }
-                break;
+        // 3. Cambiar visibilidad de páginas
+        const pages = document.querySelectorAll(".page");
+        pages.forEach(p => p.classList.remove("active"));
 
-            case "career":
-                if (typeof window.renderCareerPath === "function") {
-                    window.renderCareerPath();
-                }
-                break;
-
-            case "leaderboard":
-            case "ranking":
-                if (typeof window.updateRanking === "function") {
-                    window.updateRanking();
-                }
-                break;
-
-            case "dashboard":
-                if (typeof window.updateMissionProgress === "function") {
-                    window.updateMissionProgress();
-                }
-                if (typeof window.syncCompanionWithEquipped === "function") {
-                    window.syncCompanionWithEquipped();
-                }
-                break;
-
-            case "arcade":
-            case "free":
-                if (typeof window.openCriticalMode === "function") {
-                    window.openCriticalMode();
-                }
-                break;
+        const target = document.getElementById(pageId);
+        if (target) {
+            target.classList.add("active");
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        console.log(`[Navigation] Vista activa: ${pageId}`);
-    }
+        // 4. Actualizar barra de navegación inferior
+        const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
+        navButtons.forEach(btn => btn.classList.remove("active"));
 
-    window.navigateTo = navigateTo;
+        if (pageId === "dashboard") {
+            navButtons[0]?.classList.add("active");
+        } else if (pageId === "hanziLab") {
+            navButtons[1]?.classList.add("active");
+        } else if (pageId === "ranksLadderPage") {
+            navButtons[2]?.classList.add("active");
+        } else if (pageId === "achievementsPage") {
+            navButtons[3]?.classList.add("active");
+        }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const navElements = document.querySelectorAll("[data-page]");
-        navElements.forEach(element => {
-            element.addEventListener("click", () => {
-                const target = element.dataset.page;
-                if (target) navigateTo(target);
-            });
-        });
-
-        console.log("Zidong Navigation Router: READY");
-    });
+        // 5. Refrescar datos según sección
+        if (pageId === "ranksLadderPage" && typeof window.renderRanksSection === "function") {
+            window.renderRanksSection();
+        }
+        if (pageId === "profile" && typeof window.updateProfile === "function") {
+            window.updateProfile();
+        }
+        if (pageId === "hanziLab" && typeof window.renderLabComponents === "function") {
+            window.renderLabComponents();
+        }
+    };
 })();

@@ -1795,3 +1795,174 @@ body {
     background: var(--green);
     color: #0b1424;
 }
+
+
+/* =========================================
+   ESTILOS V4: MUNDOS CANDY CRUSH, LAB & COLAPSO
+========================================= */
+
+/* PESTAÑAS DE CATEGORÍAS EN LABORATORIO */
+.lab-category-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    scrollbar-width: none;
+}
+
+.lab-category-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.lab-tab-btn {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.lab-tab-btn.active {
+    background: var(--cyan);
+    color: #0b1424;
+    border-color: var(--cyan);
+    box-shadow: 0 0 10px rgba(39, 216, 232, 0.4);
+}
+
+/* MUNDOS INFINITOS EN CAREER MODE (CANDY CRUSH STYLE) */
+.career-worlds-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 20px;
+}
+
+.career-world-block {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.career-world-block.world-locked {
+    opacity: 0.55;
+    border-style: dashed;
+}
+
+.world-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 10px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 10px;
+}
+
+.world-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.world-title-box {
+    flex: 1;
+    min-width: 0;
+}
+
+.world-tag {
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    display: block;
+}
+
+.world-title-box h3 {
+    font-size: 13.5px;
+    color: #fff;
+    margin: 0;
+}
+
+.world-status-badge {
+    font-size: 8.5px;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(39, 216, 232, 0.15);
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+}
+
+.world-locked .world-status-badge {
+    background: rgba(255, 68, 68, 0.15);
+    color: var(--red);
+    border-color: var(--red);
+}
+
+.world-nodes-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* PANTALLA ROJA DE COLAPSO TOTAL EN SURVIVOR */
+.collapse-panel {
+    background: linear-gradient(180deg, #440d12 0%, #1f0508 100%) !important;
+    border: 2px solid #ff4444 !important;
+    border-radius: 20px !important;
+    padding: 24px 16px !important;
+    box-shadow: 0 0 35px rgba(255, 68, 68, 0.45) !important;
+    animation: shakeAnim 0.35s ease;
+}
+
+.collapse-icon {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.collapse-title {
+    color: #ff4444 !important;
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    margin: 0 0 6px 0 !important;
+    letter-spacing: 1px;
+}
+
+.collapse-subtitle {
+    color: #fff !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin-bottom: 16px !important;
+}
+
+.collapse-reason-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px dashed rgba(255, 68, 68, 0.5);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.collapse-reason-box small {
+    font-size: 9px;
+    font-weight: 800;
+    color: #ffaa00;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.collapse-reason-box strong {
+    font-size: 12px;
+    color: #fff;
+    line-height: 1.25;
+    display: block;
+}

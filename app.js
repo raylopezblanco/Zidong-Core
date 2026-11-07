@@ -1,6 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE 3.1
-   APPLICATION ENGINE, CAREER SYSTEM, 1V1 DUEL WITH CLOCK TICK & INDUSTRIAL RANKS
+   ZIDONG CORE 4.0 - APPLICATION ENGINE & INFINITE WORLDS (CANDY CRUSH STYLE)
    ========================================================================== */
 
 (() => {
@@ -8,131 +7,215 @@
 
     function triggerHaptic(type) {
         if (type === "success") {
-            if (navigator.vibrate) navigator.vibrate(40);
-            if (window.ZidongAudio && typeof window.ZidongAudio.playSuccess === "function") {
-                window.ZidongAudio.playSuccess();
-            }
+            if (navigator.vibrate) navigator.vibrate(35);
+            if (window.ZidongAudio && window.ZidongAudio.playSuccess) window.ZidongAudio.playSuccess();
         } else if (type === "error") {
-            if (navigator.vibrate) navigator.vibrate([60, 40]);
-            if (window.ZidongAudio && typeof window.ZidongAudio.playError === "function") {
-                window.ZidongAudio.playError();
-            }
+            if (navigator.vibrate) navigator.vibrate([50, 40]);
+            if (window.ZidongAudio && window.ZidongAudio.playError) window.ZidongAudio.playError();
         } else if (type === "win") {
             if (navigator.vibrate) navigator.vibrate([60, 40, 100]);
-            if (window.ZidongAudio && typeof window.ZidongAudio.playVictory === "function") {
-                window.ZidongAudio.playVictory();
-            }
+            if (window.ZidongAudio && window.ZidongAudio.playVictory) window.ZidongAudio.playVictory();
         }
     }
 
-    const STORAGE_KEY = "zidong_core_progress";
+    const STORAGE_KEY = "zidong_core_progress_v4";
 
     // =====================================
-    // 1. COMPONENTES Y ACTIVIDADES
+    // 1. MUNDOS INFINITOS TIPO CANDY CRUSH
     // =====================================
-
-    const activities = [
+    const WORLDS_CONFIG = [
         {
-            id: "hanzi_001",
-            type: "new",
-            hanzi: "电",
-            pinyin: "diàn",
-            meaning: "Electricidad / Señal",
-            example: "电缆 (diànlǎn)",
-            exampleMeaning: "Cable eléctrico",
-            reward: 50
+            id: "world_1",
+            title: "MUNDO 01: ELÉCTRICA",
+            subtitle: "Potencia, Gabinetes y Señales",
+            icon: "⚡",
+            color: "#27d8e8",
+            unlocked: true,
+            activities: [
+                { id: "h_001", hanzi: "电", pinyin: "diàn", meaning: "Electricidad", example: "电缆 (diànlǎn) Cable", reward: 50 },
+                { id: "h_002", hanzi: "机", pinyin: "jī", meaning: "Máquina", example: "电机 (diànjī) Motor", reward: 50 },
+                { id: "h_003", hanzi: "线", pinyin: "xiàn", meaning: "Línea / Cable", example: "电线 (diànxiàn) Cableado", reward: 50 },
+                { id: "h_004", hanzi: "力", pinyin: "lì", meaning: "Fuerza / Potencia", example: "动力 (dònglì) Potencia", reward: 50 },
+                { id: "h_005", hanzi: "控", pinyin: "kòng", meaning: "Control", example: "控制 (kòngzhì) PLC", reward: 50 }
+            ]
         },
         {
-            id: "hanzi_002",
-            type: "new",
-            hanzi: "机",
-            pinyin: "jī",
-            meaning: "Máquina / Mecanismo",
-            example: "机器 (jīqì)",
-            exampleMeaning: "Máquina industrial",
-            reward: 50
+            id: "world_2",
+            title: "MUNDO 02: MECÁNICA",
+            subtitle: "Servomotores, Ejes y Husillos",
+            icon: "⚙️",
+            color: "#ffc857",
+            unlocked: true,
+            activities: [
+                { id: "h_006", hanzi: "轴", pinyin: "zhóu", meaning: "Eje / Flecha", example: "伺服轴 (sìfú zhóu) Eje Servo", reward: 60 },
+                { id: "h_007", hanzi: "转", pinyin: "zhuǎn", meaning: "Giro / Rotación", example: "转速 (zhuànsù) RPM", reward: 60 },
+                { id: "h_008", hanzi: "合", pinyin: "hé", meaning: "Cierre / Acople", example: "离合器 (líhéqì) Embrague", reward: 60 },
+                { id: "h_009", hanzi: "紧", pinyin: "jǐn", meaning: "Ajuste / Apriete", example: "紧固 (jǐngù) Sujeción", reward: 60 },
+                { id: "h_010", hanzi: "位", pinyin: "wèi", meaning: "Posición", example: "原位 (yuánwèi) Posición Home", reward: 60 }
+            ]
         },
         {
-            id: "review_001",
-            type: "review",
-            hanzi: "电",
-            pinyin: "diàn",
-            meaning: "Electricidad",
-            example: "电源 (diànyuán)",
-            exampleMeaning: "Fuente de alimentación",
-            reward: 20
+            id: "world_3",
+            title: "MUNDO 03: NEUMÁTICA",
+            subtitle: "Presión, Cilindros y Válvulas",
+            icon: "💨",
+            color: "#00f59b",
+            unlocked: false,
+            activities: [
+                { id: "h_011", hanzi: "气", pinyin: "qì", meaning: "Aire / Gas", example: "气缸 (qìgāng) Cilindro", reward: 70 },
+                { id: "h_012", hanzi: "压", pinyin: "yā", meaning: "Presión", example: "气压 (qìyā) Presión Bar", reward: 70 },
+                { id: "h_013", hanzi: "阀", pinyin: "fá", meaning: "Válvula", example: "电磁阀 (diàncífá) Solenoide", reward: 70 },
+                { id: "h_014", hanzi: "管", pinyin: "guǎn", meaning: "Manguera / Tubo", example: "气管 (qìguǎn) Tubo de aire", reward: 70 },
+                { id: "h_015", hanzi: "漏", pinyin: "lòu", meaning: "Fuga", example: "漏气 (lòuqì) Fuga de aire", reward: 70 }
+            ]
         },
         {
-            id: "hanzi_003",
-            type: "new",
-            hanzi: "线",
-            pinyin: "xiàn",
-            meaning: "Línea / Cable",
-            example: "电线 (diànxiàn)",
-            exampleMeaning: "Cableado de control",
-            reward: 50
+            id: "world_4",
+            title: "MUNDO 04: ROBÓTICA & AGV",
+            subtitle: "Celdas Fanuc, Trayectorias y AGVs",
+            icon: "🤖",
+            color: "#a78bfa",
+            unlocked: false,
+            activities: [
+                { id: "h_016", hanzi: "手", pinyin: "shǒu", meaning: "Brazo / Gripper", example: "机械手 (jīxièshǒu) Robot", reward: 80 },
+                { id: "h_017", hanzi: "车", pinyin: "chē", meaning: "Carro / AGV", example: "导引车 (dǎoyǐnchē) AGV", reward: 80 },
+                { id: "h_018", hanzi: "点", pinyin: "diǎn", meaning: "Punto / Coordenada", example: "示教点 (shìjiàodiǎn) Teach Point", reward: 80 },
+                { id: "h_019", hanzi: "速", pinyin: "sù", meaning: "Velocidad", example: "减速 (jiǎnsù) Reductor", reward: 80 },
+                { id: "h_020", hanzi: "避", pinyin: "bì", meaning: "Evadir / Obstáculo", example: "避障 (bìzhàng) Sensor Lidar", reward: 80 }
+            ]
         },
         {
-            id: "hanzi_004",
-            type: "new",
-            hanzi: "力",
-            pinyin: "lì",
-            meaning: "Fuerza / Potencia",
-            example: "动力 (dònglì)",
-            exampleMeaning: "Potencia motriz",
-            reward: 50
-        },
-        {
-            id: "review_002",
-            type: "review",
-            hanzi: "机",
-            pinyin: "jī",
-            meaning: "Máquina",
-            example: "电机 (diànjī)",
-            exampleMeaning: "Motor eléctrico",
-            reward: 20
-        },
-        {
-            id: "hanzi_005",
-            type: "new",
-            hanzi: "控",
-            pinyin: "kòng",
-            meaning: "Control / Mando",
-            example: "控制 (kòngzhì)",
-            exampleMeaning: "Controlador PLC",
-            reward: 50
+            id: "world_5",
+            title: "MUNDO 05: VISIÓN AOI",
+            subtitle: "Cámaras, Iluminación y Lentes",
+            icon: "👁️",
+            color: "#ff7777",
+            unlocked: false,
+            activities: [
+                { id: "h_021", hanzi: "光", pinyin: "guāng", meaning: "Luz / Óptica", example: "光源 (guāngyuán) Estroboscopio", reward: 90 },
+                { id: "h_022", hanzi: "镜", pinyin: "jìng", meaning: "Lente / Cámara", example: "镜头 (jìngtóu) Objetivo", reward: 90 },
+                { id: "h_023", hanzi: "视", pinyin: "shì", meaning: "Visión", example: "视觉 (shìjué) Sistema AOI", reward: 90 },
+                { id: "h_024", hanzi: "检", pinyin: "jiǎn", meaning: "Inspección", example: "检测 (jiǎncè) Test de calidad", reward: 90 },
+                { id: "h_025", hanzi: "错", pinyin: "cuò", meaning: "Falso / Error", example: "误检 (wùjiǎn) Falso Rechazo", reward: 90 }
+            ]
         }
     ];
 
-    // BANCO EXPANDIDO PARA EL LABORATORIO (LAB)
+    // BANCO COMPLETO DEL LABORATORIO (CATEGORIZADO POR MUNDO)
     const LAB_COMPONENTS = [
-        { hanzi: "电", pinyin: "diàn", es: "Electricidad", cat: "Potencia", part: "电缆 (Cable)" },
-        { hanzi: "机", pinyin: "jī", es: "Máquina / Motor", cat: "Mecánica", part: "电机 (Motor)" },
-        { hanzi: "线", pinyin: "xiàn", es: "Línea / Cable", cat: "Conexión", part: "电线 (Cableado)" },
-        { hanzi: "力", pinyin: "lì", es: "Fuerza / Torque", cat: "Física", part: "动力 (Potencia)" },
-        { hanzi: "控", pinyin: "kòng", es: "Control / PLC", cat: "Automatización", part: "控制 (Control)" },
-        { hanzi: "气", pinyin: "qì", es: "Neumática / Aire", cat: "Neumática", part: "气缸 (Cilindro)" },
-        { hanzi: "门", pinyin: "mén", es: "Puerta de Seguridad", cat: "Seguridad", part: "安全门 (Puerta)" },
-        { hanzi: "光", pinyin: "guāng", es: "Sensor Óptico", cat: "Sensores", part: "光电 (Fotoeléctrico)" },
-        { hanzi: "压", pinyin: "yā", es: "Presión", cat: "Neumática", part: "压力 (Presión Bar)" },
-        { hanzi: "急", pinyin: "jí", es: "Emergencia", cat: "Seguridad", part: "急停 (E-Stop)" }
+        { hanzi: "电", pinyin: "diàn", es: "Electricidad", cat: "world_1", catName: "⚡ Eléctrica", part: "电缆 (Cable)" },
+        { hanzi: "机", pinyin: "jī", es: "Máquina / Motor", cat: "world_1", catName: "⚡ Eléctrica", part: "电机 (Motor)" },
+        { hanzi: "线", pinyin: "xiàn", es: "Línea / Cable", cat: "world_1", catName: "⚡ Eléctrica", part: "电线 (Cableado)" },
+        { hanzi: "力", pinyin: "lì", es: "Fuerza / Torque", cat: "world_1", catName: "⚡ Eléctrica", part: "动力 (Potencia)" },
+        { hanzi: "控", pinyin: "kòng", es: "Control / PLC", cat: "world_1", catName: "⚡ Eléctrica", part: "控制 (Control)" },
+        
+        { hanzi: "轴", pinyin: "zhóu", es: "Eje / Flecha", cat: "world_2", catName: "⚙️ Mecánica", part: "伺服轴 (Eje Z)" },
+        { hanzi: "转", pinyin: "zhuǎn", es: "Giro / RPM", cat: "world_2", catName: "⚙️ Mecánica", part: "转速 (Velocidad)" },
+        { hanzi: "合", pinyin: "hé", es: "Acople", cat: "world_2", catName: "⚙️ Mecánica", part: "离合器 (Embrague)" },
+        { hanzi: "紧", pinyin: "jǐn", es: "Sujeción", cat: "world_2", catName: "⚙️ Mecánica", part: "紧固 (Tornillería)" },
+        { hanzi: "位", pinyin: "wèi", es: "Posición", cat: "world_2", catName: "⚙️ Mecánica", part: "原位 (Home)" },
+
+        { hanzi: "气", pinyin: "qì", es: "Neumática", cat: "world_3", catName: "💨 Neumática", part: "气缸 (Cilindro)" },
+        { hanzi: "压", pinyin: "yā", es: "Presión Bar", cat: "world_3", catName: "💨 Neumática", part: "气压 (Regulador)" },
+        { hanzi: "阀", pinyin: "fá", es: "Válvula", cat: "world_3", catName: "💨 Neumática", part: "电磁阀 (Solenoide)" },
+
+        { hanzi: "手", pinyin: "shǒu", es: "Brazo Robot", cat: "world_4", catName: "🤖 AGVs/Robots", part: "机械手 (Fanuc)" },
+        { hanzi: "车", pinyin: "chē", es: "Carro AGV", cat: "world_4", catName: "🤖 AGVs/Robots", part: "导引车 (AGV)" },
+
+        { hanzi: "光", pinyin: "guāng", es: "Sensor Óptico", cat: "world_5", catName: "👁️ Visión AOI", part: "光源 (Lámpara)" },
+        { hanzi: "视", pinyin: "shì", es: "Visión Cámara", cat: "world_5", catName: "👁️ Visión AOI", part: "视觉 (AOI)" }
     ];
 
-    // SISTEMA DE 10 RANGOS INDUSTRIALES
+    // SISTEMA DE 10 RANGOS
     const INDUSTRIAL_RANKS = [
-        { id: 1, name: "Becario", minXP: 0, icon: "📋", desc: "Familiarización con la línea y simbología básica" },
-        { id: 2, name: "Practicante", minXP: 300, icon: "🔰", desc: "Apoyo en cambio de herramentales y verificación visual" },
-        { id: 3, name: "Operador", minXP: 700, icon: "⚙️", desc: "Operación de estaciones automatizadas y monitoreo de ciclo" },
-        { id: 4, name: "Operador Especializado", minXP: 1200, icon: "🛠️", desc: "Ajuste de parámetros y reseteo de fallas comunes de alimentador" },
-        { id: 5, name: "Técnico Jr", minXP: 1800, icon: "⚡", desc: "Diagnóstico eléctrico de señales I/O y relevadores" },
-        { id: 6, name: "Técnico Sr", minXP: 2600, icon: "🔧", desc: "Mantenimiento correctivo a servocontroladores y neumática" },
-        { id: 7, name: "Ingeniero Jr", minXP: 3600, icon: "💻", desc: "Comisionamiento de sub-estaciones y comunicación PLC" },
-        { id: 8, name: "Ingeniero Full", minXP: 5000, icon: "🚀", desc: "Optimización de tiempo de ciclo y programación de rutinas" },
-        { id: 9, name: "Ingeniero Sr", minXP: 7000, icon: "🏅", desc: "Arquitectura de celdas robóticas y enlace SCADA" },
-        { id: 10, name: "Maestro de Programación", minXP: 10000, icon: "👑", desc: "Dominio absoluto de la línea y resolución de fallas críticas" }
+        { id: 1, name: "Becario", minXP: 0, icon: "📋", desc: "Familiarización con la línea y simbología" },
+        { id: 2, name: "Practicante", minXP: 300, icon: "🔰", desc: "Apoyo en cambio de modelo y verificación visual" },
+        { id: 3, name: "Operador", minXP: 700, icon: "⚙️", desc: "Operación de estaciones automatizadas" },
+        { id: 4, name: "Operador Especializado", minXP: 1200, icon: "🛠️", desc: "Ajuste de parámetros y reseteo de fallas" },
+        { id: 5, name: "Técnico Jr", minXP: 1800, icon: "⚡", desc: "Diagnóstico eléctrico de señales I/O" },
+        { id: 6, name: "Técnico Sr", minXP: 2600, icon: "🔧", desc: "Mantenimiento preventivo a servomotores" },
+        { id: 7, name: "Ingeniero Jr", minXP: 3600, icon: "💻", desc: "Comisionamiento de sub-estaciones PLC" },
+        { id: 8, name: "Ingeniero Full", minXP: 5000, icon: "🚀", desc: "Optimización de tiempo de ciclo SMT" },
+        { id: 9, name: "Ingeniero Sr", minXP: 7000, icon: "🏅", desc: "Arquitectura de celdas robóticas y SCADA" },
+        { id: 10, name: "Maestro de Programación", minXP: 10000, icon: "👑", desc: "Dominio absoluto de la línea y Cero Downtime" }
     ];
 
-    function getCurrentRank(xp = 0) {
+    // VITRINA DE MEDALLAS
+    const MEDALS_DB = [
+        { id: "b_practicante", icon: "🔰", name: "Practicante de Automatización", desc: "Bienvenida oficial a planta Zìdòng", isUnlocked: () => true },
+        { id: "b_electric", icon: "⚡", name: "Comisionado Eléctrico", desc: "Especialista en potencia y señales", isUnlocked: () => true },
+        { id: "b_dragon", icon: "龍", name: "Dragón Zìdòng", desc: "Fundador de la academia técnica", isUnlocked: () => true },
+        { id: "b_robot", icon: "🤖", name: "Operador Especializado", desc: "Manejo de celdas y servos", isUnlocked: () => true },
+        { id: "b_overclock", icon: "⭐", name: "Overclock 3★", desc: "Test aprobado en menos de 12 segundos", isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3) },
+        { id: "b_survivor", icon: "🚨", name: "Héroe de Mantenimiento", desc: "Resuelve una alarma crítica en Survivor", isUnlocked: () => localStorage.getItem("zidong_survivor_won") === "true" }
+    ];
+
+    // LOGROS TIPO XBOX
+    const XBOX_ACHIEVEMENTS = [
+        { id: "ach_welcome", title: "Técnico en Planta", desc: "Inicia tu primer turno e interactúa con el Cyberdog.", score: 50, icon: "🤖", unlocked: () => true },
+        { id: "ach_first_circuit", title: "Primer Circuito Energizado", desc: "Domina tu primer componente eléctrico.", score: 100, icon: "⚡", unlocked: () => career.completedActivities.length >= 1 },
+        { id: "ach_overclock", title: "Calibración Overclock", desc: "Consigue 3 estrellas ⭐⭐⭐ en cualquier test.", score: 150, icon: "⭐", unlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3) },
+        { id: "ach_survivor", title: "Héroe de Mantenimiento", desc: "Supera una alarma crítica HMI.", score: 150, icon: "🚨", unlocked: () => localStorage.getItem("zidong_survivor_won") === "true" },
+        { id: "ach_duel_master", title: "Duelo de Alta Velocidad", desc: "Vence a un rival en la arena 1v1.", score: 200, icon: "⚔️", unlocked: () => localStorage.getItem("zidong_vs_won") === "true" }
+    ];
+
+    // =====================================
+    // 2. PROGRESS STATE
+    // =====================================
+    const career = {
+        completedActivities: ["h_001"],
+        assessmentPassed: false,
+        nodeStars: { "h_001": 3 }
+    };
+
+    function loadSavedProgress() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (!saved) return;
+            if (saved.player && typeof data !== "undefined" && data.player) {
+                Object.assign(data.player, saved.player);
+            }
+            if (saved.career) {
+                career.completedActivities = saved.career.completedActivities || ["h_001"];
+                career.assessmentPassed = Boolean(saved.career.assessmentPassed);
+                career.nodeStars = saved.career.nodeStars || { "h_001": 3 };
+            }
+        } catch (e) {
+            console.error("Error al cargar progreso:", e);
+        }
+    }
+
+    function saveProgress() {
+        try {
+            const saved = {
+                player: {
+                    xp: data.player?.xp || 1850,
+                    level: data.player?.level || 5,
+                    streak: data.player?.streak || 5,
+                    completed: career.completedActivities.length
+                },
+                career: {
+                    completedActivities: career.completedActivities,
+                    assessmentPassed: career.assessmentPassed,
+                    nodeStars: career.nodeStars
+                }
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+        } catch (e) {
+            console.error("Error al guardar:", e);
+        }
+    }
+
+    function awardXP(reward) {
+        if (typeof data === "undefined" || !data.player) return;
+        data.player.xp = (data.player.xp || 1850) + reward;
+        data.player.completed = career.completedActivities.length;
+        renderRanksSection();
+        updateProfile();
+        saveProgress();
+    }
+
+    function getCurrentRank(xp = 1850) {
         let current = INDUSTRIAL_RANKS[0];
         for (let i = INDUSTRIAL_RANKS.length - 1; i >= 0; i--) {
             if (xp >= INDUSTRIAL_RANKS[i].minXP) {
@@ -140,355 +223,69 @@
                 break;
             }
         }
-        const nextIndex = INDUSTRIAL_RANKS.findIndex(r => r.id === current.id) + 1;
-        const next = INDUSTRIAL_RANKS[nextIndex] || null;
-        return { current, next };
+        return current;
     }
-
-    // LOGROS TIPO XBOX (ACHIEVEMENTS)
-    const XBOX_ACHIEVEMENTS = [
-        {
-            id: "ach_welcome",
-            title: "Técnico en Planta",
-            desc: "Inicia tu primer turno e interactúa con el Cyberdog.",
-            score: 50,
-            icon: "🤖",
-            unlocked: () => true
-        },
-        {
-            id: "ach_first_circuit",
-            title: "Primer Circuito Energizado",
-            desc: "Domina tu primer componente eléctrico en Career Mode.",
-            score: 100,
-            icon: "⚡",
-            unlocked: () => career.completedActivities.length >= 1
-        },
-        {
-            id: "ach_overclock",
-            title: "Calibración Overclock",
-            desc: "Consigue 3 estrellas ⭐⭐⭐ en cualquier test de planta.",
-            score: 150,
-            icon: "⭐",
-            unlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3)
-        },
-        {
-            id: "ach_survivor",
-            title: "Héroe de Mantenimiento",
-            desc: "Intervén y soluciona una alarma HMI crítica en Survivor Mode.",
-            score: 150,
-            icon: "🚨",
-            unlocked: () => localStorage.getItem("zidong_survivor_won") === "true"
-        },
-        {
-            id: "ach_duel_master",
-            title: "Duelo de Alta Velocidad",
-            desc: "Vence a un oponente en la arena de Duelo 1v1.",
-            score: 200,
-            icon: "⚔️",
-            unlocked: () => localStorage.getItem("zidong_vs_won") === "true"
-        }
-    ];
-
-    // VITRINA DE MEDALLAS / INSIGNIAS RESTAURADA
-    const MEDALS_DB = [
-        {
-            id: "badge_practicante",
-            icon: "🔰",
-            name: "Practicante de Automatización",
-            desc: "Insignia oficial de bienvenida a planta Zìdòng",
-            isUnlocked: () => true
-        },
-        {
-            id: "badge_electric",
-            icon: "⚡",
-            name: "Comisionado Eléctrico",
-            desc: "Especialista en potencia, cables y señales de control",
-            isUnlocked: () => true
-        },
-        {
-            id: "badge_dragon",
-            icon: "龍",
-            name: "Dragón Zìdòng",
-            desc: "Rango fundador del sistema de aprendizaje industrial",
-            isUnlocked: () => true
-        },
-        {
-            id: "badge_robot",
-            icon: "🤖",
-            name: "Operador Especializado",
-            desc: "Manejo de celdas automatizadas y servomotores",
-            isUnlocked: () => true
-        },
-        {
-            id: "badge_overclock",
-            icon: "⭐",
-            name: "Overclock 3★",
-            desc: "Completa un test de planta en menos de 12 segundos",
-            isUnlocked: () => Object.values(career.nodeStars || {}).some(s => s >= 3)
-        },
-        {
-            id: "badge_survivor",
-            icon: "🚨",
-            name: "Héroe de Mantenimiento",
-            desc: "Resuelve una alarma crítica HMI en Survivor Mode",
-            isUnlocked: () => localStorage.getItem("zidong_survivor_won") === "true"
-        }
-    ];
-
-    const assessmentQuestions = [
-        {
-            question: "¿Qué significa 电?",
-            options: ["Máquina", "Electricidad", "Fuerza"],
-            answer: "Electricidad"
-        },
-        {
-            question: "¿Qué significa 机?",
-            options: ["Control", "Cable", "Máquina"],
-            answer: "Máquina"
-        },
-        {
-            question: "¿Qué significa 线?",
-            options: ["Línea / cable", "Fuerza", "Electricidad"],
-            answer: "Línea / cable"
-        },
-        {
-            question: "¿Qué significa 力?",
-            options: ["Máquina", "Fuerza", "Control"],
-            answer: "Fuerza"
-        },
-        {
-            question: "¿Qué significa 控?",
-            options: ["Control", "Cable", "Electricidad"],
-            answer: "Control"
-        }
-    ];
 
     // =====================================
-    // 2. PROGRESS STATE
+    // 3. RENDER CAREER MUNDOS (CANDY CRUSH STYLE)
     // =====================================
-
-    const career = {
-        completedActivities: [],
-        assessmentPassed: false,
-        assessmentAttempts: 0,
-        nodeStars: {}
-    };
-
-    function loadSavedProgress() {
-        try {
-            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            if (!saved) return;
-
-            if (saved.player && typeof data !== "undefined" && data.player) {
-                Object.assign(data.player, saved.player);
-            }
-
-            if (saved.career) {
-                career.completedActivities = Array.isArray(saved.career.completedActivities)
-                    ? saved.career.completedActivities
-                    : [];
-                career.assessmentPassed = Boolean(saved.career.assessmentPassed);
-                career.assessmentAttempts = Number(saved.career.assessmentAttempts || 0);
-                career.nodeStars = saved.career.nodeStars || {};
-            } else if (saved.completedLesson) {
-                career.completedActivities = ["hanzi_001"];
-            }
-        } catch (error) {
-            console.error("Could not load saved progress:", error);
-        }
-    }
-
-    function saveProgress() {
-        if (typeof data === "undefined") return;
-
-        const saved = {
-            player: {
-                xp: data.player?.xp || 0,
-                level: data.player?.level || 1,
-                streak: data.player?.streak || 1,
-                completed: data.player?.completed || 0
-            },
-            career: {
-                completedActivities: career.completedActivities,
-                assessmentPassed: career.assessmentPassed,
-                assessmentAttempts: career.assessmentAttempts,
-                nodeStars: career.nodeStars || {}
-            }
-        };
-
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-        } catch (error) {
-            console.error("Could not save progress:", error);
-        }
-    }
-
-    const formatNumber = value => Number(value || 0).toLocaleString("en-US");
-
-    function getCompletedCount() {
-        return career.completedActivities.length;
-    }
-
-    function getNextActivityIndex() {
-        return activities.findIndex(activity => {
-            return !career.completedActivities.includes(activity.id);
-        });
-    }
-
-    function isActivityUnlocked(index) {
-        const nextIndex = getNextActivityIndex();
-        return index <= nextIndex || nextIndex === -1;
-    }
-
-    function awardXP(reward) {
-        if (typeof data === "undefined" || !data.player) return;
-        const player = data.player;
-        player.xp = (player.xp || 0) + reward;
-        player.completed = (player.completed || 0) + 1;
-
-        if (Array.isArray(data.players)) {
-            const playerRecord = data.players.find(item => item.initials === player.initials);
-            if (playerRecord) playerRecord.xp = (playerRecord.xp || 0) + reward;
-        }
-
-        renderRanksSection();
-        updateProfile();
-    }
-
-    function updateMissionProgress() {
-        const completedCount = career.completedActivities.length;
-        const missionFill = document.querySelector(".daily-mission-card .progress-fill");
-        const missionSmall = document.getElementById("dashboardMissionStatus");
-
-        if (missionFill) {
-            const pct = Math.min(((completedCount + 1) / 4) * 100, 100);
-            missionFill.style.width = `${pct}%`;
-        }
-        if (missionSmall) {
-            missionSmall.textContent = `${Math.min(completedCount + 1, 4)} / 4 COMPLETADAS`;
-        }
-
-        const mCount = document.getElementById("mCountHanzi");
-        if (mCount) mCount.textContent = completedCount;
-    }
-
     function renderCareerPath() {
-        const container = document.querySelector("#career .path-nodes");
+        const container = document.getElementById("careerWorldsContainer");
         if (!container) return;
 
         container.replaceChildren();
 
-        const welcome = document.createElement("div");
-        welcome.className = "path-step left";
-        welcome.innerHTML = `
-            <div class="path-node completed"><span>✓</span></div>
-            <div class="path-label">
-                <strong>Bienvenida</strong>
-                <small>Conoce tu entrenamiento</small>
-            </div>
-        `;
-        container.appendChild(welcome);
+        WORLDS_CONFIG.forEach((world, wIdx) => {
+            const worldCard = document.createElement("div");
+            worldCard.className = `career-world-block ${world.unlocked ? "world-unlocked" : "world-locked"}`;
 
-        activities.forEach((activity, index) => {
-            const completed = career.completedActivities.includes(activity.id);
-            const unlocked = isActivityUnlocked(index);
-
-            const node = document.createElement("div");
-            node.className = `path-step ${index % 2 === 0 ? "right" : "left"}`;
-
-            const statusClass = completed ? "completed" : unlocked ? "current" : "locked";
-            const nodeText = completed ? "✓" : activity.hanzi;
-
-            const label = activity.type === "review"
-                ? `Repaso ${index + 1}`
-                : `Hanzi ${String(activities.filter(item => item.type === "new").indexOf(activity) + 1).padStart(3, "0")}`;
-
-            const starsCount = (career.nodeStars && career.nodeStars[activity.id]) || (completed ? 1 : 0);
-            const starsDisplay = completed ? "⭐".repeat(starsCount) : "";
-
-            node.innerHTML = `
-                <div class="path-node ${statusClass}">
-                    <span>${nodeText}</span>
+            worldCard.innerHTML = `
+                <div class="world-header" style="border-left: 4px solid ${world.color};">
+                    <div class="world-icon">${world.icon}</div>
+                    <div class="world-title-box">
+                        <span class="world-tag" style="color:${world.color};">${world.title}</span>
+                        <h3>${world.subtitle}</h3>
+                    </div>
+                    <span class="world-status-badge">${world.unlocked ? "ACTIVO" : "BLOQUEADO"}</span>
                 </div>
-                <div class="path-label">
-                    <strong>${label} ${starsDisplay}</strong>
-                    <small>${activity.meaning} · ${activity.pinyin}</small>
-                    <span class="node-action">
-                        ${completed ? "REPETIR TEST ↺" : unlocked ? "COMENZAR →" : "BLOQUEADO"}
-                    </span>
-                </div>
+                <div class="world-nodes-stream" id="stream_${world.id}"></div>
             `;
 
-            if (unlocked) {
-                node.style.cursor = "pointer";
-                node.addEventListener("click", () => openActivity(index));
-            }
+            const stream = worldCard.querySelector(`#stream_${world.id}`);
+            world.activities.forEach((act, aIdx) => {
+                const isCompleted = career.completedActivities.includes(act.id);
+                const stars = (career.nodeStars && career.nodeStars[act.id]) || (isCompleted ? 1 : 0);
+                const nodeEl = document.createElement("div");
+                nodeEl.className = `path-step ${aIdx % 2 === 0 ? "left" : "right"}`;
 
-            container.appendChild(node);
+                nodeEl.innerHTML = `
+                    <div class="path-node ${isCompleted ? "completed" : world.unlocked ? "current" : "locked"}">
+                        <span>${isCompleted ? "✓" : act.hanzi}</span>
+                    </div>
+                    <div class="path-label">
+                        <strong>Nivel 0${wIdx * 5 + aIdx + 1} · ${act.meaning} ${isCompleted ? "⭐".repeat(stars) : ""}</strong>
+                        <small>${act.example}</small>
+                        <span class="node-action">${isCompleted ? "REPETIR TEST ↺" : world.unlocked ? "INICIAR ⚡" : "BLOQUEADO"}</span>
+                    </div>
+                `;
+
+                if (world.unlocked) {
+                    nodeEl.style.cursor = "pointer";
+                    nodeEl.onclick = () => openActivity(act);
+                }
+
+                stream.appendChild(nodeEl);
+            });
+
+            container.appendChild(worldCard);
         });
-
-        const assessment = document.createElement("div");
-        const allActivitiesCompleted = getCompletedCount() === activities.length;
-        assessment.className = "path-step left";
-
-        const assessmentClass = career.assessmentPassed
-            ? "completed"
-            : allActivitiesCompleted ? "current" : "locked";
-
-        assessment.innerHTML = `
-            <div class="path-node assessment ${assessmentClass}">
-                <span>${career.assessmentPassed ? "✓" : "🏅"}</span>
-            </div>
-            <div class="path-label">
-                <strong>Evaluación eléctrica</strong>
-                <small>Comisionamiento de estación</small>
-                <span class="node-action">
-                    ${career.assessmentPassed ? "APROBADA ✓" : allActivitiesCompleted ? "COMENZAR EVALUACIÓN →" : "BLOQUEADA"}
-                </span>
-            </div>
-        `;
-
-        if (allActivitiesCompleted && !career.assessmentPassed) {
-            assessment.style.cursor = "pointer";
-            assessment.addEventListener("click", openAssessment);
-        }
-
-        container.appendChild(assessment);
-        updateCareerOverview();
     }
 
-    function updateCareerOverview() {
-        const completed = getCompletedCount();
-        const percentage = career.assessmentPassed ? 100 : Math.round((completed / activities.length) * 100);
-
-        const progressFill = document.querySelector("#career .career-progress .progress-fill");
-        const progressText = document.querySelector("#career .career-progress-footer span:last-child");
-        const progressDescription = document.querySelector("#career .career-progress-info span");
-        const footerText = document.querySelector("#career .career-progress-footer span:first-child");
-
-        if (progressFill) progressFill.style.width = `${percentage}%`;
-        if (progressText) progressText.textContent = `${percentage}%`;
-        if (progressDescription) {
-            progressDescription.textContent = career.assessmentPassed
-                ? "Área completada"
-                : completed === 0 ? "En preparación" : "En progreso";
-        }
-        if (footerText) {
-            footerText.textContent = career.assessmentPassed
-                ? "¡Área eléctrica dominada!"
-                : `${completed} de ${activities.length} actividades`;
-        }
-    }
-
-    function openActivity(index) {
-        if (!isActivityUnlocked(index)) return;
-        const activity = activities[index];
-        if (!activity) return;
-
-        renderLesson(activity);
+    function openActivity(act) {
         if (typeof window.navigateTo === "function") {
             window.navigateTo("level01");
         }
+        renderLesson(act);
     }
 
     function renderLesson(activity) {
@@ -496,433 +293,104 @@
         if (!card) return;
 
         const isCompleted = career.completedActivities.includes(activity.id);
-        const currentStars = (career.nodeStars && career.nodeStars[activity.id]) || (isCompleted ? 1 : 0);
 
-        function renderDataSheet() {
-            const title = activity.type === "review"
-                ? "REPASO DE COMPONENTE"
-                : `DATA SHEET · HANZI ${String(
-                    activities.filter(item => item.type === "new").indexOf(activity) + 1
-                ).padStart(3, "0")}`;
+        card.innerHTML = `
+            <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:8px;">COMPONENTE INDUSTRIAL</span>
+            <div class="recognition-hanzi">${activity.hanzi}</div>
 
-            const starBadges = isCompleted ? ` · ${"⭐".repeat(currentStars)}` : "";
-
-            card.innerHTML = `
-                <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:8px;">${title}${starBadges}</span>
-
-                <div class="recognition-hanzi">${activity.hanzi}</div>
-
-                <div style="background:rgba(39, 216, 232, 0.08); border:1px solid rgba(39, 216, 232, 0.2); border-radius:14px; padding:12px 14px; width:100%; max-width:340px; margin-bottom:14px; text-align:left;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px;">SIGNIFICADO:</span>
-                        <strong style="color:var(--cyan); font-size:16px;">${activity.meaning}</strong>
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px;">PINYIN / TONO:</span>
-                        <span style="color:#ffffff; font-weight:bold; font-size:15px;">${activity.pinyin}</span>
-                    </div>
-
-                    <div style="border-top:1px solid rgba(255,255,255,0.12); padding-top:8px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.25); margin: 0 -14px -12px -14px; padding:10px 14px; border-radius:0 0 13px 13px;">
-                        <div>
-                            <span style="font-size:9px; color:#ffc857; font-weight:900; letter-spacing:1px; display:block;">REFACCIÓN / EN PLANTA</span>
-                            <small style="color:var(--muted); font-size:12px;">${activity.exampleMeaning}</small>
-                        </div>
-                        <div style="font-size:24px; font-weight:bold; color:#00f59b; letter-spacing:3px; font-family:'Noto Sans SC', sans-serif;">
-                            ${activity.example}
-                        </div>
-                    </div>
+            <div style="background:rgba(39, 216, 232, 0.08); border:1px solid rgba(39, 216, 232, 0.2); border-radius:14px; padding:12px 14px; width:100%; max-width:340px; margin-bottom:14px; text-align:left;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-size:10px; color:var(--muted); font-weight:bold;">SIGNIFICADO:</span>
+                    <strong style="color:var(--cyan); font-size:15px;">${activity.meaning}</strong>
                 </div>
-
-                <button id="btn-start-evaluation" class="reveal-button" type="button" style="background:#00f59b; color:#0b1424; font-weight:900; min-height:44px;">
-                    ${isCompleted ? "REPETIR TEST (MEJORAR ⭐)" : "PROBAR SISTEMA (TEST) ⚡"}
-                </button>
-            `;
-
-            document.getElementById("btn-start-evaluation").onclick = startHotTest;
-        }
-
-        function startHotTest() {
-            let round = 1;
-            let errors = 0;
-            const startTime = Date.now();
-
-            function renderRound() {
-                if (round === 1) {
-                    const otherMeanings = activities
-                        .filter(a => a.meaning !== activity.meaning)
-                        .map(a => a.meaning);
-                    const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-                    const opts = [activity.meaning, ...shuffled].sort(() => 0.5 - Math.random());
-
-                    card.innerHTML = `
-                        <span class="tag" style="border-color:#ffaa00; color:#ffaa00;">RONDA 1 / 3 · SIGNIFICADO</span>
-                        <div class="recognition-hanzi" style="width:120px; height:120px; font-size:70px; margin: 15px auto;">
-                            ${activity.hanzi}
-                        </div>
-                        <h3 style="font-size:15px; margin-bottom:14px;">¿Cuál es el significado técnico correcto?</h3>
-                        <div class="career-quiz-grid" id="round1-options"></div>
-                    `;
-
-                    const grid = card.querySelector("#round1-options");
-                    opts.forEach(opt => {
-                        const btn = document.createElement("button");
-                        btn.className = "cf-btn-option";
-                        btn.style.fontSize = "15px";
-                        btn.style.padding = "14px 10px";
-                        btn.textContent = opt;
-
-                        btn.onclick = () => {
-                            if (opt === activity.meaning) {
-                                triggerHaptic("success");
-                                btn.classList.add("btn-correct");
-                                setTimeout(() => { round = 2; renderRound(); }, 300);
-                            } else {
-                                triggerHaptic("error");
-                                btn.classList.add("btn-wrong");
-                                errors++;
-                                card.classList.add("shake-it");
-                                setTimeout(() => card.classList.remove("shake-it"), 300);
-                            }
-                        };
-                        grid.appendChild(btn);
-                    });
-
-                } else if (round === 2) {
-                    const otherPinyins = activities
-                        .filter(a => a.pinyin !== activity.pinyin)
-                        .map(a => a.pinyin);
-                    const shuffledP = otherPinyins.sort(() => 0.5 - Math.random()).slice(0, 2);
-                    const opts = [activity.pinyin, ...shuffledP].sort(() => 0.5 - Math.random());
-
-                    card.innerHTML = `
-                        <span class="tag" style="border-color:#a78bfa; color:#a78bfa;">RONDA 2 / 3 · LECTURA & TONO</span>
-                        <div class="recognition-hanzi" style="width:120px; height:120px; font-size:70px; margin: 15px auto;">
-                            ${activity.hanzi}
-                        </div>
-                        <h3 style="font-size:15px; margin-bottom:14px;">¿Cuál es la pronunciación (Pinyin)?</h3>
-                        <div class="career-quiz-grid" id="round2-options"></div>
-                    `;
-
-                    const grid = card.querySelector("#round2-options");
-                    opts.forEach(opt => {
-                        const btn = document.createElement("button");
-                        btn.className = "cf-btn-option";
-                        btn.style.fontSize = "17px";
-                        btn.style.padding = "14px 10px";
-                        btn.textContent = opt;
-
-                        btn.onclick = () => {
-                            if (opt === activity.pinyin) {
-                                triggerHaptic("success");
-                                btn.classList.add("btn-correct");
-                                setTimeout(() => { round = 3; renderRound(); }, 300);
-                            } else {
-                                triggerHaptic("error");
-                                btn.classList.add("btn-wrong");
-                                errors++;
-                                card.classList.add("shake-it");
-                                setTimeout(() => card.classList.remove("shake-it"), 300);
-                            }
-                        };
-                        grid.appendChild(btn);
-                    });
-
-                } else if (round === 3) {
-                    const exampleChars = activity.example.split(" ")[0].split("");
-                    const mainChar = activity.hanzi;
-                    const targetChar = exampleChars.find(c => c !== mainChar) || mainChar;
-                    const dummyPool = ["气", "机", "线", "门", "开", "压", "力", "金", "水"].filter(c => c !== targetChar);
-                    const dummyOptions = dummyPool.sort(() => 0.5 - Math.random()).slice(0, 2);
-                    const blockOptions = [targetChar, ...dummyOptions].sort(() => 0.5 - Math.random());
-
-                    card.innerHTML = `
-                        <span class="tag" style="border-color:#00f59b; color:#00f59b;">RONDA 3 / 3 · ENSAMBLE DE PLANTA</span>
-                        <p style="color:var(--muted); font-size:11px; margin:12px 0 4px;">COMPLETA LA PIEZA TÉCNICA:</p>
-                        <h2 style="color:var(--cyan); margin-bottom:12px;">${activity.exampleMeaning}</h2>
-                        
-                        <div class="cf-slots-dock" style="margin: 15px auto;">
-                            <div class="cf-slot filled">${mainChar}</div>
-                            <div class="cf-slot empty" id="c-target-slot">_</div>
-                        </div>
-
-                        <p style="font-size:12px; color:var(--text); margin-bottom:12px;">Selecciona el carácter complementario:</p>
-                        <div style="display:flex; justify-content:center; gap:12px;" id="c-blocks-grid"></div>
-                    `;
-
-                    const bGrid = card.querySelector("#c-blocks-grid");
-                    blockOptions.forEach(char => {
-                        const b = document.createElement("button");
-                        b.className = "cf-part-btn";
-                        b.style.width = "64px";
-                        b.textContent = char;
-
-                        b.onclick = () => {
-                            if (char === targetChar) {
-                                triggerHaptic("success");
-                                const slot = card.querySelector("#c-target-slot");
-                                slot.textContent = char;
-                                slot.classList.add("filled");
-                                slot.classList.remove("empty");
-                                setTimeout(finishTest, 400);
-                            } else {
-                                triggerHaptic("error");
-                                b.style.opacity = "0.2";
-                                b.style.pointerEvents = "none";
-                                errors++;
-                                card.classList.add("shake-it");
-                                setTimeout(() => card.classList.remove("shake-it"), 300);
-                            }
-                        };
-                        bGrid.appendChild(b);
-                    });
-                }
-            }
-
-            function finishTest() {
-                const totalSeconds = Math.round((Date.now() - startTime) / 1000);
-                let stars = 1;
-                if (errors === 0 && totalSeconds <= 12) {
-                    stars = 3;
-                } else if (errors <= 1) {
-                    stars = 2;
-                }
-
-                if (!career.nodeStars) career.nodeStars = {};
-                career.nodeStars[activity.id] = Math.max(career.nodeStars[activity.id] || 0, stars);
-
-                triggerHaptic("win");
-
-                const starIcons = "⭐".repeat(stars);
-                const titleVerdict = stars === 3
-                    ? "¡MAESTRÍA OVERCLOCK!"
-                    : stars === 2 ? "¡CALIBRACIÓN EXITOSA!" : "¡SISTEMA APROBADO!";
-
-                card.innerHTML = `
-                    <span class="tag" style="border-color:#ffc857; color:#ffc857;">TEST FINALIZADO</span>
-                    <div style="font-size:46px; margin: 15px 0;">${starIcons}</div>
-                    <h2 style="color:#ffffff; font-size:22px; margin-bottom:4px;">${titleVerdict}</h2>
-                    <p style="color:var(--muted); font-size:12px; margin-bottom:16px;">
-                        Tiempo total: <strong>${totalSeconds}s</strong> · Errores: <strong>${errors}</strong>
-                    </p>
-
-                    <button id="btn-save-and-return" class="reveal-button" style="margin-bottom:10px;">
-                        REGISTRAR AVANCE (+${activity.reward} XP) →
-                    </button>
-                    <button id="btn-retry-test" class="btn-secondary" style="width:100%; max-width:260px;">
-                        ↺ REPETIR PARA MEJORAR ⭐
-                    </button>
-                `;
-
-                document.getElementById("btn-save-and-return").onclick = () => {
-                    completeActivity(activity, stars);
-                    if (typeof window.navigateTo === "function") {
-                        window.navigateTo("career");
-                    }
-                };
-
-                document.getElementById("btn-retry-test").onclick = () => {
-                    renderLesson(activity);
-                };
-            }
-
-            renderRound();
-        }
-
-        renderDataSheet();
-        updateAssessmentVisibility();
-    }
-
-    function completeActivity(activity, stars) {
-        const isNewCompletion = !career.completedActivities.includes(activity.id);
-        const reward = isNewCompletion ? activity.reward : 15;
-
-        if (isNewCompletion) {
-            career.completedActivities.push(activity.id);
-        }
-
-        awardXP(reward);
-        updateMissionProgress();
-        renderAchievements();
-        renderCareerPath();
-        saveProgress();
-    }
-
-    function updateAssessmentVisibility() {
-        const allCompleted = getCompletedCount() === activities.length;
-        let assessmentPanel = document.getElementById("electricalAssessment");
-
-        if (!assessmentPanel) {
-            assessmentPanel = document.createElement("div");
-            assessmentPanel.id = "electricalAssessment";
-            assessmentPanel.className = "panel";
-            const card = document.querySelector("#level01 .recognition-card");
-            if (card) card.insertAdjacentElement("afterend", assessmentPanel);
-        }
-
-        assessmentPanel.style.display = "none";
-        if (!allCompleted || career.assessmentPassed) return;
-        assessmentPanel.style.display = "block";
-    }
-
-    function openAssessment() {
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("assessment");
-        }
-        renderAssessment();
-    }
-
-    function renderAssessment() {
-        const panel = document.getElementById("electricalAssessment");
-        if (!panel) return;
-
-        let currentQ = 0;
-        let integrity = 100;
-        let correctCount = 0;
-
-        function showQuestion() {
-            const q = assessmentQuestions[currentQ];
-            const integrityColor = integrity >= 80 ? "#00f59b" : integrity >= 60 ? "#ffaa00" : "#ff4444";
-
-            panel.innerHTML = `
-                <div style="max-width:380px; margin: 0 auto; padding-bottom: 90px; box-sizing: border-box;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding:0 4px;">
-                        <span class="tag" style="border-color:#ffc857; color:#ffc857; font-size:10px; margin:0;">
-                            PASO ${currentQ + 1} DE ${assessmentQuestions.length}
-                        </span>
-                        <strong style="color:${integrityColor}; font-size:13px; font-weight:900; letter-spacing:0.5px;">
-                            INTEGRIDAD: ${integrity}%
-                        </strong>
-                    </div>
-
-                    <div style="width:100%; height:7px; background:#142236; border-radius:4px; overflow:hidden; margin-bottom:14px;">
-                        <div style="width:${integrity}%; height:100%; background:${integrityColor}; transition:width 0.25s ease;"></div>
-                    </div>
-
-                    <div style="background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:18px 14px; text-align:center;">
-                        <span style="font-size:10px; color:var(--muted); font-weight:bold; letter-spacing:1px; display:block; margin-bottom:6px;">VALIDACIÓN DE LÍNEA</span>
-                        <h2 style="font-size:20px; color:#ffffff; margin: 0 0 16px 0; font-weight:700;">${q.question}</h2>
-                        
-                        <div id="boss-options-grid" style="display:flex; flex-direction:column; gap:10px;"></div>
-                    </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:10px; color:var(--muted); font-weight:bold;">PINYIN:</span>
+                    <span style="color:#ffffff; font-weight:bold; font-size:14px;">${activity.pinyin}</span>
                 </div>
-            `;
+                <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:6px; font-size:11px; color:var(--gold);">
+                    Uso en planta: <strong>${activity.example}</strong>
+                </div>
+            </div>
 
-            const grid = panel.querySelector("#boss-options-grid");
-            const shuffledOptions = [...q.options].sort(() => 0.5 - Math.random());
+            <button id="btn-start-evaluation" class="reveal-button" type="button">
+                ${isCompleted ? "REPETIR TEST (MEJORAR ⭐)" : "CALIBRAR EN LÍNEA (TEST) ⚡"}
+            </button>
+        `;
 
-            shuffledOptions.forEach(opt => {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.style.width = "100%";
-                btn.style.minHeight = "46px";
-                btn.style.padding = "10px 14px";
-                btn.style.background = "var(--surface-light)";
-                btn.style.border = "1.5px solid var(--border)";
-                btn.style.borderRadius = "12px";
-                btn.style.color = "#ffffff";
-                btn.style.fontSize = "15px";
-                btn.style.fontWeight = "600";
-                btn.style.cursor = "pointer";
-                btn.textContent = opt;
+        document.getElementById("btn-start-evaluation").onclick = () => startSingleTest(activity);
+    }
 
-                btn.onclick = () => {
-                    const allBtns = grid.querySelectorAll("button");
-                    allBtns.forEach(b => b.style.pointerEvents = "none");
+    function startSingleTest(activity) {
+        const card = document.querySelector("#level01 .recognition-card");
+        const allMeanings = ["Electricidad", "Máquina", "Línea / Cable", "Fuerza / Potencia", "Control", "Eje / Flecha", "Presión", "Cilindro"];
+        const wrongOpts = allMeanings.filter(m => m !== activity.meaning).sort(() => 0.5 - Math.random()).slice(0, 2);
+        const options = [activity.meaning, ...wrongOpts].sort(() => 0.5 - Math.random());
 
-                    if (opt === q.answer) {
-                        triggerHaptic("success");
-                        btn.style.background = "rgba(0, 245, 155, 0.2)";
-                        btn.style.borderColor = "#00f59b";
-                        btn.style.color = "#00f59b";
-                        correctCount++;
-                        setTimeout(nextStep, 320);
-                    } else {
-                        triggerHaptic("error");
-                        btn.style.background = "rgba(255, 68, 68, 0.2)";
-                        btn.style.borderColor = "#ff4444";
-                        btn.style.color = "#ff4444";
-                        integrity = Math.max(0, integrity - 20);
-                        panel.classList.add("shake-it");
-                        setTimeout(() => {
-                            panel.classList.remove("shake-it");
-                            nextStep();
-                        }, 380);
+        card.innerHTML = `
+            <span class="tag" style="border-color:#ffaa00; color:#ffaa00;">VALIDACIÓN DE LECTURA</span>
+            <div class="recognition-hanzi" style="font-size:68px; margin: 12px 0;">${activity.hanzi}</div>
+            <h3 style="font-size:14px; margin-bottom:12px;">¿Cuál es el significado correcto?</h3>
+            <div class="career-quiz-grid" id="lessonQuizGrid"></div>
+        `;
+
+        const grid = card.querySelector("#lessonQuizGrid");
+        options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "cf-btn-option";
+            btn.style.fontSize = "14px";
+            btn.style.padding = "12px 10px";
+            btn.textContent = opt;
+
+            btn.onclick = () => {
+                const allButtons = grid.querySelectorAll("button");
+                allButtons.forEach(b => b.style.pointerEvents = "none");
+
+                if (opt === activity.meaning) {
+                    triggerHaptic("success");
+                    btn.classList.add("btn-correct");
+                    if (!career.completedActivities.includes(activity.id)) {
+                        career.completedActivities.push(activity.id);
                     }
-                };
-                grid.appendChild(btn);
-            });
-        }
-
-        function nextStep() {
-            currentQ++;
-            if (currentQ < assessmentQuestions.length) {
-                showQuestion();
-            } else {
-                finishAssessment();
-            }
-        }
-
-        function finishAssessment() {
-            const passed = integrity >= 80;
-            career.assessmentAttempts++;
-
-            if (passed) {
-                triggerHaptic("win");
-                career.assessmentPassed = true;
-                const reward = 100;
-                awardXP(reward);
-
-                renderCareerPath();
-                renderAchievements();
-                saveProgress();
-
-                panel.innerHTML = `
-                    <div style="max-width:380px; margin:0 auto; padding: 20px 10px 90px; text-align:center;">
-                        <span style="font-size:48px; display:block; margin-bottom:8px;">⚡</span>
-                        <span class="tag" style="border-color:#00f59b; color:#00f59b; margin-bottom:8px;">LÍNEA AUTORIZADA</span>
-                        <h2 style="color:#ffffff; font-size:22px; margin: 8px 0 4px;">¡COMISIONAMIENTO EXITOSO!</h2>
-                        <p style="color:var(--muted); font-size:13px; margin-bottom:16px;">
-                            Integridad: <strong style="color:#00f59b;">${integrity}%</strong> · Aciertos: <strong>${correctCount}/5</strong>
-                        </p>
-                        <button class="reveal-button" style="background:#00f59b; color:#0b1424; font-weight:900; min-height:44px;" onclick="navigateTo('career')">
-                            VER MAPA DE CARRERA →
-                        </button>
-                    </div>
-                `;
-            } else {
-                triggerHaptic("error");
-                saveProgress();
-                panel.innerHTML = `
-                    <div style="max-width:380px; margin:0 auto; padding: 20px 10px 90px; text-align:center;">
-                        <span style="font-size:48px; display:block; margin-bottom:8px;">⚠️</span>
-                        <span class="tag" style="border-color:#ff4444; color:#ff4444; margin-bottom:8px;">FALLA DE INTEGRIDAD</span>
-                        <h2 style="color:#ffffff; font-size:20px; margin: 8px 0 4px;">COMISIONAMIENTO RECHAZADO</h2>
-                        <p style="color:var(--muted); font-size:13px; margin-bottom:18px;">
-                            Integridad: <strong style="color:#ff4444;">${integrity}%</strong> (Mínimo: 80%)
-                        </p>
-                        <button class="reveal-button" style="background:#ffaa00; color:#0b1424; font-weight:900; min-height:44px;" onclick="renderAssessment()">
-                            ↺ REPETIR COMISIONAMIENTO
-                        </button>
-                    </div>
-                `;
-            }
-        }
-
-        showQuestion();
+                    if (!career.nodeStars) career.nodeStars = {};
+                    career.nodeStars[activity.id] = 3;
+                    awardXP(activity.reward);
+                    setTimeout(() => {
+                        alert(`⭐ ¡NIVEL APROBADO! (+${activity.reward} XP)`);
+                        if (typeof window.navigateTo === "function") window.navigateTo("career");
+                        renderCareerPath();
+                    }, 400);
+                } else {
+                    triggerHaptic("error");
+                    btn.classList.add("btn-wrong");
+                    setTimeout(() => {
+                        alert("⚠️ Respuesta incorrecta. Repasa la tarjeta técnica.");
+                        renderLesson(activity);
+                    }, 400);
+                }
+            };
+            grid.appendChild(btn);
+        });
     }
 
     // =====================================
-    // 3. LABORATORIO (LAB) - GLOSARIO TÉCNICO
+    // 4. LABORATORIO CON CATEGORÍAS & BUSCADOR
     // =====================================
+    let currentLabCategory = "all";
 
-    function renderLabComponents(filteredList = LAB_COMPONENTS) {
+    function renderLabComponents(filteredList = null) {
         const container = document.getElementById("labComponentsContainer");
         if (!container) return;
 
+        let list = filteredList;
+        if (!list) {
+            list = currentLabCategory === "all" 
+                ? LAB_COMPONENTS 
+                : LAB_COMPONENTS.filter(c => c.cat === currentLabCategory);
+        }
+
         container.replaceChildren();
 
-        filteredList.forEach(comp => {
+        list.forEach(comp => {
             const card = document.createElement("div");
             card.className = "comp-card";
             card.innerHTML = `
@@ -931,22 +399,30 @@
                     <span class="comp-pinyin">${comp.pinyin}</span>
                 </div>
                 <strong>${comp.es}</strong>
-                <small>${comp.part} · ${comp.cat}</small>
+                <small>${comp.part} · ${comp.catName}</small>
             `;
-
             card.onclick = () => {
                 triggerHaptic("success");
-                alert(`🔬 Componente: ${comp.hanzi} (${comp.pinyin})\nSignificado: ${comp.es}\nAplicación en planta: ${comp.part}\nCategoría: ${comp.cat}`);
+                alert(`🔬 ${comp.hanzi} (${comp.pinyin})
+Significado: ${comp.es}
+Aplicación: ${comp.part}
+Categoría: ${comp.catName}`);
             };
-
             container.appendChild(card);
         });
     }
 
+    window.filterLabCategory = (cat, btnEl) => {
+        currentLabCategory = cat;
+        document.querySelectorAll(".lab-tab-btn").forEach(b => b.classList.remove("active"));
+        if (btnEl) btnEl.classList.add("active");
+        renderLabComponents();
+    };
+
     window.filterLabComponents = (query) => {
         const q = query.trim().toLowerCase();
         if (!q) {
-            renderLabComponents(LAB_COMPONENTS);
+            renderLabComponents();
             return;
         }
         const filtered = LAB_COMPONENTS.filter(c => 
@@ -956,9 +432,8 @@
     };
 
     // =====================================
-    // 4. ESCALAFÓN DE RANGOS INDUSTRIALES
+    // 5. ESCALAFÓN DE RANGOS
     // =====================================
-
     function renderRanksSection() {
         const container = document.getElementById("ranksLadderContainer");
         const headerBadge = document.getElementById("topRankBadge");
@@ -966,7 +441,7 @@
         if (!container) return;
 
         const currentXP = (typeof data !== "undefined" && data.player?.xp) ? data.player.xp : 1850;
-        const { current, next } = getCurrentRank(currentXP);
+        const current = getCurrentRank(currentXP);
 
         if (headerBadge) headerBadge.textContent = `${current.icon} ${current.name}`;
         if (profileRankBadge) profileRankBadge.textContent = `${current.icon} ${current.name} (Rango ${current.id}/10)`;
@@ -998,21 +473,252 @@
     }
 
     // =====================================
-    // 5. SISTEMA DE LOGROS TIPO XBOX (ACHIEVEMENTS)
+    // 6. ARENA 1V1 (CERO MULTISELECCIÓN & SALTO INMEDIATO EN ERROR)
     // =====================================
+    let vsTimer = null;
+    let vsTimeLeft = 20;
+    let myVsPoints = 0;
+    let rivalVsPoints = 0;
 
+    window.openVsMode = () => {
+        stopVsSession();
+        triggerHaptic("success");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("vsBattle");
+        }
+
+        const rivals = [
+            { name: "Servo-Bot IA v4", avatar: "🤖" },
+            { name: "Ing. Chen Wei", avatar: "👨‍💻" },
+            { name: "PLC Omron Test", avatar: "⚙️" }
+        ];
+        const rival = rivals[Math.floor(Math.random() * rivals.length)];
+        document.getElementById("vsRivalName").textContent = rival.name;
+        document.getElementById("vsRivalAvatar").textContent = rival.avatar;
+
+        myVsPoints = 0;
+        rivalVsPoints = 0;
+        vsTimeLeft = 20;
+        document.getElementById("vsMyScore").textContent = "0 PTS";
+        document.getElementById("vsRivalScore").textContent = "0 PTS";
+        document.getElementById("vsSeconds").textContent = vsTimeLeft;
+
+        startVsRound();
+    };
+
+    function startVsRound() {
+        stopVsSession();
+        const timerBar = document.getElementById("vsTimerBar");
+
+        vsTimer = setInterval(() => {
+            vsTimeLeft--;
+            document.getElementById("vsSeconds").textContent = vsTimeLeft;
+            if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
+
+            if (window.ZidongAudio && window.ZidongAudio.playClockTick) {
+                window.ZidongAudio.playClockTick(vsTimeLeft % 2 === 0);
+            }
+
+            if (Math.random() > 0.65) {
+                rivalVsPoints += 50;
+                document.getElementById("vsRivalScore").textContent = `${rivalVsPoints} PTS`;
+            }
+
+            if (vsTimeLeft <= 0) {
+                stopVsSession();
+                finishVsBattle();
+            }
+        }, 1000);
+
+        loadVsQuestion();
+    }
+
+    function loadVsQuestion() {
+        const pool = LAB_COMPONENTS;
+        const item = pool[Math.floor(Math.random() * pool.length)];
+        document.getElementById("vsHanziDisplay").textContent = item.hanzi;
+
+        const otherMeanings = pool.filter(a => a.es !== item.es).map(a => a.es);
+        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
+        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
+
+        const grid = document.getElementById("vsOptionsGrid");
+        grid.replaceChildren();
+
+        options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "cf-btn-option";
+            btn.style.fontSize = "13.5px";
+            btn.style.padding = "12px 10px";
+            btn.textContent = opt;
+
+            btn.onclick = () => {
+                // BLOQUEO INMEDIATO DE TODAS LAS OPCIONES (CERO MULTISELECCIÓN)
+                const allButtons = grid.querySelectorAll("button");
+                allButtons.forEach(b => b.style.pointerEvents = "none");
+
+                if (opt === item.es) {
+                    triggerHaptic("success");
+                    btn.classList.add("btn-correct");
+                    myVsPoints += 100;
+                    document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
+                    setTimeout(loadVsQuestion, 260);
+                } else {
+                    // FALLASTE: SUENA ERROR, NO SUMA PUNTOS, PENALIZA 3 SEGUNDOS Y SALTA
+                    triggerHaptic("error");
+                    btn.classList.add("btn-wrong");
+                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
+                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
+                    setTimeout(loadVsQuestion, 320);
+                }
+            };
+            grid.appendChild(btn);
+        });
+    }
+
+    function finishVsBattle() {
+        stopVsSession();
+        const win = myVsPoints >= rivalVsPoints;
+        if (win) {
+            triggerHaptic("win");
+            awardXP(120);
+            localStorage.setItem("zidong_vs_won", "true");
+            alert(`🏆 ¡VICTORIA! Superaste al rival con ${myVsPoints} vs ${rivalVsPoints} PTS (+120 XP)`);
+        } else {
+            triggerHaptic("error");
+            alert(`💀 DERROTA: El rival anotó ${rivalVsPoints} PTS vs tus ${myVsPoints} PTS.`);
+        }
+        renderAchievements();
+        renderRanksSection();
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("dashboard");
+        }
+    }
+
+    function stopVsSession() {
+        clearInterval(vsTimer);
+        vsTimer = null;
+    }
+
+    window.stopVsSession = stopVsSession;
+
+    // =====================================
+    // 7. COMPANION (SOLO CAMBIA AL TOCAR)
+    // =====================================
+    const COMPANION_MESSAGES = [
+        "¡Línea lista! Modo Survivor en espera. ⚡",
+        "Tip de planta: 电 (diàn) representa potencia en gabinetes.",
+        "Sensores fotoeléctricos calibrados. Cero falso rechazo. 👁️",
+        "Modo 1v1 listo: ¿Podrás ganarle al Servocontrolador IA? ⚔️",
+        "Presión neumática en 6 bar. Cilindros en posición HOME. 💨",
+        "Alerta HMI: Revisa siempre el paro de emergencia antes de resetear. ⚠️",
+        "¡Gran racha técnico! Estás a poco de certificar Área 02. 🏅"
+    ];
+
+    let lastMsgIndex = -1;
+    function interactWithCompanion() {
+        const bubbleText = document.getElementById("companionText");
+        const dogImg = document.getElementById("companionVisual");
+
+        triggerHaptic("success");
+
+        let nextIndex;
+        do {
+            nextIndex = Math.floor(Math.random() * COMPANION_MESSAGES.length);
+        } while (nextIndex === lastMsgIndex);
+        lastMsgIndex = nextIndex;
+
+        if (bubbleText) {
+            bubbleText.style.opacity = "0";
+            setTimeout(() => {
+                bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
+                bubbleText.style.opacity = "1";
+            }, 120);
+        }
+
+        if (dogImg) {
+            dogImg.style.transform = "scale(0.92) translateY(4px)";
+            setTimeout(() => { dogImg.style.transform = "scale(1) translateY(0)"; }, 180);
+        }
+    }
+
+    // =====================================
+    // 8. MEDALLAS & PERFIL
+    // =====================================
+    function renderBadgesGrid() {
+        const container = document.getElementById("badgesContainer");
+        if (!container) return;
+
+        container.replaceChildren();
+        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || "RL";
+
+        MEDALS_DB.forEach(medal => {
+            const unlocked = medal.isUnlocked();
+            const isEquipped = currentEquipped === medal.icon;
+
+            const badgeEl = document.createElement("div");
+            badgeEl.className = `badge-item ${unlocked ? "" : "locked"} ${isEquipped ? "equipped" : ""}`;
+            badgeEl.innerHTML = `
+                <span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span>
+                <span class="badge-title">${medal.name}</span>
+            `;
+
+            if (unlocked) {
+                badgeEl.onclick = () => {
+                    const newEquip = isEquipped ? "RL" : medal.icon;
+                    localStorage.setItem("zidong_equipped_badge", newEquip);
+                    triggerHaptic("success");
+                    renderBadgesGrid();
+                    applyAvatarIcon(newEquip);
+                };
+            }
+            container.appendChild(badgeEl);
+        });
+    }
+
+    function applyAvatarIcon(icon) {
+        const profileAvatar = document.getElementById("profileAvatar");
+        const topAvatar = document.getElementById("topAvatar");
+        [profileAvatar, topAvatar].forEach(el => {
+            if (!el) return;
+            el.textContent = icon;
+            if (icon !== "RL") el.classList.add("custom-icon");
+            else el.classList.remove("custom-icon");
+        });
+    }
+
+    function updateProfile() {
+        const player = (typeof data !== "undefined" && data.player) ? data.player : { xp: 1850, level: 5, streak: 5 };
+        const xp = document.getElementById("profileXP");
+        const level = document.getElementById("profileLevel");
+        const streak = document.getElementById("profileStreak");
+        const completed = document.getElementById("profileCompleted");
+
+        if (xp) xp.textContent = Number(player.xp || 1850).toLocaleString("en-US");
+        if (level) level.textContent = "05";
+        if (streak) streak.textContent = "5 Días";
+        if (completed) completed.textContent = career.completedActivities.length;
+
+        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
+        applyAvatarIcon(savedIcon);
+        renderBadgesGrid();
+        renderRanksSection();
+    }
+
+    // =====================================
+    // 9. LOGROS XBOX & MISIONES MODAL
+    // =====================================
     function renderAchievements() {
         const container = document.getElementById("achievementsListContainer");
         const totalScoreEl = document.getElementById("totalGamerscore");
         if (!container) return;
 
         container.replaceChildren();
-
-        let currentTotalG = 0;
+        let totalG = 0;
 
         XBOX_ACHIEVEMENTS.forEach(ach => {
             const isUnlocked = ach.unlocked();
-            if (isUnlocked) currentTotalG += ach.score;
+            if (isUnlocked) totalG += ach.score;
 
             const card = document.createElement("div");
             card.className = `achieve-card ${isUnlocked ? "unlocked" : "locked"}`;
@@ -1030,304 +736,55 @@
             container.appendChild(card);
         });
 
-        if (totalScoreEl) totalScoreEl.textContent = `${currentTotalG} G`;
+        if (totalScoreEl) totalScoreEl.textContent = `${totalG} G`;
     }
-
-    // =====================================
-    // 6. VITRINA DE MEDALLAS / INSIGNIAS EN PROFILE
-    // =====================================
-
-    function renderBadgesGrid() {
-        const container = document.getElementById("badgesContainer");
-        if (!container) return;
-
-        container.replaceChildren();
-        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || "RL";
-
-        MEDALS_DB.forEach(medal => {
-            const unlocked = medal.isUnlocked();
-            const isEquipped = currentEquipped === medal.icon;
-
-            const badgeEl = document.createElement("div");
-            badgeEl.className = `badge-item ${unlocked ? "" : "locked"} ${isEquipped ? "equipped" : ""}`;
-            badgeEl.title = unlocked ? `${medal.name}: ${medal.desc}` : `Bloqueada: ${medal.desc}`;
-
-            badgeEl.innerHTML = `
-                <span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span>
-                <span class="badge-title">${medal.name}</span>
-            `;
-
-            if (unlocked) {
-                badgeEl.onclick = () => {
-                    const newEquip = isEquipped ? "RL" : medal.icon;
-                    localStorage.setItem("zidong_equipped_badge", newEquip);
-                    triggerHaptic("success");
-                    renderBadgesGrid();
-                    applyAvatarIcon(newEquip);
-                };
-            }
-
-            container.appendChild(badgeEl);
-        });
-    }
-
-    function applyAvatarIcon(icon) {
-        const profileAvatar = document.getElementById("profileAvatar");
-        const topAvatar = document.getElementById("topAvatar");
-
-        [profileAvatar, topAvatar].forEach(el => {
-            if (!el) return;
-            el.textContent = icon;
-            if (icon !== "RL") {
-                el.classList.add("custom-icon");
-            } else {
-                el.classList.remove("custom-icon");
-            }
-        });
-    }
-
-    function updateProfile() {
-        const player = (typeof data !== "undefined" && data.player) ? data.player : { xp: 1850, level: 5, streak: 5 };
-        const profileSection = document.querySelector("#profile");
-        if (!profileSection) return;
-
-        const xp = profileSection.querySelector("#profileXP");
-        const level = profileSection.querySelector("#profileLevel");
-        const streak = profileSection.querySelector("#profileStreak");
-        const completed = profileSection.querySelector("#profileCompleted");
-
-        if (xp) xp.textContent = formatNumber(player.xp);
-        if (level) level.textContent = String(player.level).padStart(2, "0");
-        if (streak) streak.textContent = `${player.streak} Días`;
-        if (completed) completed.textContent = career.completedActivities.length;
-
-        const savedIcon = localStorage.getItem("zidong_equipped_badge") || "RL";
-        applyAvatarIcon(savedIcon);
-        renderBadgesGrid();
-        renderRanksSection();
-    }
-
-    // =====================================
-    // 7. COMPANION INTERACTION (SOLO AL TOCAR)
-    // =====================================
-
-    const COMPANION_MESSAGES = [
-        "¡Línea lista! Modo Survivor en espera. ⚡",
-        "Tip de planta: 电 (diàn) representa la potencia en gabinetes.",
-        "Sensores fotoeléctricos calibrados. Cero falso rechazo. 👁️",
-        "Modo 1v1 listo: ¿Podrás ganarle al Servocontrolador IA? ⚔️",
-        "Presión neumática en 6 bar. Cilindros en posición HOME. 💨",
-        "Alerta HMI: Revisa siempre el paro de emergencia antes de resetear. ⚠️",
-        "¡Gran racha técnico! Estás a poco de certificar Área 02. 🏅",
-        "Intervención de emergencia: Cada segundo cuenta en la línea."
-    ];
-
-    let lastMsgIndex = -1;
-
-    function interactWithCompanion() {
-        const bubbleText = document.getElementById("companionText");
-        const dogImg = document.getElementById("companionVisual");
-
-        triggerHaptic("success");
-
-        let nextIndex;
-        do {
-            nextIndex = Math.floor(Math.random() * COMPANION_MESSAGES.length);
-        } while (nextIndex === lastMsgIndex);
-        
-        lastMsgIndex = nextIndex;
-
-        if (bubbleText) {
-            bubbleText.style.opacity = "0";
-            setTimeout(() => {
-                bubbleText.textContent = COMPANION_MESSAGES[nextIndex];
-                bubbleText.style.opacity = "1";
-            }, 120);
-        }
-
-        if (dogImg) {
-            dogImg.style.transform = "scale(0.92) translateY(4px)";
-            setTimeout(() => {
-                dogImg.style.transform = "scale(1) translateY(0)";
-            }, 180);
-        }
-    }
-
-    // =====================================
-    // 8. ARENA 1V1 BATTLE (CON TIC-TAC DE RELOJ REAL)
-    // =====================================
-
-    let vsTimer = null;
-    let vsTimeLeft = 20;
-    let myVsPoints = 0;
-    let rivalVsPoints = 0;
-
-    window.openVsMode = () => {
-        triggerHaptic("success");
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("vsBattle");
-        }
-
-        const opponents = (typeof data !== "undefined" && data.vsOpponents) ? data.vsOpponents : [
-            { name: "Servo-Bot IA v4.2", avatar: "🤖" },
-            { name: "Chen Wei (PE)", avatar: "👨‍💻" }
-        ];
-        const rival = opponents[Math.floor(Math.random() * opponents.length)];
-        
-        document.getElementById("vsRivalName").textContent = rival.name;
-        document.getElementById("vsRivalAvatar").textContent = rival.avatar;
-
-        myVsPoints = 0;
-        rivalVsPoints = 0;
-        vsTimeLeft = 20;
-        document.getElementById("vsMyScore").textContent = "0 PTS";
-        document.getElementById("vsRivalScore").textContent = "0 PTS";
-        document.getElementById("vsSeconds").textContent = vsTimeLeft;
-
-        startVsRound();
-    };
-
-    function startVsRound() {
-        clearInterval(vsTimer);
-        const timerBar = document.getElementById("vsTimerBar");
-        
-        vsTimer = setInterval(() => {
-            vsTimeLeft--;
-            document.getElementById("vsSeconds").textContent = vsTimeLeft;
-            if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
-
-            // SONIDO TIC-TAC DE RELOJ SINTETIZADO (CADA SEGUNDO)
-            if (window.ZidongAudio && window.ZidongAudio.playClockTick) {
-                window.ZidongAudio.playClockTick(vsTimeLeft % 2 === 0);
-            }
-
-            // IA rival anota puntos aleatoriamente simulando velocidad
-            if (Math.random() > 0.65) {
-                rivalVsPoints += 50;
-                document.getElementById("vsRivalScore").textContent = `${rivalVsPoints} PTS`;
-            }
-
-            if (vsTimeLeft <= 0) {
-                clearInterval(vsTimer);
-                finishVsBattle();
-            }
-        }, 1000);
-
-        loadVsQuestion();
-    }
-
-    function loadVsQuestion() {
-        const item = activities[Math.floor(Math.random() * activities.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.hanzi;
-
-        const otherMeanings = activities.filter(a => a.meaning !== item.meaning).map(a => a.meaning);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.meaning, ...shuffled].sort(() => 0.5 - Math.random());
-
-        const grid = document.getElementById("vsOptionsGrid");
-        grid.replaceChildren();
-
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "14px";
-            btn.style.padding = "12px 10px";
-            btn.textContent = opt;
-
-            btn.onclick = () => {
-                if (opt === item.meaning) {
-                    triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsQuestion, 280);
-                } else {
-                    triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                }
-            };
-            grid.appendChild(btn);
-        });
-    }
-
-    function finishVsBattle() {
-        const win = myVsPoints >= rivalVsPoints;
-        if (win) {
-            triggerHaptic("win");
-            awardXP(120);
-            localStorage.setItem("zidong_vs_won", "true");
-            alert(`🏆 ¡VICTORIA! Superaste al rival con ${myVsPoints} vs ${rivalVsPoints} PTS (+120 XP)`);
-        } else {
-            triggerHaptic("error");
-            alert(`⚠️ DERROTA: El rival anotó ${rivalVsPoints} PTS frente a tus ${myVsPoints} PTS.`);
-        }
-        renderAchievements();
-        renderRanksSection();
-        saveProgress();
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("dashboard");
-        }
-    }
-
-    // =====================================
-    // 9. MODAL DE MISIONES DIARIAS
-    // =====================================
 
     window.toggleDailyMissionsModal = () => {
         const modal = document.getElementById("dailyMissionsModal");
         if (!modal) return;
         const isHidden = modal.style.display === "none";
         modal.style.display = isHidden ? "flex" : "none";
-        if (isHidden) {
-            triggerHaptic("success");
-            updateMissionProgress();
-        }
+        if (isHidden) triggerHaptic("success");
     };
 
     window.closeMissionsModal = (e) => {
-        if (e.target.id === "dailyMissionsModal") {
-            window.toggleDailyMissionsModal();
-        }
+        if (e.target.id === "dailyMissionsModal") window.toggleDailyMissionsModal();
     };
 
     window.claimDailyReward = () => {
         const lastClaim = localStorage.getItem("zidong_last_daily_claim");
         const today = new Date().toDateString();
-
         if (lastClaim === today) {
             triggerHaptic("error");
             alert("¡Recompensa diaria ya reclamada hoy! Vuelve mañana.");
             return;
         }
-
         awardXP(100);
         localStorage.setItem("zidong_last_daily_claim", today);
         triggerHaptic("win");
-
         const sub = document.getElementById("dailyRewardSubtitle");
         if (sub) sub.textContent = "¡Reclamado hoy! ✓";
-
         alert("🎁 ¡Has recibido +100 XP por tu bono diario!");
-        saveProgress();
     };
 
     // =====================================
-    // 10. INITIALIZE APPLICATION
+    // 10. INICIALIZACIÓN
     // =====================================
-
     function initializeApplication() {
         loadSavedProgress();
-        updateMissionProgress();
         renderCareerPath();
         renderLabComponents();
         renderRanksSection();
         renderAchievements();
         updateProfile();
-        updateAssessmentVisibility();
+
+        // Sonido de inicio suave estilo Zelda
+        if (window.ZidongAudio) {
+            window.ZidongAudio.startDashboardZelda();
+        }
 
         console.log("--------------------------------");
-        console.log("ZIDONG CORE 3.1: SYSTEM READY");
+        console.log("ZIDONG CORE 4.0: SYSTEM READY");
         console.log("--------------------------------");
     }
 

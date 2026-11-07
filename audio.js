@@ -1,9 +1,10 @@
 /* ==========================================================================
-   ZIDONG AUDIO ENGINE 8.0 (WEB AUDIO API)
-   - Loop espacial de lobby ultracorto (3s) para corte instantáneo al cambiar de menú
-   - Suspenso tenso para Survivor Mode (+3s por alarma)
-   - Mario Castle + Tic-Tac para 1v1
-   - Pausa estricta en segundo plano / corte inmediato
+   ZIDONG AUDIO ENGINE 10.0 (WEB AUDIO API NATIVA)
+   - Reproducción inmediata en Career Mode (menú de mundos planetarios)
+   - Feedback acústico al seleccionar mundos
+   - Suspenso tenso para Survivor Mode (+3s)
+   - Mario Castle + Tic-Tac para 1v1 Battle
+   - Loop espacial en Lobby
    ========================================================================== */
 
 (() => {
@@ -12,7 +13,7 @@
     let audioCtx = null;
     let currentInterval = null;
     let isMuted = false;
-    let currentTrack = "";
+    let currentTrackName = "";
 
     function getAudioContext() {
         if (!audioCtx) {
@@ -32,10 +33,10 @@
             clearInterval(currentInterval);
             currentInterval = null;
         }
-        currentTrack = "";
+        currentTrackName = "";
     }
 
-    // SONIDO ACIERTO / BONO +3S
+    // SONIDO ACIERTO
     function playSuccess() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -47,7 +48,7 @@
 
         osc.type = "sine";
         osc.frequency.setValueAtTime(587.33, now); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.1); // A5
 
         gain.gain.setValueAtTime(0.12, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
@@ -71,19 +72,19 @@
 
         osc.type = "triangle";
         osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(80, now + 0.18);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.16);
 
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(now);
-        osc.stop(now + 0.22);
+        osc.stop(now + 0.2);
     }
 
-    // SONIDO COLAPSO
+    // SONIDO COLAPSO LÍNEA
     function playLineCollapse() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -97,7 +98,7 @@
         osc.frequency.setValueAtTime(120, now);
         osc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
 
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(0.24, now);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
 
         osc.connect(gain);
@@ -105,6 +106,30 @@
 
         osc.start(now);
         osc.stop(now + 0.6);
+    }
+
+    // SONIDO PLANETA / MUNDO INTERACTIVO
+    function playPlanetChime() {
+        if (isMuted || document.hidden) return;
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.18);
+
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.38);
     }
 
     // SONIDO VICTORIA
@@ -133,7 +158,7 @@
         });
     }
 
-    // RELOJ TIC-TAC PARA 1V1
+    // TIC-TAC DE RELOJ (1V1)
     function playClockTick(isTock = false) {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -144,10 +169,10 @@
         const gain = ctx.createGain();
 
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(isTock ? 700 : 1100, now);
+        osc.frequency.setValueAtTime(isTock ? 720 : 1150, now);
         osc.frequency.exponentialRampToValueAtTime(80, now + 0.035);
 
-        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.setValueAtTime(0.08, now);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
 
         osc.connect(gain);
@@ -157,10 +182,10 @@
         osc.stop(now + 0.045);
     }
 
-    // 1. MÚSICA DE LOBBY ESPACIAL CORTA (3s LOOP PARA CORTE INSTANTÁNEO)
+    // 1. MÚSICA LOBBY / DASHBOARD
     const SPACE_CHORDS = [
-        [440, 554.37, 659.25], // A major
-        [392, 493.88, 587.33]  // G major
+        [440, 554.37, 659.25],
+        [392, 493.88, 587.33]
     ];
     let spaceStep = 0;
 
@@ -181,7 +206,7 @@
             osc.frequency.setValueAtTime(freq, now);
 
             gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.025, now + 0.4);
+            gain.gain.linearRampToValueAtTime(0.022, now + 0.4);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
 
             osc.connect(gain);
@@ -208,8 +233,8 @@
         const isAccent = (suspenseBeat % 4 === 1);
 
         osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(isAccent ? 78 : 60, now);
-        osc.frequency.exponentialRampToValueAtTime(35, now + 0.35);
+        osc.frequency.setValueAtTime(isAccent ? 75 : 58, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.35);
 
         filter.type = "lowpass";
         filter.frequency.setValueAtTime(isAccent ? 320 : 180, now);
@@ -254,17 +279,55 @@
         osc.stop(now + 0.18);
     }
 
-    // CAMBIAR PISTA AL NAVEGAR (CORTE LIMPIO E INMEDIATO)
+    // 4. MÚSICA CAREER MODE / MUNDOS PLANETARIOS (ARPEGIO ESPACIAL CÁLIDO)
+    const OBERON_CHORDS = [
+        [220, 261.63, 329.63, 440],
+        [261.63, 329.63, 392.00, 523],
+        [196.00, 246.94, 293.66, 392]
+    ];
+    let oberonStep = 0;
+
+    function playOberonLoop() {
+        if (isMuted || document.hidden) return;
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const chord = OBERON_CHORDS[oberonStep % OBERON_CHORDS.length];
+        oberonStep++;
+
+        chord.forEach(freq => {
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.025, now + 0.6);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 2.7);
+        });
+    }
+
     function switchTrack(trackName) {
-        if (currentTrack === trackName) return;
+        if (currentTrackName === trackName) return;
         stopAllMusic();
-        currentTrack = trackName;
+        currentTrackName = trackName;
 
         if (isMuted || document.hidden) return;
 
         if (trackName === "dashboard") {
             playSpaceShortLoop();
-            currentInterval = setInterval(playSpaceShortLoop, 2800); // Bucle corto de 2.8s
+            currentInterval = setInterval(playSpaceShortLoop, 2800);
+        } else if (trackName === "career" || trackName === "oberon") {
+            playOberonLoop();
+            currentInterval = setInterval(playOberonLoop, 2900);
         } else if (trackName === "survivor") {
             suspenseBeat = 0;
             playSuspenseBeat();
@@ -284,8 +347,8 @@
             if (btn) btn.textContent = "🔈";
         } else {
             if (btn) btn.textContent = "🔊";
-            const target = currentTrack || "dashboard";
-            currentTrack = "";
+            const target = currentTrackName || "dashboard";
+            currentTrackName = "";
             switchTrack(target);
         }
         return isMuted;
@@ -294,9 +357,9 @@
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
             stopAllMusic();
-        } else if (!isMuted && currentTrack) {
-            const prev = currentTrack;
-            currentTrack = "";
+        } else if (!isMuted && currentTrackName) {
+            const prev = currentTrackName;
+            currentTrackName = "";
             switchTrack(prev);
         }
     });
@@ -307,6 +370,7 @@
         playLineCollapse,
         playVictory,
         playClockTick,
+        playPlanetChime,
         switchTrack,
         stopAllMusic,
         toggleMute,

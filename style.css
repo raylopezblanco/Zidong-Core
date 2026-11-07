@@ -2362,3 +2362,125 @@ html, body {
     color: var(--gold);
     flex-shrink: 0;
 }
+
+
+/* ==========================================================================
+   ESTILOS V10: TABLA DE CLASIFICATORIA (LEADERBOARD) Y REAJUSTE DE ALINEACIÓN
+   ========================================================================== */
+
+/* TABLA DE CLASIFICATORIA INDUSTRIAL (ONLINE-READY) */
+.lb-my-card {
+    background: linear-gradient(135deg, rgba(39, 216, 232, 0.15), rgba(17, 31, 53, 0.95));
+    border: 1.5px solid var(--cyan);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 18px rgba(39, 216, 232, 0.25);
+    width: 100%;
+}
+
+.lb-my-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--cyan);
+    flex-shrink: 0;
+}
+
+.lb-my-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.lb-my-score {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.lb-table-wrapper {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 8px 12px 14px 12px;
+    width: 100%;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.lb-table-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 4px 8px 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 9.5px;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+}
+
+.lb-table-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.lb-rank-row {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.12s ease;
+}
+
+.lb-rank-row.lb-highlight-me {
+    border-color: var(--cyan) !important;
+    background: linear-gradient(90deg, rgba(39, 216, 232, 0.18), var(--surface-light)) !important;
+    box-shadow: 0 0 12px rgba(39, 216, 232, 0.25);
+}
+
+.lb-pos {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--gold);
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.lb-user-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.lb-xp-tag {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.lb-xp-tag strong {
+    font-size: 13.5px;
+    color: var(--green);
+    display: block;
+    line-height: 1.1;
+}
+
+.lb-xp-tag small {
+    font-size: 8.5px;
+    color: var(--gold);
+    font-weight: 800;
+}

@@ -1,8 +1,8 @@
 /* ==========================================================================
-   ZIDONG NAVIGATION ENGINE 7.0
-   - Navegación estricta de pantalla completa (display: none forzado)
-   - Transición de audio instantánea por menú
-   - Detención segura de timers y sesiones activas
+   ZIDONG NAVIGATION ENGINE 10.0
+   - Enrutamiento estricto: Oculta Dashboard y muestra la sección solicitada
+   - Transición de audio limpia (incluye música al entrar a los mundos de Career)
+   - Actualización de barra inferior con Clasificatoria (Ranking)
    ========================================================================== */
 
 (() => {
@@ -21,18 +21,18 @@
         if (window.ZidongAudio) {
             if (pageId === "dashboard") {
                 window.ZidongAudio.switchTrack("dashboard");
+            } else if (pageId === "career" || pageId === "worldDetailsView" || pageId === "level01" || pageId === "assessment") {
+                window.ZidongAudio.switchTrack("career"); // Música de exploración espacial en Career Mode
             } else if (pageId === "arcade") {
                 window.ZidongAudio.switchTrack("survivor");
             } else if (pageId === "vsBattle") {
                 window.ZidongAudio.switchTrack("vsBattle");
-            } else if (pageId === "career" || pageId === "worldDetailsView" || pageId === "level01" || pageId === "assessment") {
-                window.ZidongAudio.switchTrack("oberon");
             } else {
                 window.ZidongAudio.stopAllMusic();
             }
         }
 
-        // 3. Ocultar todas las páginas
+        // 3. Ocultar todas las páginas estrictamente
         const allPages = document.querySelectorAll(".page");
         allPages.forEach(p => {
             p.classList.remove("active");
@@ -47,23 +47,26 @@
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        // 5. Actualizar barra inferior
+        // 5. Actualizar barra inferior (Home, Mundos, Ranking, Rangos)
         const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
         navButtons.forEach(btn => btn.classList.remove("active"));
 
         if (pageId === "dashboard") {
             navButtons[0]?.classList.add("active");
-        } else if (pageId === "hanziLab") {
+        } else if (pageId === "career" || pageId === "worldDetailsView") {
             navButtons[1]?.classList.add("active");
-        } else if (pageId === "ranksLadderPage") {
+        } else if (pageId === "leaderboard") {
             navButtons[2]?.classList.add("active");
-        } else if (pageId === "achievementsPage") {
+        } else if (pageId === "ranksLadderPage") {
             navButtons[3]?.classList.add("active");
         }
 
         // 6. Refrescar vistas
         if (pageId === "career" && typeof window.renderCareerPlanetsMenu === "function") {
             window.renderCareerPlanetsMenu();
+        }
+        if (pageId === "leaderboard" && typeof window.renderLeaderboardSection === "function") {
+            window.renderLeaderboardSection();
         }
         if (pageId === "ranksLadderPage" && typeof window.renderRanksSection === "function") {
             window.renderRanksSection();

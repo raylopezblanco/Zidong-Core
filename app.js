@@ -1,10 +1,9 @@
 /* ==========================================================================
-   ZIDONG CORE 5.0 - APPLICATION ENGINE
-   - 5 Mundos desbloqueados por defecto
-   - Modificación de nombre 1 SOLA VEZ con advertencia estricta
-   - Diálogo troll del Cyberdog con el nombre ("Mejor te hubieras puesto Chilaquil...")
-   - Panel emergente rojo de derrota en 1v1 dicho por la IA
-   - Nuevos logros Xbox y medallas bloqueadas/desbloqueables
+   ZIDONG CORE 6.0 - APPLICATION ENGINE
+   - Default user: "New user"
+   - Diálogo troll del Cyberdog adaptativo a Chilaquil
+   - Menú de Career Mode en planetas orbitales 3D y vista desglosada al tocar
+   - Navegación aislada por página sin solapar debajo del home
    ========================================================================== */
 
 (() => {
@@ -23,18 +22,19 @@
         }
     }
 
-    const STORAGE_KEY = "zidong_core_progress_v5";
+    const STORAGE_KEY = "zidong_core_progress_v6";
 
     // =====================================
-    // 1. LOS 5 MUNDOS TOTALMENTE DESBLOQUEADOS
+    // 1. LOS 5 MUNDOS / PLANETAS DE PLANTA
     // =====================================
     const WORLDS_CONFIG = [
         {
             id: "world_1",
-            title: "MUNDO 01: ELÉCTRICA",
+            title: "PLANETA ELÉCTRICA",
             subtitle: "Potencia, Gabinetes y Señales",
             icon: "⚡",
             color: "#27d8e8",
+            planetClass: "planet-electric",
             unlocked: true,
             activities: [
                 { id: "h_001", hanzi: "电", pinyin: "diàn", meaning: "Electricidad", example: "电缆 (diànlǎn) Cable", reward: 50 },
@@ -46,10 +46,11 @@
         },
         {
             id: "world_2",
-            title: "MUNDO 02: MECÁNICA",
+            title: "PLANETA MECÁNICA",
             subtitle: "Servomotores, Ejes y Husillos",
             icon: "⚙️",
             color: "#ffc857",
+            planetClass: "planet-mechanical",
             unlocked: true,
             activities: [
                 { id: "h_006", hanzi: "轴", pinyin: "zhóu", meaning: "Eje / Flecha", example: "伺服轴 (sìfú zhóu) Eje Servo", reward: 60 },
@@ -61,10 +62,11 @@
         },
         {
             id: "world_3",
-            title: "MUNDO 03: NEUMÁTICA",
+            title: "PLANETA NEUMÁTICA",
             subtitle: "Presión, Cilindros y Válvulas",
             icon: "💨",
             color: "#00f59b",
+            planetClass: "planet-pneumatic",
             unlocked: true,
             activities: [
                 { id: "h_011", hanzi: "气", pinyin: "qì", meaning: "Aire / Gas", example: "气缸 (qìgāng) Cilindro", reward: 70 },
@@ -76,10 +78,11 @@
         },
         {
             id: "world_4",
-            title: "MUNDO 04: ROBÓTICA & AGV",
+            title: "PLANETA ROBÓTICA & AGV",
             subtitle: "Celdas Fanuc, Trayectorias y AGVs",
             icon: "🤖",
             color: "#a78bfa",
+            planetClass: "planet-robotics",
             unlocked: true,
             activities: [
                 { id: "h_016", hanzi: "手", pinyin: "shǒu", meaning: "Brazo / Gripper", example: "机械手 (jīxièshǒu) Robot", reward: 80 },
@@ -91,10 +94,11 @@
         },
         {
             id: "world_5",
-            title: "MUNDO 05: VISIÓN AOI",
+            title: "PLANETA VISIÓN AOI",
             subtitle: "Cámaras, Iluminación y Lentes",
             icon: "👁️",
             color: "#ff7777",
+            planetClass: "planet-vision",
             unlocked: true,
             activities: [
                 { id: "h_021", hanzi: "光", pinyin: "guāng", meaning: "Luz / Óptica", example: "光源 (guāngyuán) Estroboscopio", reward: 90 },
@@ -145,7 +149,7 @@
         { id: 10, name: "Maestro de Programación", minXP: 10000, icon: "👑", desc: "Dominio absoluto de la línea y Cero Downtime" }
     ];
 
-    // MEDALLAS (INCLUYENDO DERROTADOR DE IA Y SOLUCIONADOR DE FALLAS BÁSICO)
+    // MEDALLAS
     const MEDALS_DB = [
         {
             id: "b_practicante",
@@ -191,17 +195,17 @@
         }
     ];
 
-    // LOGROS TIPO XBOX
+    // LOGROS XBOX
     const XBOX_ACHIEVEMENTS = [
         { id: "ach_welcome", title: "Técnico en Planta", desc: "Inicia tu primer turno e interactúa con el Cyberdog.", score: 50, icon: "🤖", unlocked: () => true },
-        { id: "ach_worlds", title: "Explorador de Planta", desc: "Visita los 5 mundos industriales disponibles.", score: 100, icon: "🗺️", unlocked: () => true },
+        { id: "ach_worlds", title: "Explorador Planetario", desc: "Explora los 5 planetas industriales disponibles.", score: 100, icon: "🪐", unlocked: () => true },
         { id: "ach_first_circuit", title: "Primer Circuito Energizado", desc: "Domina tu primer componente eléctrico.", score: 100, icon: "⚡", unlocked: () => career.completedActivities.length >= 1 },
         { id: "ach_survivor_hero", title: "Ingeniero de Choque", desc: "Resuelve con éxito una alarma crítica HMI.", score: 150, icon: "🚨", unlocked: () => Number(localStorage.getItem("zidong_survivor_wins") || 0) >= 1 },
         { id: "ach_ai_tamer", title: "Domador de Servocontroladores", desc: "Derrota a la IA 1 vez en Duelo 1v1.", score: 200, icon: "⚔️", unlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 }
     ];
 
     // =====================================
-    // 2. PROGRESS STATE
+    // 2. PROGRESS STATE (NOMBRE DEFAULT: "New user")
     // =====================================
     const career = {
         completedActivities: ["h_001"],
@@ -210,8 +214,8 @@
     };
 
     let currentUserData = {
-        name: "Raymundo Lopez",
-        initials: "RL",
+        name: "New user",
+        initials: "NU",
         xp: 1850,
         level: 5,
         streak: 5
@@ -223,11 +227,18 @@
             if (savedName) {
                 currentUserData.name = savedName;
                 currentUserData.initials = getInitials(savedName);
+            } else {
+                currentUserData.name = "New user";
+                currentUserData.initials = "NU";
             }
 
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
             if (saved) {
-                if (saved.player) Object.assign(currentUserData, saved.player);
+                if (saved.player) {
+                    currentUserData.xp = saved.player.xp || 1850;
+                    currentUserData.level = saved.player.level || 5;
+                    currentUserData.streak = saved.player.streak || 5;
+                }
                 if (saved.career) {
                     career.completedActivities = saved.career.completedActivities || ["h_001"];
                     career.assessmentPassed = Boolean(saved.career.assessmentPassed);
@@ -280,7 +291,7 @@
     }
 
     // =====================================
-    // 3. EDICIÓN DE NOMBRE (SOLO 1 VEZ CON ADVERTENCIA)
+    // 3. EDICIÓN DE NOMBRE (1 SOLA VEZ)
     // =====================================
     window.editUserNameOnce = () => {
         const alreadyChanged = localStorage.getItem("zidong_name_changed") === "true";
@@ -294,9 +305,9 @@
         
         if (!confirm(warningMsg)) return;
 
-        const newName = prompt("Escribe tu nombre y apellido técnico definitivo:", currentUserData.name);
-        if (!newName || newName.trim().length < 3) {
-            alert("Operación cancelada: El nombre debe tener al menos 3 caracteres.");
+        const newName = prompt("Escribe tu nombre y apellido definitivo:", currentUserData.name);
+        if (!newName || newName.trim().length < 2) {
+            alert("Operación cancelada: El nombre es muy corto.");
             return;
         }
 
@@ -335,54 +346,76 @@
     }
 
     // =====================================
-    // 4. MUNDOS INFINITOS EN CAREER
+    // 4. CAREER MODE EN MENÚ PLANETARIO COMPACTO
     // =====================================
-    function renderCareerPath() {
-        const container = document.getElementById("careerWorldsContainer");
+    function renderCareerPlanetsMenu() {
+        const container = document.getElementById("careerPlanetsGrid");
         if (!container) return;
 
         container.replaceChildren();
 
         WORLDS_CONFIG.forEach((world, wIdx) => {
-            const worldCard = document.createElement("div");
-            worldCard.className = "career-world-block world-unlocked";
+            const planetCard = document.createElement("div");
+            planetCard.className = `planet-menu-item ${world.planetClass}`;
 
-            worldCard.innerHTML = `
-                <div class="world-header" style="border-left: 4px solid ${world.color};">
-                    <div class="world-icon">${world.icon}</div>
-                    <div class="world-title-box">
-                        <span class="world-tag" style="color:${world.color};">${world.title}</span>
-                        <h3>${world.subtitle}</h3>
+            planetCard.innerHTML = `
+                <div class="planet-sphere-wrapper">
+                    <div class="planet-sphere" style="box-shadow: 0 0 25px ${world.color}88, inset -8px -8px 18px rgba(0,0,0,0.8), inset 6px 6px 14px rgba(255,255,255,0.4);">
+                        <span class="planet-core-icon">${world.icon}</span>
                     </div>
-                    <span class="world-status-badge">DESBLOQUEADO</span>
+                    <div class="planet-orbit-ring" style="border-color:${world.color}66;"></div>
                 </div>
-                <div class="world-nodes-stream" id="stream_${world.id}"></div>
+
+                <div class="planet-menu-meta">
+                    <span class="planet-tag" style="color:${world.color};">MUNDO 0${wIdx + 1}</span>
+                    <h4>${world.title}</h4>
+                    <p>${world.subtitle}</p>
+                    <span class="planet-enter-badge">EXPLORAR PLANETA →</span>
+                </div>
             `;
 
-            const stream = worldCard.querySelector(`#stream_${world.id}`);
-            world.activities.forEach((act, aIdx) => {
-                const isCompleted = career.completedActivities.includes(act.id);
-                const stars = (career.nodeStars && career.nodeStars[act.id]) || (isCompleted ? 3 : 0);
-                const nodeEl = document.createElement("div");
-                nodeEl.className = `path-step ${aIdx % 2 === 0 ? "left" : "right"}`;
+            planetCard.onclick = () => openWorldDetails(world);
+            container.appendChild(planetCard);
+        });
+    }
 
-                nodeEl.innerHTML = `
-                    <div class="path-node ${isCompleted ? "completed" : "current"}">
-                        <span>${isCompleted ? "✓" : act.hanzi}</span>
-                    </div>
-                    <div class="path-label">
-                        <strong>Nivel 0${wIdx * 5 + aIdx + 1} · ${act.meaning} ${isCompleted ? "⭐".repeat(stars) : ""}</strong>
-                        <small>${act.example}</small>
-                        <span class="node-action">${isCompleted ? "REPETIR TEST ↺" : "INICIAR ⚡"}</span>
-                    </div>
-                `;
+    function openWorldDetails(world) {
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("worldDetailsView");
+        }
 
-                nodeEl.style.cursor = "pointer";
-                nodeEl.onclick = () => openActivity(act);
-                stream.appendChild(nodeEl);
-            });
+        const titleEl = document.getElementById("selectedWorldTitle");
+        const subEl = document.getElementById("selectedWorldSubtitle");
+        const iconEl = document.getElementById("selectedWorldIcon");
+        const stream = document.getElementById("selectedWorldStream");
 
-            container.appendChild(worldCard);
+        if (titleEl) titleEl.textContent = world.title;
+        if (subEl) subEl.textContent = world.subtitle;
+        if (iconEl) iconEl.textContent = world.icon;
+
+        if (!stream) return;
+        stream.replaceChildren();
+
+        world.activities.forEach((act, aIdx) => {
+            const isCompleted = career.completedActivities.includes(act.id);
+            const stars = (career.nodeStars && career.nodeStars[act.id]) || (isCompleted ? 3 : 0);
+            const nodeEl = document.createElement("div");
+            nodeEl.className = `path-step ${aIdx % 2 === 0 ? "left" : "right"}`;
+
+            nodeEl.innerHTML = `
+                <div class="path-node ${isCompleted ? "completed" : "current"}">
+                    <span>${isCompleted ? "✓" : act.hanzi}</span>
+                </div>
+                <div class="path-label">
+                    <strong>Nivel 0${aIdx + 1} · ${act.meaning} ${isCompleted ? "⭐".repeat(stars) : ""}</strong>
+                    <small>${act.example}</small>
+                    <span class="node-action">${isCompleted ? "REPETIR TEST ↺" : "INICIAR ⚡"}</span>
+                </div>
+            `;
+
+            nodeEl.style.cursor = "pointer";
+            nodeEl.onclick = () => openActivity(act);
+            stream.appendChild(nodeEl);
         });
     }
 
@@ -460,7 +493,6 @@
                     setTimeout(() => {
                         alert(`⭐ ¡NIVEL APROBADO! (+${activity.reward} XP)`);
                         if (typeof window.navigateTo === "function") window.navigateTo("career");
-                        renderCareerPath();
                     }, 400);
                 } else {
                     triggerHaptic("error");
@@ -476,7 +508,7 @@
     }
 
     // =====================================
-    // 5. LABORATORIO CON CATEGORÍAS & BUSCADOR
+    // 5. LABORATORIO
     // =====================================
     let currentLabCategory = "all";
 
@@ -572,7 +604,7 @@
     }
 
     // =====================================
-    // 7. ARENA 1V1 (CON POPUP ROJO DE DERROTA DE LA IA)
+    // 7. ARENA 1V1
     // =====================================
     let vsTimer = null;
     let vsTimeLeft = 20;
@@ -691,7 +723,6 @@
             renderBadgesGrid();
             if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         } else {
-            // MOSTRAR PANTALLA ROJA DE DERROTA DICTADA POR LA IA
             triggerHaptic("error");
             if (window.ZidongAudio && window.ZidongAudio.playLineCollapse) {
                 window.ZidongAudio.playLineCollapse();
@@ -702,7 +733,6 @@
             defeatScreen.style.display = "block";
 
             document.getElementById("vsDefeatRivalAvatar").textContent = currentRival.avatar;
-            document.getElementById("vsDefeatRivalName").textContent = currentRival.name;
             document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${currentRival.name}: ${rivalVsPoints} PTS`;
         }
     }
@@ -715,12 +745,18 @@
     window.stopVsSession = stopVsSession;
 
     // =====================================
-    // 8. COMPANION (CON DIÁLOGO TROLL PERSONALIZADO)
+    // 8. COMPANION (DIÁLOGO CHILAQUIL EXACTO)
     // =====================================
     function getCompanionMessages() {
-        const name = currentUserData.name || "Colega";
+        const rawName = (currentUserData.name || "New user").trim();
+        const isChilaquil = rawName.toLowerCase() === "chilaquil";
+
+        const chilaquilMessage = isChilaquil
+            ? `Chilaquil... ¡jajaja te la creíste! Ahora te falta la salsa verde y la crema 🐶🌶️`
+            : `${rawName}... te quedaría mejor Chilaquil 🐶🔥`;
+
         return [
-            `${name}... ¡qué nombre tan feo! Mejor te hubieras puesto Chilaquil, va más de acuerdo con tu cara jajaja 🐶🔥`,
+            chilaquilMessage,
             `¡Línea lista! Modo Survivor en espera sin segundas oportunidades. ⚡`,
             `Tip de planta: 电 (diàn) representa potencia en gabinetes principales.`,
             `Sensores fotoeléctricos calibrados. Cero falso rechazo en AOI. 👁️`,
@@ -765,7 +801,7 @@
         if (!container) return;
 
         container.replaceChildren();
-        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || "RL";
+        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || currentUserData.initials;
 
         MEDALS_DB.forEach(medal => {
             const unlocked = medal.isUnlocked();
@@ -780,7 +816,7 @@
 
             if (unlocked) {
                 badgeEl.onclick = () => {
-                    const newEquip = isEquipped ? "RL" : medal.icon;
+                    const newEquip = isEquipped ? currentUserData.initials : medal.icon;
                     localStorage.setItem("zidong_equipped_badge", newEquip);
                     triggerHaptic("success");
                     renderBadgesGrid();
@@ -797,7 +833,7 @@
         [profileAvatar, topAvatar].forEach(el => {
             if (!el) return;
             el.textContent = icon;
-            if (icon !== "RL" && icon !== currentUserData.initials) el.classList.add("custom-icon");
+            if (icon !== "NU" && icon !== currentUserData.initials) el.classList.add("custom-icon");
             else el.classList.remove("custom-icon");
         });
     }
@@ -885,7 +921,7 @@
     function initializeApplication() {
         loadSavedProgress();
         updateUserDisplay();
-        renderCareerPath();
+        renderCareerPlanetsMenu();
         renderLabComponents();
         renderRanksSection();
         renderAchievements();
@@ -896,11 +932,12 @@
         }
 
         console.log("--------------------------------");
-        console.log("ZIDONG CORE 5.0: SYSTEM READY");
+        console.log("ZIDONG CORE 6.0: ONLINE");
         console.log("--------------------------------");
     }
 
     window.awardXP = awardXP;
+    window.renderCareerPlanetsMenu = renderCareerPlanetsMenu;
     window.interactWithCompanion = interactWithCompanion;
 
     if (document.readyState === "loading") {

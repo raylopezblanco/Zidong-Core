@@ -11,7 +11,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=5.0">
+    <link rel="stylesheet" href="style.css?v=6.0">
 </head>
 <body>
 
@@ -31,9 +31,9 @@
             </button>
 
             <div class="user-chip" onclick="navigateTo('profile')" title="Ver perfil y medallas">
-                <div class="avatar" id="topAvatar">RL</div>
+                <div class="avatar" id="topAvatar">NU</div>
                 <div class="user-meta">
-                    <strong id="topUsername">Raymundo Lopez</strong>
+                    <strong id="topUsername">New user</strong>
                     <span id="topRankBadge" class="user-rank-subtag">⚡ Técnico Jr</span>
                 </div>
             </div>
@@ -42,15 +42,15 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD (BLOQUEADO ESTRICTAMENTE SIN SCROLL) -->
+        <!-- 1. DASHBOARD (BLOQUEADO ESTRICTAMENTE SIN SCROLL, 1 SOLA PANTALLA) -->
         <section id="dashboard" class="page active dashboard-no-scroll">
 
             <!-- MODOS PRINCIPALES ARRIBA -->
             <div class="main-modes-grid">
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
-                    <div class="mode-icon">🏆</div>
+                    <div class="mode-icon">🪐</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">5 MUNDOS LIBRES</span>
+                        <span class="mode-tag">5 PLANETAS</span>
                         <h3>CAREER MODE</h3>
                         <p>Eléctrica, Servos, AGVs...</p>
                     </div>
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <!-- COMPANION CILÍNDRICO DE LUZ CON DIÁLOGO TROLL -->
+            <!-- COMPANION CILÍNDRICO DE LUZ CON DIÁLOGO CHILAQUIL -->
             <div class="companion-stage">
                 <div class="speech-bubble" id="companionBubble">
                     <span id="companionText">¡Línea lista! Tócame para recibir un reporte. ⚡</span>
@@ -82,13 +82,13 @@
                     <div class="tube-ring top-ring"></div>
                     <div class="tube-chamber">
                         <div class="energy-beam"></div>
-                        <img src="cyberdog.gif?v=7" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        <img src="cyberdog.gif?v=8" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
                     </div>
                     <div class="tube-ring bottom-ring"></div>
                 </div>
             </div>
 
-            <!-- MODOS SECUNDARIOS -->
+            <!-- MODOS SECUNDARIOS (PEGADOS A LA MISIÓN DIARIA) -->
             <div class="secondary-modes-grid">
                 <div class="sub-mode-card daily-card" onclick="claimDailyReward()">
                     <div class="sub-card-header">
@@ -109,8 +109,8 @@
                 </div>
             </div>
 
-            <!-- DAILY MISSION -->
-            <article class="daily-mission-card" onclick="toggleDailyMissionsModal()" title="Toca para ver el desglose de misiones">
+            <!-- DAILY MISSION (PEGADA INMEDIATAMENTE ARRIBA) -->
+            <article class="daily-mission-card tight-mission" onclick="toggleDailyMissionsModal()" title="Toca para ver el desglose de misiones">
                 <div class="mission-header">
                     <div>
                         <span class="eyebrow">DAILY MISSION</span>
@@ -169,18 +169,37 @@
             </script>
         </section>
 
-        <!-- 2. CAREER MODE (LOS 5 MUNDOS DESBLOQUEADOS) -->
+        <!-- 2. CAREER MODE (MENÚ PLANETARIO COMPACTO 3D) -->
         <section id="career" class="page">
             <div class="welcome">
-                <span class="eyebrow">ZIDONG SAGA · INFINITE CAREER PATH</span>
-                <h2>Mundos de Manufactura</h2>
-                <p>Explora cualquiera de las 5 ramas de automatización a tu propio ritmo:</p>
+                <span class="eyebrow">ZIDONG SAGA · PLANETARY SYSTEM</span>
+                <h2>Sistemas Planetarios</h2>
+                <p>Selecciona un mundo orbital para iniciar tus operaciones:</p>
             </div>
 
-            <div id="careerWorldsContainer" class="career-worlds-stream"></div>
+            <!-- GRID COMPACTO DE PLANETAS -->
+            <div id="careerPlanetsGrid" class="planets-menu-grid"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
                 ← REGRESAR AL DASHBOARD
+            </button>
+        </section>
+
+        <!-- VISTA DESGLOSADA DEL PLANETA SELECCIONADO -->
+        <section id="worldDetailsView" class="page">
+            <div class="lesson-top-nav">
+                <button class="btn-compact-back" onclick="navigateTo('career')">← PLANETAS</button>
+                <div class="lesson-hud-info">
+                    <span class="eyebrow" id="selectedWorldTitle" style="font-size:9px;">MUNDO SELECCIONADO</span>
+                    <strong id="selectedWorldSubtitle" style="color:var(--text); font-size:12px;">NIVELES DE PLANTA</strong>
+                </div>
+                <div class="lesson-quick-badge" id="selectedWorldIcon">🪐</div>
+            </div>
+
+            <div id="selectedWorldStream" class="world-nodes-stream" style="margin-top:14px;"></div>
+
+            <button class="back-button" onclick="navigateTo('career')" style="margin-top: 24px; margin-bottom: 20px;">
+                ← REGRESAR A PLANETAS
             </button>
         </section>
 
@@ -266,7 +285,7 @@
                 <div class="panel" style="text-align:center; margin-bottom:12px; background:linear-gradient(180deg, rgba(167, 139, 250, 0.15) 0%, rgba(17, 31, 53, 0.95) 100%);">
                     <div style="display:flex; justify-content:space-around; align-items:center; margin: 8px 0 14px 0;">
                         <div>
-                            <div class="avatar" id="vsMyAvatar" style="width:48px; height:48px; font-size:18px; margin:0 auto 4px auto; border:2px solid var(--cyan);">RL</div>
+                            <div class="avatar" id="vsMyAvatar" style="width:48px; height:48px; font-size:18px; margin:0 auto 4px auto; border:2px solid var(--cyan);">NU</div>
                             <strong style="font-size:12px; color:#fff;">Tú</strong>
                             <small id="vsMyScore" style="display:block; color:var(--cyan); font-weight:800; font-size:14px;">0 PTS</small>
                         </div>
@@ -450,7 +469,7 @@
         <!-- 8. LESSON CONTAINER -->
         <section id="level01" class="page">
             <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('career')">← MUNDOS</button>
+                <button class="btn-compact-back" onclick="navigateTo('worldDetailsView')">← NIVELES</button>
                 <div class="lesson-hud-info">
                     <span class="eyebrow" style="font-size:9px;">CALIBRACIÓN DE COMPONENTE</span>
                     <strong style="color:var(--text); font-size:12px;">TEST EN LÍNEA</strong>
@@ -468,11 +487,11 @@
             </div>
             
             <article class="profile-card">
-                <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">RL</div>
+                <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">NU</div>
                 
                 <!-- NOMBRE EDITABLE 1 SOLA VEZ -->
                 <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
-                    <h3 id="profileName">Raymundo Lopez</h3>
+                    <h3 id="profileName">New user</h3>
                     <button class="edit-name-btn" onclick="editUserNameOnce()" title="Editar nombre (1 sola vez)">✏️</button>
                 </div>
                 <small id="nameEditNotice" class="name-edit-hint" onclick="editUserNameOnce()">
@@ -535,7 +554,7 @@
                     <div class="mission-item">
                         <div class="mission-check">○</div>
                         <div class="mission-details">
-                            <strong>2. Dominio en Mundos</strong>
+                            <strong>2. Dominio Planetario</strong>
                             <small>Aprobar 1 nivel en Career Mode</small>
                         </div>
                         <span class="mission-reward-tag">+30 XP</span>
@@ -585,11 +604,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=5.0"></script>
-    <script src="navigation.js?v=5.0"></script>
-    <script src="mock-data.js?v=5.0"></script>
-    <script src="critical-fail.js?v=5.0"></script>
-    <script src="app.js?v=5.0"></script>
+    <script src="audio.js?v=6.0"></script>
+    <script src="navigation.js?v=6.0"></script>
+    <script src="mock-data.js?v=6.0"></script>
+    <script src="critical-fail.js?v=6.0"></script>
+    <script src="app.js?v=6.0"></script>
 
     <!-- PWA SERVICE WORKER -->
     <script>

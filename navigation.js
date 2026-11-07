@@ -1,15 +1,15 @@
 /* ==========================================================================
-   ZIDONG NAVIGATION ENGINE 10.0
-   - Enrutamiento estricto: Oculta Dashboard y muestra la sección solicitada
-   - Transición de audio limpia (incluye música al entrar a los mundos de Career)
-   - Actualización de barra inferior con Clasificatoria (Ranking)
+   ZIDONG NAVIGATION ENGINE 12.0
+   - Enrutamiento estricto de pantalla completa
+   - Corte inmediato de música anterior e inicio de pista de Career o Survivor
+   - Barra inferior: Home, Lab, Ranking, Rangos
    ========================================================================== */
 
 (() => {
     "use strict";
 
     window.navigateTo = (pageId) => {
-        // 1. Detener sesiones activas de juego
+        // 1. Detener sesiones activas de juego y relojes
         if (typeof window.stopSurvivorSession === "function") {
             window.stopSurvivorSession();
         }
@@ -17,12 +17,12 @@
             window.stopVsSession();
         }
 
-        // 2. Transición musical limpia por pantalla
-        if (window.ZidongAudio) {
+        // 2. Transición musical inmediata por pantalla
+        if (window.ZidongAudio && typeof window.ZidongAudio.switchTrack === "function") {
             if (pageId === "dashboard") {
                 window.ZidongAudio.switchTrack("dashboard");
             } else if (pageId === "career" || pageId === "worldDetailsView" || pageId === "level01" || pageId === "assessment") {
-                window.ZidongAudio.switchTrack("career"); // Música de exploración espacial en Career Mode
+                window.ZidongAudio.switchTrack("career");
             } else if (pageId === "arcade") {
                 window.ZidongAudio.switchTrack("survivor");
             } else if (pageId === "vsBattle") {
@@ -39,7 +39,7 @@
             p.style.display = "none";
         });
 
-        // 4. Mostrar página destino
+        // 4. Mostrar únicamente la página seleccionada
         const targetPage = document.getElementById(pageId);
         if (targetPage) {
             targetPage.classList.add("active");
@@ -47,7 +47,7 @@
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
-        // 5. Actualizar barra inferior (Home, Mundos, Ranking, Rangos)
+        // 5. Actualizar barra inferior (0: Home, 1: Lab, 2: Ranking, 3: Rangos)
         const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
         navButtons.forEach(btn => btn.classList.remove("active"));
 
@@ -61,9 +61,12 @@
             navButtons[3]?.classList.add("active");
         }
 
-        // 6. Refrescar vistas
+        // 6. Refrescar vistas garantizando que nunca aparezcan vacías
         if (pageId === "career" && typeof window.renderCareerPlanetsMenu === "function") {
             window.renderCareerPlanetsMenu();
+        }
+        if (pageId === "hanziLab" && typeof window.renderLabComponents === "function") {
+            window.renderLabComponents();
         }
         if (pageId === "leaderboard" && typeof window.renderLeaderboardSection === "function") {
             window.renderLeaderboardSection();
@@ -74,8 +77,8 @@
         if (pageId === "profile" && typeof window.updateProfile === "function") {
             window.updateProfile();
         }
-        if (pageId === "hanziLab" && typeof window.renderLabComponents === "function") {
-            window.renderLabComponents();
+        if (pageId === "achievementsPage" && typeof window.renderAchievements === "function") {
+            window.renderAchievements();
         }
     };
 })();

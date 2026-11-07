@@ -1,21 +1,20 @@
 /* ==========================================================================
-   ZIDONG AUDIO ENGINE 5.0 (WEB AUDIO API)
-   - Pausa automática en segundo plano / pantalla minimizada (visibilitychange)
-   - Melodía Zelda Ocarina para Inicio / Dashboard
-   - Melodía Bowser Castle Mario Bros ("tututututut...") + Tic-Tac para 1v1
-   - Melodía Aventura para Career
-   - Sonidos de acierto, error y colapso
+   ZIDONG AUDIO ENGINE 7.0 (WEB AUDIO API NATIVA)
+   - Transiciones limpias entre menús (corta música anterior e inicia la nueva)
+   - Música de suspenso tensa (latido/sonar) para Survivor Mode
+   - Bowser Castle + Tic-Tac para 1v1
+   - Zelda Ocarina para Dashboard
+   - Aventura espacial para Sistema OBERON (Career)
+   - Detención en segundo plano
    ========================================================================== */
 
 (() => {
     "use strict";
 
     let audioCtx = null;
-    let marioInterval = null;
-    let ocarinaInterval = null;
-    let careerInterval = null;
+    let currentInterval = null;
     let isMuted = false;
-    let activePage = "dashboard";
+    let currentTrackName = "";
 
     function getAudioContext() {
         if (!audioCtx) {
@@ -28,6 +27,14 @@
             audioCtx.resume();
         }
         return audioCtx;
+    }
+
+    function stopAllMusic() {
+        if (currentInterval) {
+            clearInterval(currentInterval);
+            currentInterval = null;
+        }
+        currentTrackName = "";
     }
 
     // SONIDO ACIERTO
@@ -79,7 +86,7 @@
         osc.stop(now + 0.24);
     }
 
-    // SONIDO COLAPSO LÍNEA / DERROTA
+    // SONIDO COLAPSO LÍNEA
     function playLineCollapse() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -91,9 +98,9 @@
 
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(130, now);
-        osc.frequency.exponentialRampToValueAtTime(40, now + 0.55);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.55);
 
-        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.setValueAtTime(0.25, now);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
 
         osc.connect(gain);
@@ -103,7 +110,7 @@
         osc.stop(now + 0.65);
     }
 
-    // SONIDO VICTORIA
+    // SONIDO VICTORIA / SUBIDA DE RANGO
     function playVictory() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -129,7 +136,7 @@
         });
     }
 
-    // TIC-TAC DE RELOJ
+    // TIC-TAC DE RELOJ SINTETIZADO (1V1)
     function playClockTick(isTock = false) {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -140,10 +147,10 @@
         const gain = ctx.createGain();
 
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(isTock ? 750 : 1100, now);
+        osc.frequency.setValueAtTime(isTock ? 750 : 1150, now);
         osc.frequency.exponentialRampToValueAtTime(90, now + 0.035);
 
-        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.setValueAtTime(0.09, now);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
 
         osc.connect(gain);
@@ -153,7 +160,7 @@
         osc.stop(now + 0.045);
     }
 
-    // 1. ZELDA OCARINA
+    // 1. ZELDA OCARINA (DASHBOARD)
     const ZELDA_NOTES = [
         { f: 440, d: 0.35 }, { f: 523.25, d: 0.35 }, { f: 587.33, d: 0.75 },
         { f: 440, d: 0.35 }, { f: 523.25, d: 0.35 }, { f: 587.33, d: 0.75 },
@@ -161,7 +168,7 @@
         { f: 493.88, d: 0.35 }, { f: 523.25, d: 0.75 }
     ];
 
-    function playZeldaOcarina() {
+    function playZeldaPhrase() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
@@ -171,12 +178,12 @@
             const now = ctx.currentTime + delay;
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
+            const lfo = ctx.createOscillator();
+            const lfoGain = ctx.createGain();
 
             osc.type = "sine";
             osc.frequency.setValueAtTime(n.f, now);
 
-            const lfo = ctx.createOscillator();
-            const lfoGain = ctx.createGain();
             lfo.frequency.setValueAtTime(5, now);
             lfoGain.gain.setValueAtTime(3.5, now);
             lfo.connect(osc.frequency);
@@ -197,10 +204,43 @@
         });
     }
 
-    // 2. MARIO BROS CASTILLO (tututututut...)
+    // 2. MUSICA DE SUSPENSO TENSO (SURVIVOR MODE - PULSO DE RADAR / LATIDO OSCURO)
+    let suspenseBeat = 0;
+    function playSuspensePulse() {
+        if (isMuted || document.hidden) return;
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        suspenseBeat++;
+        const isAccent = (suspenseBeat % 4 === 1);
+
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(isAccent ? 82.41 : 65.41, now); // E2 o C2
+        osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
+
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(isAccent ? 350 : 200, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(isAccent ? 0.08 : 0.045, now + 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.5);
+    }
+
+    // 3. BOWSER CASTLE MARIO BROS (tututututut... PARA 1V1)
     const MARIO_CASTLE_RIFF = [155.56, 155.56, 146.83, 146.83, 138.59, 138.59, 130.81, 130.81];
     let castleStep = 0;
-
     function playMarioCastleBeat() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -226,20 +266,21 @@
         osc.stop(now + 0.18);
     }
 
-    // 3. CAREER AMBIENCE
-    const CAREER_CHORDS = [
-        [329.63, 392.00, 493.88], [293.66, 369.99, 440.00],
-        [261.63, 329.63, 392.00], [246.94, 311.13, 369.99]
+    // 4. AVENTURA ESPACIAL OBERON (CAREER)
+    const OBERON_CHORDS = [
+        [220, 261.63, 329.63, 440],   // Am
+        [261.63, 329.63, 392.00, 523], // C
+        [196.00, 246.94, 293.66, 392], // G
+        [164.81, 207.65, 246.94, 329]  // E
     ];
-    let careerChordIdx = 0;
-
-    function playCareerAmbience() {
+    let oberonChordIdx = 0;
+    function playOberonAmbience() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
-        const chord = CAREER_CHORDS[careerChordIdx % CAREER_CHORDS.length];
-        careerChordIdx++;
+        const chord = OBERON_CHORDS[oberonChordIdx % OBERON_CHORDS.length];
+        oberonChordIdx++;
 
         chord.forEach(freq => {
             const now = ctx.currentTime;
@@ -250,7 +291,7 @@
             osc.frequency.setValueAtTime(freq, now);
 
             gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.025, now + 0.8);
+            gain.gain.linearRampToValueAtTime(0.022, now + 0.8);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
 
             osc.connect(gain);
@@ -261,41 +302,28 @@
         });
     }
 
-    function stopAllMusic() {
-        clearInterval(marioInterval);
-        clearInterval(ocarinaInterval);
-        clearInterval(careerInterval);
-        marioInterval = null;
-        ocarinaInterval = null;
-        careerInterval = null;
-        castleStep = 0;
-    }
-
-    function startDashboardZelda() {
-        activePage = "dashboard";
+    // CONTROLADORES DE RUTA (CORTA ANTERIOR E INICIA NUEVA)
+    function switchTrack(trackName) {
+        if (currentTrackName === trackName) return;
         stopAllMusic();
-        if (!isMuted && !document.hidden) {
-            playZeldaOcarina();
-            ocarinaInterval = setInterval(playZeldaOcarina, 7000);
-        }
-    }
+        currentTrackName = trackName;
 
-    function start1v1MarioCastle() {
-        activePage = "vsBattle";
-        stopAllMusic();
-        if (!isMuted && !document.hidden) {
+        if (isMuted || document.hidden) return;
+
+        if (trackName === "dashboard") {
+            playZeldaPhrase();
+            currentInterval = setInterval(playZeldaPhrase, 7000);
+        } else if (trackName === "survivor") {
+            suspenseBeat = 0;
+            playSuspensePulse();
+            currentInterval = setInterval(playSuspensePulse, 600); // Latido de suspenso cada 0.6s
+        } else if (trackName === "vsBattle") {
             castleStep = 0;
             playMarioCastleBeat();
-            marioInterval = setInterval(playMarioCastleBeat, 240);
-        }
-    }
-
-    function startCareerAmbience() {
-        activePage = "career";
-        stopAllMusic();
-        if (!isMuted && !document.hidden) {
-            playCareerAmbience();
-            careerInterval = setInterval(playCareerAmbience, 3600);
+            currentInterval = setInterval(playMarioCastleBeat, 240); // tututututut
+        } else if (trackName === "oberon") {
+            playOberonAmbience();
+            currentInterval = setInterval(playOberonAmbience, 3600);
         }
     }
 
@@ -307,23 +335,20 @@
             if (btn) btn.textContent = "🔈";
         } else {
             if (btn) btn.textContent = "🔊";
-            if (activePage === "dashboard") startDashboardZelda();
-            else if (activePage === "vsBattle") start1v1MarioCastle();
-            else if (activePage === "career") startCareerAmbience();
+            const current = currentTrackName || "dashboard";
+            currentTrackName = "";
+            switchTrack(current);
         }
         return isMuted;
     }
 
-    // PAUSA AUTOMÁTICA AL MINIMIZAR / SEGUNDO PLANO
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
             stopAllMusic();
-        } else {
-            if (!isMuted) {
-                if (activePage === "dashboard") startDashboardZelda();
-                else if (activePage === "vsBattle") start1v1MarioCastle();
-                else if (activePage === "career") startCareerAmbience();
-            }
+        } else if (!isMuted && currentTrackName) {
+            const prev = currentTrackName;
+            currentTrackName = "";
+            switchTrack(prev);
         }
     });
 
@@ -333,9 +358,7 @@
         playLineCollapse,
         playVictory,
         playClockTick,
-        startDashboardZelda,
-        start1v1MarioCastle,
-        startCareerAmbience,
+        switchTrack,
         stopAllMusic,
         toggleMute,
         isMuted: () => isMuted

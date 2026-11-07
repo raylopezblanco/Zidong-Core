@@ -7,13 +7,43 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Zidong Core · Industrial Hanzi PWA</title>
+    <title>Zidong Core · Sistema Espacial OBERON</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=6.0">
+    <link rel="stylesheet" href="style.css?v=7.0">
 </head>
 <body>
+
+    <!-- PANTALLA DE CARGA / SPLASH SCREEN DE 10 SEGUNDOS (SISTEMA OBERON) -->
+    <div id="oberonSplashScreen" class="splash-screen-overlay">
+        <div class="splash-content-box">
+            <span class="eyebrow" style="color:var(--cyan); letter-spacing:2px;">SISTEMA ESPACIAL OBERON</span>
+            
+            <!-- EL CYBERDOG EN SU CÁPSULA DURANTE LA CARGA -->
+            <div class="stasis-tube splash-tube">
+                <div class="tube-ring top-ring"></div>
+                <div class="tube-chamber">
+                    <div class="energy-beam"></div>
+                    <img src="cyberdog.gif?v=9" alt="Cyberdog Companion" class="companion-img">
+                </div>
+                <div class="tube-ring bottom-ring"></div>
+            </div>
+
+            <h2 class="splash-title">¡BIENVENIDO A OBERON!</h2>
+            <p class="splash-mission-text">
+                "Nuestra misión es hacer que la red de planetas industriales no colapse."
+            </p>
+
+            <div class="splash-progress-track">
+                <div id="splashLoadingFill" class="splash-progress-fill"></div>
+            </div>
+
+            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v4.8...</small>
+            
+            <button class="skip-splash-btn" onclick="skipSplashLoading()">OMITIR ESPERA →</button>
+        </div>
+    </div>
 
     <!-- TOPBAR -->
     <header class="topbar">
@@ -21,7 +51,7 @@
             <span class="brand-icon">龍</span>
             <div>
                 <h1>ZIDONG CORE</h1>
-                <small>CHINESE LEARNING SYSTEM</small>
+                <small>SISTEMA ESPACIAL OBERON</small>
             </div>
         </div>
 
@@ -42,29 +72,29 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD (BLOQUEADO ESTRICTAMENTE SIN SCROLL, 1 SOLA PANTALLA) -->
+        <!-- 1. DASHBOARD (ESPACIOS AMPLIADOS HACIA ARRIBA, CENTRADO Y SIN SCROLL) -->
         <section id="dashboard" class="page active dashboard-no-scroll">
 
-            <!-- MODOS PRINCIPALES ARRIBA -->
-            <div class="main-modes-grid">
-                <div class="mode-card career-mode" onclick="navigateTo('career')">
+            <!-- MODOS PRINCIPALES ARRIBA (CENTRADOS Y CON MAYOR PRESENCIA) -->
+            <div class="main-modes-grid home-top-grid">
+                <div class="mode-card career-mode hero-career" onclick="navigateTo('career')">
                     <div class="mode-icon">🪐</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">5 PLANETAS</span>
+                        <span class="mode-tag">5 PLANETAS OBERON</span>
                         <h3>CAREER MODE</h3>
-                        <p>Eléctrica, Servos, AGVs...</p>
+                        <p>Voltaria, Kinetix, Aethel...</p>
                     </div>
                     <div class="mode-action">
                         <span class="arrow">→</span>
                     </div>
                 </div>
 
-                <div class="mode-card arcade-mode" onclick="openCriticalMode()">
+                <div class="mode-card arcade-mode hero-survivor" onclick="openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag warning">MUERTE SÚBITA</span>
+                        <span class="mode-tag warning">MUERTE SÚBITA (18s)</span>
                         <h3>SURVIVOR MODE</h3>
-                        <p>1 error = Colapso total</p>
+                        <p>Suspenso · Cero errores</p>
                     </div>
                     <div class="mode-action warning">
                         <span class="arrow">⚡</span>
@@ -72,24 +102,24 @@
                 </div>
             </div>
 
-            <!-- COMPANION CILÍNDRICO DE LUZ CON DIÁLOGO CHILAQUIL -->
-            <div class="companion-stage">
+            <!-- COMPANION CILÍNDRICO DE LUZ CON CURIOSIDADES GRAMATICALES -->
+            <div class="companion-stage home-companion-stage">
                 <div class="speech-bubble" id="companionBubble">
-                    <span id="companionText">¡Línea lista! Tócame para recibir un reporte. ⚡</span>
+                    <span id="companionText">¡Terminal OBERON lista! Tócame para recibir un reporte técnico. ⚡</span>
                 </div>
 
                 <div class="stasis-tube" onclick="interactWithCompanion()">
                     <div class="tube-ring top-ring"></div>
                     <div class="tube-chamber">
                         <div class="energy-beam"></div>
-                        <img src="cyberdog.gif?v=8" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        <img src="cyberdog.gif?v=9" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
                     </div>
                     <div class="tube-ring bottom-ring"></div>
                 </div>
             </div>
 
-            <!-- MODOS SECUNDARIOS (PEGADOS A LA MISIÓN DIARIA) -->
-            <div class="secondary-modes-grid">
+            <!-- MODOS SECUNDARIOS (DAILY REWARD & 1V1 BATTLE) -->
+            <div class="secondary-modes-grid home-secondary-grid">
                 <div class="sub-mode-card daily-card" onclick="claimDailyReward()">
                     <div class="sub-card-header">
                         <span class="sub-card-icon">🎁</span>
@@ -105,11 +135,11 @@
                         <strong class="sub-card-tag purple">VS MODE</strong>
                     </div>
                     <h4>1v1 BATTLE</h4>
-                    <p>Castillo Bowser & Clock</p>
+                    <p>IA Difícil · Mario Castle</p>
                 </div>
             </div>
 
-            <!-- DAILY MISSION (PEGADA INMEDIATAMENTE ARRIBA) -->
+            <!-- DAILY MISSION (ALINEADA Y COMPACTA) -->
             <article class="daily-mission-card tight-mission" onclick="toggleDailyMissionsModal()" title="Toca para ver el desglose de misiones">
                 <div class="mission-header">
                     <div>
@@ -126,7 +156,7 @@
                 </div>
             </article>
 
-            <!-- MONITOR DE COMPILACIÓN AL RAS DE PANTALLA -->
+            <!-- MONITOR DE COMPILACIÓN AL RAS -->
             <div class="build-stamp-bar">
                 <span>⚡ BUILD ACTIVO:</span>
                 <strong id="buildTimestamp">Verificando versión...</strong>
@@ -169,15 +199,15 @@
             </script>
         </section>
 
-        <!-- 2. CAREER MODE (MENÚ PLANETARIO COMPACTO 3D) -->
+        <!-- 2. CAREER MODE (SISTEMA ESPACIAL OBERON - 5 PLANETAS ORBITALES 3D) -->
         <section id="career" class="page">
             <div class="welcome">
-                <span class="eyebrow">ZIDONG SAGA · PLANETARY SYSTEM</span>
-                <h2>Sistemas Planetarios</h2>
-                <p>Selecciona un mundo orbital para iniciar tus operaciones:</p>
+                <span class="eyebrow">SISTEMA ESPACIAL OBERON</span>
+                <h2>Planetas de Manufactura</h2>
+                <p>Nuestra misión es hacer que la red industrial no colapse:</p>
             </div>
 
-            <!-- GRID COMPACTO DE PLANETAS -->
+            <!-- GRID COMPACTO DE PLANETAS 3D -->
             <div id="careerPlanetsGrid" class="planets-menu-grid"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
@@ -208,16 +238,16 @@
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
                 <h2>Laboratorio de Componentes</h2>
-                <p>Banco técnico clasificado por ramas de ingeniería:</p>
+                <p>Banco técnico clasificado por planetas de ingeniería:</p>
             </div>
 
             <div class="lab-category-tabs">
                 <button class="lab-tab-btn active" onclick="filterLabCategory('all', this)">Todos</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_1', this)">⚡ Eléctrica</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_2', this)">⚙️ Mecánica</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_3', this)">💨 Neumática</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_4', this)">🤖 AGVs</button>
-                <button class="lab-tab-btn" onclick="filterLabCategory('world_5', this)">👁️ Visión</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_1', this)">⚡ Voltaria</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_2', this)">⚙️ Kinetix</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_3', this)">💨 Aethel</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_4', this)">🤖 Machina</button>
+                <button class="lab-tab-btn" onclick="filterLabCategory('world_5', this)">👁️ Lumina</button>
             </div>
 
             <div class="lab-search-box">
@@ -231,7 +261,7 @@
             </button>
         </section>
 
-        <!-- 4. ESCALAFÓN DE 10 RANGOS -->
+        <!-- 4. ESCALAFÓN DE 10 RANGOS (HASTA 45,000 XP) -->
         <section id="ranksLadderPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">CAREER PROGRESSION</span>
@@ -246,7 +276,7 @@
             </button>
         </section>
 
-        <!-- 5. SISTEMA DE LOGROS XBOX -->
+        <!-- 5. SISTEMA DE LOGROS XBOX (1,500 G EN TOTAL) -->
         <section id="achievementsPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">XBOX-STYLE ACHIEVEMENTS</span>
@@ -260,7 +290,7 @@
                     <span class="g-label">GAMERSCORE INDUSTRIAL</span>
                     <h1 id="totalGamerscore">650 G</h1>
                 </div>
-                <span class="g-rank-badge">PLANTA FOXCONN</span>
+                <span class="g-rank-badge">SISTEMA OBERON</span>
             </div>
 
             <div class="achievements-list" id="achievementsListContainer"></div>
@@ -270,7 +300,7 @@
             </button>
         </section>
 
-        <!-- 6. ARENA 1V1 (CON DERROTA ROJA DICHA POR LA IA) -->
+        <!-- 6. ARENA 1V1 (IA DIFÍCIL CON DERROTA DE LA MÁQUINA) -->
         <section id="vsBattle" class="page">
             <div id="vsBattleArenaContainer">
                 <div class="lesson-top-nav">
@@ -306,7 +336,7 @@
                 </div>
 
                 <div class="recognition-card" id="vsStageCard">
-                    <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO SIN SEGUNDA OPORTUNIDAD</span>
+                    <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO EXPERTO (HAZ PERFECT PARA GANAR)</span>
                     <h1 id="vsHanziDisplay" style="font-size:72px; color:#fff; margin:10px 0; font-family:'Noto Sans SC';">电</h1>
                     <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">Si fallas, pierdes 3 segundos y saltas a la siguiente:</p>
                     <div class="career-quiz-grid" id="vsOptionsGrid"></div>
@@ -338,14 +368,14 @@
             </div>
         </section>
 
-        <!-- 7. SURVIVOR MODE (MUERTE SÚBITA) -->
+        <!-- 7. SURVIVOR MODE (18 SEGUNDOS & SUSPENSO TOTAL) -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
                     <div class="welcome">
                         <span class="eyebrow">SISTEMA DE RESPUESTA A FALLAS CRÍTICAS</span>
-                        <h2>SURVIVOR MODE</h2>
-                        <p>1 solo intento de intervención. Si te equivocas, la línea colapsa.</p>
+                        <h2>SURVIVOR MODE (18s)</h2>
+                        <p>1 solo intento de intervención bajo reloj de 18 segundos. Si te equivocas, la línea colapsa.</p>
                     </div>
 
                     <div class="cf-levels-list">
@@ -398,7 +428,7 @@
                         <div class="cf-hud-group">
                             <div class="cf-hud-box">
                                 <small>TIEMPO</small>
-                                <span id="cf-timer">40</span>s
+                                <span id="cf-timer">18</span>s
                             </div>
                             <div class="cf-hud-box">
                                 <small>XP</small>
@@ -446,7 +476,7 @@
                     <div class="panel cf-result-panel">
                         <span class="cf-result-icon">🏅</span>
                         <h2>¡LÍNEA RESTABLECIDA!</h2>
-                        <p>Has evitado el paro de producción.</p>
+                        <p>Has evitado el paro de producción en tiempo récord.</p>
 
                         <div class="cf-score-reward">
                             <small>EXPERIENCIA OBTENIDA</small>
@@ -489,7 +519,6 @@
             <article class="profile-card">
                 <div class="avatar-large" id="profileAvatar" title="Toca una medalla abajo para equiparla">NU</div>
                 
-                <!-- NOMBRE EDITABLE 1 SOLA VEZ -->
                 <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
                     <h3 id="profileName">New user</h3>
                     <button class="edit-name-btn" onclick="editUserNameOnce()" title="Editar nombre (1 sola vez)">✏️</button>
@@ -528,6 +557,22 @@
             </button>
         </section>
 
+        <!-- MODAL ESTÉTICO DE DAILY REWARD (COFRE HOLOGRÁFICO) -->
+        <div id="dailyRewardModal" class="modal-backdrop" style="display:none;" onclick="closeRewardModal(event)">
+            <div class="modal-card reward-modal-card" onclick="event.stopPropagation()">
+                <div class="reward-glow-ring"></div>
+                <div class="reward-chest-icon">🎁</div>
+                <span class="eyebrow" style="color:var(--gold); letter-spacing:1.5px;">BONO DE GUARDIA</span>
+                <h2 id="rewardModalTitle" style="color:#fff; margin:6px 0;">¡RECOMPENSA DIARIA!</h2>
+                <p id="rewardModalDesc" style="font-size:12px; color:var(--muted); margin-bottom:18px;">
+                    Has recibido +100 XP por inicio de operaciones en el sistema OBERON.
+                </p>
+                <button id="btnClaimRewardAction" class="reveal-button" style="background:var(--gold); color:#0b1424; font-weight:900;">
+                    RECLAMAR +100 XP 🎁
+                </button>
+            </div>
+        </div>
+
         <!-- MODAL HOJA DE MISIONES -->
         <div id="dailyMissionsModal" class="modal-backdrop" style="display:none;" onclick="closeMissionsModal(event)">
             <div class="modal-card" onclick="event.stopPropagation()">
@@ -539,7 +584,7 @@
                     <button class="modal-close-btn" onclick="toggleDailyMissionsModal()">✕</button>
                 </div>
                 
-                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra y ascender de rango:</p>
+                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra y ascender de rango en OBERON:</p>
 
                 <div class="missions-checklist">
                     <div class="mission-item done">
@@ -555,7 +600,7 @@
                         <div class="mission-check">○</div>
                         <div class="mission-details">
                             <strong>2. Dominio Planetario</strong>
-                            <small>Aprobar 1 nivel en Career Mode</small>
+                            <small>Aprobar 1 nivel en los Planetas OBERON</small>
                         </div>
                         <span class="mission-reward-tag">+30 XP</span>
                     </div>
@@ -563,7 +608,7 @@
                     <div class="mission-item">
                         <div class="mission-check">○</div>
                         <div class="mission-details">
-                            <strong>3. Intervención Crítica</strong>
+                            <strong>3. Intervención Crítica (18s)</strong>
                             <small>Solucionar 1 alarma HMI en Survivor Mode</small>
                         </div>
                         <span class="mission-reward-tag">+40 XP</span>
@@ -573,7 +618,7 @@
                         <div class="mission-check">○</div>
                         <div class="mission-details">
                             <strong>4. Victoria en Duelo 1v1</strong>
-                            <small>Derrotar al Servocontrolador IA en 1v1 Battle</small>
+                            <small>Derrotar a la IA Experta en 1v1 Battle</small>
                         </div>
                         <span class="mission-reward-tag">+50 XP</span>
                     </div>
@@ -604,11 +649,11 @@
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=6.0"></script>
-    <script src="navigation.js?v=6.0"></script>
-    <script src="mock-data.js?v=6.0"></script>
-    <script src="critical-fail.js?v=6.0"></script>
-    <script src="app.js?v=6.0"></script>
+    <script src="audio.js?v=7.0"></script>
+    <script src="navigation.js?v=7.0"></script>
+    <script src="mock-data.js?v=7.0"></script>
+    <script src="critical-fail.js?v=7.0"></script>
+    <script src="app.js?v=7.0"></script>
 
     <!-- PWA SERVICE WORKER -->
     <script>

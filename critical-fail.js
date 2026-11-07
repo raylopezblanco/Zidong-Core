@@ -1,7 +1,7 @@
 /* ==========================================================================
-   ZIDONG CORE 4.0 - SURVIVOR MODE (SUDDEN DEATH / FALLO CRÍTICO INMEDIATO)
-   - Cero segundas oportunidades: Un error = Colapso total de la línea.
-   - Detención inmediata de timers y audios al abandonar la pantalla.
+   ZIDONG CORE 7.0 - SURVIVOR MODE (18 SEGUNDOS & SUSPENSO TOTAL)
+   - 18 segundos de presión extrema
+   - Cero segundas oportunidades: 1 error = Colapso total de la línea
    ========================================================================== */
 
 (() => {
@@ -9,7 +9,7 @@
 
     let currentLevel = 1;
     let timerInterval = null;
-    let timeLeft = 45;
+    let timeLeft = 18;
     let score = 0;
 
     const INDUSTRIAL_ALARMS = [
@@ -87,7 +87,7 @@
 
         document.getElementById("cf-current-level-tag").textContent = `SURVIVOR LEVEL 0${lvl}`;
         score = 0;
-        timeLeft = 40;
+        timeLeft = 18; // 18 segundos de adrenalina pura
         document.getElementById("cf-score").textContent = score;
         document.getElementById("cf-timer").textContent = timeLeft;
 
@@ -110,7 +110,7 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                triggerLineCollapse("TIEMPO AGOTADO: La línea se detuvo por falta de respuesta técnica.");
+                triggerLineCollapse("TIEMPO AGOTADO (18s): La línea se detuvo por falta de respuesta técnica.");
             }
         }, 1000);
     }
@@ -122,21 +122,21 @@
         const alarm = INDUSTRIAL_ALARMS[Math.floor(Math.random() * INDUSTRIAL_ALARMS.length)];
 
         stage.innerHTML = `
-            <div style="background:rgba(255, 68, 68, 0.12); border:1.5px solid var(--red); border-radius:16px; padding:16px 14px; text-align:center; margin-bottom:14px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <span class="tag" style="border-color:var(--red); color:var(--red); font-size:9.5px;">ALARMA CRÍTICA</span>
+            <div style="background:rgba(255, 68, 68, 0.12); border:1.5px solid var(--red); border-radius:16px; padding:14px; text-align:center; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span class="tag" style="border-color:var(--red); color:var(--red); font-size:9px;">ALARMA CRÍTICA</span>
                     <strong style="font-family:monospace; color:#fff; font-size:12px;">${alarm.code}</strong>
                 </div>
 
-                <h2 style="font-family:'Noto Sans SC', sans-serif; color:#ffffff; font-size:19px; margin: 8px 0;">${alarm.hmiText}</h2>
-                <p style="color:var(--text); font-size:11.5px; margin-bottom:8px;">${alarm.subText}</p>
+                <h2 style="font-family:'Noto Sans SC', sans-serif; color:#ffffff; font-size:18px; margin: 6px 0;">${alarm.hmiText}</h2>
+                <p style="color:var(--text); font-size:11px; margin-bottom:8px;">${alarm.subText}</p>
                 <div style="background:rgba(0,0,0,0.35); border-radius:8px; padding:6px; font-size:10px; color:var(--cyan); font-weight:700;">
-                    🔍 Glosario de piso: ${alarm.hanziClue}
+                    🔍 Glosario técnico: ${alarm.hanziClue}
                 </div>
             </div>
 
-            <p style="font-size:11px; color:#ff7777; margin-bottom:10px; font-weight:800; text-align:center;">
-                ⚠️ ADVERTENCIA: 1 solo intento. Si fallas, la línea colapsa.
+            <p style="font-size:10.5px; color:#ff7777; margin-bottom:8px; font-weight:800; text-align:center;">
+                ⚠️ 18 SEGUNDOS: 1 solo intento. Si fallas, la línea colapsa.
             </p>
             <div class="career-quiz-grid" id="cf-options-grid"></div>
         `;
@@ -146,21 +146,20 @@
             const btn = document.createElement("button");
             btn.className = "cf-btn-option";
             btn.style.fontSize = "13px";
-            btn.style.padding = "12px 10px";
+            btn.style.padding = "11px 10px";
             btn.style.textAlign = "left";
             btn.textContent = `${idx + 1}. ${opt}`;
 
             btn.onclick = () => {
-                // DESACTIVAR TODOS LOS BOTONES AL PRIMER TOQUE (CERO MULTISELECCIÓN)
                 const allButtons = grid.querySelectorAll("button");
                 allButtons.forEach(b => b.style.pointerEvents = "none");
 
                 if (idx === alarm.correct) {
                     if (window.ZidongAudio && window.ZidongAudio.playSuccess) window.ZidongAudio.playSuccess();
                     btn.classList.add("btn-correct");
-                    score += 200;
+                    score += 250;
                     document.getElementById("cf-score").textContent = score;
-                    setTimeout(finishInterventionSuccess, 450);
+                    setTimeout(finishInterventionSuccess, 400);
                 } else {
                     btn.classList.add("btn-wrong");
                     triggerLineCollapse("ACCIÓN INCORRECTA: Provocaste un corto o daño mecánico en estación.");
@@ -170,7 +169,6 @@
         });
     }
 
-    // PANTALLA ROJA DE COLAPSO TOTAL (SOLICITADA POR EL USUARIO)
     function triggerLineCollapse(reasonText) {
         clearInterval(timerInterval);
         if (window.ZidongAudio && window.ZidongAudio.playLineCollapse) {
@@ -190,10 +188,11 @@
         document.getElementById("cf-game-arena").style.display = "none";
         document.getElementById("cf-result-screen").style.display = "block";
 
-        const rewardXP = Math.max(score, 150);
+        const rewardXP = Math.max(score, 200);
         document.getElementById("cf-final-score").textContent = `+${rewardXP} XP`;
 
-        localStorage.setItem("zidong_survivor_won", "true");
+        const currentWins = Number(localStorage.getItem("zidong_survivor_wins") || 0) + 1;
+        localStorage.setItem("zidong_survivor_wins", currentWins);
 
         if (typeof window.awardXP === "function") {
             window.awardXP(rewardXP);

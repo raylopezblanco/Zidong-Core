@@ -2209,3 +2209,158 @@ body {
     box-sizing: border-box;
     padding: 4px 10px 2px 10px;
 }
+
+
+/* ==========================================================================
+   ESTILOS V7: SPLASH SCREEN 10s, DAILY REWARD ESTÉTICO & HOMEPAGE EXPANDIDO
+   ========================================================================== */
+
+/* PANTALLA DE CARGA / SPLASH SCREEN DE 10 SEGUNDOS (SISTEMA OBERON) */
+.splash-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 40%, #0d2238 0%, #050b14 100%);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    transition: opacity 0.4s ease;
+}
+
+.splash-content-box {
+    text-align: center;
+    max-width: 360px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.splash-tube {
+    margin: 12px 0 16px 0;
+    transform: scale(0.95);
+}
+
+.splash-title {
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin: 0 0 6px 0;
+}
+
+.splash-mission-text {
+    font-size: 12.5px;
+    color: var(--cyan);
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+
+.splash-progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.splash-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+    box-shadow: 0 0 12px var(--cyan);
+    transition: width 0.95s linear;
+}
+
+.splash-status-lbl {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: monospace;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.skip-splash-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* MODAL ESTÉTICO DE DAILY REWARD */
+.reward-modal-card {
+    position: relative;
+    text-align: center;
+    background: linear-gradient(180deg, #1f1a10 0%, #111f35 100%) !important;
+    border: 1.5px solid var(--gold) !important;
+    box-shadow: 0 0 35px rgba(255, 200, 87, 0.3) !important;
+    overflow: hidden;
+    padding: 26px 20px !important;
+}
+
+.reward-chest-icon {
+    font-size: 56px;
+    line-height: 1;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 16px rgba(255, 200, 87, 0.6));
+    animation: chestBounce 2s infinite ease-in-out;
+}
+
+@keyframes chestBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1.05); }
+}
+
+.reward-glow-ring {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(255, 200, 87, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* DASHBOARD: AJUSTE DE TAMAÑO VERTICAL, MÁS ALTURA PARA BOTONES */
+.home-top-grid {
+    gap: 10px !important;
+    margin-bottom: 6px !important;
+}
+
+.hero-career, .hero-survivor {
+    padding: 13px 12px !important;
+    min-height: 72px;
+}
+
+.hero-career h3, .hero-survivor h3 {
+    font-size: 13px !important;
+}
+
+.home-secondary-grid {
+    gap: 10px !important;
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+}
+
+.home-secondary-grid .sub-mode-card {
+    padding: 10px 12px !important;
+}
+
+.home-companion-stage {
+    padding: 2px 0 !important;
+    margin: 0 !important;
+}

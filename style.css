@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE 2.0 - COMPLETE INDUSTRIAL DARK THEME STYLESHEET
+   ZIDONG CORE 3.0 - COMPLETE INDUSTRIAL DARK THEME STYLESHEET
    ========================================================================== */
 
 :root {
@@ -13,6 +13,7 @@
     --red: #ff4444;
     --amber: #ffaa00;
     --purple: #a78bfa;
+    --xbox: #107c10;
     --text: #e2e8f0;
     --muted: #94a3b8;
 }
@@ -30,7 +31,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-    padding-bottom: 60px;
+    padding-bottom: 64px;
 }
 
 /* TOPBAR */
@@ -87,7 +88,7 @@ body {
     gap: 8px;
     background: var(--surface);
     border: 1px solid var(--border);
-    padding: 4px 10px 4px 4px;
+    padding: 4px 12px 4px 4px;
     border-radius: 20px;
     cursor: pointer;
 }
@@ -115,14 +116,6 @@ body {
     color: #fff;
     display: block;
     line-height: 1.1;
-}
-
-.status-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: var(--green);
-    border-radius: 50%;
 }
 
 /* APP SHELL */
@@ -230,7 +223,7 @@ body {
 }
 
 /* ==========================================================================
-   2. CÁPSULA CILÍNDRICA DE LUZ HOLOGRÁFICA (ESTILO ZORDON)
+   2. CÁPSULA CILÍNDRICA DE LUZ (BURBUJA CON ALTURA FIJA ANTI-DESFASE)
    ========================================================================== */
 
 .companion-stage {
@@ -238,17 +231,23 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4px 0 6px 0;
+    padding: 2px 0 4px 0;
     position: relative;
 }
 
-/* Burbuja interactiva */
+/* Burbuja con altura fija: NUNCA empuja ni salta */
 .speech-bubble {
     background: rgba(17, 31, 53, 0.95);
     border: 1.5px solid var(--cyan);
     border-radius: 12px;
-    padding: 6px 14px;
+    padding: 4px 14px;
+    width: 90%;
     max-width: 290px;
+    min-height: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     position: relative;
     box-shadow: 0 4px 16px rgba(39, 216, 232, 0.25);
@@ -275,12 +274,16 @@ body {
     font-size: 11px;
     font-weight: 700;
     color: #ffffff;
-    line-height: 1.25;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 @keyframes floatBubble {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+    50% { transform: translateY(-2px); }
 }
 
 /* Cilindro contenedor interactivo */
@@ -294,11 +297,11 @@ body {
     padding: 0 4px;
 }
 
-/* Cámara interior de cristal de plasma con bordes curvados */
+/* Cámara interior de cristal con bordes redondeados */
 .tube-chamber {
     position: relative;
     width: 175px;
-    height: 195px;
+    height: 190px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -335,11 +338,11 @@ body {
     100% { opacity: 0.95; }
 }
 
-/* Imagen del Cyberdog aumentada dentro del cilindro */
+/* Imagen del Cyberdog en el cilindro */
 .companion-img {
     width: 170px;
     height: auto;
-    max-height: 190px;
+    max-height: 185px;
     object-fit: cover;
     border-radius: 20px;
     display: block;
@@ -352,7 +355,7 @@ body {
     transform: scale(0.94);
 }
 
-/* Aros luminosos estilo Zordon: Superior e Inferior */
+/* Aros luminosos estilo Zordon */
 .tube-ring {
     width: 165px;
     height: 24px;
@@ -375,15 +378,15 @@ body {
 }
 
 /* ==========================================================================
-   3. BOTONES SECUNDARIOS (DAILY REWARD & VS MODE)
-   ========================================================================= */
+   3. BOTONES SECUNDARIOS (DAILY REWARD & 1V1 BATTLE)
+   ========================================================================== */
 
 .secondary-modes-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
 }
 
 .sub-mode-card {
@@ -461,6 +464,13 @@ body {
     border-radius: 12px;
     padding: 8px 12px;
     margin-bottom: 6px;
+    cursor: pointer;
+    transition: transform 0.1s ease, border-color 0.15s ease;
+}
+
+.daily-mission-card:active {
+    transform: scale(0.98);
+    border-color: var(--cyan);
 }
 
 .mission-header {
@@ -535,7 +545,411 @@ body {
 }
 
 /* ==========================================================================
-   CAREER MODE & OVERVIEW STYLES
+   5. NUEVO MENÚ: LABORATORIO (HANZI LAB / BANCO DE PARTES)
+   ========================================================================== */
+
+.lab-search-box {
+    margin-bottom: 12px;
+}
+
+.lab-search-box input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+}
+
+.lab-search-box input:focus {
+    border-color: var(--cyan);
+}
+
+.components-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    transition: transform 0.12s ease;
+}
+
+.comp-card:active {
+    transform: scale(0.97);
+}
+
+.comp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comp-hanzi {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--cyan);
+    font-family: "Noto Sans SC";
+}
+
+.comp-pinyin {
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.comp-card strong {
+    font-size: 12px;
+    color: #fff;
+}
+
+.comp-card small {
+    font-size: 9px;
+    color: var(--muted);
+}
+
+/* ==========================================================================
+   6. NUEVO MENÚ: PLAY ARENA (HUB DE INTERVENCIONES)
+   ========================================================================== */
+
+.play-hub-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.play-hero-card {
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.12s ease;
+}
+
+.play-hero-card:active {
+    transform: scale(0.98);
+}
+
+.survivor-hero {
+    background: linear-gradient(135deg, #44141a, #1b080a);
+    border: 1.5px solid rgba(255, 68, 68, 0.6);
+    box-shadow: 0 6px 20px rgba(255, 68, 68, 0.2);
+}
+
+.duel-hero {
+    background: linear-gradient(135deg, #2b1442, #10061c);
+    border: 1.5px solid rgba(167, 139, 250, 0.6);
+    box-shadow: 0 6px 20px rgba(167, 139, 250, 0.2);
+}
+
+.play-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.play-badge.warning {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff7777;
+    border: 1px solid rgba(255, 68, 68, 0.5);
+}
+
+.play-badge.purple {
+    background: rgba(167, 139, 250, 0.2);
+    color: #c4b5fd;
+    border: 1px solid rgba(167, 139, 250, 0.5);
+}
+
+.play-hero-card h2 {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.play-hero-card p {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.35;
+    margin-bottom: 12px;
+}
+
+.play-hero-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 10px;
+    font-size: 10.5px;
+}
+
+.play-hero-footer span {
+    color: #fff;
+    font-weight: 700;
+}
+
+.play-hero-footer strong {
+    color: var(--gold);
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   7. NUEVO MENÚ: LOGROS TIPO XBOX (GAMERSCORE G)
+   ========================================================================== */
+
+.gamerscore-banner {
+    background: linear-gradient(135deg, #107c10, #094709);
+    border: 1.5px solid #1ed760;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 18px rgba(16, 124, 16, 0.35);
+}
+
+.g-symbol {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #107c10;
+    font-size: 24px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.g-label {
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #86efac;
+    display: block;
+}
+
+.gamerscore-banner h1 {
+    font-size: 24px;
+    color: #ffffff;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.g-rank-badge {
+    margin-left: auto;
+    font-size: 8.5px;
+    font-weight: 900;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.achieve-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.achieve-card.unlocked {
+    border-color: rgba(16, 124, 16, 0.5);
+    background: linear-gradient(90deg, rgba(16, 124, 16, 0.15), var(--surface));
+}
+
+.achieve-card.locked {
+    opacity: 0.5;
+}
+
+.achieve-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.achieve-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.achieve-details strong {
+    font-size: 12px;
+    color: #fff;
+    display: block;
+}
+
+.achieve-details small {
+    font-size: 9.5px;
+    color: var(--muted);
+}
+
+.achieve-score {
+    font-size: 11px;
+    font-weight: 900;
+    color: #86efac;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.achieve-card.locked .achieve-score {
+    color: var(--muted);
+}
+
+/* ==========================================================================
+   8. MODAL / DRAWER DE MISIONES DIARIAS
+   ========================================================================== */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 10, 20, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.modal-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 380px;
+    padding: 18px 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.modal-close-btn {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.missions-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mission-item {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mission-item.done {
+    border-color: rgba(0, 245, 155, 0.4);
+    background: rgba(0, 245, 155, 0.08);
+}
+
+.mission-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--muted);
+}
+
+.mission-item.done .mission-check {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0b1424;
+}
+
+.mission-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.mission-details strong {
+    font-size: 12px;
+    color: #fff;
+    display: block;
+    line-height: 1.2;
+}
+
+.mission-details small {
+    font-size: 9.5px;
+    color: var(--muted);
+}
+
+.mission-reward-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--gold);
+}
+
+.mission-tag-status {
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--green);
+}
+
+/* ==========================================================================
+   9. CAREER, QUIZ & GENERAL COMPONENTS
    ========================================================================== */
 
 .welcome {
@@ -806,10 +1220,7 @@ body {
     color: var(--cyan);
 }
 
-/* ==========================================================================
-   LESSON / TESTS / ARCADE / RANKING / PROFILE
-   ========================================================================== */
-
+/* LESSON & QUIZ */
 .lesson-top-nav {
     display: flex;
     justify-content: space-between;
@@ -942,6 +1353,7 @@ body {
     cursor: pointer;
 }
 
+/* ARCADE SHELL */
 .arcade-shell {
     padding-bottom: 20px;
 }
@@ -1071,53 +1483,7 @@ body {
     transition: width 0.2s linear;
 }
 
-.ranking-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.ranking-tab {
-    flex: 1;
-    padding: 8px;
-    background: var(--surface-light);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
-    font-size: 11.5px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-.ranking-tab.active {
-    background: var(--surface);
-    border-color: var(--cyan);
-    color: #fff;
-}
-
-.ranking-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.team-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    color: #fff;
-}
-
-.team-row strong {
-    color: var(--cyan);
-    font-size: 12px;
-}
-
+/* PROFILE CARD */
 .profile-card {
     background: var(--surface);
     border: 1px solid var(--border);

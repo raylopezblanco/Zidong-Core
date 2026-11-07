@@ -11,10 +11,11 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=2.5">
+    <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
+    <!-- TOPBAR (SIN PUNTO VERDE) -->
     <header class="topbar">
         <div class="brand">
             <span class="brand-icon">龍</span>
@@ -24,21 +25,20 @@
             </div>
         </div>
 
-        <div class="user-chip" onclick="navigateTo('profile')">
+        <div class="user-chip" onclick="navigateTo('profile')" title="Ver mi perfil técnico">
             <div class="avatar" id="topAvatar">RL</div>
             <div class="user-meta">
                 <strong id="topUsername">Raymundo Lopez</strong>
-                <span class="status-dot"></span>
             </div>
         </div>
     </header>
 
     <main class="app-shell">
 
-        <!-- DASHBOARD (DISTRIBUCIÓN CILINDRO ZORDON & BRAWL STYLE) -->
+        <!-- 1. DASHBOARD PRINCIPAL -->
         <section id="dashboard" class="page active">
 
-            <!-- 1. MODOS PRINCIPALES ARRIBA -->
+            <!-- MODOS PRINCIPALES ARRIBA -->
             <div class="main-modes-grid">
                 <!-- CAREER MODE -->
                 <div class="mode-card career-mode" onclick="navigateTo('career')">
@@ -67,30 +67,25 @@
                 </div>
             </div>
 
-            <!-- 2. CÁPSULA CILÍNDRICA DE LUZ (ESTILO ZORDON) -->
+            <!-- CÁPSULA CILÍNDRICA DE LUZ (BURBUJA DE ALTURA FIJA QUE NUNCA DESFASA) -->
             <div class="companion-stage">
-                <!-- Burbuja interactiva con mensajes dinámicos -->
+                <!-- Burbuja interactiva con altura fija para evitar saltos de pantalla -->
                 <div class="speech-bubble" id="companionBubble">
-                    <span id="companionText">¡Línea lista! Modo Survivor en espera. ⚡</span>
+                    <span id="companionText">¡Línea lista! Tócame para recibir un reporte. ⚡</span>
                 </div>
 
-                <!-- Cámara de contención cilíndrica -->
+                <!-- Cámara de contención cilíndrica interactiva -->
                 <div class="stasis-tube" onclick="interactWithCompanion()">
-                    <!-- Aro proyector superior -->
                     <div class="tube-ring top-ring"></div>
-                    
-                    <!-- Cristal de energía y Cyberdog -->
                     <div class="tube-chamber">
                         <div class="energy-beam"></div>
-                        <img src="cyberdog.gif?v=4" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        <img src="cyberdog.gif?v=5" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
                     </div>
-
-                    <!-- Disco emisor inferior -->
                     <div class="tube-ring bottom-ring"></div>
                 </div>
             </div>
 
-            <!-- 3. BOTONES SECUNDARIOS (DAILY REWARD & VS MODE) -->
+            <!-- BOTONES SECUNDARIOS (DAILY REWARD & 1V1 BATTLE) -->
             <div class="secondary-modes-grid">
                 <!-- DAILY REWARD -->
                 <div class="sub-mode-card daily-card" onclick="claimDailyReward()">
@@ -102,7 +97,7 @@
                     <p id="dailyRewardSubtitle">Claim your XP</p>
                 </div>
 
-                <!-- VS MODE (1v1 BATTLE) -->
+                <!-- 1V1 BATTLE -->
                 <div class="sub-mode-card vs-card" onclick="openVsMode()">
                     <div class="sub-card-header">
                         <span class="sub-card-icon">⚔️</span>
@@ -113,24 +108,24 @@
                 </div>
             </div>
 
-            <!-- 4. DAILY MISSION COMPACTA -->
-            <article class="daily-mission-card">
+            <!-- DAILY MISSION (AL TOCARLA ABRE LA HOJA DE MISIONES) -->
+            <article class="daily-mission-card" onclick="toggleDailyMissionsModal()" title="Toca para ver el desglose de misiones">
                 <div class="mission-header">
                     <div>
                         <span class="eyebrow">DAILY MISSION</span>
-                        <h4>IN PROGRESS</h4>
+                        <h4>IN PROGRESS <small style="font-size:9px; color:var(--cyan);">(Ver lista 📋)</small></h4>
                     </div>
                     <span class="mission-reward">+50 XP</span>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-fill" style="width: 0%;"></div>
+                    <div class="progress-fill" style="width: 25%;"></div>
                 </div>
                 <div class="mission-footer">
-                    <small>0 / 5 COMPLETED</small>
+                    <small id="dashboardMissionStatus">1 / 4 COMPLETADAS</small>
                 </div>
             </article>
 
-            <!-- 5. MONITOR DE COMPILACIÓN -->
+            <!-- MONITOR DE COMPILACIÓN AL RAS -->
             <div class="build-stamp-bar">
                 <span>⚡ BUILD ACTIVO:</span>
                 <strong id="buildTimestamp">Verificando versión...</strong>
@@ -173,7 +168,7 @@
             </script>
         </section>
 
-        <!-- CAREER MODE -->
+        <!-- 2. CAREER MODE (MAPA NIVEL POR NIVEL) -->
         <section id="career" class="page">
             <div class="welcome">
                 <span class="eyebrow">ZIDONG ACADEMY · CAREER PATH</span>
@@ -256,33 +251,132 @@
             </button>
         </section>
 
-        <!-- LESSON CONTAINER -->
-        <section id="level01" class="page">
-            <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('career')">← MAPA</button>
-                <div class="lesson-hud-info">
-                    <span class="eyebrow" style="font-size:9px;">ÁREA 01 · ELÉCTRICA</span>
-                    <strong style="color:var(--text); font-size:12px;">ENTRENAMIENTO</strong>
-                </div>
-                <div class="lesson-quick-badge">TEST</div>
+        <!-- 3. LABORATORIO INDUSTRIAL / GLOSARIO (EN REEMPLAZO DEL DUPLICADO LEARN) -->
+        <section id="hanziLab" class="page">
+            <div class="welcome">
+                <span class="eyebrow">TECHNICAL REPOSITORY</span>
+                <h2>Laboratorio de Componentes</h2>
+                <p>Banco de partes de automatización y lectura de diagramas en planta.</p>
             </div>
-            <div class="recognition-card" id="lessonCard"></div>
+
+            <div class="lab-search-box">
+                <input type="text" id="labSearchInput" placeholder="🔍 Buscar sensor, motor, cable, válvula..." oninput="filterLabComponents(this.value)">
+            </div>
+
+            <div class="components-grid" id="labComponentsContainer">
+                <!-- Se llena dinámicamente con app.js -->
+            </div>
+
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
+                ← REGRESAR AL DASHBOARD
+            </button>
         </section>
 
-        <!-- BOSS FIGHT / ASSESSMENT -->
-        <section id="assessment" class="page">
-            <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="navigateTo('career')">← MAPA</button>
-                <div class="lesson-hud-info">
-                    <span class="eyebrow" style="font-size:9px; color:#ffc857;">CERTIFICACIÓN ÁREA 01</span>
-                    <strong style="color:#ffffff; font-size:12px;">COMISIONAMIENTO</strong>
-                </div>
-                <div class="lesson-quick-badge" style="border-color:#ffc857; color:#ffc857;">BOSS</div>
+        <!-- 4. PLAY ARENA (CONSOLA DE JUEGOS: SURVIVOR + 1V1 DUEL) -->
+        <section id="playArena" class="page">
+            <div class="welcome">
+                <span class="eyebrow">INDUSTRIAL SIMULATORS</span>
+                <h2>Arena de Operaciones</h2>
+                <p>Pon a prueba tus reflejos en tiempo real bajo condiciones de falla.</p>
             </div>
-            <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;"></div>
+
+            <div class="play-hub-grid">
+                <div class="play-hero-card survivor-hero" onclick="openCriticalMode()">
+                    <span class="play-badge warning">EMERGENCIA EN PLANTA</span>
+                    <h2>SURVIVOR MODE</h2>
+                    <p>Intervención de alarmas críticas HMI a contrarreloj. Diagnostica y restablece la línea antes de que se detenga la producción.</p>
+                    <div class="play-hero-footer">
+                        <span>⚡ 4 Niveles de Mantenimiento</span>
+                        <strong>ENTRAR AHORA →</strong>
+                    </div>
+                </div>
+
+                <div class="play-hero-card duel-hero" onclick="openVsMode()">
+                    <span class="play-badge purple">DUELO 1V1 TÉCNICO</span>
+                    <h2>1v1 LINE DUEL</h2>
+                    <p>Desafío directo de 20 segundos contra la IA del Servocontrolador o tus compañeros por el récord de puntos en turno.</p>
+                    <div class="play-hero-footer">
+                        <span>⚔️ Recompensa: +120 XP</span>
+                        <strong>BATALLA RÁPIDA →</strong>
+                    </div>
+                </div>
+            </div>
+
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
+                ← REGRESAR AL DASHBOARD
+            </button>
         </section>
 
-        <!-- SURVIVOR MODE / CRITICAL FAIL -->
+        <!-- 5. SISTEMA DE LOGROS TIPO XBOX (ACHIEVEMENTS CON GAMERSCORE G) -->
+        <section id="achievementsPage" class="page">
+            <div class="welcome">
+                <span class="eyebrow">XBOX-STYLE ACHIEVEMENTS</span>
+                <h2>Logros de Especialista</h2>
+                <p>Desbloquea insignias de ingeniería y acumula Gamerscore <strong>G</strong>.</p>
+            </div>
+
+            <!-- GAMERSCORE INDUSTRIAL BANNER -->
+            <div class="gamerscore-banner">
+                <div class="g-symbol">G</div>
+                <div>
+                    <span class="g-label">GAMERSCORE INDUSTRIAL</span>
+                    <h1 id="totalGamerscore">650 G</h1>
+                </div>
+                <span class="g-rank-badge">RANGO: ESPECIALISTA</span>
+            </div>
+
+            <div class="achievements-list" id="achievementsListContainer">
+                <!-- Se pobla dinámicamente -->
+            </div>
+
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
+                ← REGRESAR AL DASHBOARD
+            </button>
+        </section>
+
+        <!-- 6. ARENA 1V1 BATTLE (DUELO JUGABLE) -->
+        <section id="vsBattle" class="page">
+            <div class="lesson-top-nav">
+                <button class="btn-compact-back" onclick="navigateTo('dashboard')">← DASHBOARD</button>
+                <div class="lesson-hud-info">
+                    <span class="eyebrow" style="color:var(--purple); font-size:9px;">DUELO 1V1 INDUSTRIAL</span>
+                    <strong style="color:#ffffff; font-size:12px;">LINE DUEL</strong>
+                </div>
+                <div class="lesson-quick-badge" style="border-color:var(--purple); color:var(--purple);">1v1</div>
+            </div>
+
+            <div class="panel" style="text-align:center; margin-bottom:12px; background:linear-gradient(180deg, rgba(167, 139, 250, 0.12) 0%, rgba(17, 31, 53, 0.95) 100%);">
+                <div style="display:flex; justify-content:space-around; align-items:center; margin: 8px 0 14px 0;">
+                    <div>
+                        <div class="avatar" style="width:48px; height:48px; font-size:18px; margin:0 auto 4px auto; border:2px solid var(--cyan);">RL</div>
+                        <strong style="font-size:12px; color:#fff;">Tú</strong>
+                        <small id="vsMyScore" style="display:block; color:var(--cyan); font-weight:800; font-size:14px;">0 PTS</small>
+                    </div>
+
+                    <div style="font-size:24px; font-weight:900; color:var(--gold);">VS</div>
+
+                    <div>
+                        <div class="avatar" id="vsRivalAvatar" style="width:48px; height:48px; font-size:24px; margin:0 auto 4px auto; background:transparent; border:2px solid var(--purple);">🤖</div>
+                        <strong id="vsRivalName" style="font-size:12px; color:#fff;">Servo-Bot IA</strong>
+                        <small id="vsRivalScore" style="display:block; color:var(--purple); font-weight:800; font-size:14px;">0 PTS</small>
+                    </div>
+                </div>
+
+                <div class="cf-timer-track">
+                    <div id="vsTimerBar" class="cf-timer-fill" style="background:linear-gradient(90deg, #a78bfa, #27d8e8); width:100%;"></div>
+                </div>
+                <span style="font-size:11px; color:var(--muted);">Tiempo restante: <strong id="vsSeconds">20</strong>s</span>
+            </div>
+
+            <div class="recognition-card" id="vsStageCard">
+                <span class="tag" style="border-color:var(--purple); color:var(--purple); margin-bottom:8px;">DESAFÍO DE VELOCIDAD</span>
+                <h1 id="vsHanziDisplay" style="font-size:72px; color:#fff; margin:10px 0; font-family:'Noto Sans SC';">电</h1>
+                <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">Selecciona el significado antes que tu rival:</p>
+                <div class="career-quiz-grid" id="vsOptionsGrid"></div>
+            </div>
+        </section>
+
+        <!-- 7. SURVIVOR MODE / CRITICAL FAIL -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <div id="cf-selector" class="cf-view-container">
@@ -337,11 +431,11 @@
 
                 <div id="cf-game-arena" class="cf-view-container" style="display:none;">
                     <div class="cf-hud-bar">
-                        <div class="cf-hud-tag" id="cf-current-level-tag">SURVIVOR LEVEL 01</div>
+                        <div class="cf-hud-tag" id="cf-current-level-tag">SURVIVOR LEVEL 04</div>
                         <div class="cf-hud-group">
                             <div class="cf-hud-box">
                                 <small>TIEMPO</small>
-                                <span id="cf-timer">60</span>s
+                                <span id="cf-timer">45</span>s
                             </div>
                             <div class="cf-hud-box">
                                 <small>XP</small>
@@ -385,26 +479,33 @@
             </div>
         </section>
 
-        <!-- LEADERBOARD -->
-        <section id="leaderboard" class="page">
-            <div class="welcome">
-                <span class="eyebrow">GLOBAL LINE STATS</span>
-                <h2>Ranking de Ingenieros</h2>
-                <p>Rendimiento en planta y comisionamiento técnico.</p>
+        <!-- 8. LESSON CONTAINER -->
+        <section id="level01" class="page">
+            <div class="lesson-top-nav">
+                <button class="btn-compact-back" onclick="navigateTo('career')">← MAPA</button>
+                <div class="lesson-hud-info">
+                    <span class="eyebrow" style="font-size:9px;">ÁREA 01 · ELÉCTRICA</span>
+                    <strong style="color:var(--text); font-size:12px;">ENTRENAMIENTO</strong>
+                </div>
+                <div class="lesson-quick-badge">TEST</div>
             </div>
-            <div class="ranking-tabs">
-                <button class="ranking-tab active" onclick="showRankingTab('individual', this)">👤 Individual</button>
-                <button class="ranking-tab" onclick="showRankingTab('team', this)">🏆 Equipos</button>
-            </div>
-            <div id="individualRanking">
-                <div class="ranking-list" id="individualRankingList"></div>
-            </div>
-            <div id="teamRanking" style="display:none;">
-                <div class="ranking-list" id="teamRankingList"></div>
-            </div>
+            <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-        <!-- PROFILE -->
+        <!-- 9. BOSS FIGHT / ASSESSMENT -->
+        <section id="assessment" class="page">
+            <div class="lesson-top-nav">
+                <button class="btn-compact-back" onclick="navigateTo('career')">← MAPA</button>
+                <div class="lesson-hud-info">
+                    <span class="eyebrow" style="font-size:9px; color:#ffc857;">CERTIFICACIÓN ÁREA 01</span>
+                    <strong style="color:#ffffff; font-size:12px;">COMISIONAMIENTO</strong>
+                </div>
+                <div class="lesson-quick-badge" style="border-color:#ffc857; color:#ffc857;">BOSS</div>
+            </div>
+            <div id="electricalAssessment" style="width:100%; max-width:400px; margin: 0 auto;"></div>
+        </section>
+
+        <!-- 10. PROFILE -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -417,10 +518,10 @@
                 <span class="tag" style="border-color:#00f59b; color:#00f59b;">ESPECIALISTA DE AUTOMATIZACIÓN</span>
                 
                 <div class="profile-stats-grid">
-                    <div class="p-stat"><span id="profileXP">0</span><small>TOTAL XP</small></div>
+                    <div class="p-stat"><span id="profileXP">1,850</span><small>TOTAL XP</small></div>
                     <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
                     <div class="p-stat"><span id="profileStreak">5 Días</span><small>RACHA</small></div>
-                    <div class="p-stat"><span id="profileCompleted">0</span><small>HANZI DOMINADOS</small></div>
+                    <div class="p-stat"><span id="profileCompleted">5</span><small>HANZI DOMINADOS</small></div>
                 </div>
             </article>
 
@@ -443,30 +544,87 @@
             </button>
         </section>
 
+        <!-- MODAL DRAWER DE MISIONES DIARIAS (HOJA DE TURNO) -->
+        <div id="dailyMissionsModal" class="modal-backdrop" style="display:none;" onclick="closeMissionsModal(event)">
+            <div class="modal-card" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div>
+                        <span class="eyebrow" style="color:var(--cyan);">HOJA DE TURNO</span>
+                        <h3>MISIONES DIARIAS</h3>
+                    </div>
+                    <button class="modal-close-btn" onclick="toggleDailyMissionsModal()">✕</button>
+                </div>
+                
+                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra y subir tu Gamerscore:</p>
+
+                <div class="missions-checklist" id="missionsListContainer">
+                    <div class="mission-item done">
+                        <div class="mission-check">✓</div>
+                        <div class="mission-details">
+                            <strong>1. Iniciar Turno de Operaciones</strong>
+                            <small>Calibrar sensores con el Cyberdog (+10 XP)</small>
+                        </div>
+                        <span class="mission-tag-status">COMPLETA</span>
+                    </div>
+
+                    <div class="mission-item" id="m-task-hanzi">
+                        <div class="mission-check">○</div>
+                        <div class="mission-details">
+                            <strong>2. Dominio Eléctrico</strong>
+                            <small>Aprobar 5 componentes en Career Mode (<span id="mCountHanzi">0</span>/5)</small>
+                        </div>
+                        <span class="mission-reward-tag">+30 XP</span>
+                    </div>
+
+                    <div class="mission-item" id="m-task-survivor">
+                        <div class="mission-check">○</div>
+                        <div class="mission-details">
+                            <strong>3. Intervención Crítica</strong>
+                            <small>Solucionar 1 alarma HMI en Survivor Mode</small>
+                        </div>
+                        <span class="mission-reward-tag">+40 XP</span>
+                    </div>
+
+                    <div class="mission-item" id="m-task-vs">
+                        <div class="mission-check">○</div>
+                        <div class="mission-details">
+                            <strong>4. Victoria en Duelo 1v1</strong>
+                            <small>Derrotar al Servocontrolador IA en 1v1 Battle</small>
+                        </div>
+                        <span class="mission-reward-tag">+50 XP</span>
+                    </div>
+                </div>
+
+                <button class="reveal-button" style="margin-top:16px;" onclick="toggleDailyMissionsModal()">
+                    ENTENDIDO, VOLVER A LÍNEA
+                </button>
+            </div>
+        </div>
+
     </main>
 
-    <!-- FIXED BOTTOM NAV -->
+    <!-- FIXED BOTTOM NAV (HOME, LAB, PLAY, LOGROS) -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('career')">
-            <span class="nav-icon">🗺️</span><span class="nav-label">Learn</span>
+        <button class="nav-item" onclick="navigateTo('hanziLab')">
+            <span class="nav-icon">⚙️</span><span class="nav-label">Lab</span>
         </button>
-        <button class="nav-item" onclick="openCriticalMode()">
-            <span class="nav-icon">⚡</span><span class="nav-label">Play</span>
+        <button class="nav-item" onclick="navigateTo('playArena')">
+            <span class="nav-icon">🎮</span><span class="nav-label">Play</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('leaderboard')">
-            <span class="nav-icon">🏆</span><span class="nav-label">Rank</span>
+        <button class="nav-item" onclick="navigateTo('achievementsPage')">
+            <span class="nav-icon">🏆</span><span class="nav-label">Logros</span>
         </button>
     </nav>
 
     <!-- SCRIPTS EN RAÍZ -->
-    <script src="audio.js?v=2.5"></script>
-    <script src="navigation.js?v=2.5"></script>
-    <script src="mock-data.js?v=2.5"></script>
-    <script src="critical-fail.js?v=2.5"></script>
-    <script src="app.js?v=2.5"></script>
+    <script src="audio.js?v=3.0"></script>
+    <script src="navigation.js?v=3.0"></script>
+    <script src="mock-data.js?v=3.0"></script>
+    <script src="critical-fail.js?v=3.0"></script>
+    <script src="app.js?v=3.0"></script>
 
     <!-- SERVICE WORKER REGISTRATION (PWA) -->
     <script>

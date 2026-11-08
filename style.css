@@ -2496,26 +2496,3 @@ html, body {
     font-size: 9.5px !important;
     white-space: normal !important;
 }
-/* ==========================================================================
-   CORRECCIÓN DE TEXTOS GIGANTES 1V1 Y BARRA INFERIOR (LAB)
-   ========================================================================== */
-
-/* Forzar tamaño correcto y legible en los títulos de selección 1v1 */
-.diff-meta h3 {
-    font-size: 13px !important;
-    line-height: 1.2 !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-    margin: 2px 0 !important;
-}
-
-.diff-meta p {
-    font-size: 9.5px !important;
-    white-space: normal !important;
-    line-height: 1.2 !important;
-}
-
-/* Evitar desbordes en el contenedor del juego 1v1 */
-#vsHanziDisplay {
-    font-size: 64px !important;
-}

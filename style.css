@@ -2496,3 +2496,31 @@ html, body {
     font-size: 9.5px !important;
     white-space: normal !important;
 }
+
+
+/* Corrección absoluta para títulos largos del 1v1 */
+.diff-meta h3 {
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+}
+.diff-meta p {
+    font-size: 9px !important;
+    white-space: normal !important;
+}
+
+
+/* Corrección definitiva para el título del 1v1 en pantallas estrechas */
+.vs-diff-card .diff-meta h3 {
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+}
+.vs-diff-card .diff-meta {
+    min-width: 0 !important;
+    flex: 1 !important;
+}

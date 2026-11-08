@@ -1,21 +1,19 @@
 /* ==========================================================================
-   ZIDONG AUDIO ENGINE 5.0 (WEB AUDIO API)
-   - Pausa automática en segundo plano / pantalla minimizada (visibilitychange)
-   - Melodía Zelda Ocarina para Inicio / Dashboard
-   - Melodía Bowser Castle Mario Bros ("tututututut...") + Tic-Tac para 1v1
-   - Melodía Aventura para Career
-   - Sonidos de acierto, error y colapso
+   ZIDONG AUDIO ENGINE 10.0 (WEB AUDIO API NATIVA)
+   - Reproducción inmediata en Career Mode (menú de mundos planetarios)
+   - Feedback acústico al seleccionar mundos
+   - Suspenso tenso para Survivor Mode (+3s)
+   - Mario Castle + Tic-Tac para 1v1 Battle
+   - Loop espacial en Lobby
    ========================================================================== */
 
 (() => {
     "use strict";
 
     let audioCtx = null;
-    let marioInterval = null;
-    let ocarinaInterval = null;
-    let careerInterval = null;
+    let currentInterval = null;
     let isMuted = false;
-    let activePage = "dashboard";
+    let currentTrackName = "";
 
     function getAudioContext() {
         if (!audioCtx) {
@@ -30,6 +28,14 @@
         return audioCtx;
     }
 
+    function stopAllMusic() {
+        if (currentInterval) {
+            clearInterval(currentInterval);
+            currentInterval = null;
+        }
+        currentTrackName = "";
+    }
+
     // SONIDO ACIERTO
     function playSuccess() {
         if (isMuted || document.hidden) return;
@@ -41,18 +47,17 @@
         const gain = ctx.createGain();
 
         osc.type = "sine";
-        osc.frequency.setValueAtTime(523.25, now);
-        osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.08);
-        osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.16);
+        osc.frequency.setValueAtTime(587.33, now); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.1); // A5
 
         gain.gain.setValueAtTime(0.12, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.24);
     }
 
     // SONIDO ERROR
@@ -66,20 +71,20 @@
         const gain = ctx.createGain();
 
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(160, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.18);
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.16);
 
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(now);
-        osc.stop(now + 0.24);
+        osc.stop(now + 0.2);
     }
 
-    // SONIDO COLAPSO LÍNEA / DERROTA
+    // SONIDO COLAPSO LÍNEA
     function playLineCollapse() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -90,17 +95,41 @@
         const gain = ctx.createGain();
 
         osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(130, now);
-        osc.frequency.exponentialRampToValueAtTime(40, now + 0.55);
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
 
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(now);
-        osc.stop(now + 0.65);
+        osc.stop(now + 0.6);
+    }
+
+    // SONIDO PLANETA / MUNDO INTERACTIVO
+    function playPlanetChime() {
+        if (isMuted || document.hidden) return;
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.18);
+
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.38);
     }
 
     // SONIDO VICTORIA
@@ -111,7 +140,7 @@
 
         const notes = [440, 554.37, 659.25, 880];
         notes.forEach((freq, idx) => {
-            const now = ctx.currentTime + (idx * 0.09);
+            const now = ctx.currentTime + (idx * 0.08);
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
@@ -119,17 +148,17 @@
             osc.frequency.setValueAtTime(freq, now);
 
             gain.gain.setValueAtTime(0.12, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
 
             osc.start(now);
-            osc.stop(now + 0.25);
+            osc.stop(now + 0.22);
         });
     }
 
-    // TIC-TAC DE RELOJ
+    // TIC-TAC DE RELOJ (1V1)
     function playClockTick(isTock = false) {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -140,8 +169,8 @@
         const gain = ctx.createGain();
 
         osc.type = "triangle";
-        osc.frequency.setValueAtTime(isTock ? 750 : 1100, now);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.035);
+        osc.frequency.setValueAtTime(isTock ? 720 : 1150, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.035);
 
         gain.gain.setValueAtTime(0.08, now);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
@@ -153,54 +182,78 @@
         osc.stop(now + 0.045);
     }
 
-    // 1. ZELDA OCARINA
-    const ZELDA_NOTES = [
-        { f: 440, d: 0.35 }, { f: 523.25, d: 0.35 }, { f: 587.33, d: 0.75 },
-        { f: 440, d: 0.35 }, { f: 523.25, d: 0.35 }, { f: 587.33, d: 0.75 },
-        { f: 659.25, d: 0.35 }, { f: 587.33, d: 0.35 }, { f: 523.25, d: 0.35 },
-        { f: 493.88, d: 0.35 }, { f: 523.25, d: 0.75 }
+    // 1. MÚSICA LOBBY / DASHBOARD
+    const SPACE_CHORDS = [
+        [440, 554.37, 659.25],
+        [392, 493.88, 587.33]
     ];
+    let spaceStep = 0;
 
-    function playZeldaOcarina() {
+    function playSpaceShortLoop() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
-        let delay = 0;
-        ZELDA_NOTES.forEach(n => {
-            const now = ctx.currentTime + delay;
+        const chord = SPACE_CHORDS[spaceStep % SPACE_CHORDS.length];
+        spaceStep++;
+
+        chord.forEach(freq => {
+            const now = ctx.currentTime;
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
             osc.type = "sine";
-            osc.frequency.setValueAtTime(n.f, now);
-
-            const lfo = ctx.createOscillator();
-            const lfoGain = ctx.createGain();
-            lfo.frequency.setValueAtTime(5, now);
-            lfoGain.gain.setValueAtTime(3.5, now);
-            lfo.connect(osc.frequency);
-            lfo.start(now);
-            lfo.stop(now + n.d);
+            osc.frequency.setValueAtTime(freq, now);
 
             gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.04, now + 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + n.d);
+            gain.gain.linearRampToValueAtTime(0.022, now + 0.4);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
 
             osc.start(now);
-            osc.stop(now + n.d);
-
-            delay += n.d + 0.05;
+            osc.stop(now + 2.0);
         });
     }
 
-    // 2. MARIO BROS CASTILLO (tututututut...)
+    // 2. MÚSICA DE SUSPENSO (SURVIVOR MODE)
+    let suspenseBeat = 0;
+    function playSuspenseBeat() {
+        if (isMuted || document.hidden) return;
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        suspenseBeat++;
+        const isAccent = (suspenseBeat % 4 === 1);
+
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(isAccent ? 75 : 58, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.35);
+
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(isAccent ? 320 : 180, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(isAccent ? 0.08 : 0.04, now + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.45);
+    }
+
+    // 3. BOWSER CASTLE (1V1)
     const MARIO_CASTLE_RIFF = [155.56, 155.56, 146.83, 146.83, 138.59, 138.59, 130.81, 130.81];
     let castleStep = 0;
-
     function playMarioCastleBeat() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
@@ -226,20 +279,21 @@
         osc.stop(now + 0.18);
     }
 
-    // 3. CAREER AMBIENCE
-    const CAREER_CHORDS = [
-        [329.63, 392.00, 493.88], [293.66, 369.99, 440.00],
-        [261.63, 329.63, 392.00], [246.94, 311.13, 369.99]
+    // 4. MÚSICA CAREER MODE / MUNDOS PLANETARIOS (ARPEGIO ESPACIAL CÁLIDO)
+    const OBERON_CHORDS = [
+        [220, 261.63, 329.63, 440],
+        [261.63, 329.63, 392.00, 523],
+        [196.00, 246.94, 293.66, 392]
     ];
-    let careerChordIdx = 0;
+    let oberonStep = 0;
 
-    function playCareerAmbience() {
+    function playOberonLoop() {
         if (isMuted || document.hidden) return;
         const ctx = getAudioContext();
         if (!ctx) return;
 
-        const chord = CAREER_CHORDS[careerChordIdx % CAREER_CHORDS.length];
-        careerChordIdx++;
+        const chord = OBERON_CHORDS[oberonStep % OBERON_CHORDS.length];
+        oberonStep++;
 
         chord.forEach(freq => {
             const now = ctx.currentTime;
@@ -250,52 +304,38 @@
             osc.frequency.setValueAtTime(freq, now);
 
             gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.025, now + 0.8);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+            gain.gain.linearRampToValueAtTime(0.025, now + 0.6);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
 
             osc.start(now);
-            osc.stop(now + 3.4);
+            osc.stop(now + 2.7);
         });
     }
 
-    function stopAllMusic() {
-        clearInterval(marioInterval);
-        clearInterval(ocarinaInterval);
-        clearInterval(careerInterval);
-        marioInterval = null;
-        ocarinaInterval = null;
-        careerInterval = null;
-        castleStep = 0;
-    }
-
-    function startDashboardZelda() {
-        activePage = "dashboard";
+    function switchTrack(trackName) {
+        if (currentTrackName === trackName) return;
         stopAllMusic();
-        if (!isMuted && !document.hidden) {
-            playZeldaOcarina();
-            ocarinaInterval = setInterval(playZeldaOcarina, 7000);
-        }
-    }
+        currentTrackName = trackName;
 
-    function start1v1MarioCastle() {
-        activePage = "vsBattle";
-        stopAllMusic();
-        if (!isMuted && !document.hidden) {
+        if (isMuted || document.hidden) return;
+
+        if (trackName === "dashboard") {
+            playSpaceShortLoop();
+            currentInterval = setInterval(playSpaceShortLoop, 2800);
+        } else if (trackName === "career" || trackName === "oberon") {
+            playOberonLoop();
+            currentInterval = setInterval(playOberonLoop, 2900);
+        } else if (trackName === "survivor") {
+            suspenseBeat = 0;
+            playSuspenseBeat();
+            currentInterval = setInterval(playSuspenseBeat, 550);
+        } else if (trackName === "vsBattle") {
             castleStep = 0;
             playMarioCastleBeat();
-            marioInterval = setInterval(playMarioCastleBeat, 240);
-        }
-    }
-
-    function startCareerAmbience() {
-        activePage = "career";
-        stopAllMusic();
-        if (!isMuted && !document.hidden) {
-            playCareerAmbience();
-            careerInterval = setInterval(playCareerAmbience, 3600);
+            currentInterval = setInterval(playMarioCastleBeat, 240);
         }
     }
 
@@ -307,23 +347,20 @@
             if (btn) btn.textContent = "🔈";
         } else {
             if (btn) btn.textContent = "🔊";
-            if (activePage === "dashboard") startDashboardZelda();
-            else if (activePage === "vsBattle") start1v1MarioCastle();
-            else if (activePage === "career") startCareerAmbience();
+            const target = currentTrackName || "dashboard";
+            currentTrackName = "";
+            switchTrack(target);
         }
         return isMuted;
     }
 
-    // PAUSA AUTOMÁTICA AL MINIMIZAR / SEGUNDO PLANO
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
             stopAllMusic();
-        } else {
-            if (!isMuted) {
-                if (activePage === "dashboard") startDashboardZelda();
-                else if (activePage === "vsBattle") start1v1MarioCastle();
-                else if (activePage === "career") startCareerAmbience();
-            }
+        } else if (!isMuted && currentTrackName) {
+            const prev = currentTrackName;
+            currentTrackName = "";
+            switchTrack(prev);
         }
     });
 
@@ -333,9 +370,8 @@
         playLineCollapse,
         playVictory,
         playClockTick,
-        startDashboardZelda,
-        start1v1MarioCastle,
-        startCareerAmbience,
+        playPlanetChime,
+        switchTrack,
         stopAllMusic,
         toggleMute,
         isMuted: () => isMuted

@@ -701,25 +701,55 @@
         </button>
     </nav>
 
-    <!-- SCRIPTS MODULARES EN RAÍZ -->
-    <script src="audio.js?v=11.0"></script>
-    <script src="navigation.js?v=11.0"></script>
-    <script src="companion-phrases.js?v=11.0"></script>
-    <script src="medals-data.js?v=11.0"></script>
-    <script src="achievements-data.js?v=11.0"></script>
-    <script src="worlds-data.js?v=11.0"></script>
-    <script src="industrial-ranks.js?v=11.0"></script>
-    <script src="mock-data.js?v=11.0"></script>
-    <script src="critical-fail.js?v=11.0"></script>
-    <script src="app.js?v=11.0"></script>
+<!-- AUDIOS Y NAVEGACIÓN -->
+    <script src="audio.js?v=12.0"></script>
+    <script src="navigation.js?v=12.0"></script>
+    <script src="companion-phrases.js?v=12.0"></script>
+    <script src="mock-data.js?v=12.0"></script>
+    <script src="critical-fail.js?v=12.0"></script>
 
-    <!-- PWA SERVICE WORKER -->
+    <!-- MOTOR PRINCIPAL (Ya contiene mundos, rangos y medallas) -->
+    <script src="app.js?v=12.0"></script>
+
+    <!-- RUTINA DE ARRANQUE Y SPLASH SCREEN OBERON -->
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const splash = document.getElementById("oberonSplashScreen");
+            const fill = document.getElementById("splashLoadingFill");
+            const statusTxt = document.getElementById("splashStatusText");
+
+            const messages = [
+                { progress: 20, text: "Calibrando sensores AGV y PLC Mitsubishi..." },
+                { progress: 50, text: "Sincronizando perfiles térmicos Ersa Versaflow..." },
+                { progress: 80, text: "Cargando protocolo OBERON y módulos de voz..." },
+                { progress: 100, text: "¡Sistemas listos! Bienvenido a la estación." }
+            ];
+
+            let step = 0;
+            const interval = setInterval(() => {
+                if (step < messages.length) {
+                    if (fill) fill.style.width = messages[step].progress + "%";
+                    if (statusTxt) statusTxt.textContent = messages[step].text;
+                    step++;
+                } else {
+                    clearInterval(interval);
+                    if (splash) {
+                        splash.style.transition = "opacity 0.6s ease, visibility 0.6s ease";
+                        splash.style.opacity = "0";
+                        setTimeout(() => {
+                            splash.style.display = "none";
+                        }, 600);
+                    }
+                }
+            }, 1200); // 1.2s por paso = ~5 a 6 segundos totales
+        });
+
+        // Registro de Service Worker seguro
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('SW activo en:', reg.scope))
-                    .catch(err => console.error('Error al registrar SW:', err));
+                    .catch(err => console.warn('SW no disponible:', err));
             });
         }
     </script>

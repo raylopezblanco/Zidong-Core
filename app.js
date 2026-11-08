@@ -392,3 +392,13 @@
 
         triggerHaptic("win");
         updateUser
+// Cierre de seguridad para el Splash Screen Oberon
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        const splash = document.getElementById("oberonSplashScreen");
+        if (splash && splash.style.display !== "none") {
+            splash.style.opacity = "0";
+            setTimeout(() => { splash.style.display = "none"; }, 500);
+        }
+    }, 6200);
+});

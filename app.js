@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V28)
+   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V29)
    ========================================================================== */
 
 (() => {
@@ -20,9 +20,6 @@
 
     const STORAGE_KEY = "zidong_core_progress_v10";
 
-    // =====================================
-    // 1. LOS 5 MUNDOS DE MANUFACTURA
-    // =====================================
     const WORLDS_CONFIG = [
         {
             id: "world_1",
@@ -196,7 +193,6 @@
         }
     ];
 
-    // BANCO DE COMPONENTES DE LABORATORIO
     const LAB_COMPONENTS = [
         { hanzi: "电", pinyin: "diàn", es: "Electricidad", cat: "world_1", catName: "⚡ Voltaria", part: "电缆 (Cable)" },
         { hanzi: "机", pinyin: "jī", es: "Máquina / Motor", cat: "world_1", catName: "⚡ Voltaria", part: "电机 (Motor)" },
@@ -235,7 +231,6 @@
         { hanzi: "错", pinyin: "cuò", es: "Falso rechazo", cat: "world_5", catName: "👁️ Lumina", part: "误检 (Rechazo)" }
     ];
 
-    // RANGOS PROFESIONALES
     const INDUSTRIAL_RANKS = [
         { id: 1, name: "Becario", minXP: 0, maxXP: 800, icon: "📋", desc: "Familiarización con la línea y simbología" },
         { id: 2, name: "Practicante", minXP: 800, maxXP: 2000, icon: "🔰", desc: "Apoyo en cambio de herramentales y verificación visual" },

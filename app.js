@@ -834,7 +834,7 @@
         if (defeatScreen) defeatScreen.style.display = "none";
     };
 
-    window.start1v1WithDifficulty = function(diffKey) {
+      window.start1v1WithDifficulty = function(diffKey) {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
 

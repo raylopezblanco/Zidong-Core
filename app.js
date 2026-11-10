@@ -483,18 +483,20 @@ window.openVsMode = function() {
         if (defeatScreen) defeatScreen.style.display = "none";
     };
 
-    window.start1v1WithDifficulty = (diffKey) => {
+     window.start1v1WithDifficulty = (diffKey) => {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
 
-        // OCULTAR SELECTOR Y PANTALLA DE DERROTA, MOSTRAR SOLO LA ARENA
+        // 1. APAGAR EL SELECTOR Y LA DERROTA, PRENDER LA ARENA DE JUEGO
         const diffSelector = document.getElementById("vsDifficultySelector");
         const arenaContainer = document.getElementById("vsBattleArenaContainer");
         const defeatScreen = document.getElementById("vsDefeatScreen");
 
         if (diffSelector) diffSelector.style.display = "none";
         if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block";
+        if (arenaContainer) {
+            arenaContainer.style.display = "block"; // ¡Esto es lo que hace que aparezca el duelo!
+        }
 
         document.getElementById("vsRivalName").textContent = diff.name;
         document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";

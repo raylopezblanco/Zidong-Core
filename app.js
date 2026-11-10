@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V34)
+   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V35)
    ========================================================================== */
 
 (() => {
@@ -847,6 +847,18 @@
     }
 
     // 1V1 BATTLE MECÁNICAS
+    const VS_DIFFICULTIES = {
+        EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
+        MEDIUM: { name: "Servocontrolador Overclock", badge: "NIVEL 2 · PALABRA 2 HANZI", prob: 0.85, points: 100, winBonus: 150 },
+        HARD: { name: "Protocolo Centinela IA", badge: "NIVEL 3 · ORDENAR PALABRA", prob: 0.88, points: 100, winBonus: 250 }
+    };
+
+    let selectedVsDiffKey = "MEDIUM";
+    let vsTimer = null;
+    let vsTimeLeft = 20;
+    let myVsPoints = 0;
+    let rivalVsPoints = 0;
+
     function startVsRound() {
         stopVsSession();
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
@@ -1298,7 +1310,25 @@
         });
     }
 
-    // DAILY REWARD (VENTANA FLOTANTE)
+    // PESTAÑAS / MENÚS PARA LOGROS Y MEDALLAS EN PERFIL
+    window.switchProfileTab = function(tabName, btnEl) {
+        triggerHaptic("success");
+        const achievementsTab = document.getElementById("profileAchievementsTab");
+        const medalsTab = document.getElementById("profileMedalsTab");
+
+        document.querySelectorAll("#profile .lab-tab-btn").forEach(b => b.classList.remove("active"));
+        if (btnEl) btnEl.classList.add("active");
+
+        if (tabName === "achievements") {
+            if (achievementsTab) achievementsTab.style.display = "block";
+            if (medalsTab) medalsTab.style.display = "none";
+        } else if (tabName === "medals") {
+            if (achievementsTab) achievementsTab.style.display = "none";
+            if (medalsTab) medalsTab.style.display = "block";
+        }
+    };
+
+    // DAILY REWARD (VENTANA FLOTANTE MEJORADA)
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") triggerHaptic("success");
         
@@ -1308,15 +1338,14 @@
         const btnEl = document.getElementById("btnClaimRewardAction");
 
         if (modal && titleEl && descEl && btnEl) {
-            titleEl.textContent = "🎁 BONO DE TURNO DIARIO";
-            descEl.textContent = "¡Has sincronizado tu asistencia al turno de planta! Reclama tu experiencia para el escalafón.";
-            btnEl.textContent = "RECLAMAR +100 XP";
+            titleEl.textContent = "🎁 ¡BONO DE TURNO RECLAMADO!";
+            descEl.textContent = "Sincronización de asistencia completada con éxito. Se han acreditado +100 XP a tu batería de planta.";
+            btnEl.textContent = "¡ENTENDIDO! ⚡";
             
             btnEl.onclick = () => {
                 awardXP(100);
                 modal.style.display = "none";
                 if (typeof triggerHaptic === "function") triggerHaptic("win");
-                alert("⚡ ¡Bono reclamado con éxito! +100 XP añadidos a tu batería.");
             };
             
             modal.style.display = "flex";

@@ -9,19 +9,17 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=21.0">
+    <link rel="stylesheet" href="style.css?v=22.0">
 </head>
 <body>
 
-    <!-- 1. PANTALLA DE CARGA (SPLASH SCREEN) -->
+    <!-- PANTALLA DE CARGA -->
     <div id="oberonSplashScreen" class="splash-screen-overlay" onclick="hideSplashInstantly()" style="cursor:pointer;" title="Toca para saltar">
         <div class="splash-content-box">
             <span class="eyebrow splash-eyebrow">SISTEMA ESPACIAL OBERON</span>
-            
             <div class="splash-speech-bubble">
                 <span class="splash-bubble-text">"¡Iniciando protocolos de planta! Toca aquí si deseas entrar rápido." 🚀</span>
             </div>
-
             <div class="stasis-tube splash-tube">
                 <div class="tube-ring top-ring"></div>
                 <div class="tube-chamber">
@@ -30,11 +28,9 @@
                 </div>
                 <div class="tube-ring bottom-ring"></div>
             </div>
-
             <div class="splash-progress-track">
                 <div id="splashLoadingFill" class="splash-progress-fill" style="width: 100%;"></div>
             </div>
-
             <small id="splashStatusText" class="splash-status-lbl">¡Sistema listo! Toca en cualquier parte para entrar.</small>
         </div>
     </div>
@@ -48,13 +44,8 @@
                 <small>SISTEMA ESPACIAL OBERON</small>
             </div>
         </div>
-
         <div class="topbar-actions">
-            <button id="musicToggleBtn" class="audio-btn" onclick="if(window.ZidongAudio) ZidongAudio.toggleMute()">
-                🔊
-            </button>
-
-            <!-- CHIP DE PERFIL -->
+            <button id="musicToggleBtn" class="audio-btn" onclick="if(window.ZidongAudio) ZidongAudio.toggleMute()">🔊</button>
             <div class="user-chip" onclick="window.navigateTo ? window.navigateTo('profile') : null;">
                 <div class="avatar" id="topAvatar">NU</div>
                 <div class="user-meta">
@@ -66,11 +57,9 @@
     </header>
 
     <main class="app-shell">
-
-        <!-- 1. DASHBOARD (HOME) -->
+        <!-- 1. DASHBOARD -->
         <section id="dashboard" class="page active">
-
-            <!-- BATERÍA DE ENERGÍA XP -> MANDA A RANGOS -->
+            <!-- BATERÍA XP -->
             <div class="home-energy-battery" onclick="window.navigateTo('ranksLadderPage')">
                 <div class="battery-head-shell">
                     <div class="battery-terminal-node"></div>
@@ -81,12 +70,11 @@
                 </div>
                 <div class="battery-info-text">
                     <div class="battery-title-row">
-                        <span class="battery-label">⚡ ENERGÍA XP (VER RANGOS 📈):</span>
-                        <strong id="homeBatteryXpValue" class="battery-xp-val">1,850 XP</strong>
+                        <span class="battery-label">⚡ XP (RANGOS):</span>
+                        <strong id="homeBatteryXpValue" class="battery-xp-val">1,850</strong>
                     </div>
                     <div class="battery-sub-row">
                         <small id="homeBatteryRank">Rango 05: Técnico Jr</small>
-                        <small id="homeBatteryPercent" class="battery-pct-tag">45% de carga</small>
                     </div>
                 </div>
             </div>
@@ -96,34 +84,28 @@
                 <div class="mode-card career-mode hero-career" onclick="window.navigateTo('career')">
                     <div class="mode-icon">🪐</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag">5 MUNDOS OBERON</span>
+                        <span class="mode-tag">5 MUNDOS</span>
                         <h3>CAREER MODE</h3>
-                        <p>Eléctrico, Mecánico, etc.</p>
+                        <p>Eléctrico, Mecánico...</p>
                     </div>
-                    <div class="mode-action">
-                        <span class="arrow">→</span>
-                    </div>
+                    <div class="mode-action"><span class="arrow">→</span></div>
                 </div>
-
                 <div class="mode-card arcade-mode hero-survivor" onclick="window.openCriticalMode()">
                     <div class="mode-icon">⚠️</div>
                     <div class="mode-card-content">
-                        <span class="mode-tag warning">ENDLESS (+3s)</span>
-                        <h3>SURVIVOR MODE</h3>
-                        <p>18s · Chino experto</p>
+                        <span class="mode-tag warning">ENDLESS</span>
+                        <h3>SURVIVOR</h3>
+                        <p>Alarmas de planta</p>
                     </div>
-                    <div class="mode-action warning">
-                        <span class="arrow">⚡</span>
-                    </div>
+                    <div class="mode-action warning"><span class="arrow">⚡</span></div>
                 </div>
             </div>
 
-            <!-- COMPANION CILÍNDRICO DE LUZ -->
+            <!-- CYBERDOG -->
             <div class="companion-stage home-companion-stage">
                 <div class="speech-bubble dialog-balloon" id="companionBubble">
-                    <span id="companionText">¡Terminal OBERON lista! Tócame para recibir curiosidades del idioma chino. ⚡</span>
+                    <span id="companionText">¡Terminal OBERON lista! Tócame para recibir curiosidades. ⚡</span>
                 </div>
-
                 <div class="stasis-tube" onclick="window.interactWithCompanion ? window.interactWithCompanion() : alert('¡Oberon activo!')">
                     <div class="tube-ring top-ring"></div>
                     <div class="tube-chamber">
@@ -135,383 +117,113 @@
             </div>
 
             <!-- MODOS SECUNDARIOS -->
-            <div class="secondary-modes-grid home-secondary-grid" style="margin-top: 12px; margin-bottom: 10px;">
+            <div class="secondary-modes-grid home-secondary-grid">
                 <div class="sub-mode-card daily-card" onclick="window.claimDailyReward()">
                     <div class="sub-card-header">
                         <span class="sub-card-icon">🎁</span>
                         <strong class="sub-card-tag gold">DAILY</strong>
                     </div>
-                    <h4>DAILY REWARD</h4>
-                    <p id="dailyRewardSubtitle">Claim your XP</p>
+                    <h4>REWARD</h4>
+                    <p>Claim XP</p>
                 </div>
-
                 <div class="sub-mode-card vs-card" onclick="window.openVsMode()">
                     <div class="sub-card-header">
                         <span class="sub-card-icon">⚔️</span>
                         <strong class="sub-card-tag purple">VS MODE</strong>
                     </div>
                     <h4>1v1 BATTLE</h4>
-                    <p>3 Niveles · Mario Castle</p>
+                    <p>3 Niveles</p>
                 </div>
             </div>
 
-            <!-- DAILY MISSION -->
+            <!-- MISIONES -->
             <article class="daily-mission-card tight-mission" onclick="window.toggleDailyMissionsModal()">
                 <div class="mission-header">
                     <div>
                         <span class="eyebrow">DAILY MISSION</span>
-                        <h4>IN PROGRESS <small style="font-size:9px; color:var(--cyan);">(Ver lista 📋)</small></h4>
+                        <h4>IN PROGRESS <small style="color:var(--cyan);">(Ver lista)</small></h4>
                     </div>
                     <span class="mission-reward">+50 XP</span>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-fill" style="width: 25%;"></div>
-                </div>
-                <div class="mission-footer">
-                    <small id="dashboardMissionStatus">1 / 4 COMPLETADAS</small>
-                </div>
+                <div class="progress-bar-container"><div class="progress-fill" style="width: 25%;"></div></div>
             </article>
-
-            <!-- MONITOR DE COMPILACIÓN DINÁMICO -->
-            <div class="build-stamp-bar" style="margin-bottom: 20px;">
-                <span>⚡ BUILD ACTIVO:</span>
-                <strong id="buildTimestamp">Verificando versión...</strong>
-            </div>
-
-            <script>
-                (() => {
-                    const el = document.getElementById("buildTimestamp");
-                    const d = new Date(document.lastModified);
-                    if (el) {
-                        el.textContent = d.toLocaleString("es-MX", {
-                            day: "2-digit", month: "2-digit", year: "numeric",
-                            hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true
-                        });
-                    }
-                })();
-            </script>
         </section>
 
-        <!-- 2. CAREER MODE -->
+        <!-- CAREER MODE -->
         <section id="career" class="page">
             <div class="welcome">
                 <span class="eyebrow">SISTEMA ESPACIAL OBERON</span>
                 <h2>Mundos de Manufactura</h2>
-                <p>Nuestra misión es hacer que la red industrial no colapse:</p>
             </div>
-
             <div id="careerPlanetsGrid" class="planets-menu-grid"></div>
-
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 24px; margin-bottom: 20px;">
-                ← REGRESAR AL DASHBOARD
-            </button>
+            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR</button>
         </section>
 
-        <!-- VISTA DESGLOSADA DEL MUNDO SELECCIONADO -->
-        <section id="worldDetailsView" class="page">
-            <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="window.navigateTo('career')">← MUNDOS</button>
-                <div class="lesson-hud-info">
-                    <span class="eyebrow" id="selectedWorldTitle" style="font-size:9px;">MUNDO SELECCIONADO</span>
-                    <strong id="selectedWorldSubtitle" style="color:var(--text); font-size:12px;">NIVELES DE PLANTA</strong>
-                </div>
-                <div class="lesson-quick-badge" id="selectedWorldIcon">🪐</div>
-            </div>
-
-            <div id="selectedWorldStream" class="world-nodes-stream" style="margin-top:14px;"></div>
-
-            <button class="back-button" onclick="window.navigateTo('career')" style="margin-top: 24px; margin-bottom: 20px;">
-                ← REGRESAR A MUNDOS
-            </button>
-        </section>
-
-        <!-- 3. LABORATORIO (LAB) -->
+        <!-- LAB -->
         <section id="hanziLab" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
                 <h2>Laboratorio de Componentes</h2>
-                <p>Banco técnico clasificado por mundos de ingeniería:</p>
             </div>
-
             <div class="lab-category-tabs">
                 <button class="lab-tab-btn active" onclick="window.filterLabCategory('all', this)">Todos</button>
                 <button class="lab-tab-btn" onclick="window.filterLabCategory('world_1', this)">⚡ Eléctrico</button>
                 <button class="lab-tab-btn" onclick="window.filterLabCategory('world_2', this)">⚙️ Mecánico</button>
-                <button class="lab-tab-btn" onclick="window.filterLabCategory('world_3', this)">💨 Neumático</button>
-                <button class="lab-tab-btn" onclick="window.filterLabCategory('world_4', this)">🤖 Robótica</button>
-                <button class="lab-tab-btn" onclick="window.filterLabCategory('world_5', this)">👁️ Visión AOI</button>
             </div>
-
             <div class="lab-search-box">
-                <input type="text" id="labSearchInput" placeholder="🔍 Buscar sensor, motor, cable, válvula..." oninput="window.filterLabComponents(this.value)">
+                <input type="text" id="labSearchInput" placeholder="🔍 Buscar sensor, motor..." oninput="window.filterLabComponents(this.value)">
             </div>
-
             <div class="components-grid" id="labComponentsContainer"></div>
-
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">
-                ← REGRESAR AL DASHBOARD
-            </button>
+            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR</button>
         </section>
 
-        <!-- 4. ACADEMY -->
+        <!-- ACADEMY -->
         <section id="academy" class="page">
             <div class="welcome">
-                <span class="eyebrow">MANDARÍN TÉCNICO EN PLANTA</span>
+                <span class="eyebrow">MANDARÍN TÉCNICO</span>
                 <h2>Academy · Chino para Soporte</h2>
-                <p>Frases de gramática básica, saludos y reportes esenciales para piso de producción:</p>
             </div>
-
-            <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+            <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:10px;">
                 <div class="panel" style="background:var(--surface-light); border-left:4px solid var(--cyan); cursor:pointer;" onclick="openAcademyLesson(1)">
-                    <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:4px;">MÓDULO 01 · BÁSICO</span>
-                    <h3 style="color:#fff; font-size:14px; margin-bottom:2px;">Saludos y Presentación en Turno</h3>
-                    <p style="font-size:10px; color:var(--muted);">Aprende a decir "Buenos días", "Mi nombre es..." y saludar al ingeniero o líder de línea.</p>
+                    <h3 style="color:#fff; font-size:14px;">Módulo 01 · Saludos en Turno</h3>
                 </div>
-
                 <div class="panel" style="background:var(--surface-light); border-left:4px solid var(--green); cursor:pointer;" onclick="openAcademyLesson(2)">
-                    <span class="tag" style="border-color:var(--green); color:var(--green); margin-bottom:4px;">MÓDULO 02 · SOPORTE</span>
-                    <h3 style="color:#fff; font-size:14px; margin-bottom:2px;">Reporte de Fallas y Emergencias</h3>
-                    <p style="font-size:10px; color:var(--muted);">Frases clave para reportar paros de máquina, alarmas y solicitar asistencia técnica.</p>
+                    <h3 style="color:#fff; font-size:14px;">Módulo 02 · Reporte de Fallas</h3>
                 </div>
             </div>
-
-            <div id="academyLessonContainer" style="display:none; margin-top:14px;" class="panel">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <strong id="academyLessonTitle" style="color:var(--cyan); font-size:13px;">Lección</strong>
-                    <button class="btn-compact-back" onclick="closeAcademyLesson()">✕ Cerrar</button>
-                </div>
-                <p id="academyLessonContent" style="font-size:12px; color:#fff; line-height:1.4; margin-bottom:12px;"></p>
-                <button class="reveal-button" onclick="completeAcademyLesson()">✓ MARCAR LECCIÓN APRENDIDA (+50 XP)</button>
-            </div>
-
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">
-                ← REGRESAR AL DASHBOARD
-            </button>
+            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR</button>
         </section>
 
-        <!-- 5. RANKING -->
+        <!-- RANKING -->
         <section id="leaderboard" class="page">
             <div class="welcome">
-                <span class="eyebrow">CLASIFICATORIA INDUSTRIAL GLOBAL</span>
+                <span class="eyebrow">CLASIFICATORIA GLOBAL</span>
                 <h2>Tabla de Ingenieros</h2>
-                <p>Compara tu rendimiento en planta y acumulación de XP en tiempo real:</p>
             </div>
-
             <div class="lb-my-card" id="leaderboardMyRankBox"></div>
-
             <div class="lb-table-wrapper">
-                <div class="lb-table-header">
-                    <span>POSICIÓN & INGENIERO</span>
-                    <span>EXPERIENCIA</span>
-                </div>
                 <div class="lb-table-list" id="leaderboardTableContainer"></div>
             </div>
-
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">
-                ← REGRESAR AL DASHBOARD
-            </button>
+            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR</button>
         </section>
-
-        <!-- 6. RANGOS -->
-        <section id="ranksLadderPage" class="page">
-            <div class="welcome">
-                <span class="eyebrow">CAREER PROGRESSION</span>
-                <h2>Escalafón de Planta</h2>
-                <p>Asciende desde <strong>Becario</strong> hasta <strong>Maestro de Programación</strong> ganando XP.</p>
-            </div>
-
-            <div class="ranks-ladder-list" id="ranksLadderContainer"></div>
-
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">
-                ← REGRESAR AL DASHBOARD
-            </button>
-        </section>
-
-        <!-- 7. 1V1 BATTLE -->
-        <section id="vsBattle" class="page">
-            <div id="vsDifficultySelector" style="display:block;">
-                <div class="welcome">
-                    <span class="eyebrow">SISTEMA DE ENTRENAMIENTO 1V1</span>
-                    <h2>Duelo de Velocidad HMI</h2>
-                    <p>La IA es rápida y letal en los 3 niveles. Selecciona la modalidad mecánica:</p>
-                </div>
-
-                <div class="vs-diff-list">
-                    <div class="vs-diff-card" onclick="window.start1v1WithDifficulty('EASY')">
-                        <div class="diff-icon-box">⚙️</div>
-                        <div class="diff-meta">
-                            <span class="diff-badge green">NIVEL 1 · 1 HANZI</span>
-                            <h3>Simulador de Enlace</h3>
-                            <p>Identifica el significado técnico de un solo carácter (+100 XP)</p>
-                        </div>
-                        <span class="diff-action">DESAFÍAR →</span>
-                    </div>
-
-                    <div class="vs-diff-card" onclick="window.start1v1WithDifficulty('MEDIUM')">
-                        <div class="diff-icon-box">🤖</div>
-                        <div class="diff-meta">
-                            <span class="diff-badge gold">NIVEL 2 · 2 HANZI</span>
-                            <h3>Servocontrolador Overclock</h3>
-                            <p>Identifica refacciones y términos compuestos (+150 XP)</p>
-                        </div>
-                        <span class="diff-action">DESAFÍAR →</span>
-                    </div>
-                </div>
-
-                <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 16px;">
-                    ← REGRESAR AL DASHBOARD
-                </button>
-            </div>
-
-            <div id="vsBattleArenaContainer" style="display:none;">
-                <div class="lesson-top-nav">
-                    <button class="btn-compact-back" onclick="window.openVsMode()">← NIVELES</button>
-                    <div class="lesson-hud-info">
-                        <span class="eyebrow" id="vsDiffBadge" style="color:var(--purple); font-size:9px;">MODALIDAD</span>
-                        <strong style="color:#ffffff; font-size:12px;">BOWSER's CASTLE RUSH</strong>
-                    </div>
-                    <div class="lesson-quick-badge" style="border-color:var(--purple); color:var(--purple);">1v1</div>
-                </div>
-            </div>
-
-            <div id="vsDefeatScreen" style="display:none; text-align:center;">
-                <div class="panel collapse-panel">
-                    <h1 class="collapse-title" style="font-size:22px; margin:8px 0;">¡SIGUE ESTUDIANDO!</h1>
-                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:10px;">SALIR</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 8. SURVIVOR MODE -->
-        <section id="arcade" class="page">
-            <div class="arcade-shell">
-                <div id="cf-selector" class="cf-view-container">
-                    <div class="welcome">
-                        <span class="eyebrow">MODO SOBREVIVENCIA · ALARMAS DE PLANTA</span>
-                        <h2>SURVIVOR MODE (EXPERTO)</h2>
-                        <p>Solo en chino técnico HMI. Despeja tantas alarmas como puedas.</p>
-                    </div>
-
-                    <div class="survivor-banner-action" onclick="window.startCriticalLevel()">
-                        <div class="survivor-banner-icon">⚡</div>
-                        <div>
-                            <span class="tag" style="border-color:#ff4444; color:#ff4444;">PROTOCOLO CONTINUO</span>
-                            <h3 style="color:#fff; margin:2px 0;">INICIAR INTERVENCIÓN CRÍTICA</h3>
-                        </div>
-                        <span class="arrow" style="font-size:20px; color:#ff4444; margin-left:auto;">→</span>
-                    </div>
-
-                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:16px;">
-                        ← REGRESAR AL DASHBOARD
-                    </button>
-                </div>
-
-                <div id="cf-game-arena" class="cf-view-container" style="display:none;">
-                    <div class="cf-hud-bar">
-                        <div class="cf-hud-tag">
-                            ALARMAS RETIRADAS: <strong id="cf-cleared-count" style="color:#00f59b; font-size:14px;">0</strong>
-                        </div>
-                    </div>
-                    <div id="cf-stage-content"></div>
-                    <button class="btn-secondary" style="margin-top:16px; width:100%;" onclick="window.exitCriticalFail()">✕ SALIR</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 9. LESSON -->
-        <section id="level01" class="page">
-            <div class="lesson-top-nav">
-                <button class="btn-compact-back" onclick="window.navigateTo('worldDetailsView')">← NIVELES</button>
-            </div>
-            <div class="recognition-card" id="lessonCard"></div>
-        </section>
-
-        <!-- 10. PROFILE -->
-        <section id="profile" class="page">
-            <div class="welcome">
-                <span class="eyebrow">TECHNICAL PROFILE</span>
-                <h2>Perfil de Especialista</h2>
-            </div>
-            
-            <article class="profile-card">
-                <div class="avatar-large" id="profileAvatar">NU</div>
-                <h3 id="profileName">New user</h3>
-                <span id="profileRankBadge" class="tag" style="border-color:#00f59b; color:#00f59b; margin-top:6px;">⚡ Técnico Jr</span>
-                
-                <div class="profile-stats-grid">
-                    <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
-                    <div class="p-stat"><span id="profileStreak">5 Días</span><small>RACHA</small></div>
-                    <div class="p-stat"><span id="profileCompleted">5</span><small>DOMINADOS</small></div>
-                    <div class="p-stat"><span id="profileWorldsUnlocked">5 / 5</span><small>MUNDOS</small></div>
-                </div>
-            </article>
-
-            <!-- LOGROS XBOX -->
-            <article class="daily-mission-card" style="margin-top:14px; background:linear-gradient(135deg, #094709, #111f35); border-color:#1ed760;">
-                <div class="mission-header">
-                    <div>
-                        <span class="eyebrow" style="color:#86efac;">XBOX ACHIEVEMENTS</span>
-                        <h4 style="color:#fff;">LOGROS DE ESPECIALISTA</h4>
-                    </div>
-                    <span style="color:#86efac; font-weight:900; font-size:12px;" id="totalGamerscoreProfile">650 G</span>
-                </div>
-                <div class="achievements-list" id="achievementsListContainer" style="margin-top:10px;"></div>
-            </article>
-
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:16px;">
-                ← REGRESAR AL INICIO
-            </button>
-        </section>
-
-        <!-- MODAL REWARD -->
-        <div id="dailyRewardModal" class="modal-backdrop" style="display:none;" onclick="closeRewardModal(event)">
-            <div class="modal-card reward-modal-card" onclick="event.stopPropagation()">
-                <div class="reward-chest-icon">🎁</div>
-                <h2 style="color:#fff; margin:6px 0;">¡RECOMPENSA DIARIA!</h2>
-                <button class="reveal-button" onclick="window.closeRewardModal ? window.closeRewardModal() : document.getElementById('dailyRewardModal').style.display='none'">RECLAMAR</button>
-            </div>
-        </div>
-
     </main>
 
-    <!-- BARRA INFERIOR DE NAVEGACIÓN -->
+    <!-- BARRA INFERIOR -->
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="window.navigateTo('dashboard')">
-            <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
-        </button>
-        <button class="nav-item" onclick="window.navigateTo('hanziLab')">
-            <span class="nav-icon">⚙️</span><span class="nav-label">Lab</span>
-        </button>
-        <button class="nav-item" onclick="window.navigateTo('academy')">
-            <span class="nav-icon">📖</span><span class="nav-label">Academy</span>
-        </button>
-        <button class="nav-item" onclick="window.navigateTo('leaderboard')">
-            <span class="nav-icon">🏆</span><span class="nav-label">Ranking</span>
-        </button>
+        <button class="nav-item active" onclick="window.navigateTo('dashboard')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+        <button class="nav-item" onclick="window.navigateTo('hanziLab')"><span class="nav-icon">⚙️</span><span class="nav-label">Lab</span></button>
+        <button class="nav-item" onclick="window.navigateTo('academy')"><span class="nav-icon">📖</span><span class="nav-label">Academy</span></button>
+        <button class="nav-item" onclick="window.navigateTo('leaderboard')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
     </nav>
 
-    <!-- SCRIPTS -->
     <script>
         function hideSplashInstantly() {
-            const splash = document.getElementById('oberonSplashScreen');
-            if (splash) {
-                splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 400);
-            }
+            const s = document.getElementById('oberonSplashScreen');
+            if (s) { s.style.opacity = '0'; setTimeout(() => s.style.display = 'none', 400); }
         }
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(hideSplashInstantly, 2500);
-        });
+        setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="audio.js?v=21.0"></script>
-    <script src="navigation.js?v=21.0"></script>
-    <script src="companion-phrases.js?v=21.0"></script>
-    <script src="medals-data.js?v=21.0"></script>
-    <script src="achievements-data.js?v=21.0"></script>
-    <script src="worlds-data.js?v=21.0"></script>
-    <script src="industrial-ranks.js?v=21.0"></script>
-    <script src="mock-data.js?v=21.0"></script>
-    <script src="critical-fail.js?v=21.0"></script>
-    <script src="app.js?v=21.0"></script>
+    <script src="navigation.js?v=22.0"></script>
+    <script src="app.js?v=22.0"></script>
 </body>
 </html>

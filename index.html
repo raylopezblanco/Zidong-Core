@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=31.0">
+    <link rel="stylesheet" href="style.css?v=32.0">
 </head>
 <body>
 
@@ -135,7 +135,7 @@
                 </div>
             </div>
 
-            <!-- TARJETA MISIONES DIARIAS (DISPARADORA DEL MODAL) -->
+            <!-- TARJETA MISIONES DIARIAS -->
             <article class="daily-mission-card tight-mission" onclick="window.toggleDailyMissionsModal()">
                 <div class="mission-header">
                     <div>
@@ -176,7 +176,7 @@
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
         </section>
 
-        <!-- WORLD DETAILS VIEW (NIVELES DEL MUNDO) -->
+        <!-- WORLD DETAILS VIEW -->
         <section id="worldDetailsView" class="page">
             <div class="welcome" style="display:flex; align-items:center; gap:10px;">
                 <span id="selectedWorldIcon" style="font-size:32px;">⚡</span>
@@ -189,7 +189,7 @@
             <button class="back-button" onclick="window.navigateTo('career')" style="margin-top: 20px;">← REGRESAR A MUNDOS</button>
         </section>
 
-        <!-- LEVEL 01 (4 FASES / BOSS CHECKPOINT) -->
+        <!-- LEVEL 01 -->
         <section id="level01" class="page">
             <div class="recognition-card" style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center;"></div>
             <button class="back-button" onclick="window.navigateTo('worldDetailsView')" style="margin-top: 20px;">← ABANDONAR MISIÓN</button>
@@ -223,10 +223,10 @@
                 </div>
             </div>
 
-            <!-- PANTALLA DE DERROTA CON EL GIF DEL ROBOT BOSS -->
+            <!-- PANTALLA DE DERROTA CON EL GIF CORREGIDO (Robot%20Boss.gif) -->
             <div id="vsDefeatScreen" style="display:none; text-align:center; padding:15px 10px 30px 10px;">
                 <div style="width:100%; max-width:260px; margin:0 auto 10px auto; border-radius:12px; overflow:hidden; border:2px solid var(--red); box-shadow:0 0 20px rgba(255,68,68,0.4);">
-                    <img src="Robot_boss.gif" alt="Robot Boss Defeat" style="width:100%; height:auto; display:block;">
+                    <img src="Robot%20Boss.gif" alt="Robot Boss Defeat" style="width:100%; height:auto; display:block;">
                 </div>
                 
                 <h2 style="color:var(--red); font-size:16px; margin-bottom:2px;">💥 SISTEMA SUPERA-IZADO</h2>
@@ -235,9 +235,10 @@
                 </p>
                 <p id="vsDefeatScores" style="font-size:11px; color:var(--muted); margin-bottom:20px;"></p>
                 
-                <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px; padding-bottom:20px;">
-                    <button class="reveal-button" style="background:var(--cyan); color:#0b1424; padding:12px;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
-                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="padding: 12px; border-color:var(--border); color:#fff;">← REGRESAR AL DASHBOARD</button>
+                <div style="display:flex; flex-direction:column; gap:12px; margin-top:15px; padding-bottom:30px;">
+                    <button class="reveal-button" style="background:var(--cyan); color:#0b1424; padding:14px; font-weight:900;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
+                    <!-- BOTÓN DE REGRESAR SEPARADO Y MÁS ABAJO PARA EVITAR MISCLICKS -->
+                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="padding: 14px; border-color:var(--border); color:#fff; margin-top: 10px;">← REGRESAR AL DASHBOARD</button>
                 </div>
             </div>
 
@@ -316,30 +317,33 @@
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 24px;">← REGRESAR AL DASHBOARD</button>
         </section>
 
-        <!-- SURVIVOR MODE (ARCADE) CON DR. BOT INTRO DRAMÁTICA Y ALERTA AMARILLA/ROJA -->
+        <!-- SURVIVOR MODE (ARCADE) CON DR. BOT MEJORADO Y LLAMATIVO -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
                 <!-- 1. PANTALLA DE INTRO / ADVERTENCIA DEL DR. BOT -->
                 <div id="cf-selector" class="cf-view-container">
                     <div class="welcome" style="text-align:center;">
-                        <span class="eyebrow" style="color:#ffcc00; font-weight:900;">⚠️ ALERTA CRÍTICA DE PLANTA ⚠️</span>
+                        <span class="eyebrow" style="color:#ffcc00; font-weight:900; font-size:12px;">⚠️ ALERTA CRÍTICA DE PLANTA ⚠️</span>
                         <h2>SURVIVOR MODE</h2>
                     </div>
 
-                    <!-- SIGNO DE ALERTA GIGANTE AMARILLO CON ROJO -->
-                    <div style="text-align:center; margin:10px 0;">
-                        <span style="font-size:54px; text-shadow: 0 0 20px rgba(255,204,0,0.8); animation: pulseAlert 1.5s infinite;">⚠️</span>
+                    <!-- SIGNO DE ALERTA GIGANTE -->
+                    <div style="text-align:center; margin:6px 0;">
+                        <span style="font-size:50px; animation: pulseAlert 1.5s infinite; display:inline-block;">⚠️</span>
                     </div>
 
-                    <!-- TARJETA DEL DR. BOT CON MENSAJE DRAMÁTICO -->
-                    <div class="panel" style="background:linear-gradient(145deg, #2a080c, #111f35); border:2px solid #ff4444; border-radius:16px; padding:14px; margin-bottom:14px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: 0 0 25px rgba(255,68,68,0.3);">
-                        <img src="Dr Bot.jpeg" alt="Dr. Bot" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2px solid #ffcc00; margin-bottom:8px; box-shadow: 0 0 12px rgba(255,204,0,0.5);">
-                        <strong style="color:#ffcc00; font-size:13px; letter-spacing:1px; margin-bottom:4px;">DR. BOT · MONITOR DE NÚCLEO</strong>
-                        <p style="font-size:11.5px; color:#fff; line-height:1.4; margin:6px 0;">
-                            <span style="color:#ff4444; font-weight:900;">¡EMERGENCIA GENERAL!</span> ¡El sistema espacial OBERON está <span style="color:#ffcc00; font-weight:900;">COLAPSANDO</span>! Las alarmas HMI se multiplican sin control y el reactor principal se va a desintegrar. ¡Estamos contra reloj! 
+                    <!-- TARJETA DEL DR. BOT REDISEÑADA PARA QUE LUZCA IMPONENTE -->
+                    <div class="panel" style="background:linear-gradient(145deg, #2a080c, #111f35); border:2.5px solid #ff4444; border-radius:18px; padding:16px; margin-bottom:14px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: 0 0 30px rgba(255,68,68,0.4);">
+                        <!-- IMAGEN DEL DR BOT GRANDE Y RESALTADA -->
+                        <div style="width:90px; height:90px; border-radius:50%; border:3px solid #ffcc00; overflow:hidden; margin-bottom:10px; box-shadow: 0 0 20px rgba(255,204,0,0.6); background:#0b1424;">
+                            <img src="Dr Bot.png" alt="Dr. Bot" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <strong style="color:#ffcc00; font-size:13.5px; letter-spacing:1px; margin-bottom:6px;">DR. BOT · MONITOR DE NÚCLEO</strong>
+                        <p style="font-size:12px; color:#fff; line-height:1.45; margin:4px 0;">
+                            <span style="color:#ff4444; font-weight:900; font-size:12.5px;">¡EMERGENCIA NUCLEAR!</span> ¡El sistema OBERON está <span style="color:#ffcc00; font-weight:900;">COLAPSANDO</span>! Las alarmas HMI desbordan el PLC central y el reactor va a estallar. ¡Estamos totalmente contra reloj! 
                         </p>
-                        <p style="font-size:11px; color:#00f59b; font-weight:700; margin-top:4px;">
-                            "¡Apresúrate a purgar las fallas o toda la estación volará en mil pedazos, ingeniero!" ⚡🚨
+                        <p style="font-size:11.5px; color:#00f59b; font-weight:700; margin-top:6px; background:rgba(0,245,155,0.1); padding:6px 10px; border-radius:8px; border:1px solid rgba(0,245,155,0.3);">
+                            "¡Corre a purgar los códigos antes de que toda la estación vuele en pedazos, ingeniero!" ⚡🔥
                         </p>
                     </div>
 
@@ -355,7 +359,7 @@
                     <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:12px;">← REGRESAR AL DASHBOARD</button>
                 </div>
 
-                <!-- 2. ARENA DE JUEGO (CRITICAL FAIL) -->
+                <!-- 2. ARENA DE JUEGO -->
                 <div id="cf-game-arena" class="cf-view-container" style="display:none;">
                     <div class="cf-hud-bar">
                         <div class="cf-hud-tag">ALARMAS RETIRADAS: <strong id="cf-cleared-count" style="color:#00f59b; font-size:14px;">0</strong></div>
@@ -398,7 +402,7 @@
                 </div>
             </article>
 
-            <!-- SECCIÓN DE LOGROS DE PLANTA -->
+            <!-- SECCIÓN DE LOGROS -->
             <div class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <h3 style="font-size:12px; color:var(--green);">🏆 LOGROS DE PLANTA</h3>
@@ -449,7 +453,7 @@
         </div>
     </div>
 
-    <!-- MODAL DAILY MISSIONS (FLOTANTE) -->
+    <!-- MODAL DAILY MISSIONS -->
     <div id="dailyMissionsModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.85); backdrop-filter:blur(6px); z-index:99999; justify-content:center; align-items:center;" onclick="window.closeMissionsModal(event)">
         <div class="modal-box" style="background:var(--surface); border:1.5px solid var(--cyan); border-radius:16px; padding:20px; text-align:left; max-width:340px; width:90%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
             <h3 style="color:var(--cyan); font-size:15px; margin-bottom:12px;">📋 MISIONES DE TURNO</h3>
@@ -469,8 +473,8 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="critical-fail.js?v=31.0"></script>
-    <script src="navigation.js?v=31.0"></script>
-    <script src="app.js?v=31.0"></script>
+    <script src="critical-fail.js?v=32.0"></script>
+    <script src="navigation.js?v=32.0"></script>
+    <script src="app.js?v=32.0"></script>
 </body>
 </html>

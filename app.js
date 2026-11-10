@@ -467,14 +467,48 @@
         if (collapse) collapse.style.display = "none";
     };
 
-    window.openVsMode = function() {
-        if (typeof window.navigateTo === "function") window.navigateTo("vsBattle");
+window.openVsMode = function() {
+        stopVsSession();
+        triggerHaptic("success");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("vsBattle");
+        }
         const diffSelector = document.getElementById("vsDifficultySelector");
         const arenaContainer = document.getElementById("vsBattleArenaContainer");
         const defeatScreen = document.getElementById("vsDefeatScreen");
+        
+        // MOSTRAR SOLO EL SELECTOR Y OCULTAR LOS DEMÁS
         if (diffSelector) diffSelector.style.display = "block";
         if (arenaContainer) arenaContainer.style.display = "none";
         if (defeatScreen) defeatScreen.style.display = "none";
+    };
+
+    window.start1v1WithDifficulty = (diffKey) => {
+        selectedVsDiffKey = diffKey;
+        const diff = VS_DIFFICULTIES[diffKey];
+
+        // OCULTAR SELECTOR Y PANTALLA DE DERROTA, MOSTRAR SOLO LA ARENA
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+
+        if (diffSelector) diffSelector.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+        if (arenaContainer) arenaContainer.style.display = "block";
+
+        document.getElementById("vsRivalName").textContent = diff.name;
+        document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+        document.getElementById("vsDiffBadge").textContent = diff.badge;
+
+        myVsPoints = 0;
+        rivalVsPoints = 0;
+        vsTimeLeft = 20;
+
+        document.getElementById("vsMyScore").textContent = "0 PTS";
+        document.getElementById("vsRivalScore").textContent = "0 PTS";
+        document.getElementById("vsSeconds").textContent = vsTimeLeft;
+
+        startVsRound();
     };
 
     // CAREER PLANETS MENU

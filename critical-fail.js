@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SURVIVOR MODE (EXPERTO)
+   ZIDONG CORE - SURVIVOR MODE (CRITICAL FAIL) - V29 STABLE
    ========================================================================== */
 (() => {
     "use strict";
@@ -92,7 +92,9 @@
         `;
 
         options.forEach(opt => {
-            html += `<button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); text-align:left; padding:12px;" onclick="window.checkSurvivorAnswer('${opt.replace(/'/g, "\\\\'")}', '${alarm.correctAnswer.replace(/'/g, "\\\\'")}')">${opt}</button>`;
+            const safeOpt = opt.replace(/'/g, "\\'");
+            const safeCorrect = alarm.correctAnswer.replace(/'/g, "\\'");
+            html += `<button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); text-align:left; padding:12px;" onclick="window.checkSurvivorAnswer('${safeOpt}', '${safeCorrect}')">${opt}</button>`;
         });
 
         html += `</div></div>`;
@@ -103,7 +105,7 @@
         if (selected === correct) {
             alarmsCleared++;
             score += 50;
-            timeLeft += 3;
+            timeLeft += 3; // +3 segundos extra por acierto
             currentAlarmIndex = (currentAlarmIndex + 1) % PLANT_ALARMS.length;
             updateSurvivorHUD();
             renderSurvivorStage();
@@ -119,9 +121,12 @@
         if (arena) arena.style.display = "none";
         if (collapse) {
             collapse.style.display = "block";
-            document.getElementById("cf-collapse-cleared-count").textContent = alarmsCleared;
-            document.getElementById("cf-collapse-reason").textContent = reason;
-            document.getElementById("cf-collapse-score").textContent = "+" + score + " XP";
+            const cCount = document.getElementById("cf-collapse-cleared-count");
+            const cReason = document.getElementById("cf-collapse-reason");
+            const cScore = document.getElementById("cf-collapse-score");
+            if (cCount) cCount.textContent = alarmsCleared;
+            if (cReason) cReason.textContent = reason;
+            if (cScore) cScore.textContent = "+" + score + " XP";
         }
     }
 

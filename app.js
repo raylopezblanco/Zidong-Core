@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V35)
+   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V36)
    ========================================================================== */
 
 (() => {
@@ -497,7 +497,8 @@
         if (defeatScreen) defeatScreen.style.display = "none";
     };
 
-    window.start1v1WithDifficulty = (diffKey) => {
+    // 1V1 START (GARANTIZADO CON ESTABILIZADOR DOM)
+    window.start1v1WithDifficulty = function(diffKey) {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
 
@@ -509,17 +510,25 @@
         if (defeatScreen) defeatScreen.style.display = "none";
         if (arenaContainer) arenaContainer.style.display = "block";
 
-        document.getElementById("vsRivalName").textContent = diff.name;
-        document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        document.getElementById("vsDiffBadge").textContent = diff.badge;
+        const rivalNameEl = document.getElementById("vsRivalName");
+        const rivalAvatarEl = document.getElementById("vsRivalAvatar");
+        const diffBadgeEl = document.getElementById("vsDiffBadge");
+
+        if (rivalNameEl) rivalNameEl.textContent = diff.name;
+        if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+        if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
 
         myVsPoints = 0;
         rivalVsPoints = 0;
         vsTimeLeft = 20;
 
-        document.getElementById("vsMyScore").textContent = "0 PTS";
-        document.getElementById("vsRivalScore").textContent = "0 PTS";
-        document.getElementById("vsSeconds").textContent = vsTimeLeft;
+        const myScoreEl = document.getElementById("vsMyScore");
+        const rivalScoreEl = document.getElementById("vsRivalScore");
+        const secondsEl = document.getElementById("vsSeconds");
+
+        if (myScoreEl) myScoreEl.textContent = "0 PTS";
+        if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
+        if (secondsEl) secondsEl.textContent = vsTimeLeft;
 
         startVsRound();
     };
@@ -846,73 +855,7 @@
         renderBossSequenceView();
     }
 
-// =====================================
-    // MODO 1V1 BATTLE (3 NIVELES - CORREGIDO Y ESTABLE)
-    // =====================================
-    const VS_DIFFICULTIES = {
-        EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
-        MEDIUM: { name: "Servocontrolador Overclock", badge: "NIVEL 2 · PALABRA 2 HANZI", prob: 0.85, points: 100, winBonus: 150 },
-        HARD: { name: "Protocolo Centinela IA", badge: "NIVEL 3 · ORDENAR PALABRA", prob: 0.88, points: 100, winBonus: 250 }
-    };
-
-    let selectedVsDiffKey = "MEDIUM";
-    let vsTimer = null;
-    let vsTimeLeft = 20;
-    let myVsPoints = 0;
-    let rivalVsPoints = 0;
-
-    window.openVsMode = function() {
-        stopVsSession();
-        if (typeof triggerHaptic === "function") triggerHaptic("success");
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("vsBattle");
-        }
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-        
-        if (diffSelector) diffSelector.style.display = "block";
-        if (arenaContainer) arenaContainer.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-    };
-
-    window.start1v1WithDifficulty = function(diffKey) {
-        selectedVsDiffKey = diffKey;
-        const diff = VS_DIFFICULTIES[diffKey];
-
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-
-        // Ocultar selector y derrota, forzar despliegue de la arena de juego
-        if (diffSelector) diffSelector.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block";
-
-        const rivalNameEl = document.getElementById("vsRivalName");
-        const rivalAvatarEl = document.getElementById("vsRivalAvatar");
-        const diffBadgeEl = document.getElementById("vsDiffBadge");
-
-        if (rivalNameEl) rivalNameEl.textContent = diff.name;
-        if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
-
-        myVsPoints = 0;
-        rivalVsPoints = 0;
-        vsTimeLeft = 20;
-
-        const myScoreEl = document.getElementById("vsMyScore");
-        const rivalScoreEl = document.getElementById("vsRivalScore");
-        const secondsEl = document.getElementById("vsSeconds");
-
-        if (myScoreEl) myScoreEl.textContent = "0 PTS";
-        if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
-        if (secondsEl) secondsEl.textContent = vsTimeLeft;
-
-        // Arrancar inmediatamente la partida y el temporizador
-        startVsRound();
-    };
-
+    // 1V1 BATTLE BUCLE PRINCIPAL
     function startVsRound() {
         stopVsSession();
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
@@ -946,7 +889,7 @@
     }
 
     function loadVsLevel1SingleHanzi() {
-        const pool = typeof LAB_COMPONENTS !== 'undefined' ? LAB_COMPONENTS : [{ hanzi: "电", es: "Electricidad" }];
+        const pool = LAB_COMPONENTS;
         const item = pool[Math.floor(Math.random() * pool.length)];
         const display = document.getElementById("vsHanziDisplay");
         if (display) display.textContent = item.hanzi;
@@ -968,14 +911,14 @@
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
+                    triggerHaptic("success");
                     btn.classList.add("btn-correct");
                     myVsPoints += 100;
                     const myScore = document.getElementById("vsMyScore");
                     if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsMechanicByLevel, 240);
                 } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
+                    triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
                     const secondsEl = document.getElementById("vsSeconds");
@@ -1020,14 +963,14 @@
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
+                    triggerHaptic("success");
                     btn.classList.add("btn-correct");
                     myVsPoints += 100;
                     const myScore = document.getElementById("vsMyScore");
                     if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsMechanicByLevel, 240);
                 } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
+                    triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
                     const secondsEl = document.getElementById("vsSeconds");
@@ -1076,7 +1019,7 @@
             b.textContent = char;
             b.onclick = () => {
                 if (char === item.order[stepOrder]) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
+                    triggerHaptic("success");
                     const slot = document.getElementById(`vSlot${stepOrder}`);
                     if (slot) {
                         slot.textContent = char;
@@ -1094,7 +1037,7 @@
                         setTimeout(loadVsMechanicByLevel, 240);
                     }
                 } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
+                    triggerHaptic("error");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
                     const secondsEl = document.getElementById("vsSeconds");
                     if (secondsEl) secondsEl.textContent = vsTimeLeft;
@@ -1113,16 +1056,16 @@
         const win = myVsPoints >= rivalVsPoints;
 
         if (win) {
-            if (typeof triggerHaptic === "function") triggerHaptic("win");
-            if (typeof awardXP === "function") awardXP(diff.winBonus);
+            triggerHaptic("win");
+            awardXP(diff.winBonus);
             const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
             localStorage.setItem("zidong_vs_wins", currentWins);
             alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-            if (typeof renderBadgesGrid === "function") renderBadgesGrid();
-            if (typeof updateProfile === "function") updateProfile();
+            renderBadgesGrid();
+            updateProfile();
             if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         } else {
-            if (typeof triggerHaptic === "function") triggerHaptic("error");
+            triggerHaptic("error");
             const arena = document.getElementById("vsBattleArenaContainer");
             if (arena) arena.style.display = "none";
             const defeatScreen = document.getElementById("vsDefeatScreen");
@@ -1140,6 +1083,7 @@
         }
     }
     window.stopVsSession = stopVsSession;
+
     // LABORATORIO (LAB)
     let currentLabCategory = "all";
     function renderLabComponents(filteredList = null) {
@@ -1400,7 +1344,7 @@
         }
     };
 
-    // DAILY REWARD (VENTANA FLOTANTE MEJORADA)
+    // DAILY REWARD (VENTANA FLOTANTE ELEGANTE)
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") triggerHaptic("success");
         

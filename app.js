@@ -833,7 +833,6 @@ window.openVsMode = function() {
 
         renderBossSequenceView();
     }
-
 // =====================================
     // 2. MODO 1V1 BATTLE (3 NIVELES)
     // =====================================
@@ -858,6 +857,7 @@ window.openVsMode = function() {
         const diffSelector = document.getElementById("vsDifficultySelector");
         const arenaContainer = document.getElementById("vsBattleArenaContainer");
         const defeatScreen = document.getElementById("vsDefeatScreen");
+        
         if (diffSelector) diffSelector.style.display = "block";
         if (arenaContainer) arenaContainer.style.display = "none";
         if (defeatScreen) defeatScreen.style.display = "none";
@@ -867,9 +867,13 @@ window.openVsMode = function() {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
 
-        document.getElementById("vsDifficultySelector").style.display = "none";
-        document.getElementById("vsBattleArenaContainer").style.display = "block";
-        document.getElementById("vsDefeatScreen").style.display = "none";
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+
+        if (diffSelector) diffSelector.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+        if (arenaContainer) arenaContainer.style.display = "block"; // ¡Muestra la arena de juego correctamente!
 
         document.getElementById("vsRivalName").textContent = diff.name;
         document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
@@ -1066,7 +1070,7 @@ window.openVsMode = function() {
         grid.appendChild(blocksRow);
     }
 
-function finishVsBattle() {
+    function finishVsBattle() {
         stopVsSession();
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
         const win = myVsPoints >= rivalVsPoints;
@@ -1085,29 +1089,17 @@ function finishVsBattle() {
             document.getElementById("vsBattleArenaContainer").style.display = "none";
             const defeatScreen = document.getElementById("vsDefeatScreen");
             defeatScreen.style.display = "block";
-            
-            // 🎬 REPRODUCCIÓN FORZADA DEL VIDEO DEL JEFE AL PERDER
-            setTimeout(() => {
-                const bossVid = document.getElementById("robotBossVideo");
-                if (bossVid) {
-                    bossVid.muted = true;
-                    bossVid.currentTime = 0;
-                    bossVid.play().catch(err => {
-                        console.log("Autoplay bloqueado por políticas del navegador:", err);
-                    });
-                }
-            }, 50);
 
             document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
             document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
-        } // Cierra el else
-    } // Cierra la función finishVsBattle
+        }
+    }
+
     function stopVsSession() {
         clearInterval(vsTimer);
         vsTimer = null;
     }
     window.stopVsSession = stopVsSession;
-
     // =====================================
     // 3. LABORATORIO (LAB)
     // =====================================

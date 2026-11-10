@@ -1017,7 +1017,7 @@
         grid.appendChild(blocksRow);
     }
 
-    function finishVsBattle() {
+      function finishVsBattle() {
         stopVsSession();
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
         const win = myVsPoints >= rivalVsPoints;
@@ -1036,6 +1036,18 @@
             document.getElementById("vsBattleArenaContainer").style.display = "none";
             const defeatScreen = document.getElementById("vsDefeatScreen");
             defeatScreen.style.display = "block";
+            
+            // 🎬 DISPARA EL VIDEO EN CUALQUIER NIVEL (EASY, MEDIUM O HARD) AL PERDER
+            const bossVid = document.getElementById("robotBossVideo");
+            if (bossVid) {
+                bossVid.currentTime = 0;
+                bossVid.play().catch(e => console.log("Error al reproducir video del jefe:", e));
+            }
+
+            document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
+            document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
+        }
+    }
             
             // 🎬 AQUÍ AGREGAS ESTAS LÍNEAS PARA FORZAR LA REPRODUCCIÓN DEL VIDEO
             const bossVid = document.getElementById("robotBossVideo");

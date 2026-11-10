@@ -799,7 +799,7 @@
         renderBossSequenceView();
     }
 
-    // =====================================
+// =====================================
     // 2. MODO 1V1 BATTLE (3 NIVELES)
     // =====================================
     const VS_DIFFICULTIES = {
@@ -813,6 +813,20 @@
     let vsTimeLeft = 20;
     let myVsPoints = 0;
     let rivalVsPoints = 0;
+
+    window.openVsMode = function() {
+        stopVsSession();
+        triggerHaptic("success");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("vsBattle");
+        }
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+        if (diffSelector) diffSelector.style.display = "block";
+        if (arenaContainer) arenaContainer.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+    };
 
     window.start1v1WithDifficulty = (diffKey) => {
         selectedVsDiffKey = diffKey;
@@ -1018,41 +1032,30 @@
     }
 
     function finishVsBattle() {
-           stopVsSession();
-           const diff = VS_DIFFICULTIES[selectedVsDiffKey];
-           const win = myVsPoints >= rivalVsPoints;
-   
-           if (win) {
-               triggerHaptic("win");
-               awardXP(diff.winBonus);
-               const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
-               localStorage.setItem("zidong_vs_wins", currentWins);
-               alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-               renderBadgesGrid();
-               updateProfile();
-               if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
-           } else {
-               triggerHaptic("error");
-               document.getElementById("vsBattleArenaContainer").style.display = "none";
-               const defeatScreen = document.getElementById("vsDefeatScreen");
-               defeatScreen.style.display = "block";
-               
-               // Reproducción del video del jefe en cualquier nivel al perder
-               const bossVid = document.getElementById("robotBossVideo");
-               if (bossVid) {
-                   bossVid.currentTime = 0;
-                   bossVid.play().catch(e => console.log("Error al reproducir video del jefe:", e));
-               }
-   
-               document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
-               document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
-           }
-       }
-            // 🎬 AQUÍ AGREGAS ESTAS LÍNEAS PARA FORZAR LA REPRODUCCIÓN DEL VIDEO
+        stopVsSession();
+        const diff = VS_DIFFICULTIES[selectedVsDiffKey];
+        const win = myVsPoints >= rivalVsPoints;
+
+        if (win) {
+            triggerHaptic("win");
+            awardXP(diff.winBonus);
+            const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
+            localStorage.setItem("zidong_vs_wins", currentWins);
+            alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
+            renderBadgesGrid();
+            updateProfile();
+            if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
+        } else {
+            triggerHaptic("error");
+            document.getElementById("vsBattleArenaContainer").style.display = "none";
+            const defeatScreen = document.getElementById("vsDefeatScreen");
+            defeatScreen.style.display = "block";
+            
+            // Reproducción del video del jefe en cualquier nivel al perder
             const bossVid = document.getElementById("robotBossVideo");
             if (bossVid) {
                 bossVid.currentTime = 0;
-                bossVid.play().catch(e => console.log("Error al reproducir video:", e));
+                bossVid.play().catch(e => console.log("Error al reproducir video del jefe:", e));
             }
 
             document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";

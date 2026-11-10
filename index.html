@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=23.0">
+    <link rel="stylesheet" href="style.css?v=25.0">
 </head>
 <body>
 
@@ -59,7 +59,7 @@
     <main class="app-shell">
         <!-- 1. DASHBOARD (HOME) -->
         <section id="dashboard" class="page active">
-            <!-- BATERÍA XP EXACTA A LA REFERENCIA -->
+            <!-- BATERÍA XP EQUILIBRADA -->
             <div class="home-energy-battery" onclick="window.navigateTo('ranksLadderPage')">
                 <div class="battery-head-shell">
                     <div class="battery-terminal-node"></div>
@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <!-- MODOS PRINCIPALES -->
+            <!-- MODOS PRINCIPALES (TARJETAS UNIFICADAS EN TAMAÑO) -->
             <div class="main-modes-grid home-top-grid">
                 <div class="mode-card career-mode hero-career" onclick="window.navigateTo('career')">
                     <div class="mode-icon">🪐</div>
@@ -102,7 +102,7 @@
                 </div>
             </div>
 
-            <!-- CYBERDOG -->
+            <!-- CYBERDOG EN CÁPSULA DE ESTASIS -->
             <div class="companion-stage home-companion-stage">
                 <div class="speech-bubble dialog-balloon" id="companionBubble">
                     <span id="companionText">¡Terminal OBERON lista! Tócame para recibir curiosidades del idioma chino. ⚡</span>
@@ -117,7 +117,7 @@
                 </div>
             </div>
 
-            <!-- MODOS SECUNDARIOS -->
+            <!-- MODOS SECUNDARIOS (UNIFICADOS EN TAMAÑO) -->
             <div class="secondary-modes-grid home-secondary-grid">
                 <div class="sub-mode-card daily-card" onclick="window.claimDailyReward()">
                     <div class="sub-card-header">
@@ -212,14 +212,6 @@
                     <h3 style="color:#fff; font-size:14px;">Módulo 02 · Reporte de Fallas y Emergencias</h3>
                 </div>
             </div>
-            <div id="academyLessonContainer" style="display:none; margin-top:14px;" class="panel">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <strong id="academyLessonTitle" style="color:var(--cyan); font-size:13px;">Lección</strong>
-                    <button class="btn-compact-back" onclick="closeAcademyLesson()">✕ Cerrar</button>
-                </div>
-                <p id="academyLessonContent" style="font-size:12px; color:#fff; line-height:1.4; margin-bottom:12px;"></p>
-                <button class="reveal-button" onclick="completeAcademyLesson()">✓ MARCAR LECCIÓN APRENDIDA (+50 XP)</button>
-            </div>
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
         </section>
 
@@ -238,6 +230,40 @@
                 <div class="lb-table-list" id="leaderboardTableContainer"></div>
             </div>
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
+        </section>
+
+        <!-- SURVIVOR MODE (ARCADE) -->
+        <section id="arcade" class="page">
+            <div class="arcade-shell">
+                <div id="cf-selector" class="cf-view-container">
+                    <div class="welcome">
+                        <span class="eyebrow">MODO SOBREVIVENCIA · ALARMAS DE PLANTA</span>
+                        <h2>SURVIVOR MODE (EXPERTO)</h2>
+                        <p>Solo en chino técnico HMI. Despeja tantas alarmas como puedas. Cada acierto otorga +3s extra. 1 error = Colapso.</p>
+                    </div>
+                    <div class="survivor-banner-action" onclick="window.startCriticalLevel ? window.startCriticalLevel() : null">
+                        <div class="survivor-banner-icon">⚡</div>
+                        <div>
+                            <span class="tag" style="border-color:#ff4444; color:#ff4444;">PROTOCOLO CONTINUO</span>
+                            <h3 style="color:#fff; margin:2px 0;">INICIAR INTERVENCIÓN CRÍTICA</h3>
+                        </div>
+                        <span class="arrow" style="font-size:20px; color:#ff4444; margin-left:auto;">→</span>
+                    </div>
+                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:16px;">← REGRESAR AL DASHBOARD</button>
+                </div>
+                <div id="cf-game-arena" class="cf-view-container" style="display:none;">
+                    <div class="cf-hud-bar">
+                        <div class="cf-hud-tag">ALARMAS RETIRADAS: <strong id="cf-cleared-count" style="color:#00f59b; font-size:14px;">0</strong></div>
+                        <div class="cf-hud-group">
+                            <div class="cf-hud-box" id="cf-timer-box"><small>TIEMPO</small><span id="cf-timer">18</span>s</div>
+                            <div class="cf-hud-box"><small>XP</small><span id="cf-score">0</span></div>
+                        </div>
+                    </div>
+                    <div class="cf-timer-track"><div id="cf-timer-bar" class="cf-timer-fill"></div></div>
+                    <div id="cf-stage-content"></div>
+                    <button class="btn-secondary" style="margin-top:16px; width:100%;" onclick="window.exitCriticalFail ? window.exitCriticalFail() : window.navigateTo('dashboard')">✕ ABANDONAR INTERVENCIÓN</button>
+                </div>
+            </div>
         </section>
 
         <!-- PROFILE -->
@@ -276,7 +302,8 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="navigation.js?v=23.0"></script>
-    <script src="app.js?v=23.0"></script>
+    <script src="critical-fail.js?v=25.0"></script>
+    <script src="navigation.js?v=25.0"></script>
+    <script src="app.js?v=25.0"></script>
 </body>
 </html>

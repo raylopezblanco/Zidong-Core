@@ -11,11 +11,11 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=12.0">
+    <link rel="stylesheet" href="style.css?v=17.0">
 </head>
 <body>
 
-    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN DE 6 SEGUNDOS -->
+    <!-- 1. PANTALLA DE CARGA / SPLASH SCREEN -->
     <div id="oberonSplashScreen" class="splash-screen-overlay">
         <div class="splash-content-box">
             <span class="eyebrow splash-eyebrow">SISTEMA ESPACIAL OBERON</span>
@@ -37,7 +37,7 @@
                 <div id="splashLoadingFill" class="splash-progress-fill"></div>
             </div>
 
-            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v5.3...</small>
+            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v6.0...</small>
         </div>
     </div>
 
@@ -68,11 +68,11 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD (HOME) -->
-        <section id="dashboard" class="page active dashboard-no-scroll">
+        <!-- 1. DASHBOARD (HOME) CON FONDO DE ESTACIÓN ESPACIAL -->
+        <section id="dashboard" class="page active">
 
-            <!-- BATERÍA DE ENERGÍA XP DE PLANTA -->
-            <div class="home-energy-battery" onclick="navigateTo('profile')" title="Energía técnica acumulada (XP)">
+            <!-- BATERÍA DE ENERGÍA XP DE PLANTA -> CLIC MANDA A RANGOS -->
+            <div class="home-energy-battery" onclick="navigateTo('ranksLadderPage')" title="Toca para ver el escalafón de rangos en planta">
                 <div class="battery-head-shell">
                     <div class="battery-terminal-node"></div>
                     <div class="battery-body">
@@ -82,7 +82,7 @@
                 </div>
                 <div class="battery-info-text">
                     <div class="battery-title-row">
-                        <span class="battery-label">⚡ ENERGÍA XP EN LÍNEA:</span>
+                        <span class="battery-label">⚡ ENERGÍA XP (VER RANGOS 📈):</span>
                         <strong id="homeBatteryXpValue" class="battery-xp-val">1,850 XP</strong>
                     </div>
                     <div class="battery-sub-row">
@@ -239,7 +239,7 @@
             </button>
         </section>
 
-        <!-- 3. LABORATORIO (LAB) REINCORPORADO EN EL MENÚ INFERIOR -->
+        <!-- 3. LABORATORIO (LAB) -->
         <section id="hanziLab" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL REPOSITORY</span>
@@ -267,7 +267,49 @@
             </button>
         </section>
 
-        <!-- 4. CLASIFICATORIA DE PLANTA (RANKING) -->
+        <!-- 4. ACADEMY (CURSO DE CHINO BÁSICO / SOPORTE TÉCNICO) -->
+        <section id="academy" class="page">
+            <div class="welcome">
+                <span class="eyebrow">MANDARÍN TÉCNICO EN PLANTA</span>
+                <h2>Academy · Chino para Soporte</h2>
+                <p>Frases de gramática básica, saludos y reportes esenciales para piso de producción:</p>
+            </div>
+
+            <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+                <div class="panel" style="background:var(--surface-light); border-left:4px solid var(--cyan); cursor:pointer;" onclick="openAcademyLesson(1)">
+                    <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin-bottom:4px;">MÓDULO 01 · BÁSICO</span>
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:2px;">Saludos y Presentación en Turno</h3>
+                    <p style="font-size:10px; color:var(--muted);">Aprende a decir "Buenos días", "Mi nombre es..." y saludar al ingeniero o líder de línea.</p>
+                </div>
+
+                <div class="panel" style="background:var(--surface-light); border-left:4px solid var(--green); cursor:pointer;" onclick="openAcademyLesson(2)">
+                    <span class="tag" style="border-color:var(--green); color:var(--green); margin-bottom:4px;">MÓDULO 02 · SOPORTE</span>
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:2px;">Reporte de Fallas y Emergencias</h3>
+                    <p style="font-size:10px; color:var(--muted);">Frases clave para reportar paros de máquina, alarmas y solicitar asistencia técnica.</p>
+                </div>
+
+                <div class="panel" style="background:var(--surface-light); border-left:4px solid var(--gold); cursor:pointer;" onclick="openAcademyLesson(3)">
+                    <span class="tag" style="border-color:var(--gold); color:var(--gold); margin-bottom:4px;">MÓDULO 03 · GRAMÁTICA</span>
+                    <h3 style="color:#fff; font-size:14px; margin-bottom:2px;">Estructura de Preguntas y Órdenes</h3>
+                    <p style="font-size:10px; color:var(--muted);">Cómo preguntar "¿Dónde está...?", "¿Funcionó?" y dar instrucciones breves.</p>
+                </div>
+            </div>
+
+            <div id="academyLessonContainer" style="display:none; margin-top:14px;" class="panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <strong id="academyLessonTitle" style="color:var(--cyan); font-size:13px;">Lección</strong>
+                    <button class="btn-compact-back" onclick="closeAcademyLesson()">✕ Cerrar</button>
+                </div>
+                <p id="academyLessonContent" style="font-size:12px; color:#fff; line-height:1.4; margin-bottom:12px;"></p>
+                <button class="reveal-button" onclick="completeAcademyLesson()">✓ MARCAR LECCIÓN APRENDIDA (+50 XP)</button>
+            </div>
+
+            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
+                ← REGRESAR AL DASHBOARD
+            </button>
+        </section>
+
+        <!-- 5. CLASIFICATORIA DE PLANTA (RANKING) -->
         <section id="leaderboard" class="page">
             <div class="welcome">
                 <span class="eyebrow">CLASIFICATORIA INDUSTRIAL GLOBAL</span>
@@ -290,7 +332,7 @@
             </button>
         </section>
 
-        <!-- 5. ESCALAFÓN DE 10 RANGOS -->
+        <!-- 6. ESCALAFÓN DE 10 RANGOS -->
         <section id="ranksLadderPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">CAREER PROGRESSION</span>
@@ -299,30 +341,6 @@
             </div>
 
             <div class="ranks-ladder-list" id="ranksLadderContainer"></div>
-
-            <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
-                ← REGRESAR AL DASHBOARD
-            </button>
-        </section>
-
-        <!-- 6. LOGROS XBOX -->
-        <section id="achievementsPage" class="page">
-            <div class="welcome">
-                <span class="eyebrow">XBOX-STYLE ACHIEVEMENTS</span>
-                <h2>Logros de Especialista</h2>
-                <p>Desbloquea insignias de ingeniería y acumula Gamerscore <strong>G</strong>.</p>
-            </div>
-
-            <div class="gamerscore-banner">
-                <div class="g-symbol">G</div>
-                <div>
-                    <span class="g-label">GAMERSCORE INDUSTRIAL</span>
-                    <h1 id="totalGamerscore">650 G</h1>
-                </div>
-                <span class="g-rank-badge">SISTEMA OBERON</span>
-            </div>
-
-            <div class="achievements-list" id="achievementsListContainer"></div>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top: 20px;">
                 ← REGRESAR AL DASHBOARD
@@ -342,31 +360,31 @@
                     <div class="vs-diff-card" onclick="start1v1WithDifficulty('EASY')">
                         <div class="diff-icon-box">⚙️</div>
                         <div class="diff-meta">
-                            <span class="diff-badge green">NIVEL 1 · IDENTIFICAR 1 HANZI</span>
+                            <span class="diff-badge green">NIVEL 1 · 1 HANZI</span>
                             <h3>Simulador de Enlace</h3>
                             <p>Identifica el significado técnico de un solo carácter (+100 XP)</p>
                         </div>
-                        <span class="diff-action">DESAFIAR →</span>
+                        <span class="diff-action">DESAFÍAR →</span>
                     </div>
 
                     <div class="vs-diff-card" onclick="start1v1WithDifficulty('MEDIUM')">
                         <div class="diff-icon-box">🤖</div>
                         <div class="diff-meta">
-                            <span class="diff-badge gold">NIVEL 2 · PALABRA DE 2 HANZI</span>
+                            <span class="diff-badge gold">NIVEL 2 · 2 HANZI</span>
                             <h3>Servocontrolador Overclock</h3>
-                            <p>Identifica refacciones y términos compuestos de 2 Hanzi (+150 XP)</p>
+                            <p>Identifica refacciones y términos compuestos (+150 XP)</p>
                         </div>
-                        <span class="diff-action">DESAFIAR →</span>
+                        <span class="diff-action">DESAFÍAR →</span>
                     </div>
 
                     <div class="vs-diff-card" onclick="start1v1WithDifficulty('HARD')">
                         <div class="diff-icon-box">⚡</div>
                         <div class="diff-meta">
-                            <span class="diff-badge red">NIVEL 3 · ORDENAR CARACTERES</span>
+                            <span class="diff-badge red">NIVEL 3 · ORDENAR</span>
                             <h3>Protocolo Centinela IA</h3>
-                            <p>Ordena los bloques Hanzi para formar la palabra correcta (+250 XP)</p>
+                            <p>Ordena los bloques Hanzi para formar la palabra (+250 XP)</p>
                         </div>
-                        <span class="diff-action">DESAFIAR →</span>
+                        <span class="diff-action">DESAFÍAR →</span>
                     </div>
                 </div>
 
@@ -500,7 +518,7 @@
 
                         <div class="collapse-reason-box">
                             <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                                <span style="font-size:10px; color:#ffaa00; font-weight:800;">ALARMAS RETIRADAS EN ESTA SESIÓN:</span>
+                                <span style="font-size:10px; color:#ffaa00; font-weight:800;">ALARMAS RETIRADAS:</span>
                                 <strong id="cf-collapse-cleared-count" style="color:#00f59b; font-size:13px;">0</strong>
                             </div>
                             <small id="cf-collapse-reason">Acción errónea ejecutada en tablero.</small>
@@ -533,7 +551,7 @@
             <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-        <!-- 10. PROFILE -->
+        <!-- 10. PROFILE (CON LOGROS XBOX INTEGRADOS) -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -558,7 +576,7 @@
                 <div class="profile-stats-grid">
                     <div class="p-stat"><span id="profileLevel">05</span><small>NIVEL</small></div>
                     <div class="p-stat"><span id="profileStreak">5 Días</span><small>RACHA</small></div>
-                    <div class="p-stat"><span id="profileCompleted">5</span><small>HANZI DOMINADOS</small></div>
+                    <div class="p-stat"><span id="profileCompleted">5</span><small>DOMINADOS</small></div>
                     <div class="p-stat"><span id="profileWorldsUnlocked">5 / 5</span><small>MUNDOS</small></div>
                 </div>
 
@@ -573,13 +591,25 @@
                 <div class="profile-records-shelf">
                     <div class="record-row">
                         <span class="rec-label">🚨 Alarmas retiradas en Survivor:</span>
-                        <strong id="profileSurvivorBest" class="rec-val">0 Alarmas (Total retiradas: 0)</strong>
+                        <strong id="profileSurvivorBest" class="rec-val">0 Alarmas</strong>
                     </div>
                     <div class="record-row">
                         <span class="rec-label">⚔️ Récord Duelo 1v1 Battle:</span>
-                        <strong id="profileVsRecords" class="rec-val">0 Puntos (Fácil: 0 · Medio: 0 · Experto: 0)</strong>
+                        <strong id="profileVsRecords" class="rec-val">0 Puntos</strong>
                     </div>
                 </div>
+            </article>
+
+            <!-- SECCIÓN DE LOGROS XBOX EN EL PERFIL -->
+            <article class="daily-mission-card" style="margin-top:14px; background:linear-gradient(135deg, #094709, #111f35); border-color:#1ed760;">
+                <div class="mission-header">
+                    <div>
+                        <span class="eyebrow" style="color:#86efac;">XBOX ACHIEVEMENTS</span>
+                        <h4 style="color:#fff;">LOGROS DE ESPECIALISTA</h4>
+                    </div>
+                    <span style="color:#86efac; font-weight:900; font-size:12px;" id="totalGamerscoreProfile">650 G</span>
+                </div>
+                <div class="achievements-list" id="achievementsListContainer" style="margin-top:10px;"></div>
             </article>
 
             <!-- VITRINA DE MEDALLAS -->
@@ -591,8 +621,7 @@
                     </div>
                     <small style="color:var(--muted); font-size:10px;">Toca una para equipar</small>
                 </div>
-                <p style="font-size:11px; margin-bottom:12px;">Medallas de Carrera, Duelo 1v1 y Survivor para personalizar tu avatar:</p>
-                <div class="badges-grid" id="badgesContainer"></div>
+                <div class="badges-grid" id="badgesContainer" style="margin-top:8px;"></div>
             </article>
 
             <button class="back-button" onclick="navigateTo('dashboard')" style="margin-top:16px;">
@@ -627,7 +656,7 @@
                     <button class="modal-close-btn" onclick="toggleDailyMissionsModal()">✕</button>
                 </div>
                 
-                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra y ascender de rango en OBERON:</p>
+                <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Completa las asignaciones del día para ganar XP extra:</p>
 
                 <div class="missions-checklist">
                     <div class="mission-item done">
@@ -642,40 +671,31 @@
                     <div class="mission-item">
                         <div class="mission-check">○</div>
                         <div class="mission-details">
-                            <strong>2. Dominio en Mundos</strong>
-                            <small>Completar las 4 fases de un Hanzi técnico</small>
+                            <strong>2. Dominio en Academy</strong>
+                            <small>Completar una lección de chino técnico</small>
                         </div>
-                        <span class="mission-reward-tag">+30 XP</span>
+                        <span class="mission-reward-tag">+50 XP</span>
                     </div>
 
                     <div class="mission-item">
                         <div class="mission-check">○</div>
                         <div class="mission-details">
                             <strong>3. Intervención Crítica</strong>
-                            <small>Despejar al menos 1 alarma en Survivor Mode</small>
+                            <small>Despejar alarma en Survivor Mode</small>
                         </div>
                         <span class="mission-reward-tag">+40 XP</span>
-                    </div>
-
-                    <div class="mission-item">
-                        <div class="mission-check">○</div>
-                        <div class="mission-details">
-                            <strong>4. Victoria en Duelo 1v1</strong>
-                            <small>Derrotar a la IA en 1v1 Battle</small>
-                        </div>
-                        <span class="mission-reward-tag">+50 XP</span>
                     </div>
                 </div>
 
                 <button class="reveal-button" style="margin-top:16px;" onclick="toggleDailyMissionsModal()">
-                    ENTENDIDO, VOLVER A LÍNEA
+                    ENTENDIDO
                 </button>
             </div>
         </div>
 
     </main>
 
-    <!-- BARRA INFERIOR CON LAB RESTAURADO -->
+    <!-- BARRA INFERIOR ACTUALIZADA: HOME, LAB, ACADEMY, RANKING -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
@@ -683,35 +703,24 @@
         <button class="nav-item" onclick="navigateTo('hanziLab')">
             <span class="nav-icon">⚙️</span><span class="nav-label">Lab</span>
         </button>
+        <button class="nav-item" onclick="navigateTo('academy')">
+            <span class="nav-icon">📖</span><span class="nav-label">Academy</span>
+        </button>
         <button class="nav-item" onclick="navigateTo('leaderboard')">
             <span class="nav-icon">🏆</span><span class="nav-label">Ranking</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('ranksLadderPage')">
-            <span class="nav-icon">📈</span><span class="nav-label">Rangos</span>
-        </button>
     </nav>
 
-    <!-- SCRIPTS MODULARES -->
-    <script src="audio.js?v=12.0"></script>
-    <script src="navigation.js?v=12.0"></script>
-    <script src="companion-phrases.js?v=12.0"></script>
-    <script src="medals-data.js?v=12.0"></script>
-    <script src="achievements-data.js?v=12.0"></script>
-    <script src="worlds-data.js?v=12.0"></script>
-    <script src="industrial-ranks.js?v=12.0"></script>
-    <script src="mock-data.js?v=12.0"></script>
-    <script src="critical-fail.js?v=12.0"></script>
-    <script src="app.js?v=12.0"></script>
-
-    <!-- PWA SERVICE WORKER -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW activo en:', reg.scope))
-                    .catch(err => console.error('Error al registrar SW:', err));
-            });
-        }
-    </script>
+    <!-- SCRIPTS -->
+    <script src="audio.js?v=17.0"></script>
+    <script src="navigation.js?v=17.0"></script>
+    <script src="companion-phrases.js?v=17.0"></script>
+    <script src="medals-data.js?v=17.0"></script>
+    <script src="achievements-data.js?v=17.0"></script>
+    <script src="worlds-data.js?v=17.0"></script>
+    <script src="industrial-ranks.js?v=17.0"></script>
+    <script src="mock-data.js?v=17.0"></script>
+    <script src="critical-fail.js?v=17.0"></script>
+    <script src="app.js?v=17.0"></script>
 </body>
 </html>

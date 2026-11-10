@@ -1,81 +1,66 @@
-/* ==========================================================================
-   ZIDONG NAVIGATION ENGINE 10.0
-   - Enrutamiento estricto: Oculta Dashboard y muestra la sección solicitada
-   - Transición de audio limpia (incluye música al entrar a los mundos de Career)
-   - Actualización de barra inferior con Clasificatoria (Ranking)
-   ========================================================================== */
 
-(() => {
-    "use strict";
+// Sistema de Navegación con soporte para historial de atajos y botón Atrás del celular
+const navigationHistory = ['dashboard'];
 
-    window.navigateTo = (pageId) => {
-        // 1. Detener sesiones activas de juego
-        if (typeof window.stopSurvivorSession === "function") {
-            window.stopSurvivorSession();
-        }
-        if (typeof window.stopVsSession === "function") {
-            window.stopVsSession();
+function navigateTo(pageId, pushHistory = true) {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(p => p.classList.remove('active'));
+    
+    const target = document.getElementById(pageId);
+    if (target) {
+        target.classList.add('active');
+        window.scrollTo(0, 0);
+        
+        if (pushHistory && navigationHistory[navigationHistory.length - 1] !== pageId) {
+            navigationHistory.push(pageId);
         }
 
-        // 2. Transición musical limpia por pantalla
-        if (window.ZidongAudio) {
-            if (pageId === "dashboard") {
-                window.ZidongAudio.switchTrack("dashboard");
-            } else if (pageId === "career" || pageId === "worldDetailsView" || pageId === "level01" || pageId === "assessment") {
-                window.ZidongAudio.switchTrack("career"); // Música de exploración espacial en Career Mode
-            } else if (pageId === "arcade") {
-                window.ZidongAudio.switchTrack("survivor");
-            } else if (pageId === "vsBattle") {
-                window.ZidongAudio.switchTrack("vsBattle");
-            } else {
-                window.ZidongAudio.stopAllMusic();
+        // Actualizar estado activo en barra inferior
+        const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(pageId)) {
+                item.classList.add('active');
             }
-        }
-
-        // 3. Ocultar todas las páginas estrictamente
-        const allPages = document.querySelectorAll(".page");
-        allPages.forEach(p => {
-            p.classList.remove("active");
-            p.style.display = "none";
         });
+    }
+}
 
-        // 4. Mostrar página destino
-        const targetPage = document.getElementById(pageId);
-        if (targetPage) {
-            targetPage.classList.add("active");
-            targetPage.style.display = "block";
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+// Escuchar botón atrás del navegador / celular para evitar que cierre la app
+window.addEventListener('popstate', (event) => {
+    if (navigationHistory.length > 1) {
+        navigationHistory.pop(); // quitar actual
+        const previousPage = navigationHistory[navigationHistory.length - 1];
+        navigateTo(previousPage, false);
+    }
+});
 
-        // 5. Actualizar barra inferior (Home, Mundos, Ranking, Rangos)
-        const navButtons = document.querySelectorAll(".bottom-nav .nav-item");
-        navButtons.forEach(btn => btn.classList.remove("active"));
+// Funciones para Academy
+function openAcademyLesson(modId) {
+    const container = document.getElementById('academyLessonContainer');
+    const title = document.getElementById('academyLessonTitle');
+    const content = document.getElementById('academyLessonContent');
+    if (!container || !title || !content) return;
+    
+    container.style.display = 'block';
+    if (modId === 1) {
+        title.textContent = "Módulo 01: Saludos y Presentación en Turno";
+        content.innerHTML = "• <strong>Nǐ hǎo (你好):</strong> Hola.<br>• <strong>Zǎo'ān (早安):</strong> Buenos días / Inicio de turno.<br>• <strong>Wǒ shì... (我是...):</strong> Yo soy [Nombre / Técnico].<br>• <strong>Qǐng bāngzhù (请帮助):</strong> Por favor ayuda.";
+    } else if (modId === 2) {
+        title.textContent = "Módulo 02: Reporte de Fallas y Emergencias";
+        content.innerHTML = "• <strong>Bàojǐng (报警):</strong> Alarma / Código de error.<br>• <strong>Jīqìng gùzhàng (机器故障):</strong> Falla en máquina.<br>• <strong>Tíngzhǐ (停止):</strong> Detener / Paro.<br>• <strong>Kuài lái (快来):</strong> Ven rápido / Emergencia en línea.";
+    } else {
+        title.textContent = "Módulo 03: Estructura de Preguntas y Órdenes";
+        content.innerHTML> = "• <strong>Zài nǎlǐ (在哪里):</strong> ¿Dónde está?<br>• <strong>Hǎo le ma (好了吗):</strong> ¿Está listo / calibrado?<br>• <strong>Méiyǒu wèntí (没有问题):</strong> Sin problema / Todo OK.";
+    }
+}
 
-        if (pageId === "dashboard") {
-            navButtons[0]?.classList.add("active");
-        } else if (pageId === "hanziLab") {
-            navButtons[1]?.classList.add("active");
-        } else if (pageId === "leaderboard") {
-            navButtons[2]?.classList.add("active");
-        } else if (pageId === "ranksLadderPage") {
-            navButtons[3]?.classList.add("active");
-        }
+function closeAcademyLesson() {
+    const container = document.getElementById('academyLessonContainer');
+    if (container) container.style.display = 'none';
+}
 
-        // 6. Refrescar vistas
-        if (pageId === "career" && typeof window.renderCareerPlanetsMenu === "function") {
-            window.renderCareerPlanetsMenu();
-        }
-        if (pageId === "leaderboard" && typeof window.renderLeaderboardSection === "function") {
-            window.renderLeaderboardSection();
-        }
-        if (pageId === "ranksLadderPage" && typeof window.renderRanksSection === "function") {
-            window.renderRanksSection();
-        }
-        if (pageId === "profile" && typeof window.updateProfile === "function") {
-            window.updateProfile();
-        }
-        if (pageId === "hanziLab" && typeof window.renderLabComponents === "function") {
-            window.renderLabComponents();
-        }
-    };
-})();
+function completeAcademyLesson() {
+    alert("¡Lección completada! +50 XP sumados a tu batería de planta.");
+    closeAcademyLesson();
+}

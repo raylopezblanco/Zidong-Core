@@ -1294,74 +1294,141 @@ function renderLeaderboardSection() {
         });
     }
 
-    // DAILY REWARD & MISSIONS
-    window.claimDailyReward = () => {
-        const lastClaim = localStorage.getItem("zidong_last_daily_claim");
-        const today = new Date().toDateString();
+// =====================================
+    // 1. DAILY REWARD (VENTANA FLOTANTE)
+    // =====================================
+    window.claimDailyReward = function() {
+        triggerHaptic("success");
         const modal = document.getElementById("dailyRewardModal");
-        const claimBtn = document.getElementById("btnClaimRewardAction");
         const titleEl = document.getElementById("rewardModalTitle");
         const descEl = document.getElementById("rewardModalDesc");
+        const btnEl = document.getElementById("btnClaimRewardAction");
 
-        if (lastClaim === today) {
-            triggerHaptic("error");
-            titleEl.textContent = "¡RECOMPENSA RECLAMADA!";
-            descEl.textContent = "Ya recibiste tus +100 XP de guardia hoy. Vuelve en el siguiente cambio de turno.";
-            claimBtn.textContent = "ENTENDIDO";
-            claimBtn.onclick = () => { modal.style.display = "none"; };
-        } else {
-            triggerHaptic("win");
-            titleEl.textContent = "¡BONO DE TURNO OBERON!";
-            descEl.textContent = "Has recibido +100 XP por inicio de operaciones en el sistema.";
-            claimBtn.textContent = "RECLAMAR +100 XP 🎁";
-            claimBtn.onclick = () => {
+        if (modal && titleEl && descEl && btnEl) {
+            titleEl.textContent = "🎁 BONO DE TURNO DIARIO";
+            descEl.textContent = "¡Has sincronizado tu asistencia al turno de planta! Reclama tu experiencia para el escalafón.";
+            btnEl.textContent = "RECLAMAR +100 XP";
+            btnEl.onclick = () => {
                 awardXP(100);
-                localStorage.setItem("zidong_last_daily_claim", today);
-                triggerHaptic("success");
                 modal.style.display = "none";
+                triggerHaptic("win");
+                alert("⚡ ¡Bono reclamado con éxito! +100 XP añadidos a tu batería.");
             };
+            modal.style.display = "flex"; // Muestra como ventana flotante centrada
         }
-        modal.style.display = "flex";
     };
 
-    window.closeRewardModal = (e) => {
-        if (e.target.id === "dailyRewardModal") document.getElementById("dailyRewardModal").style.display = "none";
+    window.closeRewardModal = function(e) {
+        if (e.target.id === "dailyRewardModal") {
+            document.getElementById("dailyRewardModal").style.display = "none";
+        }
     };
 
-    window.toggleDailyMissionsModal = () => {
-        const modal = document.getElementById("dailyMissionsModal");
-        if (!modal) return;
-        const isHidden = modal.style.display === "none";
-        modal.style.display = isHidden ? "flex" : "none";
-        if (isHidden) triggerHaptic("success");
+    // =====================================
+    // 2. CORRECCIÓN INICIO 1V1 BATTLE
+    // =====================================
+    window.start1v1WithDifficulty = (diffKey) => {
+        selectedVsDiffKey = diffKey;
+        const diff = VS_DIFFICULTIES[diffKey];
+
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+
+        if (diffSelector) diffSelector.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+        if (arenaContainer) arenaContainer.style.display = "block"; // Activa la arena de juego
+
+        document.getElementById("vsRivalName").textContent = diff.name;
+        document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+        document.getElementById("vsDiffBadge").textContent = diff.badge;
+
+        myVsPoints = 0;
+        rivalVsPoints = 0;
+        vsTimeLeft = 20;
+
+        document.getElementById("vsMyScore").textContent = "0 PTS";
+        document.getElementById("vsRivalScore").textContent = "0 PTS";
+        document.getElementById("vsSeconds").textContent = vsTimeLeft;
+
+        startVsRound(); // Inicia el temporizador y carga la mecánica del nivel seleccionado
     };
 
-    window.closeMissionsModal = (e) => {
-        if (e.target.id === "dailyMissionsModal") window.toggleDailyMissionsModal();
-    };
+    // =====================================
+    // 3. LOGROS RANDOM DE PLANTA
+    // =====================================
+    function renderAchievementsGrid() {
+        const container = document.getElementById("profileAchievementsList");
+        if (!container) return;
 
-    // INICIALIZACIÓN
-    function initializeApplication() {
-        loadSavedProgress();
-        updateUserDisplay();
-        renderCareerPlanetsMenu();
-        renderLabComponents();
-        renderRanksSection();
-        updateProfile();
+        const mockAchievements = [
+            { icon: "⚡", title: "Maestro del Cableado", desc: "Identifica 10 componentes eléctricos", unlocked: true },
+            { icon: "🤖", title: "Overclock Industrial", desc: "Supera el Nivel 2 del Duelo 1v1", unlocked: true },
+            { icon: "🦾", title: "Cazador de Alarmas", desc: "Sobrevive 30s en Survivor Mode", unlocked: false },
+            { icon: "🇨🇳", title: "Lingüista PLC", desc: "Domina 20 términos técnicos en Hanzi", unlocked: true },
+            { icon: "🚨", title: "Paro de Emergencia", desc: "Resuelve una falla crítica a tiempo", unlocked: false }
+        ];
 
-        if (window.ZidongAudio) window.ZidongAudio.switchTrack("dashboard");
-        console.log("ZIDONG CORE: SISTEMA OBERON INICIALIZADO CORRECTAMENTE");
+        container.replaceChildren();
+        mockAchievements.forEach(ach => {
+            const item = document.createElement("div");
+            item.style.display = "flex";
+            item.style.alignItems = "center";
+            item.style.gap = "10px";
+            item.style.padding = "8px";
+            item.style.background = ach.unlocked ? "rgba(0,245,155,0.08)" : "rgba(255,255,255,0.03)";
+            item.style.border = `1px solid ${ach.unlocked ? "rgba(0,245,155,0.3)" : "var(--border)"}`;
+            item.style.borderRadius = "10px";
+
+            item.innerHTML = `
+                <span style="font-size:22px; filter:grayscale(${ach.unlocked ? '0%' : '100%'});">${ach.icon}</span>
+                <div style="flex:1;">
+                    <strong style="font-size:11.5px; color:${ach.unlocked ? '#00f59b' : '#fff'}; display:block;">${ach.title}</strong>
+                    <small style="font-size:9.5px; color:var(--muted);">${ach.desc}</small>
+                </div>
+                <span style="font-size:10px; font-weight:700; color:${ach.unlocked ? '#00f59b' : 'var(--muted)'};">${ach.unlocked ? '✓ LISTO' : '🔒 BLOQUEADO'}</span>
+            `;
+            container.appendChild(item);
+        });
     }
 
-    window.awardXP = awardXP;
-    window.renderCareerPlanetsMenu = renderCareerPlanetsMenu;
-    window.renderLeaderboardSection = renderLeaderboardSection;
-    window.interactWithCompanion = interactWithCompanion;
+    // =====================================
+    // 4. RANKING GLOBAL CON NOMBRES RANDOM
+    // =====================================
+    function renderLeaderboardTable() {
+        const container = document.getElementById("leaderboardTableContainer");
+        if (!container) return;
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initializeApplication);
-    } else {
-        initializeApplication();
+        const randomEngineers = [
+            { rank: 1, name: "Ing. Carlos M.", xp: "14,850 XP", badge: "⚡ Leyenda de Línea", me: false },
+            { rank: 2, name: "Raymundo López B.", xp: "11,200 XP", badge: "⚡ Especialista Sr", me: true },
+            { rank: 3, name: "Lic. Brenda S.", xp: "9,450 XP", badge: "🤖 Supervisor HMI", me: false },
+            { rank: 4, name: "Ing. Roberto G.", xp: "8,100 XP", badge: "⚙️ Técnico de Turno", me: false },
+            { rank: 5, name: "Ana Sofía L.", xp: "6,950 XP", badge: "🔧 Mantto Industrial", me: false },
+            { rank: 6, name: "Ing. Alejandro V.", xp: "5,300 XP", badge: "🔌 Integrador PLC", me: false }
+        ];
+
+        container.replaceChildren();
+        randomEngineers.forEach(eng => {
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.justifyContent = "space-between";
+            row.style.alignItems = "center";
+            row.style.padding = "10px 12px";
+            row.style.background = eng.me ? "rgba(0,245,155,0.1)" : "var(--surface-light)";
+            row.style.border = `1px solid ${eng.me ? "#00f59b" : "var(--border)"}`;
+            row.style.borderRadius = "12px";
+
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:900; color:${eng.rank === 1 ? 'var(--gold)' : eng.rank === 2 ? 'var(--cyan)' : 'var(--muted)'}; width:18px;">#${eng.rank}</span>
+                    <div>
+                        <strong style="color:#fff; font-size:12px; display:block;">${eng.name} ${eng.me ? '(Tú)' : ''}</strong>
+                        <small style="font-size:9.5px; color:var(--cyan);">${eng.badge}</small>
+                    </div>
+                </div>
+                <strong style="color:var(--green); font-size:11.5px;">${eng.xp}</strong>
+            `;
+            container.appendChild(row);
+        });
     }
-
-})();

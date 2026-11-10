@@ -171,3 +171,47 @@ window.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 });
+/* ==========================================================================
+   ZIDONG CORE - RENDERIZADO DE CAREER MODE (MUNDOS DE MANUFACTURA)
+   ========================================================================== */
+window.renderCareerPlanets = function() {
+    const grid = document.getElementById('careerPlanetsGrid');
+    if (!grid) return;
+
+    // Verificamos si window.ZidongWorlds existe, si no, usamos un respaldo básico de los 5 mundos
+    const worlds = window.ZidongWorlds || [
+        { id: "world_1", title: "MUNDO ELÉCTRICO", planetName: "Planeta Voltaria", icon: "⚡", color: "#27d8e8", unlocked: true },
+        { id: "world_2", title: "MUNDO MECÁNICO", planetName: "Planeta Kinetix", icon: "⚙️", color: "#ffc857", unlocked: true },
+        { id: "world_3", title: "MUNDO NEUMÁTICO", planetName: "Planeta Neuma", icon: "💨", color: "#00f59b", unlocked: true },
+        { id: "world_4", title: "MUNDO ROBÓTICA", planetName: "Planeta CyberLink", icon: "🤖", color: "#a78bfa", unlocked: true },
+        { id: "world_5", title: "MUNDO SCADA / PLC", planetName: "Núcleo Oberon", icon: "🛡️", color: "#ff4444", unlocked: true }
+    ];
+
+    grid.innerHTML = worlds.map(w => `
+        <div class="panel" style="background:var(--surface-light); border:1.5px solid ${w.color || 'var(--cyan)'}; border-radius:12px; padding:14px; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; gap:12px;" onclick="alert('Entrando a ${w.title} - ${w.planetName}')">
+            <div style="font-size:28px; width:48px; height:48px; background:var(--surface); border-radius:10px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border);">${w.icon || '🪐'}</div>
+            <div style="flex:1;">
+                <span class="tag" style="border-color:${w.color}; color:${w.color}; font-size:8px;">${w.planetName || 'SISTEMA OBERON'}</span>
+                <h3 style="color:#fff; font-size:13px; font-weight:800; margin:2px 0;">${w.title}</h3>
+                <small style="color:var(--muted); font-size:9px;">Acceder al repositorio de misiones</small>
+            </div>
+            <span style="font-size:18px; color:${w.color};">→</span>
+        </div>
+    `).join('');
+};
+
+// Disparar render cuando cargue la página o se navegue a career
+window.addEventListener('DOMContentLoaded', () => {
+    window.renderCareerPlanets();
+});
+
+// Parchear navigateTo para que si entran a 'career', pinte los mundos al instante
+const originalNavigateTo = window.navigateTo;
+if (originalNavigateTo) {
+    window.navigateTo = function(pageId, pushHistory = true) {
+        originalNavigateTo(pageId, pushHistory);
+        if (pageId === 'career') {
+            window.renderCareerPlanets();
+        }
+    };
+}

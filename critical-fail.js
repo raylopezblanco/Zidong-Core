@@ -1,4 +1,3 @@
-
 /* ==========================================================================
    ZIDONG CORE - SURVIVOR MODE (EXPERTO)
    ========================================================================== */
@@ -93,7 +92,7 @@
         `;
 
         options.forEach(opt => {
-            html += `<button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); text-align:left; padding:12px;" onclick="window.checkSurvivorAnswer('${opt.replace(/'/g, "\\'")}', '${alarm.correctAnswer.replace(/'/g, "\\"')}')">${opt}</button>`;
+            html += `<button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); text-align:left; padding:12px;" onclick="window.checkSurvivorAnswer('${opt.replace(/'/g, "\\\\'")}', '${alarm.correctAnswer.replace(/'/g, "\\\\'")}')">${opt}</button>`;
         });
 
         html += `</div></div>`;
@@ -104,7 +103,7 @@
         if (selected === correct) {
             alarmsCleared++;
             score += 50;
-            timeLeft += 3; // +3 segundos extra
+            timeLeft += 3;
             currentAlarmIndex = (currentAlarmIndex + 1) % PLANT_ALARMS.length;
             updateSurvivorHUD();
             renderSurvivorStage();

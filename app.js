@@ -1100,7 +1100,7 @@
         { name: "Alejandro Silva", rank: "Técnico Jr", xp: 9800, team: "Neumática Aethel", badge: "5." }
     ];
 
-    function renderLeaderboardSection() {
+function renderLeaderboardSection() {
         const myRankCard = document.getElementById("leaderboardMyRankBox");
         const listContainer = document.getElementById("leaderboardTableContainer");
         if (!listContainer) return;

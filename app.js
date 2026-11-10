@@ -842,10 +842,12 @@
         const arenaContainer = document.getElementById("vsBattleArenaContainer");
         const defeatScreen = document.getElementById("vsDefeatScreen");
 
-        // Ocultar selector y derrota, forzar despliegue de la arena de juego
-        if (diffSelector) diffSelector.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block";
+        // Ocultar selector con important y mostrar arena forzando important
+        if (diffSelector) diffSelector.style.setProperty('display', 'none', 'important');
+        if (defeatScreen) defeatScreen.style.setProperty('display', 'none', 'important');
+        if (arenaContainer) {
+            arenaContainer.style.setProperty('display', 'block', 'important');
+        }
 
         const rivalNameEl = document.getElementById("vsRivalName");
         const rivalAvatarEl = document.getElementById("vsRivalAvatar");
@@ -867,203 +869,23 @@
         if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
         if (secondsEl) secondsEl.textContent = vsTimeLeft;
 
-        // Arrancar inmediatamente la partida y el temporizador
         startVsRound();
     };
 
-    function startVsRound() {
+    window.openVsMode = function() {
         stopVsSession();
-        const diff = VS_DIFFICULTIES[selectedVsDiffKey];
-        const timerBar = document.getElementById("vsTimerBar");
-
-        vsTimer = setInterval(() => {
-            vsTimeLeft--;
-            const secondsEl = document.getElementById("vsSeconds");
-            if (secondsEl) secondsEl.textContent = vsTimeLeft;
-            if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
-
-            if (Math.random() < diff.prob) {
-                rivalVsPoints += diff.points;
-                const rScore = document.getElementById("vsRivalScore");
-                if (rScore) rScore.textContent = `${rivalVsPoints} PTS`;
-            }
-
-            if (vsTimeLeft <= 0) {
-                stopVsSession();
-                finishVsBattle();
-            }
-        }, 1000);
-
-        loadVsMechanicByLevel();
-    }
-
-    function loadVsMechanicByLevel() {
-        if (selectedVsDiffKey === "EASY") loadVsLevel1SingleHanzi();
-        else if (selectedVsDiffKey === "MEDIUM") loadVsLevel2CompoundWord();
-        else loadVsLevel3OrderHanzi();
-    }
-
-    function loadVsLevel1SingleHanzi() {
-        const pool = typeof LAB_COMPONENTS !== 'undefined' ? LAB_COMPONENTS : [{ hanzi: "电", es: "Electricidad" }];
-        const item = pool[Math.floor(Math.random() * pool.length)];
-        const display = document.getElementById("vsHanziDisplay");
-        if (display) display.textContent = item.hanzi;
-
-        const otherMeanings = pool.filter(a => a.es !== item.es).map(a => a.es);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
-
-        const grid = document.getElementById("vsOptionsGrid");
-        if (!grid) return;
-        grid.replaceChildren();
-
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "13px";
-            btn.style.padding = "11px 10px";
-            btn.textContent = opt;
-            btn.onclick = () => {
-                grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
-                if (opt === item.es) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    const myScore = document.getElementById("vsMyScore");
-                    if (myScore) myScore.textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsMechanicByLevel, 240);
-                } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    const secondsEl = document.getElementById("vsSeconds");
-                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            grid.appendChild(btn);
-        });
-    }
-
-    function loadVsLevel2CompoundWord() {
-        const words = [
-            { hanzi2: "电缆", es: "Cable eléctrico" },
-            { hanzi2: "电机", es: "Motor eléctrico" },
-            { hanzi2: "气缸", es: "Cilindro neumático" },
-            { hanzi2: "伺服", es: "Servocontrolador" },
-            { hanzi2: "电磁", es: "Solenoide eléctrico" },
-            { hanzi2: "机械", es: "Mecanismo robótico" },
-            { hanzi2: "气压", es: "Presión de aire" },
-            { hanzi2: "急停", es: "Paro de emergencia" }
-        ];
-
-        const item = words[Math.floor(Math.random() * words.length)];
-        const display = document.getElementById("vsHanziDisplay");
-        if (display) display.textContent = item.hanzi2;
-
-        const otherMeanings = words.filter(a => a.es !== item.es).map(a => a.es);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
-
-        const grid = document.getElementById("vsOptionsGrid");
-        if (!grid) return;
-        grid.replaceChildren();
-
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "13px";
-            btn.style.padding = "11px 10px";
-            btn.textContent = opt;
-            btn.onclick = () => {
-                grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
-                if (opt === item.es) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    const myScore = document.getElementById("vsMyScore");
-                    if (myScore) myScore.textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsMechanicByLevel, 240);
-                } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    const secondsEl = document.getElementById("vsSeconds");
-                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            grid.appendChild(btn);
-        });
-    }
-
-    function loadVsLevel3OrderHanzi() {
-        const words = [
-            { hanzi2: "电缆", chars: ["缆", "电"], es: "Cable eléctrico", order: ["电", "缆"] },
-            { hanzi2: "气缸", chars: ["缸", "气"], es: "Cilindro neumático", order: ["气", "缸"] },
-            { hanzi2: "电机", chars: ["机", "电"], es: "Motor eléctrico", order: ["电", "机"] },
-            { hanzi2: "急停", chars: ["停", "急"], es: "Paro de emergencia", order: ["急", "停"] },
-            { hanzi2: "伺服", chars: ["服", "伺"], es: "Servocontrolador", order: ["伺", "服"] }
-        ];
-
-        const item = words[Math.floor(Math.random() * words.length)];
-        const display = document.getElementById("vsHanziDisplay");
-        if (display) display.textContent = item.es;
-
-        const grid = document.getElementById("vsOptionsGrid");
-        if (!grid) return;
-        grid.replaceChildren();
-
-        let stepOrder = 0;
-        const slotsRow = document.createElement("div");
-        slotsRow.className = "cf-slots-dock";
-        slotsRow.style.margin = "0 auto 10px auto";
-        slotsRow.innerHTML = `<div class="cf-slot empty" id="vSlot0">_</div><div class="cf-slot empty" id="vSlot1">_</div>`;
-        grid.appendChild(slotsRow);
-
-        const blocksRow = document.createElement("div");
-        blocksRow.style.display = "flex";
-        blocksRow.style.justifyContent = "center";
-        blocksRow.style.gap = "12px";
-
-        const shuffledChars = [...item.chars].sort(() => 0.5 - Math.random());
-        shuffledChars.forEach(char => {
-            const b = document.createElement("button");
-            b.className = "cf-part-btn";
-            b.style.width = "64px";
-            b.textContent = char;
-            b.onclick = () => {
-                if (char === item.order[stepOrder]) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
-                    const slot = document.getElementById(`vSlot${stepOrder}`);
-                    if (slot) {
-                        slot.textContent = char;
-                        slot.classList.add("filled");
-                        slot.classList.remove("empty");
-                    }
-                    b.style.opacity = "0.3";
-                    b.style.pointerEvents = "none";
-                    stepOrder++;
-
-                    if (stepOrder === 2) {
-                        myVsPoints += 100;
-                        const myScore = document.getElementById("vsMyScore");
-                        if (myScore) myScore.textContent = `${myVsPoints} PTS`;
-                        setTimeout(loadVsMechanicByLevel, 240);
-                    }
-                } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    const secondsEl = document.getElementById("vsSeconds");
-                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
-                    b.style.borderColor = "#ff4444";
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            blocksRow.appendChild(b);
-        });
-        grid.appendChild(blocksRow);
-    }
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("vsBattle");
+        }
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+        
+        if (diffSelector) diffSelector.style.setProperty('display', 'block', 'important');
+        if (arenaContainer) arenaContainer.style.setProperty('display', 'none', 'important');
+        if (defeatScreen) defeatScreen.style.setProperty('display', 'none', 'important');
+    };
 
     function finishVsBattle() {
         stopVsSession();
@@ -1082,9 +904,9 @@
         } else {
             if (typeof triggerHaptic === "function") triggerHaptic("error");
             const arena = document.getElementById("vsBattleArenaContainer");
-            if (arena) arena.style.display = "none";
+            if (arena) arena.style.setProperty('display', 'none', 'important');
             const defeatScreen = document.getElementById("vsDefeatScreen");
-            if (defeatScreen) defeatScreen.style.display = "block";
+            if (defeatScreen) defeatScreen.style.setProperty('display', 'block', 'important');
 
             const scoresEl = document.getElementById("vsDefeatScores");
             if (scoresEl) scoresEl.textContent = `Tú: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;

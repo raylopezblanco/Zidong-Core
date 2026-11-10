@@ -9,11 +9,11 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=19.0">
+    <link rel="stylesheet" href="style.css?v=21.0">
 </head>
 <body>
 
-    <!-- 1. PANTALLA DE CARGA (CORREGIDA PARA QUE SE OCULTE AUTOMÁTICAMENTE) -->
+    <!-- 1. PANTALLA DE CARGA (SPLASH SCREEN) -->
     <div id="oberonSplashScreen" class="splash-screen-overlay" onclick="hideSplashInstantly()" style="cursor:pointer;" title="Toca para saltar">
         <div class="splash-content-box">
             <span class="eyebrow splash-eyebrow">SISTEMA ESPACIAL OBERON</span>
@@ -54,8 +54,8 @@
                 🔊
             </button>
 
-            <!-- CHIP DE PERFIL CORREGIDO -->
-            <div class="user-chip" onclick="window.navigateTo ? window.navigateTo('profile') : console.log('Navegando a perfil');">
+            <!-- CHIP DE PERFIL -->
+            <div class="user-chip" onclick="window.navigateTo ? window.navigateTo('profile') : null;">
                 <div class="avatar" id="topAvatar">NU</div>
                 <div class="user-meta">
                     <strong id="topUsername">New user</strong>
@@ -134,7 +134,7 @@
                 </div>
             </div>
 
-            <!-- MODOS SECUNDARIOS (CON SEPARACIÓN CLARA PARA EVITAR TRASLAPE) -->
+            <!-- MODOS SECUNDARIOS -->
             <div class="secondary-modes-grid home-secondary-grid" style="margin-top: 12px; margin-bottom: 10px;">
                 <div class="sub-mode-card daily-card" onclick="window.claimDailyReward()">
                     <div class="sub-card-header">
@@ -172,11 +172,24 @@
                 </div>
             </article>
 
-            <!-- MONITOR DE COMPILACIÓN -->
+            <!-- MONITOR DE COMPILACIÓN DINÁMICO -->
             <div class="build-stamp-bar" style="margin-bottom: 20px;">
-                <span>⚡ BUILD ACTIVO (v19.0):</span>
-                <strong>Depurado y Estable</strong>
+                <span>⚡ BUILD ACTIVO:</span>
+                <strong id="buildTimestamp">Verificando versión...</strong>
             </div>
+
+            <script>
+                (() => {
+                    const el = document.getElementById("buildTimestamp");
+                    const d = new Date(document.lastModified);
+                    if (el) {
+                        el.textContent = d.toLocaleString("es-MX", {
+                            day: "2-digit", month: "2-digit", year: "numeric",
+                            hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true
+                        });
+                    }
+                })();
+            </script>
         </section>
 
         <!-- 2. CAREER MODE -->
@@ -477,7 +490,7 @@
         </button>
     </nav>
 
-    <!-- SCRIPTS CON CONTROL DE ALCANCE GLOBAL (window) -->
+    <!-- SCRIPTS -->
     <script>
         function hideSplashInstantly() {
             const splash = document.getElementById('oberonSplashScreen');
@@ -490,15 +503,15 @@
             setTimeout(hideSplashInstantly, 2500);
         });
     </script>
-    <script src="audio.js?v=19.0"></script>
-    <script src="navigation.js?v=19.0"></script>
-    <script src="companion-phrases.js?v=19.0"></script>
-    <script src="medals-data.js?v=19.0"></script>
-    <script src="achievements-data.js?v=19.0"></script>
-    <script src="worlds-data.js?v=19.0"></script>
-    <script src="industrial-ranks.js?v=19.0"></script>
-    <script src="mock-data.js?v=19.0"></script>
-    <script src="critical-fail.js?v=19.0"></script>
-    <script src="app.js?v=19.0"></script>
+    <script src="audio.js?v=21.0"></script>
+    <script src="navigation.js?v=21.0"></script>
+    <script src="companion-phrases.js?v=21.0"></script>
+    <script src="medals-data.js?v=21.0"></script>
+    <script src="achievements-data.js?v=21.0"></script>
+    <script src="worlds-data.js?v=21.0"></script>
+    <script src="industrial-ranks.js?v=21.0"></script>
+    <script src="mock-data.js?v=21.0"></script>
+    <script src="critical-fail.js?v=21.0"></script>
+    <script src="app.js?v=21.0"></script>
 </body>
 </html>

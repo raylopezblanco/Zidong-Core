@@ -1,6 +1,11 @@
 
 window.navigationHistory = ['dashboard'];
 
+// Inicializar historia de navegación en el historial del navegador si es necesario
+if (window.history && window.history.replaceState) {
+    window.history.replaceState({ page: 'dashboard' }, '', '');
+}
+
 window.navigateTo = function(pageId, pushHistory = true) {
     const pages = document.querySelectorAll('.page');
     pages.forEach(p => p.classList.remove('active'));
@@ -10,8 +15,13 @@ window.navigateTo = function(pageId, pushHistory = true) {
         target.classList.add('active');
         window.scrollTo(0, 0);
         
-        if (pushHistory && window.navigationHistory[window.navigationHistory.length - 1] !== pageId) {
-            window.navigationHistory.push(pageId);
+        if (pushHistory) {
+            if (window.navigationHistory[window.navigationHistory.length - 1] !== pageId) {
+                window.navigationHistory.push(pageId);
+                if (window.history && window.history.pushState) {
+                    window.history.pushState({ page: pageId }, '', '');
+                }
+            }
         }
 
         // Actualizar barra inferior
@@ -28,11 +38,22 @@ window.navigateTo = function(pageId, pushHistory = true) {
     }
 };
 
+// Escuchar botón atrás del celular para navegar entre menús internos en lugar de salir de la app
 window.addEventListener('popstate', (event) => {
     if (window.navigationHistory.length > 1) {
-        window.navigationHistory.pop();
+        window.navigationHistory.pop(); // remover estado actual
         const previousPage = window.navigationHistory[window.navigationHistory.length - 1];
-        window.navigateTo(previousPage, false);
+        if (previousPage) {
+            window.navigateTo(previousPage, false);
+        } else {
+            window.navigateTo('dashboard', false);
+        }
+    } else {
+        // Si estamos en el home y da atrás, forzamos que se mantenga en el home en lugar de salir
+        if (window.history && window.history.pushState) {
+            window.history.pushState({ page: 'dashboard' }, '', '');
+        }
+        window.navigateTo('dashboard', false);
     }
 });
 

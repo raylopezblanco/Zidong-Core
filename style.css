@@ -25,11 +25,15 @@ html, body {
     width: 100%;
     background-color: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
     padding-bottom: 80px;
     margin: 0;
+    background-image: linear-gradient(rgba(11, 20, 36, 0.78), rgba(11, 20, 36, 0.92)), url('bg-station.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 /* TOPBAR */
@@ -54,12 +58,17 @@ html, body {
     width: 34px; height: 34px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 10px; color: #fff;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
 }
-.brand h1 { font-size: 13.5px; font-weight: 800; color: #fff; }
-.brand small { font-size: 8px; color: var(--cyan); }
+.brand h1 { font-size: 13.5px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+.brand small { font-size: 8px; color: var(--cyan); letter-spacing: 0.5px; font-weight: 700; }
 
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
-.audio-btn { background: var(--surface); border: 1px solid var(--border); color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.audio-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    color: #fff; width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
 
 .user-chip {
     display: flex; align-items: center; gap: 8px;
@@ -71,8 +80,8 @@ html, body {
     background: #2563eb; color: #fff; font-weight: 800; font-size: 11px;
     display: flex; align-items: center; justify-content: center;
 }
-.user-meta strong { font-size: 10.5px; color: #fff; display: block; }
-.user-rank-subtag { font-size: 8.5px; color: var(--cyan); font-weight: 800; display: block; }
+.user-meta strong { font-size: 10.5px; color: #fff; display: block; line-height: 1.1; }
+.user-rank-subtag { font-size: 8.5px; color: var(--cyan); font-weight: 800; display: block; margin-top: 2px; }
 
 /* APP SHELL */
 .app-shell {
@@ -91,6 +100,7 @@ html, body {
     border: 1.5px solid rgba(0, 245, 155, 0.35);
     border-radius: 12px; padding: 10px 14px; margin-bottom: 10px;
     display: flex; align-items: center; gap: 12px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 .battery-body {
     width: 44px; height: 22px; border: 2px solid #00f59b;
@@ -116,18 +126,24 @@ html, body {
     background: rgba(17, 31, 53, 0.96); border: 1.5px solid var(--cyan);
     border-radius: 14px; padding: 8px 14px; width: 95%; max-width: 340px;
     min-height: 46px; display: flex; align-items: center; justify-content: center;
-    text-align: center; margin-bottom: 8px;
+    text-align: center; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
-.dialog-balloon span { font-size: 10px; font-weight: 700; color: #fff; }
+.dialog-balloon span { font-size: 10.5px; font-weight: 700; color: #fff; }
 .stasis-tube { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
 .tube-chamber {
-    position: relative; width: 160px; height: 170px;
+    position: relative; width: 175px; height: 185px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 24px; border: 2px solid rgba(39, 216, 232, 0.5);
-    background: rgba(39, 216, 232, 0.1); overflow: hidden; margin: -8px 0;
+    border-radius: 28px; border-left: 2.5px solid rgba(39, 216, 232, 0.5); border-right: 2.5px solid rgba(39, 216, 232, 0.5);
+    background: linear-gradient(180deg, rgba(39, 216, 232, 0.18) 0%, rgba(39, 216, 232, 0.04) 100%);
+    box-shadow: inset 0 0 22px rgba(39, 216, 232, 0.3), 0 0 25px rgba(39, 216, 232, 0.25);
+    overflow: hidden; margin: -10px 0;
 }
-.companion-img { width: 150px; height: auto; object-fit: cover; border-radius: 18px; }
-.tube-ring { width: 150px; height: 20px; border-radius: 50%; background: rgba(39, 216, 232, 0.6); border: 2px solid #27d8e8; }
+.companion-img { width: 170px; height: auto; object-fit: cover; border-radius: 20px; }
+.tube-ring {
+    width: 165px; height: 24px; border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(39, 216, 232, 0.85) 0%, transparent 80%);
+    border: 2px solid #27d8e8;
+}
 
 /* MODOS SECUNDARIOS */
 .home-secondary-grid {
@@ -137,7 +153,7 @@ html, body {
 .sub-mode-card {
     height: 64px !important; padding: 10px !important; border-radius: 12px;
     cursor: pointer; display: flex; flex-direction: column; justify-content: center;
-    border: 1.5px solid transparent; background: var(--surface);
+    border: 1.5px solid transparent; background: rgba(17, 31, 53, 0.95);
 }
 .daily-card { border-color: rgba(255, 170, 0, 0.45); }
 .vs-card { border-color: rgba(167, 139, 250, 0.45); }
@@ -149,7 +165,7 @@ html, body {
 .sub-mode-card p { font-size: 8px; color: var(--muted); }
 
 .tight-mission {
-    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    width: 100%; background: rgba(17, 31, 53, 0.95); border: 1px solid var(--border);
     border-radius: 12px; padding: 10px 14px !important; margin-top: 8px !important; margin-bottom: 10px !important;
     cursor: pointer; position: relative; z-index: 5;
 }
@@ -166,9 +182,9 @@ html, body {
     border-radius: 8px; padding: 6px 10px; margin-top: 8px; font-family: monospace; font-size: 8px; color: var(--muted);
 }
 
-/* ESTILOS DE PERFIL Y TARJETAS 1V1 (CORRIGIENDO LO QUE SE VEÍA PLANO) */
+/* PERFIL Y ESTADÍSTICAS CORREGIDAS (SIN TEXTOS AMONTONADOS) */
 .profile-card {
-    background: var(--surface); border: 1px solid var(--border);
+    background: rgba(17, 31, 53, 0.95); border: 1px solid var(--border);
     border-radius: 16px; padding: 16px; text-align: center; width: 100%; margin-bottom: 12px;
 }
 .avatar-large {
@@ -182,13 +198,13 @@ html, body {
 .p-stat {
     background: var(--surface-light); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center;
 }
-.p-stat span { display: block; font-size: 12px; font-weight: 800; color: var(--cyan); }
-.p-stat small { display: block; font-size: 7.5px; color: var(--muted); margin-top: 2px; }
+.p-stat span { display: block; font-size: 12px; font-weight: 800; color: var(--cyan); line-height: 1.2; }
+.p-stat small { display: block; font-size: 7.5px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* TARJETAS 1V1 DIFICULTAD */
 .vs-diff-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; width: 100%; }
 .vs-diff-card {
-    background: var(--surface); border: 1.5px solid rgba(167, 139, 250, 0.4);
+    background: rgba(17, 31, 53, 0.95); border: 1.5px solid rgba(167, 139, 250, 0.4);
     border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer;
 }
 .diff-icon-box {

@@ -10,7 +10,6 @@
     --red: #ff4444;
     --amber: #ffaa00;
     --purple: #a78bfa;
-    --xbox: #107c10;
     --text: #e2e8f0;
     --muted: #94a3b8;
 }
@@ -26,10 +25,10 @@ html, body {
     width: 100%;
     background-color: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-    padding-bottom: 70px;
+    padding-bottom: 80px;
     margin: 0;
 }
 
@@ -64,22 +63,17 @@ html, body {
     justify-content: center;
     border-radius: 10px;
     color: #fff;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
 }
 
 .brand h1 {
     font-size: 13.5px;
-    letter-spacing: 1px;
     font-weight: 800;
     color: #fff;
-    line-height: 1.1;
 }
 
 .brand small {
     font-size: 8px;
     color: var(--cyan);
-    letter-spacing: 0.5px;
-    font-weight: 700;
 }
 
 .topbar-actions {
@@ -98,7 +92,6 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
     cursor: pointer;
 }
 
@@ -130,7 +123,6 @@ html, body {
     font-size: 10.5px;
     color: #fff;
     display: block;
-    line-height: 1.1;
 }
 
 .user-rank-subtag {
@@ -138,24 +130,17 @@ html, body {
     color: var(--cyan);
     font-weight: 800;
     display: block;
-    line-height: 1;
-    margin-top: 2px;
 }
 
-/* APP SHELL CON FONDO DE ESTACIÓN ESPACIAL */
+/* APP SHELL */
 .app-shell {
     width: 100%;
     max-width: 480px;
     margin: 0 auto;
-    padding: 6px 12px 14px 12px;
+    padding: 6px 12px 20px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: linear-gradient(rgba(11, 20, 36, 0.75), rgba(11, 20, 36, 0.90)), url('bg-station.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: calc(100vh - 60px);
 }
 
 .page {
@@ -180,7 +165,6 @@ html, body {
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .battery-body {
@@ -204,7 +188,7 @@ html, body {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
 }
 
 .mode-card {
@@ -218,38 +202,20 @@ html, body {
     gap: 8px;
 }
 
-.career-mode {
-    background: linear-gradient(145deg, #13423d, #0d2729);
-    border: 1.5px solid rgba(34, 197, 139, 0.55);
-}
+.career-mode { background: linear-gradient(145deg, #13423d, #0d2729); border: 1.5px solid rgba(34, 197, 139, 0.55); }
+.arcade-mode { background: linear-gradient(145deg, #44141a, #1f0a0d); border: 1.5px solid rgba(255, 68, 68, 0.55); }
 
-.arcade-mode {
-    background: linear-gradient(145deg, #44141a, #1f0a0d);
-    border: 1.5px solid rgba(255, 68, 68, 0.55);
-}
+.mode-card h3 { font-size: 11px; color: #fff; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mode-card p { color: var(--muted); font-size: 8px; }
 
-.mode-card h3 {
-    font-size: 11.5px;
-    color: #fff;
-    font-weight: 800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.mode-card p {
-    color: var(--muted);
-    font-size: 8.5px;
-}
-
-/* CÁPSULA CILÍNDRICA */
+/* COMPANION CILÍNDRICO */
 .companion-stage {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2px 0 4px 0;
+    padding: 4px 0;
 }
 
 .dialog-balloon {
@@ -259,7 +225,7 @@ html, body {
     padding: 8px 14px;
     width: 95%;
     max-width: 340px;
-    min-height: 50px;
+    min-height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -267,57 +233,35 @@ html, body {
     margin-bottom: 8px;
 }
 
-.dialog-balloon span {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: #fff;
-}
+.dialog-balloon span { font-size: 10px; font-weight: 700; color: #fff; }
 
-.stasis-tube {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-}
-
+.stasis-tube { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
 .tube-chamber {
     position: relative;
-    width: 175px;
-    height: 185px;
+    width: 160px;
+    height: 170px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 28px;
-    border-left: 2.5px solid rgba(39, 216, 232, 0.5);
-    border-right: 2.5px solid rgba(39, 216, 232, 0.5);
-    background: linear-gradient(180deg, rgba(39, 216, 232, 0.18) 0%, rgba(39, 216, 232, 0.04) 100%);
-    box-shadow: inset 0 0 22px rgba(39, 216, 232, 0.3), 0 0 25px rgba(39, 216, 232, 0.25);
+    border-radius: 24px;
+    border: 2px solid rgba(39, 216, 232, 0.5);
+    background: rgba(39, 216, 232, 0.1);
     overflow: hidden;
-    margin: -10px 0;
+    margin: -8px 0;
 }
+.companion-img { width: 150px; height: auto; object-fit: cover; border-radius: 18px; }
+.tube-ring { width: 150px; height: 20px; border-radius: 50%; background: rgba(39, 216, 232, 0.6); border: 2px solid #27d8e8; }
 
-.companion-img {
-    width: 170px;
-    height: auto;
-    object-fit: cover;
-    border-radius: 20px;
-}
-
-.tube-ring {
-    width: 165px;
-    height: 24px;
-    border-radius: 50%;
-    background: radial-gradient(ellipse at center, rgba(39, 216, 232, 0.85) 0%, transparent 80%);
-    border: 2px solid #27d8e8;
-}
-
+/* MODOS SECUNDARIOS (CORREGIDOS PARA EVITAR TRASLAPE CON ABSOLUTE/RELATIVE) */
 .home-secondary-grid {
     width: 100%;
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 8px !important;
-    margin-top: 4px !important;
-    margin-bottom: 4px !important;
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+    position: relative !important;
+    z-index: 5 !important;
 }
 
 .sub-mode-card {
@@ -329,20 +273,23 @@ html, body {
     flex-direction: column;
     justify-content: center;
     border: 1.5px solid transparent;
+    background: var(--surface);
 }
 
-.daily-card { background: linear-gradient(145deg, #2a1b12, #16100d); border-color: rgba(255, 170, 0, 0.45); }
-.vs-card { background: linear-gradient(145deg, #261435, #120b1b); border-color: rgba(167, 139, 250, 0.45); }
+.daily-card { border-color: rgba(255, 170, 0, 0.45); }
+.vs-card { border-color: rgba(167, 139, 250, 0.45); }
 
 .tight-mission {
     width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 6px 12px !important;
-    margin-top: 2px !important;
-    margin-bottom: 4px !important;
+    padding: 8px 12px !important;
+    margin-top: 6px !important;
+    margin-bottom: 8px !important;
     cursor: pointer;
+    position: relative;
+    z-index: 5;
 }
 
 .build-stamp-bar {
@@ -350,30 +297,30 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(17, 31, 53, 0.85);
+    background: rgba(17, 31, 53, 0.9);
     border: 1px dashed rgba(39, 216, 232, 0.3);
     border-radius: 8px;
-    padding: 4px 10px;
-    margin-top: 2px;
+    padding: 6px 10px;
+    margin-top: 6px;
     font-family: monospace;
     font-size: 8px;
     color: var(--muted);
 }
 
-/* BARRA INFERIOR DE 4 BOTONES: HOME, LAB, ACADEMY, RANKING */
+/* BARRA INFERIOR FIJA Y SEGURA */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 62px;
-    background: rgba(11, 20, 36, 0.97);
+    height: 64px;
+    background: rgba(11, 20, 36, 0.98);
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--border);
     display: flex;
     justify-content: space-around;
     align-items: center;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 .nav-item {
@@ -388,7 +335,7 @@ html, body {
     font-size: 10px;
     font-weight: 700;
     flex: 1;
-    padding: 6px 0;
+    padding: 8px 0;
 }
 
 .nav-item.active {
@@ -399,61 +346,26 @@ html, body {
     font-size: 20px;
 }
 
-/* CORRECCIÓN ABSOLUTA TÍTULO 1V1 ("SERVOCONTROLADOR") */
-.vs-diff-card .diff-meta h3 {
-    font-size: 10.5px !important;
-    line-height: 1.1 !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: break-word !important;
-}
-
-.vs-diff-card .diff-meta p {
-    font-size: 8.5px !important;
-    white-space: normal !important;
-}
-
-.panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px;
+/* SPLASH SCREEN OVERLAY SEGURO */
+.splash-screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 40%, #0d2238 0%, #050b14 100%);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: opacity 0.4s ease;
 }
 
-.welcome {
-    margin-bottom: 12px;
-    width: 100%;
-}
-
-.welcome h2 { font-size: 16px; color: #fff; }
-.welcome p { font-size: 10px; color: var(--muted); }
-
-.back-button, .reveal-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 800;
-    border: none;
-    cursor: pointer;
-}
-
-.back-button { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-.reveal-button { background: var(--green); color: #0b1424; }
-
-/* Resto de estilos de componentes */
-.profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; text-align: center; width: 100%; }
-.avatar-large { width: 56px; height: 56px; border-radius: 50%; background: #2563eb; color: #fff; font-size: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px auto; border: 2px solid var(--cyan); }
-.profile-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
-.p-stat { background: var(--surface-light); border: 1px solid var(--border); border-radius: 8px; padding: 6px 2px; }
-.p-stat span { display: block; font-size: 11px; font-weight: 800; color: var(--cyan); }
-.p-stat small { font-size: 7px; color: var(--muted); }
-.badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.badge-item { background: var(--surface-light); border: 1px solid var(--border); border-radius: 10px; padding: 6px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.lb-my-card { background: linear-gradient(135deg, rgba(39, 216, 232, 0.15), rgba(17, 31, 53, 0.95)); border: 1.5px solid var(--cyan); border-radius: 14px; padding: 12px; display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 12px; }
-.lb-table-wrapper { background: var(--surface); border: 1.5px solid var(--border); border-radius: 16px; padding: 8px 12px; width: 100%; }
-.lb-rank-row { background: var(--surface-light); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-.ranks-ladder-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.rank-ladder-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+.splash-content-box { text-align: center; max-width: 360px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.splash-eyebrow { color: var(--cyan); letter-spacing: 2px; margin-bottom: 12px; }
+.splash-speech-bubble { background: rgba(17, 31, 53, 0.96); border: 1.5px solid var(--cyan); border-radius: 14px; padding: 10px 14px; margin-bottom: 12px; }
+.splash-bubble-text { font-size: 12px; color: #fff; font-weight: 700; }
+.splash-progress-track { width: 100%; max-width: 260px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
+.splash-progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); }
+.splash-status-lbl { font-size: 10px; color: var(--muted); margin-top: 6px; display: block; }

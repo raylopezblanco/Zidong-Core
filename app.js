@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V36)
+   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V35)
    ========================================================================== */
 
 (() => {
@@ -366,18 +366,11 @@
         const alreadyChanged = localStorage.getItem("zidong_name_changed") === "true";
         if (alreadyChanged) {
             triggerHaptic("error");
-            alert(`🔒 No puedes modificar tu nombre de nuevo.
-El sistema ya registró tu identidad como: "${currentUserData.name}".`);
+            alert(`🔒 No puedes modificar tu nombre de nuevo.\nEl sistema ya registró tu identidad como: "${currentUserData.name}".`);
             return;
         }
 
-        const warningMsg = `⚠️ ¡ATENCIÓN! REGLA DE PLANTA:
-
-Solo tienes permitido registrar tu nombre UNA SOLA VEZ en el sistema.
-
-Piénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 mundos.
-
-¿Deseas continuar?`;
+        const warningMsg = `⚠️ ¡ATENCIÓN! REGLA DE PLANTA:\n\nSolo tienes permitido registrar tu nombre UNA SOLA VEZ en el sistema.\n\nPiénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 mundos.\n\n¿Deseas continuar?`;
         if (!confirm(warningMsg)) return;
 
         const newName = prompt("Escribe tu nombre y apellido definitivo:", currentUserData.name);
@@ -397,8 +390,7 @@ Piénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 mund
         updateProfile();
         saveProgress();
 
-        alert(`✅ Nombre registrado con éxito: "${cleanName}".
-Este cambio ha quedado bloqueado permanentemente.`);
+        alert(`✅ Nombre registrado con éxito: "${cleanName}".\nEste cambio ha quedado bloqueado permanentemente.`);
     };
 
     function updateUserDisplay() {
@@ -489,61 +481,6 @@ Este cambio ha quedado bloqueado permanentemente.`);
         if (arena) arena.style.display = "none";
         if (collapse) collapse.style.display = "none";
     };
-
-    window.openVsMode = function() {
-        stopVsSession();
-        triggerHaptic("success");
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("vsBattle");
-        }
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-        
-        if (diffSelector) diffSelector.style.display = "block";
-        if (arenaContainer) arenaContainer.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-    };
-
-    // 1V1 START (FORZANDO VISIBILIDAD DE CONTENEDORES)
-    window.start1v1WithDifficulty = function(diffKey) {
-        selectedVsDiffKey = diffKey;
-        const diff = VS_DIFFICULTIES[diffKey];
-
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-
-        if (diffSelector) diffSelector.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) {
-            arenaContainer.style.display = "block";
-            arenaContainer.style.visibility = "visible";
-        }
-
-        const rivalNameEl = document.getElementById("vsRivalName");
-        const rivalAvatarEl = document.getElementById("vsRivalAvatar");
-        const diffBadgeEl = document.getElementById("vsDiffBadge");
-
-        if (rivalNameEl) rivalNameEl.textContent = diff.name;
-        if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
-
-        myVsPoints = 0;
-        rivalVsPoints = 0;
-        vsTimeLeft = 20;
-
-        const myScoreEl = document.getElementById("vsMyScore");
-        const rivalScoreEl = document.getElementById("vsRivalScore");
-        const secondsEl = document.getElementById("vsSeconds");
-
-        if (myScoreEl) myScoreEl.textContent = "0 PTS";
-        if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
-        if (secondsEl) secondsEl.textContent = vsTimeLeft;
-
-        startVsRound();
-    };
-    window.start1v1WithDifficulty = window.start1v1WithDifficulty;
 
     // CAREER PLANETS MENU
     function renderCareerPlanetsMenu() {
@@ -782,8 +719,7 @@ Este cambio ha quedado bloqueado permanentemente.`);
                         awardXP(act.reward);
 
                         setTimeout(() => {
-                            alert(`🌟 ¡NIVEL APROBADO! (+${act.reward} XP)
-Has dominado las 4 fases de "${act.hanzi}" (${act.meaning}).`);
+                            alert(`🌟 ¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado las 4 fases de "${act.hanzi}" (${act.meaning}).`);
                             if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
                         }, 400);
                     } else {
@@ -847,8 +783,7 @@ Has dominado las 4 fases de "${act.hanzi}" (${act.meaning}).`);
                             awardXP(boss.reward);
 
                             setTimeout(() => {
-                                alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)
-Has desbloqueado la medalla "${boss.badgeName}".`);
+                                alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`);
                                 renderBadgesGrid();
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 450);
@@ -869,7 +804,9 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
         renderBossSequenceView();
     }
 
-    // 1V1 BATTLE BUCLE PRINCIPAL
+// =====================================
+    // MODO 1V1 BATTLE (3 NIVELES - CORREGIDO Y ESTABLE)
+    // =====================================
     const VS_DIFFICULTIES = {
         EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
         MEDIUM: { name: "Servocontrolador Overclock", badge: "NIVEL 2 · PALABRA 2 HANZI", prob: 0.85, points: 100, winBonus: 150 },
@@ -881,6 +818,58 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
     let vsTimeLeft = 20;
     let myVsPoints = 0;
     let rivalVsPoints = 0;
+
+    window.openVsMode = function() {
+        stopVsSession();
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("vsBattle");
+        }
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+        
+        if (diffSelector) diffSelector.style.display = "block";
+        if (arenaContainer) arenaContainer.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+    };
+
+    window.start1v1WithDifficulty = function(diffKey) {
+        selectedVsDiffKey = diffKey;
+        const diff = VS_DIFFICULTIES[diffKey];
+
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+
+        // Ocultar selector y derrota, forzar despliegue de la arena de juego
+        if (diffSelector) diffSelector.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+        if (arenaContainer) arenaContainer.style.display = "block";
+
+        const rivalNameEl = document.getElementById("vsRivalName");
+        const rivalAvatarEl = document.getElementById("vsRivalAvatar");
+        const diffBadgeEl = document.getElementById("vsDiffBadge");
+
+        if (rivalNameEl) rivalNameEl.textContent = diff.name;
+        if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+        if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
+
+        myVsPoints = 0;
+        rivalVsPoints = 0;
+        vsTimeLeft = 20;
+
+        const myScoreEl = document.getElementById("vsMyScore");
+        const rivalScoreEl = document.getElementById("vsRivalScore");
+        const secondsEl = document.getElementById("vsSeconds");
+
+        if (myScoreEl) myScoreEl.textContent = "0 PTS";
+        if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
+        if (secondsEl) secondsEl.textContent = vsTimeLeft;
+
+        // Arrancar inmediatamente la partida y el temporizador
+        startVsRound();
+    };
 
     function startVsRound() {
         stopVsSession();
@@ -915,7 +904,7 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
     }
 
     function loadVsLevel1SingleHanzi() {
-        const pool = LAB_COMPONENTS;
+        const pool = typeof LAB_COMPONENTS !== 'undefined' ? LAB_COMPONENTS : [{ hanzi: "电", es: "Electricidad" }];
         const item = pool[Math.floor(Math.random() * pool.length)];
         const display = document.getElementById("vsHanziDisplay");
         if (display) display.textContent = item.hanzi;
@@ -937,14 +926,14 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
-                    triggerHaptic("success");
+                    if (typeof triggerHaptic === "function") triggerHaptic("success");
                     btn.classList.add("btn-correct");
                     myVsPoints += 100;
                     const myScore = document.getElementById("vsMyScore");
                     if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsMechanicByLevel, 240);
                 } else {
-                    triggerHaptic("error");
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
                     const secondsEl = document.getElementById("vsSeconds");
@@ -989,14 +978,14 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
-                    triggerHaptic("success");
+                    if (typeof triggerHaptic === "function") triggerHaptic("success");
                     btn.classList.add("btn-correct");
                     myVsPoints += 100;
                     const myScore = document.getElementById("vsMyScore");
                     if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsMechanicByLevel, 240);
                 } else {
-                    triggerHaptic("error");
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
                     const secondsEl = document.getElementById("vsSeconds");
@@ -1045,7 +1034,7 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
             b.textContent = char;
             b.onclick = () => {
                 if (char === item.order[stepOrder]) {
-                    triggerHaptic("success");
+                    if (typeof triggerHaptic === "function") triggerHaptic("success");
                     const slot = document.getElementById(`vSlot${stepOrder}`);
                     if (slot) {
                         slot.textContent = char;
@@ -1063,7 +1052,7 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
                         setTimeout(loadVsMechanicByLevel, 240);
                     }
                 } else {
-                    triggerHaptic("error");
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
                     const secondsEl = document.getElementById("vsSeconds");
                     if (secondsEl) secondsEl.textContent = vsTimeLeft;
@@ -1082,16 +1071,16 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
         const win = myVsPoints >= rivalVsPoints;
 
         if (win) {
-            triggerHaptic("win");
-            awardXP(diff.winBonus);
+            if (typeof triggerHaptic === "function") triggerHaptic("win");
+            if (typeof awardXP === "function") awardXP(diff.winBonus);
             const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
             localStorage.setItem("zidong_vs_wins", currentWins);
             alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-            renderBadgesGrid();
-            updateProfile();
+            if (typeof renderBadgesGrid === "function") renderBadgesGrid();
+            if (typeof updateProfile === "function") updateProfile();
             if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         } else {
-            triggerHaptic("error");
+            if (typeof triggerHaptic === "function") triggerHaptic("error");
             const arena = document.getElementById("vsBattleArenaContainer");
             if (arena) arena.style.display = "none";
             const defeatScreen = document.getElementById("vsDefeatScreen");
@@ -1109,7 +1098,6 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
         }
     }
     window.stopVsSession = stopVsSession;
-
     // LABORATORIO (LAB)
     let currentLabCategory = "all";
     function renderLabComponents(filteredList = null) {
@@ -1128,10 +1116,7 @@ Has desbloqueado la medalla "${boss.badgeName}".`);
             `;
             card.onclick = () => {
                 triggerHaptic("success");
-                alert(`🔬 ${comp.hanzi} (${comp.pinyin})
-Significado: ${comp.es}
-Aplicación: ${comp.part}
-Mundo: ${comp.catName}`);
+                alert(`🔬 ${comp.hanzi} (${comp.pinyin})\nSignificado: ${comp.es}\nAplicación: ${comp.part}\nMundo: ${comp.catName}`);
             };
             container.appendChild(card);
         });
@@ -1373,7 +1358,7 @@ Mundo: ${comp.catName}`);
         }
     };
 
-    // DAILY REWARD (VENTANA FLOTANTE ELEGANTE)
+    // DAILY REWARD (VENTANA FLOTANTE MEJORADA)
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") triggerHaptic("success");
         

@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=36.0">
+    <link rel="stylesheet" href="style.css?v=32.0">
 </head>
 <body>
 
@@ -195,8 +195,9 @@
             <button class="back-button" onclick="window.navigateTo('worldDetailsView')" style="margin-top: 20px;">← ABANDONAR MISIÓN</button>
         </section>
 
-        <!-- 1V1 BATTLE -->
+<!-- 1V1 BATTLE -->
         <section id="vsBattle" class="page">
+            <!-- 1. SELECTOR DE DIFICULTAD -->
             <div id="vsDifficultySelector" class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center;">
                 <span class="eyebrow">ARENA DE DUELO 1V1</span>
                 <h2>Selecciona el Nivel de la IA</h2>
@@ -205,11 +206,11 @@
                     <button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); padding:12px;" onclick="window.start1v1WithDifficulty('MEDIUM')">🤖 Nivel 2 · Palabra de 2 Hanzi</button>
                     <button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); padding:12px;" onclick="window.start1v1WithDifficulty('HARD')">🔥 Nivel 3 · Ordenar Bloques Hanzi</button>
                 </div>
-                <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
+                <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 90px;">← REGRESAR AL DASHBOARD</button>
             </div>
 
-            <!-- ARENA DE JUEGO 1V1 -->
-            <div id="vsBattleArenaContainer" style="display:none;">
+            <!-- 2. ARENA DE JUEGO (AISLADA Y LIMPIA) -->
+            <div id="vsBattleArenaContainer">
                 <div class="cf-hud-bar" style="margin-bottom:10px;">
                     <div class="cf-hud-tag"><span id="vsRivalAvatar">🤖</span> <strong id="vsRivalName" style="color:#ff4444;">IA</strong>: <span id="vsRivalScore">0 PTS</span></div>
                     <div class="cf-hud-group">
@@ -225,8 +226,8 @@
                 </div>
             </div>
 
-            <!-- PANTALLA DE DERROTA CON ROBOT BOSS -->
-            <div id="vsDefeatScreen" style="display:none; text-align:center; padding:15px 10px 30px 10px;">
+            <!-- 3. PANTALLA DE DERROTA -->
+            <div id="vsDefeatScreen" style="text-align:center; padding:15px 10px 30px 10px;">
                 <div style="width:100%; max-width:260px; margin:0 auto 10px auto; border-radius:12px; overflow:hidden; border:2px solid var(--red); box-shadow:0 0 20px rgba(255,68,68,0.4);">
                     <img src="Robot%20Boss.gif" alt="Robot Boss Defeat" style="width:100%; height:auto; display:block;">
                 </div>
@@ -243,7 +244,6 @@
                 </div>
             </div>
         </section>
-
         <!-- LAB -->
         <section id="hanziLab" class="page">
             <div class="welcome">
@@ -270,6 +270,8 @@
                 <span class="eyebrow">MANDARÍN TÉCNICO EN PLANTA</span>
                 <h2>Academy · Chino para Soporte</h2>
             </div>
+            
+            <!-- GUÍA CYBER CAT -->
             <div class="panel" style="background:var(--surface); border:1.5px solid var(--cyan); border-radius:14px; padding:12px; margin-bottom:12px; display:flex; align-items:center; gap:12px;">
                 <img src="cyber_cat.gif" alt="Cyber Cat" style="width:54px; height:54px; border-radius:12px; object-fit:cover; border:1px solid var(--cyan);">
                 <div>
@@ -277,6 +279,7 @@
                     <p style="font-size:10px; color:#fff; margin-top:2px;">"¡Miaul saludo, ingeniero! Estoy aquí para auditar tus módulos de mandarín. ¡Elige una lección!" 🐾⚡</p>
                 </div>
             </div>
+
             <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:12px;">
                 <div class="panel academy-module-card" onclick="openAcademyLesson(1)" style="background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--cyan); border-radius:14px; padding:16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
                     <div>
@@ -313,18 +316,24 @@
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 24px;">← REGRESAR AL DASHBOARD</button>
         </section>
 
-        <!-- SURVIVOR MODE (ARCADE) CON DR. BOT -->
+        <!-- SURVIVOR MODE (ARCADE) CON DR. BOT MEJORADO Y LLAMATIVO -->
         <section id="arcade" class="page">
             <div class="arcade-shell">
+                <!-- 1. PANTALLA DE INTRO / ADVERTENCIA DEL DR. BOT -->
                 <div id="cf-selector" class="cf-view-container">
                     <div class="welcome" style="text-align:center;">
                         <span class="eyebrow" style="color:#ffcc00; font-weight:900; font-size:12px;">⚠️ ALERTA CRÍTICA DE PLANTA ⚠️</span>
                         <h2>SURVIVOR MODE</h2>
                     </div>
+
+                    <!-- SIGNO DE ALERTA GIGANTE -->
                     <div style="text-align:center; margin:6px 0;">
                         <span style="font-size:50px; animation: pulseAlert 1.5s infinite; display:inline-block;">⚠️</span>
                     </div>
+
+                    <!-- TARJETA DEL DR. BOT REDISEÑADA PARA QUE LUZCA IMPONENTE -->
                     <div class="panel" style="background:linear-gradient(145deg, #2a080c, #111f35); border:2.5px solid #ff4444; border-radius:18px; padding:16px; margin-bottom:14px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow: 0 0 30px rgba(255,68,68,0.4);">
+                        <!-- IMAGEN DEL DR BOT GRANDE Y RESALTADA -->
                         <div style="width:90px; height:90px; border-radius:50%; border:3px solid #ffcc00; overflow:hidden; margin-bottom:10px; box-shadow: 0 0 20px rgba(255,204,0,0.6); background:#0b1424;">
                             <img src="Dr Bot.png" alt="Dr. Bot" style="width:100%; height:100%; object-fit:cover;">
                         </div>
@@ -336,6 +345,7 @@
                             "¡Corre a purgar los códigos antes de que toda la estación vuele en pedazos, ingeniero!" ⚡🔥
                         </p>
                     </div>
+
                     <div class="survivor-banner-action" onclick="window.startCriticalLevel()">
                         <div class="survivor-banner-icon" style="background:rgba(255,68,68,0.3); border-color:#ff4444;">🚨</div>
                         <div>
@@ -344,9 +354,11 @@
                         </div>
                         <span class="arrow" style="font-size:20px; color:#ff4444; margin-left:auto;">→</span>
                     </div>
+
                     <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:12px;">← REGRESAR AL DASHBOARD</button>
                 </div>
 
+                <!-- 2. ARENA DE JUEGO -->
                 <div id="cf-game-arena" class="cf-view-container" style="display:none;">
                     <div class="cf-hud-bar">
                         <div class="cf-hud-tag">ALARMAS RETIRADAS: <strong id="cf-cleared-count" style="color:#00f59b; font-size:14px;">0</strong></div>
@@ -360,6 +372,7 @@
                     <button class="btn-secondary" style="margin-top:16px; width:100%;" onclick="window.exitCriticalFail()">✕ ABANDONAR INTERVENCIÓN</button>
                 </div>
 
+                <!-- 3. PANTALLA DE COLAPSO -->
                 <div id="cf-collapse-screen" class="cf-view-container" style="display:none; text-align:center; padding:30px 10px;">
                     <h2 style="color:#ff4444; margin-bottom:8px;">💥 COLAPSO DE LÍNEA</h2>
                     <p id="cf-collapse-reason" style="font-size:12px; color:#fff; margin-bottom:12px;"></p>
@@ -370,7 +383,7 @@
             </div>
         </section>
 
-        <!-- PROFILE (CON LOGROS Y MEDALLAS EN MENÚS / PESTAÑAS) -->
+        <!-- PROFILE -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -388,32 +401,23 @@
                 </div>
             </article>
 
-            <!-- MENÚS / PESTAÑAS INTERACTIVAS PARA LOGROS Y MEDALLAS -->
-            <div class="lab-category-tabs" style="margin-bottom: 12px;">
-                <button class="lab-tab-btn active" onclick="window.switchProfileTab('achievements', this)">🏆 Logros de Planta</button>
-                <button class="lab-tab-btn" onclick="window.switchProfileTab('medals', this)">🏅 Vitrina de Medallas</button>
-            </div>
-
-            <!-- CONTENEDOR LOGROS -->
-            <div id="profileAchievementsTab" class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;">
+            <!-- SECCIÓN DE LOGROS -->
+            <div class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <h3 style="font-size:12px; color:var(--green);">🏆 MISIÓN Y LOGROS DE PLANTA</h3>
-                    <small id="achievementsCountLabel" style="color:var(--muted); font-size:9px;">3 / 5 Desbloqueados</small>
+                    <h3 style="font-size:12px; color:var(--green);">🏆 LOGROS DE PLANTA</h3>
+                    <small id="achievementsCountLabel" style="color:var(--muted); font-size:9px;">3 / 9 Desbloqueados</small>
                 </div>
                 <div id="profileAchievementsList" style="display:flex; flex-direction:column; gap:6px;"></div>
-            </div>
-
-            <!-- CONTENEDOR MEDALLAS -->
-            <div id="profileMedalsTab" class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px; display:none;">
-                <h3 style="font-size:12px; color:var(--gold); margin-bottom:8px;">🏅 MEDALLAS DE CERTIFICACIÓN OBERON</h3>
-                <div class="badges-grid" id="badgesContainer" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;"></div>
             </div>
 
             <div class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;">
                 <h3 style="font-size:12px; color:var(--cyan); margin-bottom:8px;">PROGRESO EN LOS 5 MUNDOS</h3>
                 <div id="profileWorldsProgressList" style="display:flex; flex-direction:column; gap:8px;"></div>
             </div>
-
+            <div class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;">
+                <h3 style="font-size:12px; color:var(--gold); margin-bottom:8px;">VITRINA DE MEDALLAS</h3>
+                <div class="badges-grid" id="badgesContainer" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;"></div>
+            </div>
             <div class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px;" onclick="window.editUserNameOnce()">
                 <small id="nameEditNotice" style="color:var(--muted); cursor:pointer;">✏️ Toca aquí para editar nombre <strong style="color:#ffaa00;">(1 sola vez)</strong></small>
             </div>
@@ -439,13 +443,12 @@
         <button class="nav-item" onclick="window.navigateTo('leaderboard')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
     </nav>
 
-    <!-- MODAL DAILY REWARD (VENTANA FLOTANTE MEJORADA Y BONITA) -->
-    <div id="dailyRewardModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.88); backdrop-filter:blur(8px); z-index:99999; justify-content:center; align-items:center;" onclick="window.closeRewardModal(event)">
-        <div class="modal-box" style="background:linear-gradient(145deg, #112238, #0b1424); border:2px solid var(--gold); border-radius:20px; padding:24px; text-align:center; max-width:330px; width:90%; box-shadow: 0 15px 40px rgba(255,215,0,0.25);">
-            <div style="font-size:42px; margin-bottom:6px; animation: pulseAlert 2s infinite;">🎁</div>
-            <h3 id="rewardModalTitle" style="color:var(--gold); font-size:17px; font-weight:900; margin-bottom:6px; letter-spacing:1px;">BONO DE TURNO</h3>
-            <p id="rewardModalDesc" style="font-size:12px; color:#e2e8f0; line-height:1.4; margin-bottom:18px;"></p>
-            <button id="btnClaimRewardAction" class="reveal-button" style="background:linear-gradient(135deg, #ffd700, #ffa500); color:#0b1424; width:100%; padding:14px; font-weight:900; font-size:13px; border-radius:12px; border:none; cursor:pointer; box-shadow:0 4px 15px rgba(255,215,0,0.4);"></button>
+    <!-- MODAL DAILY REWARD -->
+    <div id="dailyRewardModal" class="modal-overlay" style="display:none;" onclick="window.closeRewardModal(event)">
+        <div class="modal-box" style="background:var(--surface); border:1.5px solid var(--gold); border-radius:16px; padding:20px; text-align:center; max-width:320px; width:90%;">
+            <h3 id="rewardModalTitle" style="color:var(--gold); font-size:16px; margin-bottom:8px;">BONO DE TURNO</h3>
+            <p id="rewardModalDesc" style="font-size:11.5px; color:var(--muted); margin-bottom:16px;"></p>
+            <button id="btnClaimRewardAction" class="reveal-button" style="background:var(--gold); color:#0b1424;"></button>
         </div>
     </div>
 
@@ -469,8 +472,8 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="critical-fail.js?v=36.0"></script>
-    <script src="navigation.js?v=36.0"></script>
-    <script src="app.js?v=36.0"></script>
+    <script src="critical-fail.js?v=32.0"></script>
+    <script src="navigation.js?v=32.0"></script>
+    <script src="app.js?v=32.0"></script>
 </body>
 </html>

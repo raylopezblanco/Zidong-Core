@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (DEFINITIVO)
+   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V28)
    ========================================================================== */
 
 (() => {
@@ -461,6 +461,27 @@
         }
     }
 
+    // EXPOSICIÓN GLOBAL DE NAVEGACIÓN Y ACCIONES
+    window.openCriticalMode = function() {
+        if (typeof window.navigateTo === "function") window.navigateTo("arcade");
+        const sel = document.getElementById("cf-selector");
+        const arena = document.getElementById("cf-game-arena");
+        const collapse = document.getElementById("cf-collapse-screen");
+        if (sel) sel.style.display = "block";
+        if (arena) arena.style.display = "none";
+        if (collapse) collapse.style.display = "none";
+    };
+
+    window.openVsMode = function() {
+        if (typeof window.navigateTo === "function") window.navigateTo("vsBattle");
+        const diffSelector = document.getElementById("vsDifficultySelector");
+        const arenaContainer = document.getElementById("vsBattleArenaContainer");
+        const defeatScreen = document.getElementById("vsDefeatScreen");
+        if (diffSelector) diffSelector.style.display = "block";
+        if (arenaContainer) arenaContainer.style.display = "none";
+        if (defeatScreen) defeatScreen.style.display = "none";
+    };
+
     // CAREER PLANETS MENU
     function renderCareerPlanetsMenu() {
         const container = document.getElementById("careerPlanetsGrid");
@@ -477,12 +498,9 @@
 
             planetCard.innerHTML = `
                 <div class="planet-sphere-wrapper">
-                    <div class="planet-sphere">
-                        <span class="planet-core-icon">${world.icon}</span>
-                    </div>
+                    <div class="planet-sphere"><span class="planet-core-icon">${world.icon}</span></div>
                     <div class="planet-orbit-ring" style="border-color:${world.color}88;"></div>
                 </div>
-
                 <div class="planet-menu-meta">
                     <span class="planet-tag" style="color:${world.color};">${world.title}</span>
                     <h4>${world.planetName}</h4>
@@ -495,9 +513,7 @@
             `;
 
             planetCard.onclick = () => {
-                if (window.ZidongAudio && window.ZidongAudio.playPlanetChime) {
-                    window.ZidongAudio.playPlanetChime();
-                }
+                if (window.ZidongAudio && window.ZidongAudio.playPlanetChime) window.ZidongAudio.playPlanetChime();
                 openWorldDetails(world);
             };
             container.appendChild(planetCard);
@@ -505,9 +521,7 @@
     }
 
     function openWorldDetails(world) {
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("worldDetailsView");
-        }
+        if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
 
         const titleEl = document.getElementById("selectedWorldTitle");
         const subEl = document.getElementById("selectedWorldSubtitle");
@@ -528,16 +542,13 @@
             nodeEl.className = `path-step ${aIdx % 2 === 0 ? "left" : "right"}`;
 
             nodeEl.innerHTML = `
-                <div class="path-node ${isCompleted ? "completed" : "current"}">
-                    <span>${isCompleted ? "✓" : act.hanzi}</span>
-                </div>
+                <div class="path-node ${isCompleted ? "completed" : "current"}"><span>${isCompleted ? "✓" : act.hanzi}</span></div>
                 <div class="path-label">
                     <strong>Nivel 0${aIdx + 1} · ${act.meaning} ${isCompleted ? "⭐".repeat(stars) : ""}</strong>
                     <small>4 Fases: Significado, Pinyin, Compuesta, Alarma</small>
                     <span class="node-action">${isCompleted ? "REPETIR TEST ↺" : "CALIBRAR EN LÍNEA ⚡"}</span>
                 </div>
             `;
-
             nodeEl.style.cursor = "pointer";
             nodeEl.onclick = () => openActivity(act);
             stream.appendChild(nodeEl);
@@ -548,9 +559,7 @@
             const bossNode = document.createElement("div");
             bossNode.className = "path-step left";
             bossNode.innerHTML = `
-                <div class="path-node assessment ${isBossBeaten ? "completed" : "current"}" style="border-color:${world.color};">
-                    <span>${isBossBeaten ? "✓" : "🏅"}</span>
-                </div>
+                <div class="path-node assessment ${isBossBeaten ? "completed" : "current"}" style="border-color:${world.color};"><span>${isBossBeaten ? "✓" : "🏅"}</span></div>
                 <div class="path-label">
                     <strong style="color:${world.color};">${world.boss.name}</strong>
                     <small>Secuencia en orden español · Sin pistas en Hanzi</small>
@@ -579,13 +588,7 @@
             const options = [act.meaning, ...wrongOpts].sort(() => 0.5 - Math.random());
 
             card.innerHTML = `
-                <div class="phase-stepper-bar">
-                    <span class="step-dot active">1. Significado</span>
-                    <span class="step-dot">2. Pronunciación</span>
-                    <span class="step-dot">3. Compuesta</span>
-                    <span class="step-dot">4. Alarma HMI</span>
-                </div>
-
+                <div class="phase-stepper-bar"><span class="step-dot active">1. Significado</span><span class="step-dot">2. Pronunciación</span><span class="step-dot">3. Compuesta</span><span class="step-dot">4. Alarma HMI</span></div>
                 <span class="tag" style="border-color:var(--cyan); color:var(--cyan); margin:6px 0 4px 0;">FASE 1 DE 4 · IDENTIFICACIÓN</span>
                 <div class="recognition-hanzi">${act.hanzi}</div>
                 <h3 style="font-size:13.5px; margin-bottom:12px; color:#fff;">¿Cuál es el significado técnico de este carácter?</h3>
@@ -599,10 +602,8 @@
                 btn.style.fontSize = "13.5px";
                 btn.style.padding = "12px 10px";
                 btn.textContent = opt;
-
                 btn.onclick = () => {
-                    const allButtons = grid.querySelectorAll("button");
-                    allButtons.forEach(b => b.style.pointerEvents = "none");
+                    grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                     if (opt === act.meaning) {
                         triggerHaptic("success");
                         btn.classList.add("btn-correct");
@@ -623,13 +624,7 @@
             const options = [act.pinyin, ...shuffledP].sort(() => 0.5 - Math.random());
 
             card.innerHTML = `
-                <div class="phase-stepper-bar">
-                    <span class="step-dot done">✓</span>
-                    <span class="step-dot active">2. Pronunciación</span>
-                    <span class="step-dot">3. Compuesta</span>
-                    <span class="step-dot">4. Alarma HMI</span>
-                </div>
-
+                <div class="phase-stepper-bar"><span class="step-dot done">✓</span><span class="step-dot active">2. Pronunciación</span><span class="step-dot">3. Compuesta</span><span class="step-dot">4. Alarma HMI</span></div>
                 <span class="tag" style="border-color:#a78bfa; color:#a78bfa; margin:6px 0 4px 0;">FASE 2 DE 4 · LECTURA FONÉTICA</span>
                 <div class="recognition-hanzi">${act.hanzi}</div>
                 <h3 style="font-size:13.5px; margin-bottom:12px; color:#fff;">¿Cómo se pronuncia en mandarín técnico?</h3>
@@ -643,10 +638,8 @@
                 btn.style.fontSize = "15px";
                 btn.style.padding = "12px 10px";
                 btn.textContent = opt;
-
                 btn.onclick = () => {
-                    const allButtons = grid.querySelectorAll("button");
-                    allButtons.forEach(b => b.style.pointerEvents = "none");
+                    grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                     if (opt === act.pinyin) {
                         triggerHaptic("success");
                         btn.classList.add("btn-correct");
@@ -668,22 +661,11 @@
             const blockOptions = [targetChar, ...dummyPool.sort(() => 0.5 - Math.random()).slice(0, 2)].sort(() => 0.5 - Math.random());
 
             card.innerHTML = `
-                <div class="phase-stepper-bar">
-                    <span class="step-dot done">✓</span>
-                    <span class="step-dot done">✓</span>
-                    <span class="step-dot active">3. Compuesta</span>
-                    <span class="step-dot">4. Alarma HMI</span>
-                </div>
-
+                <div class="phase-stepper-bar"><span class="step-dot done">✓</span><span class="step-dot done">✓</span><span class="step-dot active">3. Compuesta</span><span class="step-dot">4. Alarma HMI</span></div>
                 <span class="tag" style="border-color:#ffaa00; color:#ffaa00; margin:6px 0 4px 0;">FASE 3 DE 4 · PALABRA COMPUESTA</span>
                 <p style="font-size:10.5px; color:var(--muted); margin:4px 0;">FORMA EL TÉRMINO DE PLANTA:</p>
                 <h2 style="color:var(--cyan); margin: 4px 0 12px 0;">${act.compoundMeaning}</h2>
-
-                <div class="cf-slots-dock" style="margin-bottom:14px;">
-                    <div class="cf-slot filled">${act.hanzi}</div>
-                    <div class="cf-slot empty" id="slotTarget">_</div>
-                </div>
-
+                <div class="cf-slots-dock" style="margin-bottom:14px;"><div class="cf-slot filled">${act.hanzi}</div><div class="cf-slot empty" id="slotTarget">_</div></div>
                 <div style="display:flex; justify-content:center; gap:12px;" id="compoundBlocksGrid"></div>
             `;
 
@@ -693,7 +675,6 @@
                 b.className = "cf-part-btn";
                 b.style.width = "64px";
                 b.textContent = char;
-
                 b.onclick = () => {
                     if (char === targetChar) {
                         triggerHaptic("success");
@@ -714,29 +695,13 @@
 
         function renderPhase4() {
             card.innerHTML = `
-                <div class="phase-stepper-bar">
-                    <span class="step-dot done">✓</span>
-                    <span class="step-dot done">✓</span>
-                    <span class="step-dot done">✓</span>
-                    <span class="step-dot active">4. Escáner HMI</span>
-                </div>
-
+                <div class="phase-stepper-bar"><span class="step-dot done">✓</span><span class="step-dot done">✓</span><span class="step-dot done">✓</span><span class="step-dot active">4. Escáner HMI</span></div>
                 <span class="tag" style="border-color:#00f59b; color:#00f59b; margin:6px 0 4px 0;">FASE 4 DE 4 · ESCÁNER EN PISO</span>
-                <p style="font-size:12px; color:#ffffff; font-weight:700; margin:6px 0 10px 0;">
-                    Identifica el componente <strong style="color:var(--cyan);">"${act.meaning}"</strong> dentro del texto de la alarma HMI:
-                </p>
-
+                <p style="font-size:12px; color:#ffffff; font-weight:700; margin:6px 0 10px 0;">Identifica el componente <strong style="color:var(--cyan);">"${act.meaning}"</strong> dentro del texto de la alarma HMI:</p>
                 <div class="hmi-alarm-scanner-box">
-                    <div class="hmi-screen-header">
-                        <small>HMI RUNTIME · ALARM MONITOR</small>
-                        <span class="alarm-led-red">●</span>
-                    </div>
+                    <div class="hmi-screen-header"><small>HMI RUNTIME · ALARM MONITOR</small><span class="alarm-led-red">●</span></div>
                     <div class="hmi-tokens-container" id="alarmTokensGrid"></div>
                 </div>
-
-                <p style="font-size:10px; color:var(--muted); margin-top:6px;">
-                    Toca el carácter exacto en la alarma para autorizar el rearme.
-                </p>
             `;
 
             const tokensGrid = card.querySelector("#alarmTokensGrid");
@@ -744,15 +709,11 @@
                 const tokenBtn = document.createElement("button");
                 tokenBtn.className = "hmi-char-token";
                 tokenBtn.textContent = c;
-
                 tokenBtn.onclick = () => {
                     if (c === act.alarmTarget) {
                         triggerHaptic("win");
                         tokenBtn.classList.add("token-hit");
-
-                        if (!career.completedActivities.includes(act.id)) {
-                            career.completedActivities.push(act.id);
-                        }
+                        if (!career.completedActivities.includes(act.id)) career.completedActivities.push(act.id);
                         if (!career.nodeStars) career.nodeStars = {};
                         career.nodeStars[act.id] = 3;
                         awardXP(act.reward);
@@ -794,28 +755,14 @@
             const currentTarget = sequence[currentStepIndex];
 
             card.innerHTML = `
-                <span class="tag" style="border-color:${world.color}; color:${world.color}; margin-bottom:8px;">
-                    ${boss.name} · SECUENCIA EN ORDEN
-                </span>
-                
+                <span class="tag" style="border-color:${world.color}; color:${world.color}; margin-bottom:8px;">${boss.name} · SECUENCIA EN ORDEN</span>
                 <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">SELECCIONA EN ESTE ORDEN EXACTO:</p>
                 <div class="boss-target-sequence-shelf">${chipsHtml}</div>
-
-                <p style="font-size:12.5px; color:#ffffff; font-weight:800; margin:6px 0 12px 0;">
-                    Toca en la alarma el Hanzi que corresponde a: <strong style="color:var(--gold); font-size:14px;">"${currentTarget.esName}"</strong>
-                </p>
-
+                <p style="font-size:12.5px; color:#ffffff; font-weight:800; margin:6px 0 12px 0;">Toca en la alarma el Hanzi que corresponde a: <strong style="color:var(--gold); font-size:14px;">"${currentTarget.esName}"</strong></p>
                 <div class="hmi-alarm-scanner-box">
-                    <div class="hmi-screen-header">
-                        <small>CHECKPOINT MASTER SCANNER</small>
-                        <span class="alarm-led-red">●</span>
-                    </div>
+                    <div class="hmi-screen-header"><small>CHECKPOINT MASTER SCANNER</small><span class="alarm-led-red">●</span></div>
                     <div class="hmi-tokens-container" id="bossTokensGrid"></div>
                 </div>
-
-                <p style="font-size:10px; color:var(--muted); margin-top:4px;">
-                    Paso ${currentStepIndex + 1} de ${sequence.length}. Identifica la palabra en la alarma sin pistas chinas.
-                </p>
             `;
 
             const tokensGrid = card.querySelector("#bossTokensGrid");
@@ -823,7 +770,6 @@
                 const b = document.createElement("button");
                 b.className = "hmi-char-token";
                 b.textContent = c;
-
                 b.onclick = () => {
                     if (c === currentTarget.targetHanzi) {
                         triggerHaptic("success");
@@ -872,15 +818,6 @@
     let vsTimeLeft = 20;
     let myVsPoints = 0;
     let rivalVsPoints = 0;
-
-    window.openVsMode = () => {
-        stopVsSession();
-        triggerHaptic("success");
-        if (typeof window.navigateTo === "function") window.navigateTo("vsBattle");
-        document.getElementById("vsDifficultySelector").style.display = "block";
-        document.getElementById("vsBattleArenaContainer").style.display = "none";
-        document.getElementById("vsDefeatScreen").style.display = "none";
-    };
 
     window.start1v1WithDifficulty = (diffKey) => {
         selectedVsDiffKey = diffKey;
@@ -953,7 +890,6 @@
             btn.style.fontSize = "13px";
             btn.style.padding = "11px 10px";
             btn.textContent = opt;
-
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
@@ -1002,7 +938,6 @@
             btn.style.fontSize = "13px";
             btn.style.padding = "11px 10px";
             btn.textContent = opt;
-
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
@@ -1042,10 +977,7 @@
         const slotsRow = document.createElement("div");
         slotsRow.className = "cf-slots-dock";
         slotsRow.style.margin = "0 auto 10px auto";
-        slotsRow.innerHTML = `
-            <div class="cf-slot empty" id="vSlot0">_</div>
-            <div class="cf-slot empty" id="vSlot1">_</div>
-        `;
+        slotsRow.innerHTML = `<div class="cf-slot empty" id="vSlot0">_</div><div class="cf-slot empty" id="vSlot1">_</div>`;
         grid.appendChild(slotsRow);
 
         const blocksRow = document.createElement("div");
@@ -1059,7 +991,6 @@
             b.className = "cf-part-btn";
             b.style.width = "64px";
             b.textContent = char;
-
             b.onclick = () => {
                 if (char === item.order[stepOrder]) {
                     triggerHaptic("success");
@@ -1136,12 +1067,8 @@
             const card = document.createElement("div");
             card.className = "comp-card";
             card.innerHTML = `
-                <div class="comp-header">
-                    <span class="comp-hanzi">${comp.hanzi}</span>
-                    <span class="comp-pinyin">${comp.pinyin}</span>
-                </div>
-                <strong>${comp.es}</strong>
-                <small>${comp.part} · ${comp.catName}</small>
+                <div class="comp-header"><span class="comp-hanzi">${comp.hanzi}</span><span class="comp-pinyin">${comp.pinyin}</span></div>
+                <strong>${comp.es}</strong><small>${comp.part} · ${comp.catName}</small>
             `;
             card.onclick = () => {
                 triggerHaptic("success");
@@ -1197,10 +1124,7 @@
                     <strong style="color:#fff; font-size:14px;">#0${myIndex + 1} · ${currentUserData.name}</strong>
                     <small style="color:var(--muted);">${getCurrentRank(currentUserData.xp).name}</small>
                 </div>
-                <div class="lb-my-score">
-                    <span style="color:var(--green); font-size:15px; font-weight:900;">${Number(currentUserData.xp).toLocaleString("en-US")}</span>
-                    <small style="color:var(--gold); font-size:9px;">XP TOTAL</small>
-                </div>
+                <div class="lb-my-score"><span style="color:var(--green); font-size:15px; font-weight:900;">${Number(currentUserData.xp).toLocaleString("en-US")}</span><small style="color:var(--gold); font-size:9px;">XP TOTAL</small></div>
             `;
         }
 
@@ -1212,14 +1136,8 @@
             const posTag = medals[idx] || `${idx + 1}.`;
             row.innerHTML = `
                 <span class="lb-pos">${posTag}</span>
-                <div class="lb-user-details">
-                    <strong style="color:${user.isMe ? 'var(--cyan)' : '#ffffff'}; font-size:12.5px;">${user.name}</strong>
-                    <small style="color:var(--muted); font-size:9.5px;">${user.rank} · ${user.team}</small>
-                </div>
-                <div class="lb-xp-tag">
-                    <strong>${Number(user.xp).toLocaleString("en-US")}</strong>
-                    <small>XP</small>
-                </div>
+                <div class="lb-user-details"><strong style="color:${user.isMe ? 'var(--cyan)' : '#ffffff'}; font-size:12.5px;">${user.name}</strong><small style="color:var(--muted); font-size:9.5px;">${user.rank} · ${user.team}</small></div>
+                <div class="lb-xp-tag"><strong>${Number(user.xp).toLocaleString("en-US")}</strong><small>XP</small></div>
             `;
             listContainer.appendChild(row);
         });
@@ -1247,15 +1165,10 @@
             card.innerHTML = `
                 <div class="rank-icon-box">${rank.icon}</div>
                 <div class="rank-info-box">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <strong>${rank.id}. ${rank.name}</strong>
-                        <span class="rank-xp-req">${rank.minXP.toLocaleString("en-US")} XP</span>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;"><strong>${rank.id}. ${rank.name}</strong><span class="rank-xp-req">${rank.minXP.toLocaleString("en-US")} XP</span></div>
                     <small>${rank.desc}</small>
                 </div>
-                <div class="rank-status-tag">
-                    ${isCurrent ? "<span class='badge-current'>ACTUAL</span>" : isReached ? "✓" : "🔒"}
-                </div>
+                <div class="rank-status-tag">${isCurrent ? "<span class='badge-current'>ACTUAL</span>" : isReached ? "✓" : "🔒"}</div>
             `;
             container.appendChild(card);
         });
@@ -1290,13 +1203,8 @@
             const row = document.createElement("div");
             row.className = "world-prog-row";
             row.innerHTML = `
-                <div class="world-prog-title">
-                    <span style="color:${world.color};">${world.icon} ${world.title}</span>
-                    <strong style="color:#fff;">${done}/${total} (${pct}%)</strong>
-                </div>
-                <div class="world-prog-track">
-                    <div class="world-prog-fill" style="width:${pct}%; background:${world.color};"></div>
-                </div>
+                <div class="world-prog-title"><span style="color:${world.color};">${world.icon} ${world.title}</span><strong style="color:#fff;">${done}/${total} (${pct}%)</strong></div>
+                <div class="world-prog-track"><div class="world-prog-fill" style="width:${pct}%; background:${world.color};"></div></div>
             `;
             container.appendChild(row);
         });
@@ -1313,10 +1221,7 @@
             const isEquipped = currentEquipped === medal.icon;
             const badgeEl = document.createElement("div");
             badgeEl.className = `badge-item ${unlocked ? "" : "locked"} ${isEquipped ? "equipped" : ""}`;
-            badgeEl.innerHTML = `
-                <span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span>
-                <span class="badge-title">${medal.name}</span>
-            `;
+            badgeEl.innerHTML = `<span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span><span class="badge-title">${medal.name}</span>`;
             if (unlocked) {
                 badgeEl.onclick = () => {
                     const newEquip = isEquipped ? currentUserData.initials : medal.icon;

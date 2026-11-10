@@ -366,11 +366,18 @@
         const alreadyChanged = localStorage.getItem("zidong_name_changed") === "true";
         if (alreadyChanged) {
             triggerHaptic("error");
-            alert(`🔒 No puedes modificar tu nombre de nuevo.\nEl sistema ya registró tu identidad como: "${currentUserData.name}".`);
+            alert(`🔒 No puedes modificar tu nombre de nuevo.
+El sistema ya registró tu identidad como: "${currentUserData.name}".`);
             return;
         }
 
-        const warningMsg = `⚠️ ¡ATENCIÓN! REGLA DE PLANTA:\n\nSolo tienes permitido registrar tu nombre UNA SOLA VEZ en el sistema.\n\nPiénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 mundos.\n\n¿Deseas continuar?`;
+        const warningMsg = `⚠️ ¡ATENCIÓN! REGLA DE PLANTA:
+
+Solo tienes permitido registrar tu nombre UNA SOLA VEZ en el sistema.
+
+Piénsalo bien: tal y como lo escribas ahora, así serás conocido en los 5 mundos.
+
+¿Deseas continuar?`;
         if (!confirm(warningMsg)) return;
 
         const newName = prompt("Escribe tu nombre y apellido definitivo:", currentUserData.name);
@@ -390,7 +397,8 @@
         updateProfile();
         saveProgress();
 
-        alert(`✅ Nombre registrado con éxito: "${cleanName}".\nEste cambio ha quedado bloqueado permanentemente.`);
+        alert(`✅ Nombre registrado con éxito: "${cleanName}".
+Este cambio ha quedado bloqueado permanentemente.`);
     };
 
     function updateUserDisplay() {
@@ -497,7 +505,7 @@
         if (defeatScreen) defeatScreen.style.display = "none";
     };
 
-    // 1V1 START (GARANTIZADO CON ESTABILIZADOR DOM)
+    // 1V1 START (FORZANDO VISIBILIDAD DE CONTENEDORES)
     window.start1v1WithDifficulty = function(diffKey) {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
@@ -508,7 +516,10 @@
 
         if (diffSelector) diffSelector.style.display = "none";
         if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block";
+        if (arenaContainer) {
+            arenaContainer.style.display = "block";
+            arenaContainer.style.visibility = "visible";
+        }
 
         const rivalNameEl = document.getElementById("vsRivalName");
         const rivalAvatarEl = document.getElementById("vsRivalAvatar");
@@ -532,6 +543,7 @@
 
         startVsRound();
     };
+    window.start1v1WithDifficulty = window.start1v1WithDifficulty;
 
     // CAREER PLANETS MENU
     function renderCareerPlanetsMenu() {
@@ -770,7 +782,8 @@
                         awardXP(act.reward);
 
                         setTimeout(() => {
-                            alert(`🌟 ¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado las 4 fases de "${act.hanzi}" (${act.meaning}).`);
+                            alert(`🌟 ¡NIVEL APROBADO! (+${act.reward} XP)
+Has dominado las 4 fases de "${act.hanzi}" (${act.meaning}).`);
                             if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
                         }, 400);
                     } else {
@@ -834,7 +847,8 @@
                             awardXP(boss.reward);
 
                             setTimeout(() => {
-                                alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`);
+                                alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)
+Has desbloqueado la medalla "${boss.badgeName}".`);
                                 renderBadgesGrid();
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 450);
@@ -856,6 +870,18 @@
     }
 
     // 1V1 BATTLE BUCLE PRINCIPAL
+    const VS_DIFFICULTIES = {
+        EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
+        MEDIUM: { name: "Servocontrolador Overclock", badge: "NIVEL 2 · PALABRA 2 HANZI", prob: 0.85, points: 100, winBonus: 150 },
+        HARD: { name: "Protocolo Centinela IA", badge: "NIVEL 3 · ORDENAR PALABRA", prob: 0.88, points: 100, winBonus: 250 }
+    };
+
+    let selectedVsDiffKey = "MEDIUM";
+    let vsTimer = null;
+    let vsTimeLeft = 20;
+    let myVsPoints = 0;
+    let rivalVsPoints = 0;
+
     function startVsRound() {
         stopVsSession();
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
@@ -1102,7 +1128,10 @@
             `;
             card.onclick = () => {
                 triggerHaptic("success");
-                alert(`🔬 ${comp.hanzi} (${comp.pinyin})\nSignificado: ${comp.es}\nAplicación: ${comp.part}\nMundo: ${comp.catName}`);
+                alert(`🔬 ${comp.hanzi} (${comp.pinyin})
+Significado: ${comp.es}
+Aplicación: ${comp.part}
+Mundo: ${comp.catName}`);
             };
             container.appendChild(card);
         });

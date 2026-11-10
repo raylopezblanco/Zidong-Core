@@ -210,3 +210,52 @@ html, body {
 .splash-progress-track { width: 100%; max-width: 260px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
 .splash-progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--green)); }
 .splash-status-lbl { font-size: 10px; color: var(--muted); margin-top: 6px; display: block; }
+
+
+/* UNIFICACIÓN DE ALTURAS Y TAMAÑOS DE TARJETAS */
+
+/* UNIFICACIÓN ABSOLUTA DE TAMAÑOS Y PROPORCIONES PARA LAS 4 TARJETAS PRINCIPALES/SECUNDARIAS */
+.home-top-grid, .home-secondary-grid {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-top: 6px !important;
+    margin-bottom: 6px !important;
+}
+
+/* Forzar altura exacta, padding y estructura idéntica para TODAS las tarjetas (Career, Survivor, Daily, 1v1) */
+.mode-card, .sub-mode-card {
+    height: 66px !important;
+    min-height: 66px !important;
+    max-height: 66px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    cursor: pointer;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* Estilos específicos de colores manteniendo la misma geometría */
+.career-mode {
+    background: linear-gradient(145deg, #13423d, #0d2729) !important;
+    border: 1.5px solid rgba(34, 197, 139, 0.55) !important;
+}
+
+.arcade-mode {
+    background: linear-gradient(145deg, #44141a, #1f0a0d) !important;
+    border: 1.5px solid rgba(255, 68, 68, 0.55) !important;
+}
+
+.daily-card {
+    background: rgba(17, 31, 53, 0.95) !important;
+    border: 1.5px solid rgba(255, 170, 0, 0.45) !important;
+}
+
+.vs-card {
+    background: rgba(17, 31, 53, 0.95) !important;
+    border: 1.5px solid rgba(167, 139, 250, 0.45) !important;
+}

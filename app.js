@@ -1295,10 +1295,11 @@ function renderLeaderboardSection() {
     }
 
 // =====================================
-    // 1. DAILY REWARD (VENTANA FLOTANTE)
+    // DAILY REWARD (VENTANA FLOTANTE)
     // =====================================
     window.claimDailyReward = function() {
-        triggerHaptic("success");
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+        
         const modal = document.getElementById("dailyRewardModal");
         const titleEl = document.getElementById("rewardModalTitle");
         const descEl = document.getElementById("rewardModalDesc");
@@ -1308,13 +1309,15 @@ function renderLeaderboardSection() {
             titleEl.textContent = "🎁 BONO DE TURNO DIARIO";
             descEl.textContent = "¡Has sincronizado tu asistencia al turno de planta! Reclama tu experiencia para el escalafón.";
             btnEl.textContent = "RECLAMAR +100 XP";
+            
             btnEl.onclick = () => {
-                awardXP(100);
+                if (typeof awardXP === "function") awardXP(100);
                 modal.style.display = "none";
-                triggerHaptic("win");
+                if (typeof triggerHaptic === "function") triggerHaptic("win");
                 alert("⚡ ¡Bono reclamado con éxito! +100 XP añadidos a tu batería.");
             };
-            modal.style.display = "flex"; // Muestra como ventana flotante centrada
+            
+            modal.style.display = "flex"; // Forzar la visualización flotante centrada
         }
     };
 

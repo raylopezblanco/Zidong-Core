@@ -224,17 +224,23 @@
             </div>
 
 
-<!-- PANTALLA DE DERROTA CON VIDEO ROBOT BOSS -->
-            <div id="vsDefeatScreen" style="display:none; text-align:center; padding:20px 10px;">
-                <div style="width:100%; max-width:280px; margin:0 auto 12px auto; border-radius:14px; overflow:hidden; border:2px solid var(--red); box-shadow:0 0 20px rgba(255,68,68,0.4);">
-                    <video id="robotBossVideo" src="Robot_boss.mp4" autoplay loop muted playsinline webkit-playsinline style="width:100%; height:auto; display:block;"></video>
+<!-- PANTALLA DE DERROTA CON VIDEO ROBOT BOSS Y BOTONES ABAJO -->
+            <div id="vsDefeatScreen" style="display:none; text-align:center; padding:15px 10px 30px 10px;">
+                <div style="width:100%; max-width:260px; margin:0 auto 10px auto; border-radius:12px; overflow:hidden; border:2px solid var(--red); box-shadow:0 0 20px rgba(255,68,68,0.4);">
+                    <video id="robotBossVideo" src="Robot_boss.mp4" autoplay loop muted playsinline webkit-playsinline style="width:100%; height:auto; display:block; pointer-events:none;"></video>
                 </div>
-                <h2 style="color:var(--red); font-size:18px; margin-bottom:4px;">💥 SISTEMA SUPERA-IZADO</h2>
-                <p id="vsDefeatTaunt" style="font-size:12.5px; color:#fff; font-weight:700; background:rgba(255,68,68,0.15); border:1px solid rgba(255,68,68,0.3); padding:10px 14px; border-radius:10px; margin:10px 0 16px 0;">
+                
+                <h2 style="color:var(--red); font-size:16px; margin-bottom:2px;">💥 SISTEMA SUPERA-IZADO</h2>
+                <p id="vsDefeatTaunt" style="font-size:11.5px; color:#fff; font-weight:700; background:rgba(255,68,68,0.15); border:1px solid rgba(255,68,68,0.3); padding:8px 12px; border-radius:10px; margin:8px 0 12px 0;">
                     "Patético... ¿A esto le llamas calibración industrial? Hasta un PLC patito procesa más rápido que tú. ¡Vuelve a estudiar los diagramas!" 🦾🔥
                 </p>
-                <p id="vsDefeatScores" style="font-size:11px; color:var(--muted); margin-bottom:14px;"></p>
-                <button class="reveal-button" style="background:var(--cyan); color:#0b1424;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
+                <p id="vsDefeatScores" style="font-size:11px; color:var(--muted); margin-bottom:20px;"></p>
+                
+                <!-- BOTONES SEPARADOS Y MÁS ABAJO PARA EVITAR CLICS ACCIDENTALES -->
+                <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px; padding-bottom:20px;">
+                    <button class="reveal-button" style="background:var(--cyan); color:#0b1424; padding:12px;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
+                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="padding: 12px; border-color:var(--border); color:#fff;">← REGRESAR AL DASHBOARD</button>
+                </div>
             </div>
 
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>

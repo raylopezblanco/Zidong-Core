@@ -1031,7 +1031,7 @@
         grid.appendChild(blocksRow);
     }
 
-    function finishVsBattle() {
+function finishVsBattle() {
         stopVsSession();
         const diff = VS_DIFFICULTIES[selectedVsDiffKey];
         const win = myVsPoints >= rivalVsPoints;
@@ -1044,29 +1044,29 @@
             alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
             renderBadgesGrid();
             updateProfile();
-                     if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
-         } else {
-                     triggerHaptic("error");
-                     document.getElementById("vsBattleArenaContainer").style.display = "none";
-                     const defeatScreen = document.getElementById("vsDefeatScreen");
-                     defeatScreen.style.display = "block";
-                     
-                     // 🎬 REPRODUCCIÓN FORZADA CONMUTADA
-                     setTimeout(() => {
-                         const bossVid = document.getElementById("robotBossVideo");
-                         if (bossVid) {
-                             bossVid.muted = true; // Obligatorio para autoplay en móviles
-                             bossVid.currentTime = 0;
-                             bossVid.play().catch(err => {
-                                 console.log("Autoplay bloqueado por políticas del navegador:", err);
-                             });
-                         }
-                     }, 50);
-         
-                     document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
-                     document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
-                 }
+            if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
+        } else {
+            triggerHaptic("error");
+            document.getElementById("vsBattleArenaContainer").style.display = "none";
+            const defeatScreen = document.getElementById("vsDefeatScreen");
+            defeatScreen.style.display = "block";
+            
+            // 🎬 REPRODUCCIÓN FORZADA DEL VIDEO DEL JEFE AL PERDER
+            setTimeout(() => {
+                const bossVid = document.getElementById("robotBossVideo");
+                if (bossVid) {
+                    bossVid.muted = true;
+                    bossVid.currentTime = 0;
+                    bossVid.play().catch(err => {
+                        console.log("Autoplay bloqueado por políticas del navegador:", err);
+                    });
+                }
+            }, 50);
 
+            document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
+            document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
+        } // Cierra el else
+    } // Cierra la función finishVsBattle
     function stopVsSession() {
         clearInterval(vsTimer);
         vsTimer = null;

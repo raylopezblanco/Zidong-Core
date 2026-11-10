@@ -195,7 +195,7 @@
             <button class="back-button" onclick="window.navigateTo('worldDetailsView')" style="margin-top: 20px;">← ABANDONAR MISIÓN</button>
         </section>
 
-        <!-- 1V1 BATTLE -->
+<!-- 1V1 BATTLE (CON PANTALLA DE DERROTA Y VIDEO ROBOT BOSS) -->
         <section id="vsBattle" class="page">
             <div id="vsDifficultySelector" class="panel" style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center;">
                 <span class="eyebrow">ARENA DE DUELO 1V1</span>
@@ -223,16 +223,21 @@
                 </div>
             </div>
 
-            <div id="vsDefeatScreen" style="display:none; text-align:center; padding:30px 10px;">
-                <div style="font-size:48px; margin-bottom:10px;" id="vsDefeatRivalAvatar">🤖</div>
-                <h2 style="color:#ff4444; margin-bottom:6px;">FIN DEL DUELO</h2>
-                <p id="vsDefeatScores" style="font-size:13px; color:#fff; margin-bottom:16px;"></p>
-                <button class="reveal-button" style="background:var(--cyan); color:#0b1424;" onclick="window.openVsMode()">VOLVER A INTENTAR ↺</button>
+            <!-- PANTALLA DE DERROTA CON VIDEO ROBOT BOSS Y TEXTO MAMALÓN -->
+            <div id="vsDefeatScreen" style="display:none; text-align:center; padding:20px 10px;">
+                <div style="width:100%; max-width:320px; margin:0 auto 12px auto; border-radius:14px; overflow:hidden; border:2px solid var(--red); box-shadow:0 0 20px rgba(255,68,68,0.4);">
+                    <video src="Robot_boss.mp4" autoplay loop muted playsinline style="width:100%; height:auto; display:block;"></video>
+                </div>
+                <h2 style="color:var(--red); font-size:18px; margin-bottom:4px;">💥 SISTEMA SUPERA-IZADO</h2>
+                <p id="vsDefeatTaunt" style="font-size:12.5px; color:#fff; font-weight:700; background:rgba(255,68,68,0.15); border:1px solid rgba(255,68,68,0.3); padding:10px 14px; border-radius:10px; margin:10px 0 16px 0;">
+                    "Patético... ¿A esto le llamas calibración industrial? Hasta un PLC patito procesa más rápido que tú. ¡Vuelve a estudiar los diagramas!" 🦾🔥
+                </p>
+                <p id="vsDefeatScores" style="font-size:11px; color:var(--muted); margin-bottom:14px;"></p>
+                <button class="reveal-button" style="background:var(--cyan); color:#0b1424;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
             </div>
 
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
         </section>
-
         <!-- LAB -->
         <section id="hanziLab" class="page">
             <div class="welcome">
@@ -253,13 +258,23 @@
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
         </section>
 
-        <!-- ACADEMY (MEJORADA Y ESTILIZADA) -->
+<!-- ACADEMY (CON CYBER CAT GUÍA) -->
         <section id="academy" class="page">
             <div class="welcome">
                 <span class="eyebrow">MANDARÍN TÉCNICO EN PLANTA</span>
                 <h2>Academy · Chino para Soporte</h2>
             </div>
-            <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+            
+            <!-- GUÍA CYBER CAT -->
+            <div class="panel" style="background:var(--surface); border:1.5px solid var(--cyan); border-radius:14px; padding:12px; margin-bottom:12px; display:flex; align-items:center; gap:12px;">
+                <img src="cyber_cat.gif" alt="Cyber Cat" style="width:54px; height:54px; border-radius:12px; object-fit:cover; border:1px solid var(--cyan);">
+                <div>
+                    <strong style="color:var(--cyan); font-size:12px; display:block;">Neko-Bot 9000 (Guía Academy)</strong>
+                    <p style="font-size:10px; color:#fff; margin-top:2px;">"¡Miaul saludo, ingeniero! Estoy aquí para auditar tus módulos de mandarín. ¡Elige una lección!" 🐾⚡</p>
+                </div>
+            </div>
+
+            <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:12px;">
                 <div class="panel academy-module-card" onclick="openAcademyLesson(1)" style="background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--cyan); border-radius:14px; padding:16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <span class="tag" style="color:var(--cyan); border-color:var(--cyan); font-size:8px;">MÓDULO 01</span>

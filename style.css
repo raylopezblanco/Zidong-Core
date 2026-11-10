@@ -1,3 +1,4 @@
+
 :root {
     --bg: #0b1424;
     --surface: #111f35;
@@ -91,7 +92,7 @@ html, body {
 .battery-sub-row small { font-size: 9px; color: var(--muted); }
 .battery-pct-tag { color: var(--cyan); font-weight: 700; }
 
-/* UNIFICACIÓN ABSOLUTA DE TAMAÑOS Y PROPORCIONES PARA LAS 4 TARJETAS */
+/* UNIFICACIÓN ABSOLUTA DE TAMAÑOS, FUENTES Y PROPORCIONES PARA LAS 4 TARJETAS */
 .home-top-grid, .home-secondary-grid {
     width: 100%;
     display: grid !important;
@@ -101,7 +102,7 @@ html, body {
     margin-bottom: 6px !important;
 }
 
-.mode-card, .sub-mode-card {
+.sub-mode-card {
     height: 66px !important;
     min-height: 66px !important;
     max-height: 66px !important;
@@ -113,6 +114,7 @@ html, body {
     justify-content: center !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
+    background: rgba(17, 31, 53, 0.95) !important;
 }
 
 .career-mode {
@@ -126,21 +128,39 @@ html, body {
 }
 
 .daily-card {
-    background: rgba(17, 31, 53, 0.95) !important;
     border: 1.5px solid rgba(255, 170, 0, 0.45) !important;
 }
 
 .vs-card {
-    background: rgba(17, 31, 53, 0.95) !important;
     border: 1.5px solid rgba(167, 139, 250, 0.45) !important;
 }
 
-.mode-card h3, .sub-mode-card h4 { font-size: 11px; color: #fff; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mode-card p, .sub-mode-card p { color: var(--muted); font-size: 8px; }
-.sub-card-header { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
-.sub-card-tag { font-size: 8px; font-weight: 800; }
+.sub-mode-card h4 {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.2 !important;
+}
+
+.sub-mode-card p {
+    font-size: 8px !important;
+    color: var(--muted) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-top: 1px !important;
+}
+
+.sub-card-header { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+.sub-card-tag { font-size: 8px !important; font-weight: 800 !important; letter-spacing: 0.5px; }
+.sub-card-tag.green { color: var(--green); }
+.sub-card-tag.red { color: var(--red); }
 .sub-card-tag.gold { color: var(--gold); }
 .sub-card-tag.purple { color: var(--purple); }
+.sub-card-icon { font-size: 12px; }
 
 .companion-stage { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 0; }
 .dialog-balloon {

@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=25.0">
+    <link rel="stylesheet" href="style.css?v=26.0">
 </head>
 <body>
 
@@ -80,25 +80,23 @@
                 </div>
             </div>
 
-            <!-- MODOS PRINCIPALES (TARJETAS UNIFICADAS EN TAMAÑO) -->
+            <!-- MODOS PRINCIPALES (TARJETAS UNIFICADAS CON EL MISMO DISEÑO Y TAMAÑO) -->
             <div class="main-modes-grid home-top-grid">
-                <div class="mode-card career-mode hero-career" onclick="window.navigateTo('career')">
-                    <div class="mode-icon">🪐</div>
-                    <div class="mode-card-content">
-                        <span class="mode-tag">5 MUNDOS OBERON</span>
-                        <h3>CAREER MODE</h3>
-                        <p>Eléctrico, Mecánico, etc.</p>
+                <div class="sub-mode-card career-mode" onclick="window.navigateTo('career')">
+                    <div class="sub-card-header">
+                        <span class="sub-card-icon">🪐</span>
+                        <strong class="sub-card-tag green">CAREER MODE</strong>
                     </div>
-                    <div class="mode-action"><span class="arrow">→</span></div>
+                    <h4>5 MUNDOS OBERON</h4>
+                    <p>Eléctrico, Mecánico, etc.</p>
                 </div>
-                <div class="mode-card arcade-mode hero-survivor" onclick="window.openCriticalMode()">
-                    <div class="mode-icon">⚠️</div>
-                    <div class="mode-card-content">
-                        <span class="mode-tag warning">ENDLESS (+3s)</span>
-                        <h3>SURVIVOR MODE</h3>
-                        <p>18s · Chino experto</p>
+                <div class="sub-mode-card arcade-mode" onclick="window.openCriticalMode()">
+                    <div class="sub-card-header">
+                        <span class="sub-card-icon">⚠️</span>
+                        <strong class="sub-card-tag red">SURVIVOR MODE</strong>
                     </div>
-                    <div class="mode-action warning"><span class="arrow">⚡</span></div>
+                    <h4>ENDLESS (+3s)</h4>
+                    <p>18s · Chino experto</p>
                 </div>
             </div>
 
@@ -117,7 +115,7 @@
                 </div>
             </div>
 
-            <!-- MODOS SECUNDARIOS (UNIFICADOS EN TAMAÑO) -->
+            <!-- MODOS SECUNDARIOS (MISMA ESTRUCTURA Y TAMAÑO EXACTO) -->
             <div class="secondary-modes-grid home-secondary-grid">
                 <div class="sub-mode-card daily-card" onclick="window.claimDailyReward()">
                     <div class="sub-card-header">
@@ -302,8 +300,8 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="critical-fail.js?v=25.0"></script>
-    <script src="navigation.js?v=25.0"></script>
-    <script src="app.js?v=25.0"></script>
+    <script src="critical-fail.js?v=26.0"></script>
+    <script src="navigation.js?v=26.0"></script>
+    <script src="app.js?v=26.0"></script>
 </body>
 </html>

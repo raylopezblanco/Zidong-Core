@@ -11,7 +11,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=17.0">
+    <link rel="stylesheet" href="style.css?v=18.0">
 </head>
 <body>
 
@@ -37,7 +37,7 @@
                 <div id="splashLoadingFill" class="splash-progress-fill"></div>
             </div>
 
-            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v6.0...</small>
+            <small id="splashStatusText" class="splash-status-lbl">Iniciando protocolo OBERON v6.2...</small>
         </div>
     </div>
 
@@ -68,10 +68,10 @@
 
     <main class="app-shell">
 
-        <!-- 1. DASHBOARD (HOME) CON FONDO DE ESTACIÓN ESPACIAL -->
+        <!-- 1. DASHBOARD (HOME) -->
         <section id="dashboard" class="page active">
 
-            <!-- BATERÍA DE ENERGÍA XP DE PLANTA -> CLIC MANDA A RANGOS -->
+            <!-- BATERÍA DE ENERGÍA XP -> MANDA A RANGOS -->
             <div class="home-energy-battery" onclick="navigateTo('ranksLadderPage')" title="Toca para ver el escalafón de rangos en planta">
                 <div class="battery-head-shell">
                     <div class="battery-terminal-node"></div>
@@ -92,7 +92,7 @@
                 </div>
             </div>
 
-            <!-- MODOS PRINCIPALES ARRIBA -->
+            <!-- MODOS PRINCIPALES -->
             <div class="main-modes-grid home-top-grid">
                 <div class="mode-card career-mode hero-career" onclick="navigateTo('career')">
                     <div class="mode-icon">🪐</div>
@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- COMPANION CILÍNDRICO DE LUZ CON GLOBO ESTÁNDAR -->
+            <!-- COMPANION CILÍNDRICO DE LUZ -->
             <div class="companion-stage home-companion-stage">
                 <div class="speech-bubble dialog-balloon" id="companionBubble">
                     <span id="companionText">¡Terminal OBERON lista! Tócame para recibir curiosidades del idioma chino. ⚡</span>
@@ -206,7 +206,7 @@
             </script>
         </section>
 
-        <!-- 2. CAREER MODE (MUNDOS INDUSTRIALES) -->
+        <!-- 2. CAREER MODE -->
         <section id="career" class="page">
             <div class="welcome">
                 <span class="eyebrow">SISTEMA ESPACIAL OBERON</span>
@@ -309,7 +309,7 @@
             </button>
         </section>
 
-        <!-- 5. CLASIFICATORIA DE PLANTA (RANKING) -->
+        <!-- 5. CLASIFICATORIA (RANKING) -->
         <section id="leaderboard" class="page">
             <div class="welcome">
                 <span class="eyebrow">CLASIFICATORIA INDUSTRIAL GLOBAL</span>
@@ -332,7 +332,7 @@
             </button>
         </section>
 
-        <!-- 6. ESCALAFÓN DE 10 RANGOS -->
+        <!-- 6. ESCALAFÓN DE RANGOS -->
         <section id="ranksLadderPage" class="page">
             <div class="welcome">
                 <span class="eyebrow">CAREER PROGRESSION</span>
@@ -347,7 +347,7 @@
             </button>
         </section>
 
-        <!-- 7. ARENA 1V1 CON 3 MECÁNICAS -->
+        <!-- 7. ARENA 1V1 -->
         <section id="vsBattle" class="page">
             <div id="vsDifficultySelector" style="display:block;">
                 <div class="welcome">
@@ -551,7 +551,7 @@
             <div class="recognition-card" id="lessonCard"></div>
         </section>
 
-        <!-- 10. PROFILE (CON LOGROS XBOX INTEGRADOS) -->
+        <!-- 10. PROFILE (CON LOGROS XBOX) -->
         <section id="profile" class="page">
             <div class="welcome">
                 <span class="eyebrow">TECHNICAL PROFILE</span>
@@ -695,7 +695,7 @@
 
     </main>
 
-    <!-- BARRA INFERIOR ACTUALIZADA: HOME, LAB, ACADEMY, RANKING -->
+    <!-- BARRA INFERIOR: HOME, LAB, ACADEMY, RANKING -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="navigateTo('dashboard')">
             <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
@@ -712,15 +712,15 @@
     </nav>
 
     <!-- SCRIPTS -->
-    <script src="audio.js?v=17.0"></script>
-    <script src="navigation.js?v=17.0"></script>
-    <script src="companion-phrases.js?v=17.0"></script>
-    <script src="medals-data.js?v=17.0"></script>
-    <script src="achievements-data.js?v=17.0"></script>
-    <script src="worlds-data.js?v=17.0"></script>
-    <script src="industrial-ranks.js?v=17.0"></script>
-    <script src="mock-data.js?v=17.0"></script>
-    <script src="critical-fail.js?v=17.0"></script>
-    <script src="app.js?v=17.0"></script>
+    <script src="audio.js?v=18.0"></script>
+    <script src="navigation.js?v=18.0"></script>
+    <script src="companion-phrases.js?v=18.0"></script>
+    <script src="medals-data.js?v=18.0"></script>
+    <script src="achievements-data.js?v=18.0"></script>
+    <script src="worlds-data.js?v=18.0"></script>
+    <script src="industrial-ranks.js?v=18.0"></script>
+    <script src="mock-data.js?v=18.0"></script>
+    <script src="critical-fail.js?v=18.0"></script>
+    <script src="app.js?v=18.0"></script>
 </body>
 </html>

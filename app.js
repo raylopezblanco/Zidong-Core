@@ -482,8 +482,7 @@ window.openVsMode = function() {
         if (arenaContainer) arenaContainer.style.display = "none";
         if (defeatScreen) defeatScreen.style.display = "none";
     };
-
-     window.start1v1WithDifficulty = (diffKey) => {
+   window.start1v1WithDifficulty = (diffKey) => {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
 

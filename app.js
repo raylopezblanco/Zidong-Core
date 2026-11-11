@@ -971,7 +971,10 @@ window.start1v1WithDifficulty = function(diffKey) {
 
     if (selector) selector.style.setProperty("display", "none", "important");
     if (defeat) defeat.style.setProperty("display", "none", "important");
-    if (arena) arena.style.setProperty("display", "block", "important");
+    if (arena) {
+        arena.style.setProperty("display", "block", "important");
+        arena.style.setProperty("pointer-events", "auto", "important");
+    }
 
     const rivalName = document.getElementById("vsRivalName");
     const rivalAvatar = document.getElementById("vsRivalAvatar");
@@ -983,10 +986,11 @@ window.start1v1WithDifficulty = function(diffKey) {
     }
     if (badge) badge.textContent = diff.badge;
 
+    // INICIALIZACIÓN CRÍTICA DE ESTADO
     window.myVsPoints = 0;
     window.rivalVsPoints = 0;
     window.vsTimeLeft = 20;
-    window.vsSessionActive = true;
+    window.vsSessionActive = true; // Forzar sesión activa
     window.vsRoundLocked = false;
 
     window.vsUpdateScores();
@@ -997,12 +1001,18 @@ window.start1v1WithDifficulty = function(diffKey) {
     const timerBar = document.getElementById("vsTimerBar");
     if (timerBar) timerBar.style.width = "100%";
 
-    if (typeof startVsRound === "function") startVsRound();
-    if (typeof startVsTimer === "function") startVsTimer();
+    // Arrancar la primera ronda y el reloj de inmediato
+    if (typeof window.startVsRound === "function") {
+        window.startVsRound();
+    }
+    if (typeof window.startVsTimer === "function") {
+        window.startVsTimer();
+    }
 };
 
 window.startVsRound = function() {
-    if (!window.vsSessionActive || window.vsTimeLeft <= 0) return;
+    window.vsSessionActive = true; // Blindaje extra
+    if (window.vsTimeLeft <= 0) return;
     window.vsRoundLocked = false;
     window.vsSelectedChars = [];
 
@@ -1021,7 +1031,6 @@ window.startVsRound = function() {
         window.loadVsLevel3OrderHanzi();
     }
 };
-
 window.loadVsLevel1SingleHanzi = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");

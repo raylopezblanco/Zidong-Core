@@ -845,6 +845,7 @@ window.VS_DIFFICULTIES = {
         points: 100,
         winBonus: 100
     },
+
     MEDIUM: {
         name: "Servocontrolador Overclock",
         badge: "NIVEL 2 · PALABRAS INDUSTRIALES",
@@ -852,12 +853,13 @@ window.VS_DIFFICULTIES = {
         points: 100,
         winBonus: 150
     },
+
     HARD: {
-        name: "Protocolo Central de Enclavamiento",
-        badge: "NIVEL 3 · ORDENAR BLOQUES",
-        prob: 0.90,
-        points: 150,
-        winBonus: 200
+        name: "Protocolo Centinela IA",
+        badge: "NIVEL 3 · ORDENAR PALABRAS",
+        prob: 0.88,
+        points: 100,
+        winBonus: 250
     }
 };
 
@@ -888,91 +890,391 @@ window.VS_WORD_DATA = [
     { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor" }
 ];
 
-        const item = words[Math.floor(Math.random() * words.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.es;
+window.vsShuffle = function(array) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+};
 
-        const grid = document.getElementById("vsOptionsGrid");
-        grid.replaceChildren();
+window.vsRandomItem = function(array) {
+    return array[Math.floor(Math.random() * array.length)];
+};
 
-        let stepOrder = 0;
-        const slotsRow = document.createElement("div");
-        slotsRow.className = "cf-slots-dock";
-        slotsRow.style.margin = "0 auto 10px auto";
-        slotsRow.innerHTML = `<div class="cf-slot empty" id="vSlot0">_</div><div class="cf-slot empty" id="vSlot1">_</div>`;
-        grid.appendChild(slotsRow);
+window.vsUpdateScores = function() {
+    const myScoreEl = document.getElementById("vsMyScore");
+    const rivalScoreEl = document.getElementById("vsRivalScore");
+    if (myScoreEl) myScoreEl.textContent = `${window.myVsPoints} PTS`;
+    if (rivalScoreEl) rivalScoreEl.textContent = `${window.rivalVsPoints} PTS`;
+};
 
-        const blocksRow = document.createElement("div");
-        blocksRow.style.display = "flex";
-        blocksRow.style.justifyContent = "center";
-        blocksRow.style.gap = "12px";
+window.vsGetInstruction = function() {
+    const stage = document.getElementById("vsStageCard");
+    if (!stage) return null;
+    let instruction = document.getElementById("vsInstruction");
+    if (!instruction) {
+        instruction = document.createElement("p");
+        instruction.id = "vsInstruction";
+        instruction.style.fontSize = "11px";
+        instruction.style.color = "var(--muted)";
+        instruction.style.marginBottom = "8px";
+        stage.insertBefore(instruction, document.getElementById("vsHanziDisplay"));
+    }
+    return instruction;
+};
 
-        const shuffledChars = [...item.chars].sort(() => 0.5 - Math.random());
-        shuffledChars.forEach(char => {
-            const b = document.createElement("button");
-            b.className = "cf-part-btn";
-            b.style.width = "64px";
-            b.textContent = char;
-            b.onclick = () => {
-                if (char === item.order[stepOrder]) {
-                    triggerHaptic("success");
-                    const slot = document.getElementById(`vSlot${stepOrder}`);
-                    if (slot) {
-                        slot.textContent = char;
-                        slot.classList.add("filled");
-                        slot.classList.remove("empty");
-                    }
-                    b.style.opacity = "0.3";
-                    b.style.pointerEvents = "none";
-                    stepOrder++;
+window.openVsMode = function() {
+    if (typeof stopVsSession === "function") stopVsSession();
 
-                    if (stepOrder === 2) {
-                        myVsPoints += 100;
-                        document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
-                        setTimeout(loadVsMechanicByLevel, 240);
-                    }
-                } else {
-                    triggerHaptic("error");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
-                    b.style.borderColor = "#ff4444";
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            blocksRow.appendChild(b);
-        });
-        grid.appendChild(blocksRow);
+    if (typeof triggerHaptic === "function") {
+        triggerHaptic("success");
     }
 
-    function finishVsBattle() {
-        stopVsSession();
-        const diff = VS_DIFFICULTIES[selectedVsDiffKey];
-        const win = myVsPoints >= rivalVsPoints;
+    if (typeof window.navigateTo === "function") {
+        window.navigateTo("vsBattle");
+    }
 
-        if (win) {
-            triggerHaptic("win");
-            awardXP(diff.winBonus);
-            const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
-            localStorage.setItem("zidong_vs_wins", currentWins);
-            alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-            renderBadgesGrid();
-            updateProfile();
-            if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
-        } else {
-            triggerHaptic("error");
-            document.getElementById("vsBattleArenaContainer").style.display = "none";
-            const defeatScreen = document.getElementById("vsDefeatScreen");
-            defeatScreen.style.display = "block";
+    const diffSelector = document.getElementById("vsDifficultySelector");
+    const arena = document.getElementById("vsBattleArenaContainer");
+    const defeat = document.getElementById("vsDefeatScreen");
 
-            document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
-            document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
+    if (diffSelector) diffSelector.style.setProperty("display", "block", "important");
+    if (arena) arena.style.setProperty("display", "none", "important");
+    if (defeat) defeat.style.setProperty("display", "none", "important");
+};
+
+window.start1v1WithDifficulty = function(diffKey) {
+    if (!window.VS_DIFFICULTIES[diffKey]) {
+        console.error("Dificultad 1v1 desconocida:", diffKey);
+        return;
+    }
+
+    if (typeof stopVsSession === "function") stopVsSession();
+
+    window.selectedVsDiffKey = diffKey;
+    const diff = window.VS_DIFFICULTIES[diffKey];
+
+    const selector = document.getElementById("vsDifficultySelector");
+    const arena = document.getElementById("vsBattleArenaContainer");
+    const defeat = document.getElementById("vsDefeatScreen");
+
+    if (selector) selector.style.setProperty("display", "none", "important");
+    if (defeat) defeat.style.setProperty("display", "none", "important");
+    if (arena) arena.style.setProperty("display", "block", "important");
+
+    const rivalName = document.getElementById("vsRivalName");
+    const rivalAvatar = document.getElementById("vsRivalAvatar");
+    const badge = document.getElementById("vsDiffBadge");
+
+    if (rivalName) rivalName.textContent = diff.name;
+    if (rivalAvatar) {
+        rivalAvatar.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+    }
+    if (badge) badge.textContent = diff.badge;
+
+    window.myVsPoints = 0;
+    window.rivalVsPoints = 0;
+    window.vsTimeLeft = 20;
+    window.vsSessionActive = true;
+    window.vsRoundLocked = false;
+
+    window.vsUpdateScores();
+
+    const seconds = document.getElementById("vsSeconds");
+    if (seconds) seconds.textContent = window.vsTimeLeft;
+
+    const timerBar = document.getElementById("vsTimerBar");
+    if (timerBar) timerBar.style.width = "100%";
+
+    if (typeof startVsRound === "function") startVsRound();
+    if (typeof startVsTimer === "function") startVsTimer();
+};
+
+window.startVsRound = function() {
+    if (!window.vsSessionActive || window.vsTimeLeft <= 0) return;
+    window.vsRoundLocked = false;
+    window.vsSelectedChars = [];
+
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = window.vsGetInstruction();
+
+    if (!display || !grid) return;
+    grid.replaceChildren();
+
+    if (window.selectedVsDiffKey === "EASY") {
+        window.loadVsLevel1SingleHanzi();
+    } else if (window.selectedVsDiffKey === "MEDIUM") {
+        window.loadVsLevel2CompoundWord();
+    } else if (window.selectedVsDiffKey === "HARD") {
+        window.loadVsLevel3OrderHanzi();
+    }
+};
+
+window.loadVsLevel1SingleHanzi = function() {
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = window.vsGetInstruction();
+
+    const correct = window.vsRandomItem(window.VS_HANZI_DATA);
+    const wrongOptions = window.vsShuffle(
+        window.VS_HANZI_DATA.filter(item => item.hanzi !== correct.hanzi)
+    ).slice(0, 3);
+
+    const options = window.vsShuffle([correct, ...wrongOptions]);
+    window.vsCurrentQuestion = correct;
+
+    if (display) display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Identifica el significado: "${correct.meaning}"`;
+
+    options.forEach(option => {
+        const button = document.createElement("button");
+        button.className = "reveal-button";
+        button.style.background = "var(--surface-light)";
+        button.style.color = "#fff";
+        button.style.border = "1px solid var(--border)";
+        button.style.padding = "10px";
+        button.style.fontWeight = "800";
+        button.style.fontSize = "12px";
+        button.textContent = option.pinyin ? `${option.pinyin} - ${option.meaning}` : option.meaning;
+
+        button.onclick = () => {
+            if (window.vsRoundLocked || !window.vsSessionActive) return;
+            window.submitVsAnswer(option.hanzi === correct.hanzi, button);
+        };
+        grid.appendChild(button);
+    });
+};
+
+window.loadVsLevel2CompoundWord = function() {
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = window.vsGetInstruction();
+
+    const correct = window.vsRandomItem(window.VS_WORD_DATA);
+    const wrongOptions = window.vsShuffle(
+        window.VS_WORD_DATA.filter(item => item.hanzi !== correct.hanzi)
+    ).slice(0, 3);
+
+    const options = window.vsShuffle([correct, ...wrongOptions]);
+    window.vsCurrentQuestion = correct;
+
+    if (display) display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Selecciona la planta/término correcto para: "${correct.meaning}"`;
+
+    options.forEach(option => {
+        const button = document.createElement("button");
+        button.className = "reveal-button";
+        button.style.background = "var(--surface-light)";
+        button.style.color = "#fff";
+        button.style.border = "1px solid var(--border)";
+        button.style.padding = "10px";
+        button.style.fontWeight = "800";
+        button.style.fontSize = "12px";
+        button.textContent = option.meaning;
+
+        button.onclick = () => {
+            if (window.vsRoundLocked || !window.vsSessionActive) return;
+            window.submitVsAnswer(option.hanzi === correct.hanzi, button);
+        };
+        grid.appendChild(button);
+    });
+};
+
+window.loadVsLevel3OrderHanzi = function() {
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = window.vsGetInstruction();
+
+    const correct = window.vsRandomItem(window.VS_WORD_DATA);
+    window.vsCurrentQuestion = correct;
+
+    if (display) display.textContent = correct.meaning;
+    if (instruction) instruction.textContent = `Ordena los caracteres para formar: "${correct.meaning}"`;
+
+    const correctChars = correct.hanzi.split("");
+    const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自"];
+    const availableChars = [
+        ...correctChars,
+        ...window.vsShuffle(extraChars).filter(char => !correctChars.includes(char)).slice(0, 3)
+    ];
+    const shuffledChars = window.vsShuffle(availableChars);
+
+    const containerBox = document.createElement("div");
+    containerBox.style.display = "flex";
+    containerBox.style.flexDirection = "column";
+    containerBox.style.gap = "10px";
+    containerBox.style.width = "100%";
+
+    const answerBox = document.createElement("div");
+    answerBox.id = "vsBuildAnswer";
+    answerBox.style.background = "rgba(0,0,0,0.4)";
+    answerBox.style.border = "2px dashed var(--cyan)";
+    answerBox.style.borderRadius = "10px";
+    answerBox.style.padding = "12px";
+    answerBox.style.fontSize = "22px";
+    answerBox.style.letterSpacing = "4px";
+    answerBox.style.color = "var(--cyan)";
+    answerBox.style.minHeight = "48px";
+    answerBox.style.display = "flex";
+    answerBox.style.alignItems = "center";
+    answerBox.style.justifyContent = "center";
+    answerBox.textContent = "";
+
+    const chipsGrid = document.createElement("div");
+    chipsGrid.style.display = "flex";
+    chipsGrid.style.flexWrap = "wrap";
+    chipsGrid.style.gap = "6px";
+    chipsGrid.style.justifyContent = "center";
+
+    shuffledChars.forEach(char => {
+        const chip = document.createElement("button");
+        chip.className = "reveal-button";
+        chip.style.background = "var(--surface-light)";
+        chip.style.color = "#fff";
+        chip.style.border = "1px solid var(--border)";
+        chip.style.padding = "8px 12px";
+        chip.style.fontSize = "16px";
+        chip.style.fontWeight = "bold";
+        chip.textContent = char;
+
+        chip.onclick = () => {
+            if (window.vsRoundLocked || !window.vsSessionActive) return;
+            window.vsSelectedChars.push(char);
+            answerBox.textContent = window.vsSelectedChars.join("");
+
+            if (window.vsSelectedChars.length === correctChars.length) {
+                const assembled = window.vsSelectedChars.join("");
+                window.submitVsAnswer(assembled === correct.hanzi);
+            }
+        };
+        chipsGrid.appendChild(chip);
+    });
+
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "btn-secondary";
+    clearBtn.style.fontSize = "10px";
+    clearBtn.style.padding = "6px";
+    clearBtn.textContent = "🔄 Borrar selección";
+    clearBtn.onclick = () => {
+        if (window.vsRoundLocked || !window.vsSessionActive) return;
+        window.vsSelectedChars = [];
+        answerBox.textContent = "";
+    };
+
+    containerBox.appendChild(answerBox);
+    containerBox.appendChild(chipsGrid);
+    containerBox.appendChild(clearBtn);
+    grid.appendChild(containerBox);
+};
+
+window.submitVsAnswer = function(isCorrect, selectedButton = null) {
+    if (!window.vsSessionActive || window.vsRoundLocked) return;
+    window.vsRoundLocked = true;
+
+    const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];
+
+    if (isCorrect) {
+        if (selectedButton) {
+            selectedButton.style.background = "var(--green)";
+            selectedButton.style.color = "#0b1424";
+        }
+        window.myVsPoints += diff.points;
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+    } else {
+        if (selectedButton) {
+            selectedButton.style.background = "var(--red)";
+            selectedButton.style.color = "#fff";
+        }
+        window.rivalVsPoints += 50;
+        if (typeof triggerHaptic === "function") triggerHaptic("error");
+    }
+
+    window.vsUpdateScores();
+
+    setTimeout(() => {
+        if (!window.vsSessionActive || window.vsTimeLeft <= 0) return;
+        window.startVsRound();
+    }, 450);
+};
+
+window.startVsTimer = function() {
+    if (typeof stopVsSession === "function") stopVsSession();
+    window.vsTimer = setInterval(() => {
+        if (!window.vsSessionActive) return;
+        window.vsTimeLeft--;
+
+        const seconds = document.getElementById("vsSeconds");
+        const timerBar = document.getElementById("vsTimerBar");
+
+        if (seconds) seconds.textContent = window.vsTimeLeft;
+        if (timerBar) {
+            timerBar.style.width = `${Math.max(0, (window.vsTimeLeft / 20) * 100)}%`;
+        }
+
+        if (window.vsTimeLeft > 0 && window.vsTimeLeft % 5 === 0) {
+            const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];
+            window.rivalVsPoints += Math.round(diff.points * 0.8);
+            window.vsUpdateScores();
+        }
+
+        if (window.vsTimeLeft <= 0) {
+            if (typeof finishVsBattle === "function") finishVsBattle();
+        }
+    }, 1000);
+};
+
+window.finishVsBattle = function() {
+    if (!window.vsSessionActive) return;
+    if (typeof stopVsSession === "function") stopVsSession();
+
+    const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];
+    const win = window.myVsPoints >= window.rivalVsPoints;
+
+    if (win) {
+        if (typeof triggerHaptic === "function") triggerHaptic("win");
+        const earnedXp = diff.winBonus;
+        
+        if (typeof currentUserData !== "undefined" && currentUserData) {
+            currentUserData.xp = (currentUserData.xp || 0) + earnedXp;
+            if (typeof updateProfile === "function") updateProfile();
+        }
+
+        const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
+        localStorage.setItem("zidong_vs_wins", currentWins);
+
+        alert(`🏆 ¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`);
+        if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
+    } else {
+        if (typeof triggerHaptic === "function") triggerHaptic("error");
+
+        const arena = document.getElementById("vsBattleArenaContainer");
+        const defeat = document.getElementById("vsDefeatScreen");
+        const scores = document.getElementById("vsDefeatScores");
+
+        if (arena) arena.style.setProperty("display", "none", "important");
+        if (defeat) defeat.style.setProperty("display", "block", "important");
+
+        const avatar = document.getElementById("vsDefeatRivalAvatar");
+        if (avatar) {
+            avatar.textContent = window.selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
+        }
+
+        if (scores) {
+            scores.textContent = `Tú: ${window.myVsPoints} PTS vs ${diff.name}: ${window.rivalVsPoints} PTS`;
         }
     }
+};
 
-    function stopVsSession() {
-        clearInterval(vsTimer);
-        vsTimer = null;
+window.stopVsSession = function() {
+    window.vsSessionActive = false;
+    if (window.vsTimer) {
+        clearInterval(window.vsTimer);
+        window.vsTimer = null;
     }
-    window.stopVsSession = stopVsSession;
+};
     // =====================================
     // 3. LABORATORIO (LAB)
     // =====================================

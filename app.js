@@ -1033,12 +1033,11 @@ function vsGetInstruction() {
 
 
 // =============================================
-// ABRIR MENÚ 1V1
+// MOTOR 1V1 - CORRECCIÓN DE APERTURA Y ARENA
 // =============================================
 
 window.openVsMode = function() {
-
-    stopVsSession();
+    if (typeof stopVsSession === "function") stopVsSession();
 
     if (typeof triggerHaptic === "function") {
         triggerHaptic("success");
@@ -1049,23 +1048,65 @@ window.openVsMode = function() {
     }
 
     const diffSelector = document.getElementById("vsDifficultySelector");
-    const arena = document.getElementById("vsBattleArenaContainer");
-    const defeat = document.getElementById("vsDefeatScreen");
+    const arenaContainer = document.getElementById("vsBattleArenaContainer");
+    const defeatScreen = document.getElementById("vsDefeatScreen");
 
+    // Asegurar que el selector de dificultad se muestre y la arena comience oculta
     if (diffSelector) {
         diffSelector.style.setProperty("display", "block", "important");
     }
-
-    if (arena) {
-        arena.style.setProperty("display", "none", "important");
+    if (arenaContainer) {
+        arenaContainer.style.setProperty("display", "none", "important");
     }
-
-    if (defeat) {
-        defeat.style.setProperty("display", "none", "important");
+    if (defeatScreen) {
+        defeatScreen.style.setProperty("display", "none", "important");
     }
-
 };
 
+window.start1v1WithDifficulty = function(diffKey) {
+    if (!VS_DIFFICULTIES[diffKey]) {
+        console.error("Dificultad 1v1 desconocida:", diffKey);
+        return;
+    }
+
+    selectedVsDiffKey = diffKey;
+    const diff = VS_DIFFICULTIES[diffKey];
+
+    const diffSelector = document.getElementById("vsDifficultySelector");
+    const arenaContainer = document.getElementById("vsBattleArenaContainer");
+    const defeatScreen = document.getElementById("vsDefeatScreen");
+
+    if (diffSelector) diffSelector.style.setProperty("display", "none", "important");
+    if (defeatScreen) defeatScreen.style.setProperty("display", "none", "important");
+    
+    if (arenaContainer) {
+        arenaContainer.style.setProperty("display", "block", "important");
+    }
+
+    const rivalNameEl = document.getElementById("vsRivalName");
+    const rivalAvatarEl = document.getElementById("vsRivalAvatar");
+    const diffBadgeEl = document.getElementById("vsDiffBadge");
+
+    if (rivalNameEl) rivalNameEl.textContent = diff.name;
+    if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+    if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
+
+    myVsPoints = 0;
+    rivalVsPoints = 0;
+    vsTimeLeft = 20;
+
+    const myScoreEl = document.getElementById("vsMyScore");
+    const rivalScoreEl = document.getElementById("vsRivalScore");
+    const secondsEl = document.getElementById("vsSeconds");
+
+    if (myScoreEl) myScoreEl.textContent = "0 PTS";
+    if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
+    if (secondsEl) secondsEl.textContent = vsTimeLeft;
+
+    if (typeof startVsRound === "function") {
+        startVsRound();
+    }
+};
 
 // =============================================
 // INICIAR DIFICULTAD

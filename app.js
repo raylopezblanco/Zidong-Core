@@ -833,187 +833,61 @@ window.openVsMode = function() {
 
         renderBossSequenceView();
     }
-// =====================================
-    // 2. MODO 1V1 BATTLE (3 NIVELES)
-    // =====================================
-    const VS_DIFFICULTIES = {
-        EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
-        MEDIUM: { name: "Servocontrolador Overclock", badge: "NIVEL 2 · PALABRA 2 HANZI", prob: 0.85, points: 100, winBonus: 150 },
-        HARD: { name: "Protocolo Centinela IA", badge: "NIVEL 3 · ORDENAR PALABRA", prob: 0.88, points: 100, winBonus: 250 }
-    };
+// =============================================
+// MOTOR 1V1 - SISTEMA DE TRES NIVELES (EXPUESTO A WINDOW)
+// =============================================
 
-    let selectedVsDiffKey = "MEDIUM";
-    let vsTimer = null;
-    let vsTimeLeft = 20;
-    let myVsPoints = 0;
-    let rivalVsPoints = 0;
-
-    window.openVsMode = function() {
-        stopVsSession();
-        triggerHaptic("success");
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("vsBattle");
-        }
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-        
-        if (diffSelector) diffSelector.style.display = "block";
-        if (arenaContainer) arenaContainer.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-    };
-
-    window.start1v1WithDifficulty = (diffKey) => {
-        selectedVsDiffKey = diffKey;
-        const diff = VS_DIFFICULTIES[diffKey];
-
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-
-        if (diffSelector) diffSelector.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block"; // ¡Muestra la arena de juego correctamente!
-
-        document.getElementById("vsRivalName").textContent = diff.name;
-        document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        document.getElementById("vsDiffBadge").textContent = diff.badge;
-
-        myVsPoints = 0;
-        rivalVsPoints = 0;
-        vsTimeLeft = 20;
-
-        document.getElementById("vsMyScore").textContent = "0 PTS";
-        document.getElementById("vsRivalScore").textContent = "0 PTS";
-        document.getElementById("vsSeconds").textContent = vsTimeLeft;
-
-        startVsRound();
-    };
-
-    function startVsRound() {
-        stopVsSession();
-        const diff = VS_DIFFICULTIES[selectedVsDiffKey];
-        const timerBar = document.getElementById("vsTimerBar");
-
-        vsTimer = setInterval(() => {
-            vsTimeLeft--;
-            document.getElementById("vsSeconds").textContent = vsTimeLeft;
-            if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
-
-            if (Math.random() < diff.prob) {
-                rivalVsPoints += diff.points;
-                document.getElementById("vsRivalScore").textContent = `${rivalVsPoints} PTS`;
-            }
-
-            if (vsTimeLeft <= 0) {
-                stopVsSession();
-                finishVsBattle();
-            }
-        }, 1000);
-
-        loadVsMechanicByLevel();
+window.VS_DIFFICULTIES = {
+    EASY: {
+        name: "Simulador de Enlace",
+        badge: "NIVEL 1 · HANZI SIMPLE",
+        prob: 0.82,
+        points: 100,
+        winBonus: 100
+    },
+    MEDIUM: {
+        name: "Servocontrolador Overclock",
+        badge: "NIVEL 2 · PALABRAS INDUSTRIALES",
+        prob: 0.85,
+        points: 100,
+        winBonus: 150
+    },
+    HARD: {
+        name: "Protocolo Central de Enclavamiento",
+        badge: "NIVEL 3 · ORDENAR BLOQUES",
+        prob: 0.90,
+        points: 150,
+        winBonus: 200
     }
+};
 
-    function loadVsMechanicByLevel() {
-        if (selectedVsDiffKey === "EASY") loadVsLevel1SingleHanzi();
-        else if (selectedVsDiffKey === "MEDIUM") loadVsLevel2CompoundWord();
-        else loadVsLevel3OrderHanzi();
-    }
+let selectedVsDiffKey = "MEDIUM";
+let vsTimer = null;
+let vsTimeLeft = 20;
+let myVsPoints = 0;
+let rivalVsPoints = 0;
+let vsCurrentQuestion = null;
+let vsSelectedChars = [];
+let vsRoundLocked = false;
+let vsSessionActive = false;
 
-    function loadVsLevel1SingleHanzi() {
-        const pool = LAB_COMPONENTS;
-        const item = pool[Math.floor(Math.random() * pool.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.hanzi;
+// Bancos de datos para el 1v1
+const VS_HANZI_DATA = [
+    { hanzi: "电", pinyin: "diàn", meaning: "Electricidad / Eléctrico" },
+    { hanzi: "线", pinyin: "xiàn", meaning: "Línea / Cable" },
+    { hanzi: "模", pinyin: "mó", meaning: "Molde / Módulo" },
+    { hanzi: "组", pinyin: "zǔ", meaning: "Grupo / Ensamble" },
+    { hanzi: "机", pinyin: "jī", meaning: "Máquina" },
+    { hanzi: "动", pinyin: "dòng", meaning: "Movimiento / Automático" }
+];
 
-        const otherMeanings = pool.filter(a => a.es !== item.es).map(a => a.es);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
-
-        const grid = document.getElementById("vsOptionsGrid");
-        grid.replaceChildren();
-
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "13px";
-            btn.style.padding = "11px 10px";
-            btn.textContent = opt;
-            btn.onclick = () => {
-                grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
-                if (opt === item.es) {
-                    triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsMechanicByLevel, 240);
-                } else {
-                    triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            grid.appendChild(btn);
-        });
-    }
-
-    function loadVsLevel2CompoundWord() {
-        const words = [
-            { hanzi2: "电缆", es: "Cable eléctrico" },
-            { hanzi2: "电机", es: "Motor eléctrico" },
-            { hanzi2: "气缸", es: "Cilindro neumático" },
-            { hanzi2: "伺服", es: "Servocontrolador" },
-            { hanzi2: "电磁", es: "Solenoide eléctrico" },
-            { hanzi2: "机械", es: "Mecanismo robótico" },
-            { hanzi2: "气压", es: "Presión de aire" },
-            { hanzi2: "急停", es: "Paro de emergencia" }
-        ];
-
-        const item = words[Math.floor(Math.random() * words.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.hanzi2;
-
-        const otherMeanings = words.filter(a => a.es !== item.es).map(a => a.es);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
-
-        const grid = document.getElementById("vsOptionsGrid");
-        grid.replaceChildren();
-
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "13px";
-            btn.style.padding = "11px 10px";
-            btn.textContent = opt;
-            btn.onclick = () => {
-                grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
-                if (opt === item.es) {
-                    triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsMechanicByLevel, 240);
-                } else {
-                    triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            grid.appendChild(btn);
-        });
-    }
-
-    function loadVsLevel3OrderHanzi() {
-        const words = [
-            { hanzi2: "电缆", chars: ["缆", "电"], es: "Cable eléctrico", order: ["电", "缆"] },
-            { hanzi2: "气缸", chars: ["缸", "气"], es: "Cilindro neumático", order: ["气", "缸"] },
-            { hanzi2: "电机", chars: ["机", "电"], es: "Motor eléctrico", order: ["电", "机"] },
-            { hanzi2: "急停", chars: ["停", "急"], es: "Paro de emergencia", order: ["急", "停"] },
-            { hanzi2: "伺服", chars: ["服", "伺"], es: "Servocontrolador", order: ["伺", "服"] }
-        ];
+const VS_WORD_DATA = [
+    { hanzi: "_1es_急停", pinyin: "jí tíng", meaning: "Paro de emergencia" },
+    { hanzi: "自动", pinyin: "zì dòng", meaning: "Automático" },
+    { hanzi: "机器人", pinyin: "jī qì rén", meaning: "Robot industrial" },
+    { hanzi: "uPLC", pinyin: "kě lù", meaning: "Controlador PLC" },
+    { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor" }
+];
 
         const item = words[Math.floor(Math.random() * words.length)];
         document.getElementById("vsHanziDisplay").textContent = item.es;

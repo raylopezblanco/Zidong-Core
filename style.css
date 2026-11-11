@@ -460,8 +460,7 @@ html, body {
     box-sizing: border-box;
     overflow: hidden;
 }
-/* Arena y pantalla de derrota ocultas inicialmente */
-#vsBattleArenaContainer,
-#vsDefeatScreen {
-    display: none;
+/* Forzar que la arena de duelo y la pantalla de derrota inicien ocultas */
+#vsBattleArenaContainer, #vsDefeatScreen {
+    display: none !important;
 }

@@ -804,604 +804,878 @@
         renderBossSequenceView();
     }
 
-// =====================================
-    // MODO 1V1 BATTLE (3 NIVELES - CORREGIDO Y ESTABLE)
-    // =====================================
-    const VS_DIFFICULTIES = {
-        EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
-        MEDIUM: { name: "Servocontrolador Overclock", badge: "NIVEL 2 · PALABRA 2 HANZI", prob: 0.85, points: 100, winBonus: 150 },
-        HARD: { name: "Protocolo Centinela IA", badge: "NIVEL 3 · ORDENAR PALABRA", prob: 0.88, points: 100, winBonus: 250 }
-    };
+// =============================================
+// ZIDONG CORE 2.0
+// MOTOR 1V1 - SISTEMA DE TRES NIVELES
+// =============================================
 
-    let selectedVsDiffKey = "MEDIUM";
-    let vsTimer = null;
-    let vsTimeLeft = 20;
-    let myVsPoints = 0;
-    let rivalVsPoints = 0;
+const VS_DIFFICULTIES = {
+    EASY: {
+        name: "Simulador de Enlace",
+        badge: "NIVEL 1 · HANZI SIMPLE",
+        prob: 0.82,
+        points: 100,
+        winBonus: 100
+    },
 
-    window.openVsMode = function() {
-        stopVsSession();
-        if (typeof triggerHaptic === "function") triggerHaptic("success");
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("vsBattle");
-        }
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-        
-        if (diffSelector) diffSelector.style.display = "block";
-        if (arenaContainer) arenaContainer.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-    };
+    MEDIUM: {
+        name: "Servocontrolador Overclock",
+        badge: "NIVEL 2 · PALABRAS INDUSTRIALES",
+        prob: 0.85,
+        points: 100,
+        winBonus: 150
+    },
 
-    window.start1v1WithDifficulty = function(diffKey) {
-        selectedVsDiffKey = diffKey;
-        const diff = VS_DIFFICULTIES[diffKey];
+    HARD: {
+        name: "Protocolo Centinela IA",
+        badge: "NIVEL 3 · ORDENAR PALABRAS",
+        prob: 0.88,
+        points: 100,
+        winBonus: 250
+    }
+};
 
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
 
-        // Ocultar selector y derrota, forzar despliegue de la arena de juego
-        if (diffSelector) diffSelector.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block";
+// =============================================
+// VARIABLES DE SESIÓN
+// =============================================
 
-        const rivalNameEl = document.getElementById("vsRivalName");
-        const rivalAvatarEl = document.getElementById("vsRivalAvatar");
-        const diffBadgeEl = document.getElementById("vsDiffBadge");
+let selectedVsDiffKey = "MEDIUM";
 
-        if (rivalNameEl) rivalNameEl.textContent = diff.name;
-        if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
+let vsTimer = null;
+let vsTimeLeft = 20;
 
-        myVsPoints = 0;
-        rivalVsPoints = 0;
-        vsTimeLeft = 20;
+let myVsPoints = 0;
+let rivalVsPoints = 0;
 
-        const myScoreEl = document.getElementById("vsMyScore");
-        const rivalScoreEl = document.getElementById("vsRivalScore");
-        const secondsEl = document.getElementById("vsSeconds");
+let vsCurrentQuestion = null;
+let vsSelectedChars = [];
 
-        if (myScoreEl) myScoreEl.textContent = "0 PTS";
-        if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
-        if (secondsEl) secondsEl.textContent = vsTimeLeft;
+let vsRoundLocked = false;
+let vsSessionActive = false;
 
-        // Arrancar inmediatamente la partida y el temporizador
-        startVsRound();
-    };
 
-    function startVsRound() {
-        stopVsSession();
-        const diff = VS_DIFFICULTIES[selectedVsDiffKey];
-        const timerBar = document.getElementById("vsTimerBar");
+// =============================================
+// BANCO DE HANZI - NIVEL 1
+// =============================================
 
-        vsTimer = setInterval(() => {
-            vsTimeLeft--;
-            const secondsEl = document.getElementById("vsSeconds");
-            if (secondsEl) secondsEl.textContent = vsTimeLeft;
-            if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
+const VS_HANZI_DATA = [
 
-            if (Math.random() < diff.prob) {
-                rivalVsPoints += diff.points;
-                const rScore = document.getElementById("vsRivalScore");
-                if (rScore) rScore.textContent = `${rivalVsPoints} PTS`;
-            }
+    { hanzi: "电", pinyin: "diàn", es: "Electricidad" },
+    { hanzi: "机", pinyin: "jī", es: "Máquina" },
+    { hanzi: "线", pinyin: "xiàn", es: "Cable / Línea" },
+    { hanzi: "力", pinyin: "lì", es: "Fuerza" },
+    { hanzi: "控", pinyin: "kòng", es: "Control" },
+    { hanzi: "压", pinyin: "yā", es: "Presión" },
+    { hanzi: "气", pinyin: "qì", es: "Aire / Gas" },
+    { hanzi: "阀", pinyin: "fá", es: "Válvula" },
+    { hanzi: "传", pinyin: "chuán", es: "Transmitir" },
+    { hanzi: "感", pinyin: "gǎn", es: "Sensar" },
+    { hanzi: "热", pinyin: "rè", es: "Calor" },
+    { hanzi: "冷", pinyin: "lěng", es: "Frío" }
 
-            if (vsTimeLeft <= 0) {
-                stopVsSession();
-                finishVsBattle();
-            }
-        }, 1000);
+];
 
-        loadVsMechanicByLevel();
+
+// =============================================
+// BANCO DE PALABRAS - NIVEL 2 Y 3
+// =============================================
+
+const VS_WORD_DATA = [
+
+    {
+        hanzi: "电缆",
+        pinyin: "diàn lǎn",
+        es: "Cable eléctrico"
+    },
+
+    {
+        hanzi: "电机",
+        pinyin: "diàn jī",
+        es: "Motor eléctrico"
+    },
+
+    {
+        hanzi: "电源",
+        pinyin: "diàn yuán",
+        es: "Fuente de alimentación"
+    },
+
+    {
+        hanzi: "机器",
+        pinyin: "jī qì",
+        es: "Máquina"
+    },
+
+    {
+        hanzi: "控制",
+        pinyin: "kòng zhì",
+        es: "Control"
+    },
+
+    {
+        hanzi: "气压",
+        pinyin: "qì yā",
+        es: "Presión neumática"
+    },
+
+    {
+        hanzi: "传感器",
+        pinyin: "chuán gǎn qì",
+        es: "Sensor"
+    },
+
+    {
+        hanzi: "机器人",
+        pinyin: "jī qì rén",
+        es: "Robot"
+    },
+
+    {
+        hanzi: "维修",
+        pinyin: "wéi xiū",
+        es: "Mantenimiento / Reparación"
+    },
+
+    {
+        hanzi: "视觉",
+        pinyin: "shì jué",
+        es: "Visión artificial"
+    },
+
+    {
+        hanzi: "压力",
+        pinyin: "yā lì",
+        es: "Presión"
+    },
+
+    {
+        hanzi: "温度",
+        pinyin: "wēn dù",
+        es: "Temperatura"
     }
 
-    function loadVsMechanicByLevel() {
-        if (selectedVsDiffKey === "EASY") loadVsLevel1SingleHanzi();
-        else if (selectedVsDiffKey === "MEDIUM") loadVsLevel2CompoundWord();
-        else loadVsLevel3OrderHanzi();
+];
+
+
+// =============================================
+// FUNCIONES AUXILIARES
+// =============================================
+
+function vsShuffle(array) {
+
+    const result = [...array];
+
+    for (let i = result.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [result[i], result[j]] = [result[j], result[i]];
+
     }
 
-    function loadVsLevel1SingleHanzi() {
-        const pool = typeof LAB_COMPONENTS !== 'undefined' ? LAB_COMPONENTS : [{ hanzi: "电", es: "Electricidad" }];
-        const item = pool[Math.floor(Math.random() * pool.length)];
-        const display = document.getElementById("vsHanziDisplay");
-        if (display) display.textContent = item.hanzi;
+    return result;
+}
 
-        const otherMeanings = pool.filter(a => a.es !== item.es).map(a => a.es);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
 
-        const grid = document.getElementById("vsOptionsGrid");
-        if (!grid) return;
-        grid.replaceChildren();
+function vsRandomItem(array) {
 
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "13px";
-            btn.style.padding = "11px 10px";
-            btn.textContent = opt;
-            btn.onclick = () => {
-                grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
-                if (opt === item.es) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    const myScore = document.getElementById("vsMyScore");
-                    if (myScore) myScore.textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsMechanicByLevel, 240);
-                } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    const secondsEl = document.getElementById("vsSeconds");
-                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            grid.appendChild(btn);
-        });
+    return array[Math.floor(Math.random() * array.length)];
+
+}
+
+
+function vsUpdateScores() {
+
+    const myScoreEl = document.getElementById("vsMyScore");
+    const rivalScoreEl = document.getElementById("vsRivalScore");
+
+    if (myScoreEl) {
+        myScoreEl.textContent = `${myVsPoints} PTS`;
     }
 
-    function loadVsLevel2CompoundWord() {
-        const words = [
-            { hanzi2: "电缆", es: "Cable eléctrico" },
-            { hanzi2: "电机", es: "Motor eléctrico" },
-            { hanzi2: "气缸", es: "Cilindro neumático" },
-            { hanzi2: "伺服", es: "Servocontrolador" },
-            { hanzi2: "电磁", es: "Solenoide eléctrico" },
-            { hanzi2: "机械", es: "Mecanismo robótico" },
-            { hanzi2: "气压", es: "Presión de aire" },
-            { hanzi2: "急停", es: "Paro de emergencia" }
-        ];
-
-        const item = words[Math.floor(Math.random() * words.length)];
-        const display = document.getElementById("vsHanziDisplay");
-        if (display) display.textContent = item.hanzi2;
-
-        const otherMeanings = words.filter(a => a.es !== item.es).map(a => a.es);
-        const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
-        const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
-
-        const grid = document.getElementById("vsOptionsGrid");
-        if (!grid) return;
-        grid.replaceChildren();
-
-        options.forEach(opt => {
-            const btn = document.createElement("button");
-            btn.className = "cf-btn-option";
-            btn.style.fontSize = "13px";
-            btn.style.padding = "11px 10px";
-            btn.textContent = opt;
-            btn.onclick = () => {
-                grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
-                if (opt === item.es) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
-                    btn.classList.add("btn-correct");
-                    myVsPoints += 100;
-                    const myScore = document.getElementById("vsMyScore");
-                    if (myScore) myScore.textContent = `${myVsPoints} PTS`;
-                    setTimeout(loadVsMechanicByLevel, 240);
-                } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    btn.classList.add("btn-wrong");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    const secondsEl = document.getElementById("vsSeconds");
-                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            grid.appendChild(btn);
-        });
+    if (rivalScoreEl) {
+        rivalScoreEl.textContent = `${rivalVsPoints} PTS`;
     }
 
-    function loadVsLevel3OrderHanzi() {
-        const words = [
-            { hanzi2: "电缆", chars: ["缆", "电"], es: "Cable eléctrico", order: ["电", "缆"] },
-            { hanzi2: "气缸", chars: ["缸", "气"], es: "Cilindro neumático", order: ["气", "缸"] },
-            { hanzi2: "电机", chars: ["机", "电"], es: "Motor eléctrico", order: ["电", "机"] },
-            { hanzi2: "急停", chars: ["停", "急"], es: "Paro de emergencia", order: ["急", "停"] },
-            { hanzi2: "伺服", chars: ["服", "伺"], es: "Servocontrolador", order: ["伺", "服"] }
-        ];
+}
 
-        const item = words[Math.floor(Math.random() * words.length)];
-        const display = document.getElementById("vsHanziDisplay");
-        if (display) display.textContent = item.es;
 
-        const grid = document.getElementById("vsOptionsGrid");
-        if (!grid) return;
-        grid.replaceChildren();
+function vsGetInstruction() {
 
-        let stepOrder = 0;
-        const slotsRow = document.createElement("div");
-        slotsRow.className = "cf-slots-dock";
-        slotsRow.style.margin = "0 auto 10px auto";
-        slotsRow.innerHTML = `<div class="cf-slot empty" id="vSlot0">_</div><div class="cf-slot empty" id="vSlot1">_</div>`;
-        grid.appendChild(slotsRow);
+    const stage = document.getElementById("vsStageCard");
+    const grid = document.getElementById("vsOptionsGrid");
 
-        const blocksRow = document.createElement("div");
-        blocksRow.style.display = "flex";
-        blocksRow.style.justifyContent = "center";
-        blocksRow.style.gap = "12px";
+    if (!stage || !grid) return null;
 
-        const shuffledChars = [...item.chars].sort(() => 0.5 - Math.random());
-        shuffledChars.forEach(char => {
-            const b = document.createElement("button");
-            b.className = "cf-part-btn";
-            b.style.width = "64px";
-            b.textContent = char;
-            b.onclick = () => {
-                if (char === item.order[stepOrder]) {
-                    if (typeof triggerHaptic === "function") triggerHaptic("success");
-                    const slot = document.getElementById(`vSlot${stepOrder}`);
-                    if (slot) {
-                        slot.textContent = char;
-                        slot.classList.add("filled");
-                        slot.classList.remove("empty");
-                    }
-                    b.style.opacity = "0.3";
-                    b.style.pointerEvents = "none";
-                    stepOrder++;
+    let instruction = document.getElementById("vsInstruction");
 
-                    if (stepOrder === 2) {
-                        myVsPoints += 100;
-                        const myScore = document.getElementById("vsMyScore");
-                        if (myScore) myScore.textContent = `${myVsPoints} PTS`;
-                        setTimeout(loadVsMechanicByLevel, 240);
-                    }
-                } else {
-                    if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    const secondsEl = document.getElementById("vsSeconds");
-                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
-                    b.style.borderColor = "#ff4444";
-                    setTimeout(loadVsMechanicByLevel, 300);
-                }
-            };
-            blocksRow.appendChild(b);
-        });
-        grid.appendChild(blocksRow);
+    if (!instruction) {
+
+        instruction = document.createElement("p");
+
+        instruction.id = "vsInstruction";
+
+        instruction.style.cssText = `
+            color: var(--cyan);
+            font-size: 12px;
+            font-weight: 800;
+            margin: 8px 0;
+        `;
+
+        stage.insertBefore(instruction, grid);
+
     }
 
-    function finishVsBattle() {
-        stopVsSession();
-        const diff = VS_DIFFICULTIES[selectedVsDiffKey];
-        const win = myVsPoints >= rivalVsPoints;
+    return instruction;
 
-        if (win) {
-            if (typeof triggerHaptic === "function") triggerHaptic("win");
-            if (typeof awardXP === "function") awardXP(diff.winBonus);
-            const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
-            localStorage.setItem("zidong_vs_wins", currentWins);
-            alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-            if (typeof renderBadgesGrid === "function") renderBadgesGrid();
-            if (typeof updateProfile === "function") updateProfile();
-            if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
-        } else {
-            if (typeof triggerHaptic === "function") triggerHaptic("error");
-            const arena = document.getElementById("vsBattleArenaContainer");
-            if (arena) arena.style.display = "none";
-            const defeatScreen = document.getElementById("vsDefeatScreen");
-            if (defeatScreen) defeatScreen.style.display = "block";
+}
 
-            const scoresEl = document.getElementById("vsDefeatScores");
-            if (scoresEl) scoresEl.textContent = `Tú: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
-        }
-    }
 
-    function stopVsSession() {
-        if (vsTimer) {
-            clearInterval(vsTimer);
-            vsTimer = null;
-        }
-    }
-    window.stopVsSession = stopVsSession;
-    // LABORATORIO (LAB)
-    let currentLabCategory = "all";
-    function renderLabComponents(filteredList = null) {
-        const container = document.getElementById("labComponentsContainer");
-        if (!container) return;
+// =============================================
+// ABRIR MENÚ 1V1
+// =============================================
 
-        let list = filteredList || (currentLabCategory === "all" ? LAB_COMPONENTS : LAB_COMPONENTS.filter(c => c.cat === currentLabCategory));
-        container.replaceChildren();
+window.openVsMode = function() {
 
-        list.forEach(comp => {
-            const card = document.createElement("div");
-            card.className = "comp-card";
-            card.innerHTML = `
-                <div class="comp-header"><span class="comp-hanzi">${comp.hanzi}</span><span class="comp-pinyin">${comp.pinyin}</span></div>
-                <strong>${comp.es}</strong><small>${comp.part} · ${comp.catName}</small>
-            `;
-            card.onclick = () => {
-                triggerHaptic("success");
-                alert(`🔬 ${comp.hanzi} (${comp.pinyin})\nSignificado: ${comp.es}\nAplicación: ${comp.part}\nMundo: ${comp.catName}`);
-            };
-            container.appendChild(card);
-        });
-    }
+    stopVsSession();
 
-    window.filterLabCategory = (cat, btnEl) => {
-        currentLabCategory = cat;
-        document.querySelectorAll(".lab-tab-btn").forEach(b => b.classList.remove("active"));
-        if (btnEl) btnEl.classList.add("active");
-        renderLabComponents();
-    };
-
-    window.filterLabComponents = (query) => {
-        const q = query.trim().toLowerCase();
-        if (!q) { renderLabComponents(); return; }
-        const filtered = LAB_COMPONENTS.filter(c => 
-            c.hanzi.includes(q) || c.pinyin.toLowerCase().includes(q) || c.es.toLowerCase().includes(q) || c.part.toLowerCase().includes(q)
-        );
-        renderLabComponents(filtered);
-    };
-
-    // RANKING Y ESCALAFÓN
-    const MOCK_LEADERBOARD = [
-        { name: "Chen Wei (陈伟)", rank: "Ingeniero Sr", xp: 32450, team: "SMT Alpha", badge: "🥇" },
-        { name: "Li Na (李娜)", rank: "Ingeniero Full", xp: 24800, team: "AOI Lumina", badge: "🥈" },
-        { name: "Carlos Mendoza", rank: "Ingeniero Jr", xp: 18950, team: "Kinetix Core", badge: "🥉" },
-        { name: "Zhang Tao (张涛)", rank: "Técnico Sr", xp: 14200, team: "Robotics 04", badge: "4." },
-        { name: "Alejandro Silva", rank: "Técnico Jr", xp: 9800, team: "Neumática Aethel", badge: "5." }
-    ];
-
-    function renderLeaderboardSection() {
-        const myRankCard = document.getElementById("leaderboardMyRankBox");
-        const listContainer = document.getElementById("leaderboardTableContainer");
-        if (!listContainer) return;
-
-        const allUsers = [
-            { name: currentUserData.name, rank: getCurrentRank(currentUserData.xp).name, xp: currentUserData.xp, team: "Mi Estación", isMe: true },
-            ...MOCK_LEADERBOARD
-        ].sort((a, b) => b.xp - a.xp);
-
-        const myIndex = allUsers.findIndex(u => u.isMe);
-        if (myRankCard) {
-            myRankCard.innerHTML = `
-                <div class="lb-my-avatar">${currentUserData.initials}</div>
-                <div class="lb-my-info">
-                    <span class="eyebrow" style="color:var(--cyan);">TU POSICIÓN EN PLANTA</span>
-                    <strong style="color:#fff; font-size:14px;">#0${myIndex + 1} · ${currentUserData.name}</strong>
-                    <small style="color:var(--muted);">${getCurrentRank(currentUserData.xp).name}</small>
-                </div>
-                <div class="lb-my-score"><span style="color:var(--green); font-size:15px; font-weight:900;">${Number(currentUserData.xp).toLocaleString("en-US")}</span><small style="color:var(--gold); font-size:9px;">XP TOTAL</small></div>
-            `;
-        }
-
-        listContainer.replaceChildren();
-        const randomEngineers = [
-            { rank: 1, name: "Ing. Carlos M.", xp: "14,850 XP", badge: "⚡ Leyenda de Línea", me: false },
-            { rank: 2, name: currentUserData.name, xp: `${Number(currentUserData.xp).toLocaleString("en-US")} XP`, badge: "⚡ Especialista Sr", me: true },
-            { rank: 3, name: "Lic. Brenda S.", xp: "9,450 XP", badge: "🤖 Supervisor HMI", me: false },
-            { rank: 4, name: "Ing. Roberto G.", xp: "8,100 XP", badge: "⚙️ Técnico de Turno", me: false },
-            { rank: 5, name: "Ana Sofía L.", xp: "6,950 XP", badge: "🔧 Mantto Industrial", me: false },
-            { rank: 6, name: "Ing. Alejandro V.", xp: "5,300 XP", badge: "🔌 Integrador PLC", me: false }
-        ];
-
-        randomEngineers.forEach(eng => {
-            const row = document.createElement("div");
-            row.style.display = "flex";
-            row.style.justifyContent = "space-between";
-            row.style.alignItems = "center";
-            row.style.padding = "10px 12px";
-            row.style.background = eng.me ? "rgba(0,245,155,0.1)" : "var(--surface-light)";
-            row.style.border = `1px solid ${eng.me ? "#00f59b" : "var(--border)"}`;
-            row.style.borderRadius = "12px";
-
-            row.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-weight:900; color:${eng.rank === 1 ? 'var(--gold)' : eng.rank === 2 ? 'var(--cyan)' : 'var(--muted)'}; width:18px;">#${eng.rank}</span>
-                    <div>
-                        <strong style="color:#fff; font-size:12px; display:block;">${eng.name} ${eng.me ? '(Tú)' : ''}</strong>
-                        <small style="font-size:9.5px; color:var(--cyan);">${eng.badge}</small>
-                    </div>
-                </div>
-                <strong style="color:var(--green); font-size:11.5px;">${eng.xp}</strong>
-            `;
-            listContainer.appendChild(row);
-        });
-    }
-
-    function renderRanksSection() {
-        const container = document.getElementById("ranksLadderContainer");
-        const headerBadge = document.getElementById("topRankBadge");
-        const profileRankBadge = document.getElementById("profileRankBadge");
-        if (!container) return;
-
-        const current = getCurrentRank(currentUserData.xp);
-        if (headerBadge) headerBadge.textContent = `${current.icon} ${current.name}`;
-        if (profileRankBadge) profileRankBadge.textContent = `${current.icon} ${current.name} (Rango 0${current.id}/10)`;
-
-        container.replaceChildren();
-        INDUSTRIAL_RANKS.forEach(rank => {
-            const isReached = currentUserData.xp >= rank.minXP;
-            const isCurrent = rank.id === current.id;
-            const card = document.createElement("div");
-            card.className = `rank-ladder-card ${isReached ? "reached" : "locked"} ${isCurrent ? "current-rank" : ""}`;
-            card.innerHTML = `
-                <div class="rank-icon-box">${rank.icon}</div>
-                <div class="rank-info-box">
-                    <div style="display:flex; justify-content:space-between; align-items:center;"><strong>${rank.id}. ${rank.name}</strong><span class="rank-xp-req">${rank.minXP.toLocaleString("en-US")} XP</span></div>
-                    <small>${rank.desc}</small>
-                </div>
-                <div class="rank-status-tag">${isCurrent ? "<span class='badge-current'>ACTUAL</span>" : isReached ? "✓" : "🔒"}</div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    function updateProfile() {
-        const level = document.getElementById("profileLevel");
-        const streak = document.getElementById("profileStreak");
-        const completed = document.getElementById("profileCompleted");
-
-        if (level) level.textContent = "05";
-        if (streak) streak.textContent = "5 Días";
-        if (completed) completed.textContent = career.completedActivities.length;
-
-        renderProfileWorldsProgress();
-        renderBadgesGrid();
-        renderRanksSection();
-        updateUserDisplay();
-        updateEnergyBatteryDisplay();
-        renderAchievementsGrid();
-    }
-
-    function renderProfileWorldsProgress() {
-        const container = document.getElementById("profileWorldsProgressList");
-        if (!container) return;
-        container.replaceChildren();
-
-        WORLDS_CONFIG.forEach(world => {
-            const total = world.activities.length;
-            const done = world.activities.filter(a => career.completedActivities.includes(a.id)).length;
-            const pct = Math.round((done / total) * 100);
-
-            const row = document.createElement("div");
-            row.className = "world-prog-row";
-            row.innerHTML = `
-                <div class="world-prog-title"><span style="color:${world.color};">${world.icon} ${world.title}</span><strong style="color:#fff;">${done}/${total} (${pct}%)</strong></div>
-                <div class="world-prog-track"><div class="world-prog-fill" style="width:${pct}%; background:${world.color};"></div></div>
-            `;
-            container.appendChild(row);
-        });
-    }
-
-    function renderBadgesGrid() {
-        const container = document.getElementById("badgesContainer");
-        if (!container) return;
-        container.replaceChildren();
-        const currentEquipped = localStorage.getItem("zidong_equipped_badge") || currentUserData.initials;
-
-        MEDALS_DB.forEach(medal => {
-            const unlocked = medal.isUnlocked();
-            const isEquipped = currentEquipped === medal.icon;
-            const badgeEl = document.createElement("div");
-            badgeEl.className = `badge-item ${unlocked ? "" : "locked"} ${isEquipped ? "equipped" : ""}`;
-            badgeEl.innerHTML = `<span class="badge-icon">${unlocked ? medal.icon : "🔒"}</span><span class="badge-title">${medal.name}</span>`;
-            if (unlocked) {
-                badgeEl.onclick = () => {
-                    const newEquip = isEquipped ? currentUserData.initials : medal.icon;
-                    localStorage.setItem("zidong_equipped_badge", newEquip);
-                    triggerHaptic("success");
-                    renderBadgesGrid();
-                    applyAvatarIcon(newEquip);
-                };
-            }
-            container.appendChild(badgeEl);
-        });
-    }
-
-    function applyAvatarIcon(icon) {
-        const profileAvatar = document.getElementById("profileAvatar");
-        const topAvatar = document.getElementById("topAvatar");
-        [profileAvatar, topAvatar].forEach(el => {
-            if (!el) return;
-            el.textContent = icon;
-            if (icon !== "NU" && icon !== currentUserData.initials) el.classList.add("custom-icon");
-            else el.classList.remove("custom-icon");
-        });
-    }
-
-    function renderAchievementsGrid() {
-        const container = document.getElementById("profileAchievementsList");
-        if (!container) return;
-
-        const mockAchievements = [
-            { icon: "⚡", title: "Maestro del Cableado", desc: "Identifica 10 componentes eléctricos", unlocked: true },
-            { icon: "🤖", title: "Overclock Industrial", desc: "Supera el Nivel 2 del Duelo 1v1", unlocked: true },
-            { icon: "🦾", title: "Cazador de Alarmas", desc: "Sobrevive 30s en Survivor Mode", unlocked: false },
-            { icon: "🇨🇳", title: "Lingüista PLC", desc: "Domina 20 términos técnicos en Hanzi", unlocked: true },
-            { icon: "🚨", title: "Paro de Emergencia", desc: "Resuelve una falla crítica a tiempo", unlocked: false }
-        ];
-
-        container.replaceChildren();
-        mockAchievements.forEach(ach => {
-            const item = document.createElement("div");
-            item.style.display = "flex";
-            item.style.alignItems = "center";
-            item.style.gap = "10px";
-            item.style.padding = "8px";
-            item.style.background = ach.unlocked ? "rgba(0,245,155,0.08)" : "rgba(255,255,255,0.03)";
-            item.style.border = `1px solid ${ach.unlocked ? "rgba(0,245,155,0.3)" : "var(--border)"}`;
-            item.style.borderRadius = "10px";
-
-            item.innerHTML = `
-                <span style="font-size:22px; filter:grayscale(${ach.unlocked ? '0%' : '100%'});">${ach.icon}</span>
-                <div style="flex:1;">
-                    <strong style="font-size:11.5px; color:${ach.unlocked ? '#00f59b' : '#fff'}; display:block;">${ach.title}</strong>
-                    <small style="font-size:9.5px; color:var(--muted);">${ach.desc}</small>
-                </div>
-                <span style="font-size:10px; font-weight:700; color:${ach.unlocked ? '#00f59b' : 'var(--muted)'};">${ach.unlocked ? '✓ LISTO' : '🔒 BLOQUEADO'}</span>
-            `;
-            container.appendChild(item);
-        });
-    }
-
-    // PESTAÑAS / MENÚS PARA LOGROS Y MEDALLAS EN PERFIL
-    window.switchProfileTab = function(tabName, btnEl) {
+    if (typeof triggerHaptic === "function") {
         triggerHaptic("success");
-        const achievementsTab = document.getElementById("profileAchievementsTab");
-        const medalsTab = document.getElementById("profileMedalsTab");
+    }
 
-        document.querySelectorAll("#profile .lab-tab-btn").forEach(b => b.classList.remove("active"));
-        if (btnEl) btnEl.classList.add("active");
+    if (typeof window.navigateTo === "function") {
+        window.navigateTo("vsBattle");
+    }
 
-        if (tabName === "achievements") {
-            if (achievementsTab) achievementsTab.style.display = "block";
-            if (medalsTab) medalsTab.style.display = "none";
-        } else if (tabName === "medals") {
-            if (achievementsTab) achievementsTab.style.display = "none";
-            if (medalsTab) medalsTab.style.display = "block";
-        }
-    };
+    const diffSelector = document.getElementById("vsDifficultySelector");
+    const arena = document.getElementById("vsBattleArenaContainer");
+    const defeat = document.getElementById("vsDefeatScreen");
 
-    // DAILY REWARD (VENTANA FLOTANTE MEJORADA)
-    window.claimDailyReward = function() {
-        if (typeof triggerHaptic === "function") triggerHaptic("success");
-        
-        const modal = document.getElementById("dailyRewardModal");
-        const titleEl = document.getElementById("rewardModalTitle");
-        const descEl = document.getElementById("rewardModalDesc");
-        const btnEl = document.getElementById("btnClaimRewardAction");
+    if (diffSelector) {
+        diffSelector.style.setProperty("display", "block", "important");
+    }
 
-        if (modal && titleEl && descEl && btnEl) {
-            titleEl.textContent = "🎁 ¡BONO DE TURNO RECLAMADO!";
-            descEl.textContent = "Sincronización de asistencia completada con éxito. Se han acreditado +100 XP a tu batería de planta.";
-            btnEl.textContent = "¡ENTENDIDO! ⚡";
-            
-            btnEl.onclick = () => {
-                awardXP(100);
-                modal.style.display = "none";
-                if (typeof triggerHaptic === "function") triggerHaptic("win");
-            };
-            
-            modal.style.display = "flex";
-        }
-    };
+    if (arena) {
+        arena.style.setProperty("display", "none", "important");
+    }
 
-    window.closeRewardModal = function(e) {
-        if (e.target.id === "dailyRewardModal") {
-            document.getElementById("dailyRewardModal").style.display = "none";
-        }
-    };
+    if (defeat) {
+        defeat.style.setProperty("display", "none", "important");
+    }
 
-    // INICIALIZACIÓN
-    document.addEventListener("DOMContentLoaded", () => {
-        loadSavedProgress();
-        renderCareerPlanetsMenu();
-        renderLabComponents();
-        renderLeaderboardSection();
-        updateProfile();
+};
+
+
+// =============================================
+// INICIAR DIFICULTAD
+// =============================================
+
+window.start1v1WithDifficulty = function(diffKey) {
+
+    if (!VS_DIFFICULTIES[diffKey]) {
+        console.error("Dificultad 1v1 desconocida:", diffKey);
+        return;
+    }
+
+    stopVsSession();
+
+    selectedVsDiffKey = diffKey;
+
+    const diff = VS_DIFFICULTIES[diffKey];
+
+    const selector = document.getElementById("vsDifficultySelector");
+    const arena = document.getElementById("vsBattleArenaContainer");
+    const defeat = document.getElementById("vsDefeatScreen");
+
+    if (selector) {
+        selector.style.setProperty("display", "none", "important");
+    }
+
+    if (defeat) {
+        defeat.style.setProperty("display", "none", "important");
+    }
+
+    if (arena) {
+        arena.style.setProperty("display", "block", "important");
+    }
+
+    const rivalName = document.getElementById("vsRivalName");
+    const rivalAvatar = document.getElementById("vsRivalAvatar");
+    const badge = document.getElementById("vsDiffBadge");
+
+    if (rivalName) {
+        rivalName.textContent = diff.name;
+    }
+
+    if (rivalAvatar) {
+        rivalAvatar.textContent =
+            diffKey === "HARD" ? "⚡" :
+            diffKey === "MEDIUM" ? "🤖" : "⚙️";
+    }
+
+    if (badge) {
+        badge.textContent = diff.badge;
+    }
+
+    myVsPoints = 0;
+    rivalVsPoints = 0;
+
+    vsTimeLeft = 20;
+
+    vsSessionActive = true;
+    vsRoundLocked = false;
+
+    vsUpdateScores();
+
+    const seconds = document.getElementById("vsSeconds");
+
+    if (seconds) {
+        seconds.textContent = vsTimeLeft;
+    }
+
+    const timerBar = document.getElementById("vsTimerBar");
+
+    if (timerBar) {
+        timerBar.style.width = "100%";
+    }
+
+    startVsRound();
+
+    startVsTimer();
+
+};
+
+
+// =============================================
+// MOTOR PRINCIPAL DE RONDAS
+// =============================================
+
+function startVsRound() {
+
+    if (!vsSessionActive || vsTimeLeft <= 0) return;
+
+    vsRoundLocked = false;
+
+    vsSelectedChars = [];
+
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = vsGetInstruction();
+
+    if (!display || !grid || !instruction) {
+
+        console.error("No se encontraron los elementos de la arena 1v1.");
+
+        return;
+
+    }
+
+    grid.replaceChildren();
+
+    if (selectedVsDiffKey === "EASY") {
+
+        loadVsLevel1SingleHanzi();
+
+    }
+
+    else if (selectedVsDiffKey === "MEDIUM") {
+
+        loadVsLevel2CompoundWord();
+
+    }
+
+    else if (selectedVsDiffKey === "HARD") {
+
+        loadVsLevel3OrderHanzi();
+
+    }
+
+}
+
+
+// =============================================
+// NIVEL 1 - RECONOCER HANZI
+// =============================================
+
+function loadVsLevel1SingleHanzi() {
+
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = vsGetInstruction();
+
+    const correct = vsRandomItem(VS_HANZI_DATA);
+
+    const wrongOptions = vsShuffle(
+        VS_HANZI_DATA.filter(item => item.hanzi !== correct.hanzi)
+    ).slice(0, 3);
+
+    const options = vsShuffle([correct, ...wrongOptions]);
+
+    vsCurrentQuestion = correct;
+
+    display.textContent = correct.hanzi;
+
+    display.style.fontSize = "64px";
+
+    instruction.textContent =
+        "Selecciona el significado correcto del carácter.";
+
+    options.forEach(option => {
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+
+        button.textContent = option.es;
+
+        button.style.cssText = `
+            min-height: 55px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface-light);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+        `;
+
+        button.addEventListener("click", () => {
+
+            submitVsAnswer(option.hanzi === correct.hanzi, button);
+
+        });
+
+        grid.appendChild(button);
+
     });
 
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        loadSavedProgress();
-        renderCareerPlanetsMenu();
-        renderLabComponents();
-        renderLeaderboardSection();
-        updateProfile();
+}
+
+
+// =============================================
+// NIVEL 2 - RECONOCER PALABRAS
+// =============================================
+
+function loadVsLevel2CompoundWord() {
+
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = vsGetInstruction();
+
+    const correct = vsRandomItem(VS_WORD_DATA);
+
+    const wrongOptions = vsShuffle(
+        VS_WORD_DATA.filter(item => item.hanzi !== correct.hanzi)
+    ).slice(0, 3);
+
+    const options = vsShuffle([correct, ...wrongOptions]);
+
+    vsCurrentQuestion = correct;
+
+    display.textContent = correct.hanzi;
+
+    display.style.fontSize = "46px";
+
+    instruction.textContent =
+        "Identifica el significado de esta palabra industrial.";
+
+    options.forEach(option => {
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+
+        button.textContent = option.es;
+
+        button.style.cssText = `
+            min-height: 55px;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface-light);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+        `;
+
+        button.addEventListener("click", () => {
+
+            submitVsAnswer(option.hanzi === correct.hanzi, button);
+
+        });
+
+        grid.appendChild(button);
+
+    });
+
+}
+
+
+// =============================================
+// NIVEL 3 - ORDENAR CARACTERES
+// =============================================
+
+function loadVsLevel3OrderHanzi() {
+
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = vsGetInstruction();
+
+    const correct = vsRandomItem(VS_WORD_DATA);
+
+    vsCurrentQuestion = correct;
+
+    display.textContent = correct.es;
+
+    display.style.fontSize = "23px";
+
+    instruction.textContent =
+        "Construye la palabra seleccionando los caracteres en orden.";
+
+    // Caracteres correctos
+    const correctChars = Array.from(correct.hanzi);
+
+    // Caracteres adicionales para confundir
+    const extraChars = ["电", "机", "气", "控", "力", "压", "感", "线", "热", "冷"];
+
+    const availableChars = [...new Set([
+        ...correctChars,
+        ...vsShuffle(extraChars).filter(char => !correctChars.includes(char)).slice(0, 3)
+    ])];
+
+    const shuffledChars = vsShuffle(availableChars);
+
+    // Área donde se construye la palabra
+    const answerBox = document.createElement("div");
+
+    answerBox.id = "vsBuildAnswer";
+
+    answerBox.style.cssText = `
+        min-height: 48px;
+        margin: 12px 0;
+        padding: 10px;
+        border: 1px dashed var(--cyan);
+        border-radius: 12px;
+        color: #fff;
+        font-family: 'Noto Sans SC';
+        font-size: 26px;
+        letter-spacing: 5px;
+        background: rgba(39,216,232,0.08);
+    `;
+
+    answerBox.textContent = "＿＿＿＿";
+
+    grid.before(answerBox);
+
+    // Botones de caracteres
+    shuffledChars.forEach(char => {
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+
+        button.textContent = char;
+
+        button.dataset.char = char;
+
+        button.style.cssText = `
+            min-height: 58px;
+            font-family: 'Noto Sans SC';
+            font-size: 27px;
+            border-radius: 12px;
+            border: 1px solid var(--cyan);
+            background: var(--surface-light);
+            color: #fff;
+            font-weight: 900;
+            cursor: pointer;
+        `;
+
+        button.addEventListener("click", () => {
+
+            if (vsRoundLocked || !vsSessionActive) return;
+
+            if (button.disabled) return;
+
+            button.disabled = true;
+
+            vsSelectedChars.push(char);
+
+            answerBox.textContent = vsSelectedChars.join("");
+
+            if (vsSelectedChars.length === correctChars.length) {
+
+                const assembled = vsSelectedChars.join("");
+
+                submitVsAnswer(assembled === correct.hanzi);
+
+            }
+
+        });
+
+        grid.appendChild(button);
+
+    });
+
+    // Botón para borrar selección
+    const resetButton = document.createElement("button");
+
+    resetButton.type = "button";
+
+    resetButton.textContent = "↶ BORRAR";
+
+    resetButton.style.cssText = `
+        grid-column: 1 / -1;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--cyan);
+        font-weight: 800;
+        cursor: pointer;
+    `;
+
+    resetButton.addEventListener("click", () => {
+
+        if (vsRoundLocked || !vsSessionActive) return;
+
+        vsSelectedChars = [];
+
+        answerBox.textContent = "＿＿＿＿";
+
+        grid.querySelectorAll("button[data-char]").forEach(button => {
+            button.disabled = false;
+        });
+
+    });
+
+    grid.appendChild(resetButton);
+
+}
+
+
+// =============================================
+// VALIDAR RESPUESTAS
+// =============================================
+
+function submitVsAnswer(isCorrect, selectedButton = null) {
+
+    if (!vsSessionActive || vsRoundLocked) return;
+
+    vsRoundLocked = true;
+
+    const instruction = vsGetInstruction();
+
+    const grid = document.getElementById("vsOptionsGrid");
+
+    if (grid) {
+
+        grid.querySelectorAll("button").forEach(button => {
+            button.disabled = true;
+        });
+
     }
-})();
+
+    if (isCorrect) {
+
+        myVsPoints += VS_DIFFICULTIES[selectedVsDiffKey].points;
+
+        if (instruction) {
+            instruction.textContent = "✓ ¡CORRECTO! +100 PTS";
+            instruction.style.color = "var(--green)";
+        }
+
+        if (selectedButton) {
+            selectedButton.style.border = "2px solid var(--green)";
+            selectedButton.style.background = "rgba(0,245,155,0.15)";
+        }
+
+        if (typeof triggerHaptic === "function") {
+            triggerHaptic("success");
+        }
+
+    } else {
+
+        rivalVsPoints += 50;
+
+        if (instruction) {
+            instruction.textContent = "✗ INCORRECTO. La IA aprovecha el error.";
+            instruction.style.color = "var(--red)";
+        }
+
+        if (selectedButton) {
+            selectedButton.style.border = "2px solid var(--red)";
+        }
+
+        if (typeof triggerHaptic === "function") {
+            triggerHaptic("error");
+        }
+
+    }
+
+    vsUpdateScores();
+
+    setTimeout(() => {
+
+        if (!vsSessionActive || vsTimeLeft <= 0) return;
+
+        startVsRound();
+
+    }, 850);
+
+}
+
+
+// =============================================
+// TEMPORIZADOR Y RESPUESTAS DE LA IA
+// =============================================
+
+function startVsTimer() {
+
+    stopVsSession();
+
+    vsTimer = setInterval(() => {
+
+        if (!vsSessionActive) return;
+
+        vsTimeLeft--;
+
+        const seconds = document.getElementById("vsSeconds");
+        const timerBar = document.getElementById("vsTimerBar");
+
+        if (seconds) {
+            seconds.textContent = vsTimeLeft;
+        }
+
+        if (timerBar) {
+
+            timerBar.style.width =
+                `${Math.max(0, (vsTimeLeft / 20) * 100)}%`;
+
+        }
+
+        // La IA intenta responder cada 5 segundos
+        if (vsTimeLeft > 0 && vsTimeLeft % 5 === 0) {
+
+            const diff = VS_DIFFICULTIES[selectedVsDiffKey];
+
+            if (Math.random() < diff.prob) {
+
+                rivalVsPoints += 100;
+
+                vsUpdateScores();
+
+            }
+
+        }
+
+        if (vsTimeLeft <= 0) {
+
+            finishVsBattle();
+
+        }
+
+    }, 1000);
+
+}
+
+
+// =============================================
+// FINALIZAR BATALLA
+// =============================================
+
+function finishVsBattle() {
+
+    if (!vsSessionActive) return;
+
+    stopVsSession();
+
+    const diff = VS_DIFFICULTIES[selectedVsDiffKey];
+
+    const win = myVsPoints >= rivalVsPoints;
+
+    if (win) {
+
+        if (typeof triggerHaptic === "function") {
+            triggerHaptic("win");
+        }
+
+        if (typeof awardXP === "function") {
+            awardXP(diff.winBonus);
+        }
+
+        const currentWins =
+            Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
+
+        localStorage.setItem("zidong_vs_wins", currentWins);
+
+        alert(
+            `🏆 ¡VICTORIA!\n\n` +
+            `Superaste a "${diff.name}"\n\n` +
+            `${myVsPoints} vs ${rivalVsPoints} PTS\n\n` +
+            `+${diff.winBonus} XP`
+        );
+
+        if (typeof renderBadgesGrid === "function") {
+            renderBadgesGrid();
+        }
+
+        if (typeof updateProfile === "function") {
+            updateProfile();
+        }
+
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("dashboard");
+        }
+
+    } else {
+
+        if (typeof triggerHaptic === "function") {
+            triggerHaptic("error");
+        }
+
+        const arena = document.getElementById("vsBattleArenaContainer");
+
+        const defeat = document.getElementById("vsDefeatScreen");
+
+        if (arena) {
+            arena.style.setProperty("display", "none", "important");
+        }
+
+        if (defeat) {
+            defeat.style.setProperty("display", "block", "important");
+        }
+
+        const scores = document.getElementById("vsDefeatScores");
+
+        if (scores) {
+
+            scores.textContent =
+                `Tú: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
+
+        }
+
+    }
+
+}
+
+
+// =============================================
+// DETENER SESIÓN
+// =============================================
+
+function stopVsSession() {
+
+    vsSessionActive = false;
+
+    if (vsTimer) {
+
+        clearInterval(vsTimer);
+
+        vsTimer = null;
+
+    }
+
+}
+
+window.stopVsSession = stopVsSession;

@@ -834,7 +834,7 @@ window.openVsMode = function() {
         renderBossSequenceView();
     }
 // =============================================
-// MOTOR 1V1 - SISTEMA DE TRES NIVELES (EXPUESTO A WINDOW)
+// MOTOR 1V1 - SISTEMA DE TRES NIVELES (GLOBAL)
 // =============================================
 
 window.VS_DIFFICULTIES = {
@@ -861,18 +861,17 @@ window.VS_DIFFICULTIES = {
     }
 };
 
-let selectedVsDiffKey = "MEDIUM";
-let vsTimer = null;
-let vsTimeLeft = 20;
-let myVsPoints = 0;
-let rivalVsPoints = 0;
-let vsCurrentQuestion = null;
-let vsSelectedChars = [];
-let vsRoundLocked = false;
-let vsSessionActive = false;
+window.selectedVsDiffKey = "MEDIUM";
+window.vsTimer = null;
+window.vsTimeLeft = 20;
+window.myVsPoints = 0;
+window.rivalVsPoints = 0;
+window.vsCurrentQuestion = null;
+window.vsSelectedChars = [];
+window.vsRoundLocked = false;
+window.vsSessionActive = false;
 
-// Bancos de datos para el 1v1
-const VS_HANZI_DATA = [
+window.VS_HANZI_DATA = [
     { hanzi: "电", pinyin: "diàn", meaning: "Electricidad / Eléctrico" },
     { hanzi: "线", pinyin: "xiàn", meaning: "Línea / Cable" },
     { hanzi: "模", pinyin: "mó", meaning: "Molde / Módulo" },
@@ -881,11 +880,11 @@ const VS_HANZI_DATA = [
     { hanzi: "动", pinyin: "dòng", meaning: "Movimiento / Automático" }
 ];
 
-const VS_WORD_DATA = [
-    { hanzi: "_1es_急停", pinyin: "jí tíng", meaning: "Paro de emergencia" },
+window.VS_WORD_DATA = [
+    { hanzi: "急停", pinyin: "jí tíng", meaning: "Paro de emergencia" },
     { hanzi: "自动", pinyin: "zì dòng", meaning: "Automático" },
     { hanzi: "机器人", pinyin: "jī qì rén", meaning: "Robot industrial" },
-    { hanzi: "uPLC", pinyin: "kě lù", meaning: "Controlador PLC" },
+    { hanzi: "PLC", pinyin: "kě lù", meaning: "Controlador PLC" },
     { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor" }
 ];
 

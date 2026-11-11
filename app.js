@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V29)
+   ZIDONG CORE - SISTEMA INDUSTRIAL INTEGRAL (APP.JS DEFINITIVO V35)
    ========================================================================== */
 
 (() => {
@@ -17,6 +17,7 @@
             if (window.ZidongAudio && window.ZidongAudio.playVictory) window.ZidongAudio.playVictory();
         }
     }
+    window.triggerHaptic = triggerHaptic;
 
     const STORAGE_KEY = "zidong_core_progress_v10";
 
@@ -331,6 +332,7 @@
         updateProfile();
         saveProgress();
     }
+    window.awardXP = awardXP;
 
     function getCurrentRank(xp = 1850) {
         let current = INDUSTRIAL_RANKS[0];
@@ -431,7 +433,7 @@
     }
 
     let lastMsgIndex = -1;
-    function interactWithCompanion() {
+    window.interactWithCompanion = function() {
         const bubbleText = document.getElementById("companionText");
         const dogImg = document.getElementById("companionVisual");
 
@@ -454,7 +456,20 @@
             dogImg.style.transform = "scale(0.92) translateY(4px)";
             setTimeout(() => { dogImg.style.transform = "scale(1) translateY(0)"; }, 180);
         }
-    }
+    };
+
+    // MISIONES DIARIAS MODAL
+    window.toggleDailyMissionsModal = function() {
+        const modal = document.getElementById("dailyMissionsModal");
+        if (modal) {
+            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+        }
+    };
+    window.closeMissionsModal = function(e) {
+        if (e.target.id === "dailyMissionsModal") {
+            document.getElementById("dailyMissionsModal").style.display = "none";
+        }
+    };
 
     // EXPOSICIÓN GLOBAL DE NAVEGACIÓN Y ACCIONES
     window.openCriticalMode = function() {
@@ -465,51 +480,6 @@
         if (sel) sel.style.display = "block";
         if (arena) arena.style.display = "none";
         if (collapse) collapse.style.display = "none";
-    };
-
-window.openVsMode = function() {
-        stopVsSession();
-        triggerHaptic("success");
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("vsBattle");
-        }
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-        
-        // MOSTRAR SOLO EL SELECTOR Y OCULTAR LOS DEMÁS
-        if (diffSelector) diffSelector.style.display = "block";
-        if (arenaContainer) arenaContainer.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-    };
-   window.start1v1WithDifficulty = (diffKey) => {
-        selectedVsDiffKey = diffKey;
-        const diff = VS_DIFFICULTIES[diffKey];
-
-        // 1. APAGAR EL SELECTOR Y LA DERROTA, PRENDER LA ARENA DE JUEGO
-        const diffSelector = document.getElementById("vsDifficultySelector");
-        const arenaContainer = document.getElementById("vsBattleArenaContainer");
-        const defeatScreen = document.getElementById("vsDefeatScreen");
-
-        if (diffSelector) diffSelector.style.display = "none";
-        if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) {
-            arenaContainer.style.display = "block"; // ¡Esto es lo que hace que aparezca el duelo!
-        }
-
-        document.getElementById("vsRivalName").textContent = diff.name;
-        document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        document.getElementById("vsDiffBadge").textContent = diff.badge;
-
-        myVsPoints = 0;
-        rivalVsPoints = 0;
-        vsTimeLeft = 20;
-
-        document.getElementById("vsMyScore").textContent = "0 PTS";
-        document.getElementById("vsRivalScore").textContent = "0 PTS";
-        document.getElementById("vsSeconds").textContent = vsTimeLeft;
-
-        startVsRound();
     };
 
     // CAREER PLANETS MENU
@@ -833,8 +803,9 @@ window.openVsMode = function() {
 
         renderBossSequenceView();
     }
+
 // =====================================
-    // 2. MODO 1V1 BATTLE (3 NIVELES)
+    // MODO 1V1 BATTLE (3 NIVELES - CORREGIDO Y ESTABLE)
     // =====================================
     const VS_DIFFICULTIES = {
         EASY: { name: "Simulador de Enlace", badge: "NIVEL 1 · HANZI SIMPLE", prob: 0.82, points: 100, winBonus: 100 },
@@ -850,7 +821,7 @@ window.openVsMode = function() {
 
     window.openVsMode = function() {
         stopVsSession();
-        triggerHaptic("success");
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
         if (typeof window.navigateTo === "function") {
             window.navigateTo("vsBattle");
         }
@@ -863,7 +834,7 @@ window.openVsMode = function() {
         if (defeatScreen) defeatScreen.style.display = "none";
     };
 
-    window.start1v1WithDifficulty = (diffKey) => {
+    window.start1v1WithDifficulty = function(diffKey) {
         selectedVsDiffKey = diffKey;
         const diff = VS_DIFFICULTIES[diffKey];
 
@@ -871,22 +842,32 @@ window.openVsMode = function() {
         const arenaContainer = document.getElementById("vsBattleArenaContainer");
         const defeatScreen = document.getElementById("vsDefeatScreen");
 
+        // Ocultar selector y derrota, forzar despliegue de la arena de juego
         if (diffSelector) diffSelector.style.display = "none";
         if (defeatScreen) defeatScreen.style.display = "none";
-        if (arenaContainer) arenaContainer.style.display = "block"; // ¡Muestra la arena de juego correctamente!
+        if (arenaContainer) arenaContainer.style.display = "block";
 
-        document.getElementById("vsRivalName").textContent = diff.name;
-        document.getElementById("vsRivalAvatar").textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
-        document.getElementById("vsDiffBadge").textContent = diff.badge;
+        const rivalNameEl = document.getElementById("vsRivalName");
+        const rivalAvatarEl = document.getElementById("vsRivalAvatar");
+        const diffBadgeEl = document.getElementById("vsDiffBadge");
+
+        if (rivalNameEl) rivalNameEl.textContent = diff.name;
+        if (rivalAvatarEl) rivalAvatarEl.textContent = diffKey === "HARD" ? "⚡" : diffKey === "MEDIUM" ? "🤖" : "⚙️";
+        if (diffBadgeEl) diffBadgeEl.textContent = diff.badge;
 
         myVsPoints = 0;
         rivalVsPoints = 0;
         vsTimeLeft = 20;
 
-        document.getElementById("vsMyScore").textContent = "0 PTS";
-        document.getElementById("vsRivalScore").textContent = "0 PTS";
-        document.getElementById("vsSeconds").textContent = vsTimeLeft;
+        const myScoreEl = document.getElementById("vsMyScore");
+        const rivalScoreEl = document.getElementById("vsRivalScore");
+        const secondsEl = document.getElementById("vsSeconds");
 
+        if (myScoreEl) myScoreEl.textContent = "0 PTS";
+        if (rivalScoreEl) rivalScoreEl.textContent = "0 PTS";
+        if (secondsEl) secondsEl.textContent = vsTimeLeft;
+
+        // Arrancar inmediatamente la partida y el temporizador
         startVsRound();
     };
 
@@ -897,12 +878,14 @@ window.openVsMode = function() {
 
         vsTimer = setInterval(() => {
             vsTimeLeft--;
-            document.getElementById("vsSeconds").textContent = vsTimeLeft;
+            const secondsEl = document.getElementById("vsSeconds");
+            if (secondsEl) secondsEl.textContent = vsTimeLeft;
             if (timerBar) timerBar.style.width = `${(vsTimeLeft / 20) * 100}%`;
 
             if (Math.random() < diff.prob) {
                 rivalVsPoints += diff.points;
-                document.getElementById("vsRivalScore").textContent = `${rivalVsPoints} PTS`;
+                const rScore = document.getElementById("vsRivalScore");
+                if (rScore) rScore.textContent = `${rivalVsPoints} PTS`;
             }
 
             if (vsTimeLeft <= 0) {
@@ -921,15 +904,17 @@ window.openVsMode = function() {
     }
 
     function loadVsLevel1SingleHanzi() {
-        const pool = LAB_COMPONENTS;
+        const pool = typeof LAB_COMPONENTS !== 'undefined' ? LAB_COMPONENTS : [{ hanzi: "电", es: "Electricidad" }];
         const item = pool[Math.floor(Math.random() * pool.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.hanzi;
+        const display = document.getElementById("vsHanziDisplay");
+        if (display) display.textContent = item.hanzi;
 
         const otherMeanings = pool.filter(a => a.es !== item.es).map(a => a.es);
         const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
         const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
 
         const grid = document.getElementById("vsOptionsGrid");
+        if (!grid) return;
         grid.replaceChildren();
 
         options.forEach(opt => {
@@ -941,16 +926,18 @@ window.openVsMode = function() {
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
-                    triggerHaptic("success");
+                    if (typeof triggerHaptic === "function") triggerHaptic("success");
                     btn.classList.add("btn-correct");
                     myVsPoints += 100;
-                    document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
+                    const myScore = document.getElementById("vsMyScore");
+                    if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsMechanicByLevel, 240);
                 } else {
-                    triggerHaptic("error");
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
+                    const secondsEl = document.getElementById("vsSeconds");
+                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
                     setTimeout(loadVsMechanicByLevel, 300);
                 }
             };
@@ -971,13 +958,15 @@ window.openVsMode = function() {
         ];
 
         const item = words[Math.floor(Math.random() * words.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.hanzi2;
+        const display = document.getElementById("vsHanziDisplay");
+        if (display) display.textContent = item.hanzi2;
 
         const otherMeanings = words.filter(a => a.es !== item.es).map(a => a.es);
         const shuffled = otherMeanings.sort(() => 0.5 - Math.random()).slice(0, 2);
         const options = [item.es, ...shuffled].sort(() => 0.5 - Math.random());
 
         const grid = document.getElementById("vsOptionsGrid");
+        if (!grid) return;
         grid.replaceChildren();
 
         options.forEach(opt => {
@@ -989,16 +978,18 @@ window.openVsMode = function() {
             btn.onclick = () => {
                 grid.querySelectorAll("button").forEach(b => b.style.pointerEvents = "none");
                 if (opt === item.es) {
-                    triggerHaptic("success");
+                    if (typeof triggerHaptic === "function") triggerHaptic("success");
                     btn.classList.add("btn-correct");
                     myVsPoints += 100;
-                    document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
+                    const myScore = document.getElementById("vsMyScore");
+                    if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                     setTimeout(loadVsMechanicByLevel, 240);
                 } else {
-                    triggerHaptic("error");
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
                     btn.classList.add("btn-wrong");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
+                    const secondsEl = document.getElementById("vsSeconds");
+                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
                     setTimeout(loadVsMechanicByLevel, 300);
                 }
             };
@@ -1016,9 +1007,11 @@ window.openVsMode = function() {
         ];
 
         const item = words[Math.floor(Math.random() * words.length)];
-        document.getElementById("vsHanziDisplay").textContent = item.es;
+        const display = document.getElementById("vsHanziDisplay");
+        if (display) display.textContent = item.es;
 
         const grid = document.getElementById("vsOptionsGrid");
+        if (!grid) return;
         grid.replaceChildren();
 
         let stepOrder = 0;
@@ -1041,7 +1034,7 @@ window.openVsMode = function() {
             b.textContent = char;
             b.onclick = () => {
                 if (char === item.order[stepOrder]) {
-                    triggerHaptic("success");
+                    if (typeof triggerHaptic === "function") triggerHaptic("success");
                     const slot = document.getElementById(`vSlot${stepOrder}`);
                     if (slot) {
                         slot.textContent = char;
@@ -1054,13 +1047,15 @@ window.openVsMode = function() {
 
                     if (stepOrder === 2) {
                         myVsPoints += 100;
-                        document.getElementById("vsMyScore").textContent = `${myVsPoints} PTS`;
+                        const myScore = document.getElementById("vsMyScore");
+                        if (myScore) myScore.textContent = `${myVsPoints} PTS`;
                         setTimeout(loadVsMechanicByLevel, 240);
                     }
                 } else {
-                    triggerHaptic("error");
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
                     vsTimeLeft = Math.max(0, vsTimeLeft - 3);
-                    document.getElementById("vsSeconds").textContent = vsTimeLeft;
+                    const secondsEl = document.getElementById("vsSeconds");
+                    if (secondsEl) secondsEl.textContent = vsTimeLeft;
                     b.style.borderColor = "#ff4444";
                     setTimeout(loadVsMechanicByLevel, 300);
                 }
@@ -1076,33 +1071,34 @@ window.openVsMode = function() {
         const win = myVsPoints >= rivalVsPoints;
 
         if (win) {
-            triggerHaptic("win");
-            awardXP(diff.winBonus);
+            if (typeof triggerHaptic === "function") triggerHaptic("win");
+            if (typeof awardXP === "function") awardXP(diff.winBonus);
             const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
             localStorage.setItem("zidong_vs_wins", currentWins);
             alert(`🏆 ¡VICTORIA! Superaste a "${diff.name}" con ${myVsPoints} vs ${rivalVsPoints} PTS (+${diff.winBonus} XP)`);
-            renderBadgesGrid();
-            updateProfile();
+            if (typeof renderBadgesGrid === "function") renderBadgesGrid();
+            if (typeof updateProfile === "function") updateProfile();
             if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         } else {
-            triggerHaptic("error");
-            document.getElementById("vsBattleArenaContainer").style.display = "none";
+            if (typeof triggerHaptic === "function") triggerHaptic("error");
+            const arena = document.getElementById("vsBattleArenaContainer");
+            if (arena) arena.style.display = "none";
             const defeatScreen = document.getElementById("vsDefeatScreen");
-            defeatScreen.style.display = "block";
+            if (defeatScreen) defeatScreen.style.display = "block";
 
-            document.getElementById("vsDefeatRivalAvatar").textContent = selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
-            document.getElementById("vsDefeatScores").textContent = `${currentUserData.name}: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
+            const scoresEl = document.getElementById("vsDefeatScores");
+            if (scoresEl) scoresEl.textContent = `Tú: ${myVsPoints} PTS vs ${diff.name}: ${rivalVsPoints} PTS`;
         }
     }
 
     function stopVsSession() {
-        clearInterval(vsTimer);
-        vsTimer = null;
+        if (vsTimer) {
+            clearInterval(vsTimer);
+            vsTimer = null;
+        }
     }
     window.stopVsSession = stopVsSession;
-    // =====================================
-    // 3. LABORATORIO (LAB)
-    // =====================================
+    // LABORATORIO (LAB)
     let currentLabCategory = "all";
     function renderLabComponents(filteredList = null) {
         const container = document.getElementById("labComponentsContainer");
@@ -1142,9 +1138,7 @@ window.openVsMode = function() {
         renderLabComponents(filtered);
     };
 
-    // =====================================
-    // 4. RANKING
-    // =====================================
+    // RANKING Y ESCALAFÓN
     const MOCK_LEADERBOARD = [
         { name: "Chen Wei (陈伟)", rank: "Ingeniero Sr", xp: 32450, team: "SMT Alpha", badge: "🥇" },
         { name: "Li Na (李娜)", rank: "Ingeniero Full", xp: 24800, team: "AOI Lumina", badge: "🥈" },
@@ -1153,7 +1147,7 @@ window.openVsMode = function() {
         { name: "Alejandro Silva", rank: "Técnico Jr", xp: 9800, team: "Neumática Aethel", badge: "5." }
     ];
 
-function renderLeaderboardSection() {
+    function renderLeaderboardSection() {
         const myRankCard = document.getElementById("leaderboardMyRankBox");
         const listContainer = document.getElementById("leaderboardTableContainer");
         if (!listContainer) return;
@@ -1177,23 +1171,39 @@ function renderLeaderboardSection() {
         }
 
         listContainer.replaceChildren();
-        const medals = ["🥇", "🥈", "🥉"];
-        allUsers.forEach((user, idx) => {
+        const randomEngineers = [
+            { rank: 1, name: "Ing. Carlos M.", xp: "14,850 XP", badge: "⚡ Leyenda de Línea", me: false },
+            { rank: 2, name: currentUserData.name, xp: `${Number(currentUserData.xp).toLocaleString("en-US")} XP`, badge: "⚡ Especialista Sr", me: true },
+            { rank: 3, name: "Lic. Brenda S.", xp: "9,450 XP", badge: "🤖 Supervisor HMI", me: false },
+            { rank: 4, name: "Ing. Roberto G.", xp: "8,100 XP", badge: "⚙️ Técnico de Turno", me: false },
+            { rank: 5, name: "Ana Sofía L.", xp: "6,950 XP", badge: "🔧 Mantto Industrial", me: false },
+            { rank: 6, name: "Ing. Alejandro V.", xp: "5,300 XP", badge: "🔌 Integrador PLC", me: false }
+        ];
+
+        randomEngineers.forEach(eng => {
             const row = document.createElement("div");
-            row.className = `lb-rank-row ${user.isMe ? "lb-highlight-me" : ""}`;
-            const posTag = medals[idx] || `${idx + 1}.`;
+            row.style.display = "flex";
+            row.style.justifyContent = "space-between";
+            row.style.alignItems = "center";
+            row.style.padding = "10px 12px";
+            row.style.background = eng.me ? "rgba(0,245,155,0.1)" : "var(--surface-light)";
+            row.style.border = `1px solid ${eng.me ? "#00f59b" : "var(--border)"}`;
+            row.style.borderRadius = "12px";
+
             row.innerHTML = `
-                <span class="lb-pos">${posTag}</span>
-                <div class="lb-user-details"><strong style="color:${user.isMe ? 'var(--cyan)' : '#ffffff'}; font-size:12.5px;">${user.name}</strong><small style="color:var(--muted); font-size:9.5px;">${user.rank} · ${user.team}</small></div>
-                <div class="lb-xp-tag"><strong>${Number(user.xp).toLocaleString("en-US")}</strong><small>XP</small></div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:900; color:${eng.rank === 1 ? 'var(--gold)' : eng.rank === 2 ? 'var(--cyan)' : 'var(--muted)'}; width:18px;">#${eng.rank}</span>
+                    <div>
+                        <strong style="color:#fff; font-size:12px; display:block;">${eng.name} ${eng.me ? '(Tú)' : ''}</strong>
+                        <small style="font-size:9.5px; color:var(--cyan);">${eng.badge}</small>
+                    </div>
+                </div>
+                <strong style="color:var(--green); font-size:11.5px;">${eng.xp}</strong>
             `;
             listContainer.appendChild(row);
         });
     }
 
-    // =====================================
-    // 5. ESCALAFÓN Y PERFIL
-    // =====================================
     function renderRanksSection() {
         const container = document.getElementById("ranksLadderContainer");
         const headerBadge = document.getElementById("topRankBadge");
@@ -1236,6 +1246,7 @@ function renderLeaderboardSection() {
         renderRanksSection();
         updateUserDisplay();
         updateEnergyBatteryDisplay();
+        renderAchievementsGrid();
     }
 
     function renderProfileWorldsProgress() {
@@ -1294,74 +1305,103 @@ function renderLeaderboardSection() {
         });
     }
 
-    // DAILY REWARD & MISSIONS
-    window.claimDailyReward = () => {
-        const lastClaim = localStorage.getItem("zidong_last_daily_claim");
-        const today = new Date().toDateString();
+    function renderAchievementsGrid() {
+        const container = document.getElementById("profileAchievementsList");
+        if (!container) return;
+
+        const mockAchievements = [
+            { icon: "⚡", title: "Maestro del Cableado", desc: "Identifica 10 componentes eléctricos", unlocked: true },
+            { icon: "🤖", title: "Overclock Industrial", desc: "Supera el Nivel 2 del Duelo 1v1", unlocked: true },
+            { icon: "🦾", title: "Cazador de Alarmas", desc: "Sobrevive 30s en Survivor Mode", unlocked: false },
+            { icon: "🇨🇳", title: "Lingüista PLC", desc: "Domina 20 términos técnicos en Hanzi", unlocked: true },
+            { icon: "🚨", title: "Paro de Emergencia", desc: "Resuelve una falla crítica a tiempo", unlocked: false }
+        ];
+
+        container.replaceChildren();
+        mockAchievements.forEach(ach => {
+            const item = document.createElement("div");
+            item.style.display = "flex";
+            item.style.alignItems = "center";
+            item.style.gap = "10px";
+            item.style.padding = "8px";
+            item.style.background = ach.unlocked ? "rgba(0,245,155,0.08)" : "rgba(255,255,255,0.03)";
+            item.style.border = `1px solid ${ach.unlocked ? "rgba(0,245,155,0.3)" : "var(--border)"}`;
+            item.style.borderRadius = "10px";
+
+            item.innerHTML = `
+                <span style="font-size:22px; filter:grayscale(${ach.unlocked ? '0%' : '100%'});">${ach.icon}</span>
+                <div style="flex:1;">
+                    <strong style="font-size:11.5px; color:${ach.unlocked ? '#00f59b' : '#fff'}; display:block;">${ach.title}</strong>
+                    <small style="font-size:9.5px; color:var(--muted);">${ach.desc}</small>
+                </div>
+                <span style="font-size:10px; font-weight:700; color:${ach.unlocked ? '#00f59b' : 'var(--muted)'};">${ach.unlocked ? '✓ LISTO' : '🔒 BLOQUEADO'}</span>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    // PESTAÑAS / MENÚS PARA LOGROS Y MEDALLAS EN PERFIL
+    window.switchProfileTab = function(tabName, btnEl) {
+        triggerHaptic("success");
+        const achievementsTab = document.getElementById("profileAchievementsTab");
+        const medalsTab = document.getElementById("profileMedalsTab");
+
+        document.querySelectorAll("#profile .lab-tab-btn").forEach(b => b.classList.remove("active"));
+        if (btnEl) btnEl.classList.add("active");
+
+        if (tabName === "achievements") {
+            if (achievementsTab) achievementsTab.style.display = "block";
+            if (medalsTab) medalsTab.style.display = "none";
+        } else if (tabName === "medals") {
+            if (achievementsTab) achievementsTab.style.display = "none";
+            if (medalsTab) medalsTab.style.display = "block";
+        }
+    };
+
+    // DAILY REWARD (VENTANA FLOTANTE MEJORADA)
+    window.claimDailyReward = function() {
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+        
         const modal = document.getElementById("dailyRewardModal");
-        const claimBtn = document.getElementById("btnClaimRewardAction");
         const titleEl = document.getElementById("rewardModalTitle");
         const descEl = document.getElementById("rewardModalDesc");
+        const btnEl = document.getElementById("btnClaimRewardAction");
 
-        if (lastClaim === today) {
-            triggerHaptic("error");
-            titleEl.textContent = "¡RECOMPENSA RECLAMADA!";
-            descEl.textContent = "Ya recibiste tus +100 XP de guardia hoy. Vuelve en el siguiente cambio de turno.";
-            claimBtn.textContent = "ENTENDIDO";
-            claimBtn.onclick = () => { modal.style.display = "none"; };
-        } else {
-            triggerHaptic("win");
-            titleEl.textContent = "¡BONO DE TURNO OBERON!";
-            descEl.textContent = "Has recibido +100 XP por inicio de operaciones en el sistema.";
-            claimBtn.textContent = "RECLAMAR +100 XP 🎁";
-            claimBtn.onclick = () => {
+        if (modal && titleEl && descEl && btnEl) {
+            titleEl.textContent = "🎁 ¡BONO DE TURNO RECLAMADO!";
+            descEl.textContent = "Sincronización de asistencia completada con éxito. Se han acreditado +100 XP a tu batería de planta.";
+            btnEl.textContent = "¡ENTENDIDO! ⚡";
+            
+            btnEl.onclick = () => {
                 awardXP(100);
-                localStorage.setItem("zidong_last_daily_claim", today);
-                triggerHaptic("success");
                 modal.style.display = "none";
+                if (typeof triggerHaptic === "function") triggerHaptic("win");
             };
+            
+            modal.style.display = "flex";
         }
-        modal.style.display = "flex";
     };
 
-    window.closeRewardModal = (e) => {
-        if (e.target.id === "dailyRewardModal") document.getElementById("dailyRewardModal").style.display = "none";
-    };
-
-    window.toggleDailyMissionsModal = () => {
-        const modal = document.getElementById("dailyMissionsModal");
-        if (!modal) return;
-        const isHidden = modal.style.display === "none";
-        modal.style.display = isHidden ? "flex" : "none";
-        if (isHidden) triggerHaptic("success");
-    };
-
-    window.closeMissionsModal = (e) => {
-        if (e.target.id === "dailyMissionsModal") window.toggleDailyMissionsModal();
+    window.closeRewardModal = function(e) {
+        if (e.target.id === "dailyRewardModal") {
+            document.getElementById("dailyRewardModal").style.display = "none";
+        }
     };
 
     // INICIALIZACIÓN
-    function initializeApplication() {
+    document.addEventListener("DOMContentLoaded", () => {
         loadSavedProgress();
-        updateUserDisplay();
         renderCareerPlanetsMenu();
         renderLabComponents();
-        renderRanksSection();
+        renderLeaderboardSection();
         updateProfile();
+    });
 
-        if (window.ZidongAudio) window.ZidongAudio.switchTrack("dashboard");
-        console.log("ZIDONG CORE: SISTEMA OBERON INICIALIZADO CORRECTAMENTE");
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        loadSavedProgress();
+        renderCareerPlanetsMenu();
+        renderLabComponents();
+        renderLeaderboardSection();
+        updateProfile();
     }
-
-    window.awardXP = awardXP;
-    window.renderCareerPlanetsMenu = renderCareerPlanetsMenu;
-    window.renderLeaderboardSection = renderLeaderboardSection;
-    window.interactWithCompanion = interactWithCompanion;
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initializeApplication);
-    } else {
-        initializeApplication();
-    }
-
 })();

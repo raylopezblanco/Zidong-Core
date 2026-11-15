@@ -575,7 +575,7 @@
     };
 
     // CAREER PLANETS MENU RENDERING
-    function renderCareerPlanetsMenu() {
+    window.renderCareerPlanetsMenu = function renderCareerPlanetsMenu() {
         const container = document.getElementById("careerPlanetsGrid");
         if (!container) return;
         container.replaceChildren();
@@ -1383,5 +1383,11 @@ window.stopVsSession = function() {
         window.vsTimer = null;
     }
 };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        updateProfile();
+        renderCareerPlanetsMenu();
+        renderLeaderboard();
+    });
 
 })();

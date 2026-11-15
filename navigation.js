@@ -12,6 +12,13 @@ window.navigateTo = function(pageId, pushHistory = true) {
     if (target) {
         target.classList.add('active');
         window.scrollTo(0, 0);
+
+        if (pageId === 'career' && typeof window.renderCareerPlanetsMenu === 'function') {
+            window.renderCareerPlanetsMenu();
+        }
+        if (pageId === 'leaderboard' && typeof window.renderLeaderboard === 'function') {
+            window.renderLeaderboard();
+        }
         
         if (pushHistory) {
             if (window.navigationHistory[window.navigationHistory.length - 1] !== pageId) {

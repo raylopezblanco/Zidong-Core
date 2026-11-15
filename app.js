@@ -1113,91 +1113,136 @@
     };
 
     window.loadVsLevel3OrderHanzi = function() {
-        const display = document.getElementById("vsHanziDisplay");
-        const grid = document.getElementById("vsOptionsGrid");
-        const instruction = window.vsGetInstruction();
+    const display = document.getElementById("vsHanziDisplay");
+    const grid = document.getElementById("vsOptionsGrid");
+    const instruction = window.vsGetInstruction();
 
-        const correct = window.vsRandomItem(window.VS_WORD_DATA);
-        window.vsCurrentQuestion = correct;
+    const correct = window.vsRandomItem(window.VS_WORD_DATA);
+    window.vsCurrentQuestion = correct;
 
-        if (display) display.textContent = correct.meaning;
-        if (instruction) instruction.textContent = `Ordena los caracteres para formar: "${correct.meaning}"`;
+    if (display) display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Ensambla los caracteres para: "${correct.meaning}"`;
 
-        const correctChars = correct.hanzi.split("");
-        const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自"];
-        const availableChars = [
-            ...correctChars,
-            ...window.vsShuffle(extraChars).filter(char => !correctChars.includes(char)).slice(0, 3)
-        ];
-        const shuffledChars = window.vsShuffle(availableChars);
+    const correctChars = correct.hanzi.split("");
+    const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自"];
+    const availableChars = [
+        ...correctChars,
+        ...window.vsShuffle(extraChars).filter(char => !correctChars.includes(char)).slice(0, Math.max(2, 6 - correctChars.length))
+    ];
+    const shuffledChars = window.vsShuffle(availableChars);
 
-        const containerBox = document.createElement("div");
-        containerBox.style.display = "flex";
-        containerBox.style.flexDirection = "column";
-        containerBox.style.gap = "10px";
-        containerBox.style.width = "100%";
+    grid.replaceChildren();
 
-        const answerBox = document.createElement("div");
-        answerBox.id = "vsBuildAnswer";
-        answerBox.style.background = "rgba(0,0,0,0.4)";
-        answerBox.style.border = "2px dashed var(--cyan)";
-        answerBox.style.borderRadius = "10px";
-        answerBox.style.padding = "12px";
-        answerBox.style.fontSize = "22px";
-        answerBox.style.letterSpacing = "4px";
-        answerBox.style.color = "var(--cyan)";
-        answerBox.style.minHeight = "48px";
-        answerBox.style.display = "flex";
-        answerBox.style.alignItems = "center";
-        answerBox.style.justifyContent = "center";
-        answerBox.textContent = "";
+    const containerBox = document.createElement("div");
+    containerBox.style.display = "flex";
+    containerBox.style.flexDirection = "column";
+    containerBox.style.gap = "14px";
+    containerBox.style.width = "100%";
+    containerBox.style.gridColumn = "1 / -1";
 
-        const chipsGrid = document.createElement("div");
-        chipsGrid.style.display = "flex";
-        chipsGrid.style.flexWrap = "wrap";
-        chipsGrid.style.gap = "6px";
-        chipsGrid.style.justifyContent = "center";
+    const targetCard = document.createElement("div");
+    targetCard.style.background = "rgba(39, 216, 232, 0.08)";
+    targetCard.style.border = "1px solid rgba(39, 216, 232, 0.3)";
+    targetCard.style.borderRadius = "12px";
+    targetCard.style.padding = "10px";
+    targetCard.style.textAlign = "center";
+    targetCard.innerHTML = `
+        <span style="font-size:9px; color:var(--cyan); font-weight:800; letter-spacing:1px; display:block;">OBJETIVO TÉCNICO</span>
+        <strong style="color:#fff; font-size:15px; display:block; margin-top:2px;">"${correct.meaning}"</strong>
+    `;
+    containerBox.appendChild(targetCard);
 
-        shuffledChars.forEach(char => {
-            const chip = document.createElement("button");
-            chip.className = "reveal-button";
-            chip.style.background = "var(--surface-light)";
-            chip.style.color = "#fff";
-            chip.style.border = "1px solid var(--border)";
-            chip.style.padding = "8px 12px";
-            chip.style.fontSize = "16px";
-            chip.style.fontWeight = "bold";
-            chip.textContent = char;
+    const answerBox = document.createElement("div");
+    answerBox.id = "vsBuildAnswer";
+    answerBox.style.background = "rgba(5, 11, 20, 0.85)";
+    answerBox.style.border = "2px solid var(--cyan)";
+    answerBox.style.borderRadius = "12px";
+    answerBox.style.padding = "14px";
+    answerBox.style.fontSize = "28px";
+    answerBox.style.fontFamily = "'Noto Sans SC'";
+    answerBox.style.letterSpacing = "8px";
+    answerBox.style.color = "var(--green)";
+    answerBox.style.minHeight = "64px";
+    answerBox.style.display = "flex";
+    answerBox.style.alignItems = "center";
+    answerBox.style.justifyContent = "center";
+    answerBox.style.boxShadow = "inset 0 0 15px rgba(39, 216, 232, 0.2)";
+    answerBox.textContent = "";
+    containerBox.appendChild(answerBox);
 
-            chip.onclick = () => {
-                if (window.vsRoundLocked || !window.vsSessionActive) return;
-                window.vsSelectedChars.push(char);
-                answerBox.textContent = window.vsSelectedChars.join("");
+    const chipsGrid = document.createElement("div");
+    chipsGrid.style.display = "grid";
+    chipsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
+    chipsGrid.style.gap = "10px";
+    chipsGrid.style.width = "100%";
 
-                if (window.vsSelectedChars.length === correctChars.length) {
-                    const assembled = window.vsSelectedChars.join("");
-                    window.submitVsAnswer(assembled === correct.hanzi);
-                }
-            };
-            chipsGrid.appendChild(chip);
-        });
+    shuffledChars.forEach(char => {
+        const chip = document.createElement("button");
+        chip.className = "reveal-button";
+        chip.style.background = "var(--surface-light)";
+        chip.style.color = "#fff";
+        chip.style.border = "1px solid var(--border)";
+        chip.style.borderRadius = "12px";
+        chip.style.padding = "14px 10px";
+        chip.style.fontSize = "22px";
+        chip.style.fontFamily = "'Noto Sans SC'";
+        chip.style.fontWeight = "900";
+        chip.style.cursor = "pointer";
+        chip.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+        chip.textContent = char;
 
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "btn-secondary";
-        clearBtn.style.fontSize = "10px";
-        clearBtn.style.padding = "6px";
-        clearBtn.textContent = "🔄 Borrar selección";
-        clearBtn.onclick = () => {
+        const handleTokenClick = (e) => {
+            e.preventDefault();
             if (window.vsRoundLocked || !window.vsSessionActive) return;
-            window.vsSelectedChars = [];
-            answerBox.textContent = "";
+            
+            if (typeof triggerHaptic === "function") triggerHaptic("success");
+            window.vsSelectedChars.push(char);
+            answerBox.textContent = window.vsSelectedChars.join("");
+
+            chip.style.opacity = "0.3";
+            chip.style.pointerEvents = "none";
+
+            if (window.vsSelectedChars.length === correctChars.length) {
+                const assembled = window.vsSelectedChars.join("");
+                window.submitVsAnswer(assembled === correct.hanzi);
+            }
         };
 
-        containerBox.appendChild(answerBox);
-        containerBox.appendChild(chipsGrid);
-        containerBox.appendChild(clearBtn);
-        grid.appendChild(containerBox);
+        chip.onclick = handleTokenClick;
+        chip.ontouchend = handleTokenClick;
+
+        chipsGrid.appendChild(chip);
+    });
+    containerBox.appendChild(chipsGrid);
+
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "back-button";
+    clearBtn.style.fontSize = "11px";
+    clearBtn.style.padding = "10px";
+    clearBtn.style.borderColor = "rgba(255, 68, 68, 0.4)";
+    clearBtn.style.color = "#ff4444";
+    clearBtn.style.fontWeight = "800";
+    clearBtn.style.borderRadius = "10px";
+    clearBtn.textContent = "🔄 Borrar selección y reintentar";
+    
+    const handleClear = (e) => {
+        e.preventDefault();
+        if (window.vsRoundLocked || !window.vsSessionActive) return;
+        if (typeof triggerHaptic === "function") triggerHaptic("error");
+        window.vsSelectedChars = [];
+        answerBox.textContent = "";
+        Array.from(chipsGrid.children).forEach(ch => {
+            ch.style.opacity = "1";
+            ch.style.pointerEvents = "auto";
+        });
     };
+
+    clearBtn.onclick = handleClear;
+    clearBtn.ontouchend = handleClear;
+    
+    containerBox.appendChild(clearBtn);
+    grid.appendChild(containerBox);
+};
 
     window.submitVsAnswer = function(isCorrect, selectedButton = null) {
         if (!window.vsSessionActive || window.vsRoundLocked) return;

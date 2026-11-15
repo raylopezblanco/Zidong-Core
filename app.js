@@ -188,7 +188,7 @@
         return current;
     }
 
-    function updateProfile() {
+function updateProfile() {
         const rank = calculateUserRank(currentUserData.xp);
         currentUserData.level = rank.level;
 
@@ -210,25 +210,19 @@
                 topAvatar.style.fontSize = "11px";
             }
         }
-        if (profileAvatar) {
-            if (currentUserData.selectedAvatar) {
-                profileAvatar.textContent = currentUserData.selectedAvatar;
-                profileAvatar.style.fontSize = "32px";
-            } else {
-                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
-                profileAvatar.style.fontSize = "24px";
-            }
-        }
         if (topRank) topRank.textContent = `⚡ ${rank.name}`;
 
         if (batteryXp) batteryXp.textContent = `${currentUserData.xp.toLocaleString()} XP`;
         if (batteryRank) batteryRank.textContent = `Rango 0${rank.level}: ${rank.name}`;
         
-        const nextRank = RANKS_LADDER.find(r => r.level === rank.level + 1);
+        const ranks = window.ZidongRanks || [];
+        const nextRank = ranks.find(r => (r.id || r.level) === rank.level + 1);
         let pct = 100;
         if (nextRank) {
-            const prevXp = rank.minXp;
-            const span = nextRank.minXp - prevXp;
+            const prevRank = ranks.find(r => (r.id || r.level) === rank.level) || ranks[0];
+            const prevXp = prevRank.minXP !== undefined ? prevRank.minXP : (prevRank.minXp || 0);
+            const nextXp = nextRank.minXP !== undefined ? nextRank.minXP : (nextRank.minXp || 1000);
+            const span = nextXp - prevXp;
             const cur = currentUserData.xp - prevXp;
             pct = Math.min(100, Math.max(0, Math.round((cur / span) * 100)));
         }
@@ -236,26 +230,38 @@
         if (batteryPct) batteryPct.textContent = `${pct}% carga`;
 
         const profileName = document.getElementById("profileName");
-        const profileAvatar = document.getElementById("profileAvatar");
+        const profileAvatarEl = document.getElementById("profileAvatar");
         const profileRankBadge = document.getElementById("profileRankBadge");
         const profileLevel = document.getElementById("profileLevel");
         const profileStreak = document.getElementById("profileStreak");
         const profileCompleted = document.getElementById("profileCompleted");
 
         if (profileName) profileName.textContent = currentUserData.name;
-        if (profileAvatar) profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+        if (profileAvatarEl) {
+            if (currentUserData.selectedAvatar) {
+                profileAvatarEl.textContent = currentUserData.selectedAvatar;
+                profileAvatarEl.style.fontSize = "32px";
+            } else {
+                profileAvatarEl.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                profileAvatarEl.style.fontSize = "24px";
+            }
+        }
         if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
-        if (profileLevel) profileLevel.textContent = `0${rank.level}`;
+        
+        const totalCompleted = currentUserData.completedActivities.length;
+        if (profileLevel) profileLevel.textContent = totalCompleted < 10 ? `0${totalCompleted}` : totalCompleted;
         if (profileStreak) profileStreak.textContent = `${currentUserData.streak} Días`;
-        if (profileCompleted) profileCompleted.textContent = currentUserData.completedActivities.length;
+        if (profileCompleted) profileCompleted.textContent = totalCompleted;
 
-        renderBadgesGrid();
-        renderAchievementsList();
-        renderWorldsProgressInProfile();
-        renderRanksLadder();
+        const rankPosEl = document.getElementById("profileRankPos");
+        if (rankPosEl) rankPosEl.textContent = "#03";
+
+        if (typeof renderBadgesGrid === "function") renderBadgesGrid();
+        if (typeof renderAchievementsList === "function") renderAchievementsList();
+        if (typeof renderWorldsProgressInProfile === "function") renderWorldsProgressInProfile();
+        if (typeof renderRanksLadder === "function") renderRanksLadder();
     }
     window.updateProfile = updateProfile;
-
     function renderBadgesGrid() {
         const container = document.getElementById("badgesContainer");
         const countLabel = document.getElementById("medalsCountLabel");

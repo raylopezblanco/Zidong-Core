@@ -19,6 +19,9 @@ window.navigateTo = function(pageId, pushHistory = true) {
         if (pageId === 'leaderboard' && typeof window.renderLeaderboard === 'function') {
             window.renderLeaderboard();
         }
+        if (pageId === 'profile' && typeof window.updateProfile === 'function') {
+            window.updateProfile();
+        }
         
         if (pushHistory) {
             if (window.navigationHistory[window.navigationHistory.length - 1] !== pageId) {

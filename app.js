@@ -311,7 +311,7 @@
         const arrow = document.getElementById(arrowId);
         if (content) {
             const isHidden = content.style.display === "none" || content.style.display === "";
-            content.style.display = isHidden ? "flex" : "none";
+            content.style.display = isHidden ? "block" : "none";
             if (arrow) {
                 arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
             }
@@ -411,11 +411,35 @@
     }
 
     window.editUserNameOnce = function() {
-        const newName = prompt("Ingresa tu nombre o identificador de especialista (Solo 1 vez):", currentUserData.name);
-        if (newName && newName.trim().length > 0) {
-            currentUserData.name = newName.trim().slice(0, 20);
+        const input = document.getElementById("editNameInput");
+        if (input) input.value = currentUserData.name;
+        window.toggleEditNameModal();
+    };
+
+    window.toggleEditNameModal = function() {
+        const modal = document.getElementById("editNameModal");
+        if (modal) {
+            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+            if (modal.style.display === "flex") {
+                const input = document.getElementById("editNameInput");
+                if (input) {
+                    input.value = currentUserData.name;
+                    input.focus();
+                }
+            }
+        }
+    };
+
+    window.saveNewUserName = function() {
+        const input = document.getElementById("editNameInput");
+        if (input && input.value.trim().length > 0) {
+            currentUserData.name = input.value.trim().slice(0, 20);
             updateProfile();
+            window.toggleEditNameModal();
+            if (typeof triggerHaptic === "function") triggerHaptic("win");
             alert("¡Identificador actualizado correctamente!");
+        } else {
+            alert("Por favor ingresa un nombre válido.");
         }
     };
 

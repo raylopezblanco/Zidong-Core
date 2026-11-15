@@ -359,17 +359,41 @@
         if (typeof triggerHaptic === "function") {
             triggerHaptic("success");
         }
+        const today = new Date().toISOString().slice(0, 10);
+        const lastClaim = localStorage.getItem("zidong_last_claim_date");
+        const btn = document.getElementById("btnClaimRewardAction");
+        const desc = document.getElementById("rewardModalDesc");
+        
+        if (btn && desc) {
+            if (lastClaim === today) {
+                btn.textContent = "YA RECLAMADO HOY ✓";
+                btn.style.opacity = "0.6";
+                btn.style.pointerEvents = "none";
+                desc.textContent = "Ya has obtenido tu bono de energía de hoy. ¡Vuelve mañana!";
+            } else {
+                btn.textContent = "RECLAMAR +100 XP ⚡";
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+                desc.textContent = "¡Reclama tu energía diaria de turno y mantén tu racha!";
+            }
+        }
         window.toggleDailyRewardModal();
     };
 
     window.confirmClaimReward = function() {
+        const today = new Date().toISOString().slice(0, 10);
+        const lastClaim = localStorage.getItem("zidong_last_claim_date");
+        if (lastClaim === today) {
+            window.toggleDailyRewardModal();
+            return;
+        }
         if (typeof triggerHaptic === "function") {
             triggerHaptic("win");
         }
         currentUserData.xp += 100;
+        localStorage.setItem("zidong_last_claim_date", today);
         updateProfile();
         window.toggleDailyRewardModal();
-        alert("🎁 ¡Bono de turno acreditado a tu perfil!\nHas recibido +100 XP de energía industrial ⚡");
     };
 
     window.toggleDailyRewardModal = function() {

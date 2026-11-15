@@ -20,7 +20,7 @@
     window.triggerHaptic = triggerHaptic;
 
     let currentUserData = {
-        name: "Raymundo",
+        name: "New user",
         xp: 1850,
         streak: 5,
         completedActivities: ["w1_a1", "w1_a2", "w1_a3", "w1_a4", "w2_a1", "w2_a2", "w2_a3", "w2_a4"],
@@ -210,6 +210,15 @@
                 topAvatar.style.fontSize = "11px";
             }
         }
+        if (profileAvatar) {
+            if (currentUserData.selectedAvatar) {
+                profileAvatar.textContent = currentUserData.selectedAvatar;
+                profileAvatar.style.fontSize = "32px";
+            } else {
+                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                profileAvatar.style.fontSize = "24px";
+            }
+        }
         if (topRank) topRank.textContent = `⚡ ${rank.name}`;
 
         if (batteryXp) batteryXp.textContent = `${currentUserData.xp.toLocaleString()} XP`;
@@ -234,15 +243,7 @@
         const profileCompleted = document.getElementById("profileCompleted");
 
         if (profileName) profileName.textContent = currentUserData.name;
-        if (profileAvatar) {
-            if (currentUserData.selectedAvatar) {
-                profileAvatar.textContent = currentUserData.selectedAvatar;
-                profileAvatar.style.fontSize = "32px";
-            } else {
-                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
-                profileAvatar.style.fontSize = "24px";
-            }
-        }
+        if (profileAvatar) profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
         if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
         if (profileLevel) profileLevel.textContent = `0${rank.level}`;
         if (profileStreak) profileStreak.textContent = `${currentUserData.streak} Días`;
@@ -310,7 +311,7 @@
         const arrow = document.getElementById(arrowId);
         if (content) {
             const isHidden = content.style.display === "none" || content.style.display === "";
-            content.style.display = isHidden ? "flex" : "none";
+            content.style.display = isHidden ? "block" : "none";
             if (arrow) {
                 arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
             }
@@ -1478,3 +1479,29 @@ window.stopVsSession = function() {
     });
 
 })();
+
+    window.switchProfileTab = function(tabName) {
+        const btnAch = document.getElementById("tabBtnAchievements");
+        const btnMed = document.getElementById("tabBtnMedals");
+        const contentAch = document.getElementById("tabContentAchievements");
+        const contentMed = document.getElementById("tabContentMedals");
+
+        if (!btnAch || !btnMed || !contentAch || !contentMed) return;
+
+        if (tabName === 'achievements') {
+            btnAch.style.borderColor = "var(--green)";
+            btnAch.style.color = "#fff";
+            btnMed.style.borderColor = "var(--border)";
+            btnMed.style.color = "var(--muted)";
+            contentAch.style.display = "flex";
+            contentMed.style.display = "none";
+        } else {
+            btnMed.style.borderColor = "var(--gold)";
+            btnMed.style.color = "#fff";
+            btnAch.style.borderColor = "var(--border)";
+            btnAch.style.color = "var(--muted)";
+            contentMed.style.display = "flex";
+            contentAch.style.display = "none";
+        }
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+    };

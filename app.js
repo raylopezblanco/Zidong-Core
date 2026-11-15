@@ -232,7 +232,11 @@
             const cur = currentUserData.xp - prevXp;
             pct = Math.min(100, Math.max(0, Math.round((cur / span) * 100)));
         }
-        if (batteryFill) batteryFill.style.width = `${pct}%`;
+        if (batteryFill) {
+            batteryFill.style.width = `${pct}%`;
+            batteryFill.style.background = "var(--green, #00f59b)";
+            batteryFill.style.height = "100%";
+        }
         if (batteryPct) batteryPct.textContent = `${pct}% carga`;
 
         const profileName = document.getElementById("profileName");
@@ -434,7 +438,14 @@
         const input = document.getElementById("editNameInput");
         if (input && input.value.trim().length > 0) {
             currentUserData.name = input.value.trim().slice(0, 20);
+            // Update Mock Leaderboard 'isMe' name
+            MOCK_LEADERBOARD.forEach(item => {
+                if (item.isMe) {
+                    item.name = currentUserData.name + " (Tú)";
+                }
+            });
             updateProfile();
+            if (typeof renderLeaderboard === "function") renderLeaderboard();
             window.toggleEditNameModal();
             if (typeof triggerHaptic === "function") triggerHaptic("win");
             window.showCyberAlert("SISTEMA ACTUALIZADO", "¡Identificador actualizado correctamente!", "✏️");
@@ -1476,6 +1487,9 @@ window.stopVsSession = function() {
         updateProfile();
         renderCareerPlanetsMenu();
         renderLeaderboard();
+        if (typeof window.renderLabComponents === "function") {
+            window.renderLabComponents();
+        }
     });
 
 })();

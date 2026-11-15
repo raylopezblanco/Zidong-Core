@@ -367,8 +367,8 @@
         if (btn && desc) {
             if (lastClaim === today) {
                 btn.textContent = "YA RECLAMADO HOY ✓";
-                btn.style.opacity = "0.6";
-                btn.style.pointerEvents = "none";
+                btn.style.opacity = "0.85";
+                btn.style.pointerEvents = "auto";
                 desc.textContent = "Ya has obtenido tu bono de energía de hoy. ¡Vuelve mañana!";
             } else {
                 btn.textContent = "RECLAMAR +100 XP ⚡";

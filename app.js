@@ -20,7 +20,7 @@
     window.triggerHaptic = triggerHaptic;
 
     let currentUserData = {
-        name: "New user",
+        name: "Raymundo",
         xp: 1850,
         streak: 5,
         completedActivities: ["w1_a1", "w1_a2", "w1_a3", "w1_a4", "w2_a1", "w2_a2", "w2_a3", "w2_a4"],
@@ -210,15 +210,6 @@
                 topAvatar.style.fontSize = "11px";
             }
         }
-        if (profileAvatar) {
-            if (currentUserData.selectedAvatar) {
-                profileAvatar.textContent = currentUserData.selectedAvatar;
-                profileAvatar.style.fontSize = "32px";
-            } else {
-                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
-                profileAvatar.style.fontSize = "24px";
-            }
-        }
         if (topRank) topRank.textContent = `⚡ ${rank.name}`;
 
         if (batteryXp) batteryXp.textContent = `${currentUserData.xp.toLocaleString()} XP`;
@@ -243,7 +234,15 @@
         const profileCompleted = document.getElementById("profileCompleted");
 
         if (profileName) profileName.textContent = currentUserData.name;
-        if (profileAvatar) profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+        if (profileAvatar) {
+            if (currentUserData.selectedAvatar) {
+                profileAvatar.textContent = currentUserData.selectedAvatar;
+                profileAvatar.style.fontSize = "32px";
+            } else {
+                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                profileAvatar.style.fontSize = "24px";
+            }
+        }
         if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
         if (profileLevel) profileLevel.textContent = `0${rank.level}`;
         if (profileStreak) profileStreak.textContent = `${currentUserData.streak} Días`;
@@ -311,7 +310,7 @@
         const arrow = document.getElementById(arrowId);
         if (content) {
             const isHidden = content.style.display === "none" || content.style.display === "";
-            content.style.display = isHidden ? "block" : "none";
+            content.style.display = isHidden ? "flex" : "none";
             if (arrow) {
                 arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
             }

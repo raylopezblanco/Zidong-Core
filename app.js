@@ -23,9 +23,10 @@
         name: "New user",
         xp: 1850,
         streak: 5,
-        completedActivities: ["w1_a1", "w1_a2"],
+        completedActivities: ["w1_a1", "w1_a2", "w1_a3", "w1_a4", "w2_a1", "w2_a2", "w2_a3", "w2_a4"],
         unlockedWorlds: ["world_1", "world_2", "world_3", "world_4", "world_5"],
-        unlockedBadges: ["badge_starter", "badge_volt", "badge_sensor"]
+        unlockedBadges: ["badge_starter", "badge_volt", "badge_sensor"],
+        selectedAvatar: "⚡"
     };
 
     const WORLDS_CONFIG = [
@@ -200,7 +201,24 @@
         const batteryPct = document.getElementById("homeBatteryPercent");
 
         if (topUser) topUser.textContent = currentUserData.name;
-        if (topAvatar) topAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+        if (topAvatar) {
+            if (currentUserData.selectedAvatar) {
+                topAvatar.textContent = currentUserData.selectedAvatar;
+                topAvatar.style.fontSize = "16px";
+            } else {
+                topAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                topAvatar.style.fontSize = "11px";
+            }
+        }
+        if (profileAvatar) {
+            if (currentUserData.selectedAvatar) {
+                profileAvatar.textContent = currentUserData.selectedAvatar;
+                profileAvatar.style.fontSize = "32px";
+            } else {
+                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                profileAvatar.style.fontSize = "24px";
+            }
+        }
         if (topRank) topRank.textContent = `⚡ ${rank.name}`;
 
         if (batteryXp) batteryXp.textContent = `${currentUserData.xp.toLocaleString()} XP`;
@@ -240,20 +258,66 @@
 
     function renderBadgesGrid() {
         const container = document.getElementById("badgesContainer");
+        const countLabel = document.getElementById("medalsCountLabel");
         if (!container) return;
         container.replaceChildren();
 
+        let unlockedCount = 0;
         WORLDS_CONFIG.forEach(w => {
             const isUnlocked = currentUserData.completedActivities.includes(w.activities[w.activities.length - 1].id);
+            if (isUnlocked) unlockedCount++;
+
             const badgeEl = document.createElement("div");
             badgeEl.className = `profile-badge-item ${isUnlocked ? "unlocked" : "locked"}`;
+            badgeEl.style.background = "var(--surface-light)";
+            badgeEl.style.border = "1px solid var(--border)";
+            badgeEl.style.borderRadius = "10px";
+            badgeEl.style.padding = "10px 6px";
+            badgeEl.style.textAlign = "center";
+            badgeEl.style.cursor = isUnlocked ? "pointer" : "default";
+
+            const isEquipped = currentUserData.selectedAvatar === w.icon;
+            if (isEquipped) {
+                badgeEl.style.borderColor = "var(--gold)";
+                badgeEl.style.background = "rgba(255, 200, 87, 0.15)";
+            }
+
             badgeEl.innerHTML = `
-                <div class="badge-icon-box">${isUnlocked ? w.icon : "🔒"}</div>
-                <span>${w.boss.badgeName}</span>
+                <div style="font-size:24px; display:block; margin-bottom:4px; filter:${isUnlocked ? 'none' : 'grayscale(100%) opacity(0.4)'};">${isUnlocked ? w.icon : "🔒"}</div>
+                <span style="font-size:8px; color:#fff; font-weight:700; display:block; line-height:1.2;">${w.boss.badgeName}</span>
+                ${isEquipped ? '<small style="color:var(--gold); font-size:7px; font-weight:900; display:block; margin-top:2px;">EN USO ⚡</small>' : ''}
             `;
+
+            badgeEl.onclick = () => {
+                if (isUnlocked) {
+                    currentUserData.selectedAvatar = w.icon;
+                    if (typeof triggerHaptic === "function") triggerHaptic("win");
+                    updateProfile();
+                    alert(`✨ ¡Has equipado la medalla ${w.icon} (${w.boss.badgeName}) como tu imagen de perfil!`);
+                } else {
+                    if (typeof triggerHaptic === "function") triggerHaptic("error");
+                    alert("🔒 Esta medalla aún está bloqueada. ¡Supera el checkpoint del mundo para desbloquearla!");
+                }
+            };
+
             container.appendChild(badgeEl);
         });
+
+        if (countLabel) countLabel.textContent = `${unlockedCount} / ${WORLDS_CONFIG.length} Desbloqueadas`;
     }
+
+    window.toggleProfileMenu = function(contentId, arrowId) {
+        const content = document.getElementById(contentId);
+        const arrow = document.getElementById(arrowId);
+        if (content) {
+            const isHidden = content.style.display === "none" || content.style.display === "";
+            content.style.display = isHidden ? "flex" : "none";
+            if (arrow) {
+                arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+            }
+            if (typeof triggerHaptic === "function") triggerHaptic("success");
+        }
+    };
 
     function renderAchievementsList() {
         const container = document.getElementById("profileAchievementsList");

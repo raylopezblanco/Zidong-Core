@@ -13,6 +13,9 @@ window.navigateTo = function(pageId, pushHistory = true) {
         target.classList.add('active');
         window.scrollTo(0, 0);
 
+        if (pageId === 'dashboard' && typeof window.updateProfile === 'function') {
+            window.updateProfile();
+        }
         if (pageId === 'career' && typeof window.renderCareerPlanetsMenu === 'function') {
             window.renderCareerPlanetsMenu();
         }
@@ -21,6 +24,9 @@ window.navigateTo = function(pageId, pushHistory = true) {
         }
         if (pageId === 'profile' && typeof window.updateProfile === 'function') {
             window.updateProfile();
+        }
+        if (pageId === 'hanziLab' && typeof window.renderLabComponents === 'function') {
+            window.renderLabComponents('all', '');
         }
         
         if (pushHistory) {
@@ -63,5 +69,9 @@ window.addEventListener('popstate', (event) => {
 });
 
 window.openAcademyLesson = function(modId) {
-    alert("Abriendo módulo de Academy #" + modId);
+    if (typeof window.showCyberAlert === 'function') {
+        window.showCyberAlert("ACADEMY OBERON", "Abriendo módulo de Academy #" + modId, "📖");
+    } else {
+        alert("Abriendo módulo de Academy #" + modId);
+    }
 };

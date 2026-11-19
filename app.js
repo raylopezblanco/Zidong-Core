@@ -188,7 +188,7 @@
         return current;
     }
 
-    function updateProfile() {
+function updateProfile() {
         const rank = calculateUserRank(currentUserData.xp);
         currentUserData.level = rank.level;
 
@@ -210,56 +210,58 @@
                 topAvatar.style.fontSize = "11px";
             }
         }
-        if (profileAvatar) {
-            if (currentUserData.selectedAvatar) {
-                profileAvatar.textContent = currentUserData.selectedAvatar;
-                profileAvatar.style.fontSize = "32px";
-            } else {
-                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
-                profileAvatar.style.fontSize = "24px";
-            }
-        }
         if (topRank) topRank.textContent = `⚡ ${rank.name}`;
 
         if (batteryXp) batteryXp.textContent = `${currentUserData.xp.toLocaleString()} XP`;
         if (batteryRank) batteryRank.textContent = `Rango 0${rank.level}: ${rank.name}`;
         
-        const nextRank = RANKS_LADDER.find(r => r.level === rank.level + 1);
+        const ranks = window.ZidongRanks || [];
+        const nextRank = ranks.find(r => (r.id || r.level) === rank.level + 1);
         let pct = 100;
         if (nextRank) {
-            const prevXp = rank.minXp;
-            const span = nextRank.minXp - prevXp;
+            const prevRank = ranks.find(r => (r.id || r.level) === rank.level) || ranks[0];
+            const prevXp = prevRank.minXP !== undefined ? prevRank.minXP : (prevRank.minXp || 0);
+            const nextXp = nextRank.minXP !== undefined ? nextRank.minXP : (nextRank.minXp || 1000);
+            const span = nextXp - prevXp;
             const cur = currentUserData.xp - prevXp;
             pct = Math.min(100, Math.max(0, Math.round((cur / span) * 100)));
         }
-        if (batteryFill) {
-            batteryFill.style.width = `${pct}%`;
-            batteryFill.style.background = "var(--green, #00f59b)";
-            batteryFill.style.height = "100%";
-        }
+        if (batteryFill) batteryFill.style.width = `${pct}%`;
         if (batteryPct) batteryPct.textContent = `${pct}% carga`;
 
         const profileName = document.getElementById("profileName");
-        const profileAvatar = document.getElementById("profileAvatar");
+        const profileAvatarEl = document.getElementById("profileAvatar");
         const profileRankBadge = document.getElementById("profileRankBadge");
         const profileLevel = document.getElementById("profileLevel");
         const profileStreak = document.getElementById("profileStreak");
         const profileCompleted = document.getElementById("profileCompleted");
 
         if (profileName) profileName.textContent = currentUserData.name;
-        if (profileAvatar) profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+        if (profileAvatarEl) {
+            if (currentUserData.selectedAvatar) {
+                profileAvatarEl.textContent = currentUserData.selectedAvatar;
+                profileAvatarEl.style.fontSize = "32px";
+            } else {
+                profileAvatarEl.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                profileAvatarEl.style.fontSize = "24px";
+            }
+        }
         if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
-        if (profileLevel) profileLevel.textContent = `0${rank.level}`;
+        
+        const totalCompleted = currentUserData.completedActivities.length;
+        if (profileLevel) profileLevel.textContent = totalCompleted < 10 ? `0${totalCompleted}` : totalCompleted;
         if (profileStreak) profileStreak.textContent = `${currentUserData.streak} Días`;
-        if (profileCompleted) profileCompleted.textContent = currentUserData.completedActivities.length;
+        if (profileCompleted) profileCompleted.textContent = totalCompleted;
 
-        renderBadgesGrid();
-        renderAchievementsList();
-        renderWorldsProgressInProfile();
-        renderRanksLadder();
+        const rankPosEl = document.getElementById("profileRankPos");
+        if (rankPosEl) rankPosEl.textContent = "#03";
+
+        if (typeof renderBadgesGrid === "function") renderBadgesGrid();
+        if (typeof renderAchievementsList === "function") renderAchievementsList();
+        if (typeof renderWorldsProgressInProfile === "function") renderWorldsProgressInProfile();
+        if (typeof renderRanksLadder === "function") renderRanksLadder();
     }
     window.updateProfile = updateProfile;
-
     function renderBadgesGrid() {
         const container = document.getElementById("badgesContainer");
         const countLabel = document.getElementById("medalsCountLabel");
@@ -297,10 +299,10 @@
                     currentUserData.selectedAvatar = w.icon;
                     if (typeof triggerHaptic === "function") triggerHaptic("win");
                     updateProfile();
-                    window.showCyberAlert("MEDALLA EQUIPADA", `¡Has equipado la medalla ${w.icon} (${w.boss.badgeName}) como tu imagen de perfil!`, "✨");
+                    alert(`✨ ¡Has equipado la medalla ${w.icon} (${w.boss.badgeName}) como tu imagen de perfil!`);
                 } else {
                     if (typeof triggerHaptic === "function") triggerHaptic("error");
-                    window.showCyberAlert("ACCESO DENEGADO", "Esta medalla aún está bloqueada. ¡Supera el checkpoint del mundo para desbloquearla!", "🔒");
+                    alert("🔒 Esta medalla aún está bloqueada. ¡Supera el checkpoint del mundo para desbloquearla!");
                 }
             };
 
@@ -438,19 +440,12 @@
         const input = document.getElementById("editNameInput");
         if (input && input.value.trim().length > 0) {
             currentUserData.name = input.value.trim().slice(0, 20);
-            // Update Mock Leaderboard 'isMe' name
-            MOCK_LEADERBOARD.forEach(item => {
-                if (item.isMe) {
-                    item.name = currentUserData.name + " (Tú)";
-                }
-            });
             updateProfile();
-            if (typeof renderLeaderboard === "function") renderLeaderboard();
             window.toggleEditNameModal();
             if (typeof triggerHaptic === "function") triggerHaptic("win");
-            window.showCyberAlert("SISTEMA ACTUALIZADO", "¡Identificador actualizado correctamente!", "✏️");
+            alert("¡Identificador actualizado correctamente!");
         } else {
-            window.showCyberAlert("ADVERTENCIA DE PLANTA", "Por favor ingresa un nombre válido.", "⚠️");
+            alert("Por favor ingresa un nombre válido.");
         }
     };
 
@@ -902,7 +897,7 @@
                 currentUserData.xp += act.reward;
                 updateProfile();
             }
-            window.showCyberAlert("NIVEL CONQUISTADO", `¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado "${act.hanzi}" (${act.meaning}).`, "🌟");
+            alert(`🌟 ¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado "${act.hanzi}" (${act.meaning}).`);
             if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
         };
 
@@ -967,7 +962,7 @@
                                 updateProfile();
                             }
                             setTimeout(() => {
-                                window.showCyberAlert("CHECKPOINT DE LÍNEA", `¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`, "🏆");
+                                alert(`🏆 ¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`);
                                 renderBadgesGrid();
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 400);
@@ -1452,7 +1447,7 @@ window.finishVsBattle = function() {
         const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
         localStorage.setItem("zidong_vs_wins", currentWins);
 
-        window.showCyberAlert("VICTORIA EN DUELO", `¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`, "⚔️");
+        alert(`🏆 ¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`);
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
     } else {
         if (typeof triggerHaptic === "function") triggerHaptic("error");
@@ -1487,9 +1482,6 @@ window.stopVsSession = function() {
         updateProfile();
         renderCareerPlanetsMenu();
         renderLeaderboard();
-        if (typeof window.renderLabComponents === "function") {
-            window.renderLabComponents();
-        }
     });
 
 })();

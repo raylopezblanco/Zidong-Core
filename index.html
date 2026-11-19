@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=32.0">
+    <link rel="stylesheet" href="style.css?v=36.0">
 </head>
 <body>
 
@@ -465,16 +465,29 @@
         </div>
     </div>
 
-            <!-- MODAL EDITAR NOMBRE CIBER-INDUSTRIAL -->
-    <div id="editNameModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.88); backdrop-filter:blur(8px); z-index:999999; justify-content:center; align-items:center;" onclick="if(event.target.id==='editNameModal') window.toggleEditNameModal()">
-        <div class="modal-box" style="background:linear-gradient(145deg, #0b1424, #132238); border:2px solid var(--cyan); border-radius:20px; padding:28px; text-align:center; max-width:360px; width:90%; box-shadow: 0 15px 50px rgba(39,216,232,0.35);">
-            <div style="font-size:38px; margin-bottom:10px;">🛡️</div>
-            <h3 style="color:var(--cyan); font-size:16px; margin-bottom:6px; letter-spacing:1px;">IDENTIFICADOR DE ESPECIALISTA</h3>
-            <p style="font-size:12px; color:var(--muted); margin-bottom:18px; line-height:1.4;">Actualiza tu nombre de operador en la red OBERON:</p>
-            <input type="text" id="editNameInput" maxlength="20" placeholder="Ej. Ing. Raymundo" style="width:100%; background:rgba(5,11,20,0.95); border:1.5px solid var(--cyan); border-radius:12px; padding:14px; color:#fff; font-size:15px; outline:none; margin-bottom:20px; text-align:center; font-weight:bold; box-shadow:inset 0 0 12px rgba(39,216,232,0.2);" />
-            <div style="display:flex; gap:12px;">
-                <button class="reveal-button" style="background:var(--cyan); color:#0b1424; font-weight:900; flex:1; padding:14px; border-radius:12px; cursor:pointer;" onclick="window.saveNewUserName()">GUARDAR ⚡</button>
-                <button class="back-button" style="flex:1; padding:14px; border-radius:12px; border-color:var(--border); color:#fff; cursor:pointer;" onclick="window.toggleEditNameModal()">CANCELAR</button>
+    <!-- MODAL EDITAR NOMBRE CIBER-INDUSTRIAL -->
+    <div id="editNameModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.9); backdrop-filter:blur(10px); z-index:999999; justify-content:center; align-items:center;" onclick="if(event.target.id==='editNameModal') window.closeEditNameModal()">
+        <div class="modal-box" style="background:linear-gradient(145deg, #0b1424, #142640); border:2px solid var(--cyan); border-radius:20px; padding:26px 22px; text-align:center; max-width:350px; width:90%; box-shadow: 0 20px 50px rgba(0, 245, 155, 0.2), 0 0 30px rgba(39, 216, 232, 0.3);">
+            <div id="editNameStep1">
+                <div style="width:56px; height:56px; margin:0 auto 12px auto; border-radius:50%; background:rgba(39,216,232,0.12); border:1.5px solid var(--cyan); display:flex; align-items:center; justify-content:center; font-size:28px;">🪪</div>
+                <h3 style="color:var(--cyan); font-size:15px; margin-bottom:6px; letter-spacing:1px;">IDENTIFICADOR DE OPERADOR</h3>
+                <p style="font-size:11.5px; color:var(--muted); margin-bottom:16px; line-height:1.4;">Ingresa tu nuevo nombre de especialista en la red OBERON:</p>
+                <input type="text" id="editNameInput" maxlength="20" placeholder="Ej. Ing. Raymundo" style="width:100%; background:rgba(5,11,20,0.95); border:1.5px solid var(--cyan); border-radius:12px; padding:13px; color:#fff; font-size:15px; outline:none; margin-bottom:18px; text-align:center; font-weight:800; box-shadow:inset 0 0 12px rgba(39,216,232,0.2);" />
+                <div style="display:flex; gap:10px;">
+                    <button class="back-button" style="flex:1; padding:13px; border-radius:12px; border-color:var(--border); color:var(--muted); cursor:pointer;" onclick="window.closeEditNameModal()">CANCELAR</button>
+                    <button class="reveal-button" style="background:var(--cyan); color:#0b1424; font-weight:900; flex:1; padding:13px; border-radius:12px; cursor:pointer;" onclick="window.askConfirmUserName()">ACEPTAR ⚡</button>
+                </div>
+            </div>
+            <div id="editNameStep2" style="display:none;">
+                <div style="width:56px; height:56px; margin:0 auto 12px auto; border-radius:50%; background:rgba(255,170,0,0.15); border:1.5px solid var(--amber); display:flex; align-items:center; justify-content:center; font-size:28px;">⚠️</div>
+                <h3 style="color:var(--amber); font-size:15px; margin-bottom:8px; letter-spacing:0.8px;">CONFIRMAR CAMBIO</h3>
+                <p style="font-size:12px; color:#e2e8f0; margin-bottom:10px; line-height:1.45;">¿Estás seguro de cambiar tu nombre a:</p>
+                <div id="confirmPreviewName" style="background:rgba(0,245,155,0.1); border:1px solid var(--green); border-radius:10px; padding:10px; color:var(--green); font-size:16px; font-weight:900; margin-bottom:16px; word-break:break-word;"></div>
+                <p style="font-size:10.5px; color:var(--muted); margin-bottom:18px;">Este cambio se reflejará en tu perfil y en el ranking global.</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="back-button" style="flex:1; padding:13px; border-radius:12px; border-color:rgba(255,68,68,0.4); color:#ff6b6b; cursor:pointer;" onclick="window.closeEditNameModal()">CANCEL</button>
+                    <button class="reveal-button" style="background:var(--green); color:#0b1424; font-weight:900; flex:1; padding:13px; border-radius:12px; cursor:pointer;" onclick="window.confirmSaveNewUserName()">OK ✓</button>
+                </div>
             </div>
         </div>
     </div>
@@ -492,6 +505,16 @@
         </div>
     </div>
 
+    <!-- MODAL ALERTA ESTÉTICA CIBER-INDUSTRIAL -->
+    <div id="cyberAlertModal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,11,20,0.88); backdrop-filter:blur(8px); z-index:999999; justify-content:center; align-items:center;" onclick="if(event.target.id==='cyberAlertModal') window.closeCyberAlert()">
+        <div class="modal-box" style="background:linear-gradient(145deg, #0b1424, #142640); border:2px solid var(--cyan); border-radius:20px; padding:26px 22px; text-align:center; max-width:340px; width:90%; box-shadow: 0 15px 45px rgba(39,216,232,0.35);">
+            <div id="cyberAlertIcon" style="font-size:40px; margin-bottom:10px;">⚡</div>
+            <h3 id="cyberAlertTitle" style="color:var(--cyan); font-size:15px; margin-bottom:8px; letter-spacing:1px;">SISTEMA OBERON</h3>
+            <p id="cyberAlertMsg" style="font-size:12px; color:#e2e8f0; margin-bottom:20px; line-height:1.5; white-space:pre-line;"></p>
+            <button class="reveal-button" style="background:var(--cyan); color:#0b1424; font-weight:900; padding:13px; border-radius:12px; cursor:pointer;" onclick="window.closeCyberAlert()">ENTENDIDO ⚡</button>
+        </div>
+    </div>
+
     <script>
         function hideSplashInstantly() {
             const s = document.getElementById('oberonSplashScreen');
@@ -499,9 +522,9 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="industrial-ranks.js?v=32.0"></script>
-    <script src="critical-fail.js?v=32.0"></script>
-    <script src="navigation.js?v=32.0"></script>
-    <script src="app.js?v=32.0"></script>
+    <script src="industrial-ranks.js?v=36.0"></script>
+    <script src="critical-fail.js?v=36.0"></script>
+    <script src="navigation.js?v=36.0"></script>
+    <script src="app.js?v=36.0"></script>
 </body>
 </html>

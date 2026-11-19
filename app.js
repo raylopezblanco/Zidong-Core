@@ -19,7 +19,28 @@
     }
     window.triggerHaptic = triggerHaptic;
 
-    let currentUserData = {
+    window.showCyberAlert = function(title, message, icon = "⚡") {
+        const modal = document.getElementById("cyberAlertModal");
+        const titleEl = document.getElementById("cyberAlertTitle");
+        const msgEl = document.getElementById("cyberAlertMsg");
+        const iconEl = document.getElementById("cyberAlertIcon");
+        if (modal && titleEl && msgEl) {
+            if (iconEl) iconEl.textContent = icon;
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.style.display = "flex";
+        } else {
+            alert(`${title}\n\n${message}`);
+        }
+    };
+
+    window.closeCyberAlert = function() {
+        const modal = document.getElementById("cyberAlertModal");
+        if (modal) modal.style.display = "none";
+    };
+
+
+    const DEFAULT_USER_DATA = {
         name: "New user",
         xp: 1850,
         streak: 5,
@@ -28,6 +49,22 @@
         unlockedBadges: ["badge_starter", "badge_volt", "badge_sensor"],
         selectedAvatar: "⚡"
     };
+
+    let currentUserData = (() => {
+        try {
+            const saved = localStorage.getItem("zidong_user_data_v1");
+            if (saved) {
+                return Object.assign({}, DEFAULT_USER_DATA, JSON.parse(saved));
+            }
+        } catch (e) {}
+        return Object.assign({}, DEFAULT_USER_DATA);
+    })();
+
+    function saveUserData() {
+        try {
+            localStorage.setItem("zidong_user_data_v1", JSON.stringify(currentUserData));
+        } catch (e) {}
+    }
 
     const WORLDS_CONFIG = [
         {
@@ -191,6 +228,7 @@
     function updateProfile() {
         const rank = calculateUserRank(currentUserData.xp);
         currentUserData.level = rank.level;
+        saveUserData();
 
         const topUser = document.getElementById("topUsername");
         const topAvatar = document.getElementById("topAvatar");
@@ -199,6 +237,14 @@
         const batteryXp = document.getElementById("homeBatteryXpValue");
         const batteryRank = document.getElementById("homeBatteryRank");
         const batteryPct = document.getElementById("homeBatteryPercent");
+
+        const profileName = document.getElementById("profileName");
+        const profileAvatar = document.getElementById("profileAvatar");
+        const profileRankBadge = document.getElementById("profileRankBadge");
+        const profileLevel = document.getElementById("profileLevel");
+        const profileStreak = document.getElementById("profileStreak");
+        const profileCompleted = document.getElementById("profileCompleted");
+        const profileRankPos = document.getElementById("profileRankPos");
 
         if (topUser) topUser.textContent = currentUserData.name;
         if (topAvatar) {
@@ -230,33 +276,45 @@
             const prevXp = rank.minXp;
             const span = nextRank.minXp - prevXp;
             const cur = currentUserData.xp - prevXp;
-            pct = Math.min(100, Math.max(0, Math.round((cur / span) * 100)));
+            pct = Math.min(100, Math.max(5, Math.round((cur / span) * 100)));
         }
         if (batteryFill) {
-            batteryFill.style.width = `${pct}%`;
-            batteryFill.style.background = "var(--green, #00f59b)";
-            batteryFill.style.height = "100%";
+            batteryFill.style.setProperty("width", `${pct}%`, "important");
+            batteryFill.style.setProperty("background", "linear-gradient(90deg, #00f59b, #27d8e8)", "important");
+            batteryFill.style.setProperty("height", "100%", "important");
+            batteryFill.style.setProperty("display", "block", "important");
         }
         if (batteryPct) batteryPct.textContent = `${pct}% carga`;
 
-        const profileName = document.getElementById("profileName");
-        const profileAvatar = document.getElementById("profileAvatar");
-        const profileRankBadge = document.getElementById("profileRankBadge");
-        const profileLevel = document.getElementById("profileLevel");
-        const profileStreak = document.getElementById("profileStreak");
-        const profileCompleted = document.getElementById("profileCompleted");
-
         if (profileName) profileName.textContent = currentUserData.name;
-        if (profileAvatar) profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
         if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
         if (profileLevel) profileLevel.textContent = `0${rank.level}`;
         if (profileStreak) profileStreak.textContent = `${currentUserData.streak} Días`;
         if (profileCompleted) profileCompleted.textContent = currentUserData.completedActivities.length;
 
+        // Sync leaderboard entry with current user name & XP
+        if (typeof MOCK_LEADERBOARD !== "undefined" && Array.isArray(MOCK_LEADERBOARD)) {
+            MOCK_LEADERBOARD.forEach(item => {
+                if (item.isMe) {
+                    item.name = currentUserData.name;
+                    item.xp = currentUserData.xp;
+                    item.badge = `⚡ Nivel ${rank.level}`;
+                }
+            });
+            MOCK_LEADERBOARD.sort((a, b) => b.xp - a.xp);
+            MOCK_LEADERBOARD.forEach((item, idx) => {
+                item.rank = idx + 1;
+                if (item.isMe && profileRankPos) {
+                    profileRankPos.textContent = `#0${item.rank}`;
+                }
+            });
+        }
+
         renderBadgesGrid();
         renderAchievementsList();
         renderWorldsProgressInProfile();
         renderRanksLadder();
+        if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
     }
     window.updateProfile = updateProfile;
 
@@ -414,45 +472,67 @@
         });
     }
 
+    let pendingNewUserName = "";
+
     window.editUserNameOnce = function() {
-        const input = document.getElementById("editNameInput");
-        if (input) input.value = currentUserData.name;
-        window.toggleEditNameModal();
-    };
-
-    window.toggleEditNameModal = function() {
         const modal = document.getElementById("editNameModal");
+        const step1 = document.getElementById("editNameStep1");
+        const step2 = document.getElementById("editNameStep2");
+        const input = document.getElementById("editNameInput");
+        if (step1) step1.style.display = "block";
+        if (step2) step2.style.display = "none";
+        if (input) {
+            input.value = currentUserData.name;
+        }
         if (modal) {
-            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-            if (modal.style.display === "flex") {
-                const input = document.getElementById("editNameInput");
-                if (input) {
-                    input.value = currentUserData.name;
-                    input.focus();
-                }
-            }
+            modal.style.display = "flex";
+            if (input) setTimeout(() => input.focus(), 50);
         }
     };
 
-    window.saveNewUserName = function() {
-        const input = document.getElementById("editNameInput");
-        if (input && input.value.trim().length > 0) {
-            currentUserData.name = input.value.trim().slice(0, 20);
-            // Update Mock Leaderboard 'isMe' name
-            MOCK_LEADERBOARD.forEach(item => {
-                if (item.isMe) {
-                    item.name = currentUserData.name + " (Tú)";
-                }
-            });
-            updateProfile();
-            if (typeof renderLeaderboard === "function") renderLeaderboard();
-            window.toggleEditNameModal();
-            if (typeof triggerHaptic === "function") triggerHaptic("win");
-            window.showCyberAlert("SISTEMA ACTUALIZADO", "¡Identificador actualizado correctamente!", "✏️");
-        } else {
-            window.showCyberAlert("ADVERTENCIA DE PLANTA", "Por favor ingresa un nombre válido.", "⚠️");
-        }
+    window.closeEditNameModal = function() {
+        const modal = document.getElementById("editNameModal");
+        const step1 = document.getElementById("editNameStep1");
+        const step2 = document.getElementById("editNameStep2");
+        if (modal) modal.style.display = "none";
+        if (step1) step1.style.display = "block";
+        if (step2) step2.style.display = "none";
+        pendingNewUserName = "";
     };
+
+    window.toggleEditNameModal = window.closeEditNameModal;
+
+    window.askConfirmUserName = function() {
+        const input = document.getElementById("editNameInput");
+        const val = input ? input.value.trim().slice(0, 20) : "";
+        if (!val) {
+            if (typeof triggerHaptic === "function") triggerHaptic("error");
+            window.showCyberAlert("ADVERTENCIA DE PLANTA", "Por favor ingresa un nombre válido.", "⚠️");
+            return;
+        }
+        pendingNewUserName = val;
+        const step1 = document.getElementById("editNameStep1");
+        const step2 = document.getElementById("editNameStep2");
+        const preview = document.getElementById("confirmPreviewName");
+        if (preview) preview.textContent = pendingNewUserName;
+        if (step1) step1.style.display = "none";
+        if (step2) step2.style.display = "block";
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+    };
+
+    window.confirmSaveNewUserName = function() {
+        if (!pendingNewUserName) {
+            window.closeEditNameModal();
+            return;
+        }
+        currentUserData.name = pendingNewUserName;
+        updateProfile();
+        window.closeEditNameModal();
+        if (typeof triggerHaptic === "function") triggerHaptic("win");
+        window.showCyberAlert("SISTEMA ACTUALIZADO", `¡Identificador cambiado a "${currentUserData.name}" correctamente!`, "✏️");
+    };
+
+    window.saveNewUserName = window.askConfirmUserName;
 
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") {
@@ -525,11 +605,14 @@
     const LAB_COMPONENTS = [
         { id: "c1", category: "world_1", hanzi: "变频器", pinyin: "biàn pín qì", name: "VFD / Inversor de Frecuencia", desc: "Controla velocidad y torque de motores asíncronos.", icon: "⚡" },
         { id: "c2", category: "world_1", hanzi: "接触器", pinyin: "jiē chù qì", name: "Contactor Eléctrico", desc: "Dispositivo electromecánico para abrir/cerrar potencia.", icon: "🔌" },
-        { id: "c3", category: "world_2", hanzi: "气缸", pinyin: "qì gāng", name: "Cilindro Neumático", desc: "Actuador lineal impulsado por aire comprimido.", icon: "⚙️" },
-        { id: "c4", category: "world_2", hanzi: "传感器", pinyin: "chuán gǎn qì", name: "Sensor Inductivo / Fotoeléctrico", desc: "Detecta presencia de piezas metálicas u ópticas.", icon: "📡" },
-        { id: "c5", category: "world_3", hanzi: "电磁阀", pinyin: "diàn cí fá", name: "Electroválvula SMC", desc: "Gobierna el flujo de aire hacia los actuadores.", icon: "💨" },
-        { id: "c6", category: "world_4", hanzi: "机器人", pinyin: "jī qì rén", name: "Brazo Robot KUKA / Fanuc", desc: "Manipulador articulado para ensamble automático.", icon: "🤖" },
-        { id: "c7", category: "world_5", hanzi: "相机", pinyin: "xiàng jī", name: "Cámara AOI / Visión", desc: "Inspección de soldadura y componentes SMD.", icon: "📷" }
+        { id: "c3", category: "world_1", hanzi: "电源", pinyin: "diàn yuán", name: "Fuente Conmutada 24VDC", desc: "Suministra voltaje estabilizado para control PLC y sensores.", icon: "🔋" },
+        { id: "c4", category: "world_2", hanzi: "伺服电机", pinyin: "sì fú diàn jī", name: "Servomotor de Eje", desc: "Actuador de precisión con encoder para posicionamiento.", icon: "⚙️" },
+        { id: "c5", category: "world_2", hanzi: "传感器", pinyin: "chuán gǎn qì", name: "Sensor Inductivo / Fotoeléctrico", desc: "Detecta presencia de piezas metálicas u ópticas.", icon: "📡" },
+        { id: "c6", category: "world_3", hanzi: "电磁阀", pinyin: "diàn cí fá", name: "Electroválvula SMC", desc: "Gobierna el flujo de aire hacia los actuadores.", icon: "💨" },
+        { id: "c7", category: "world_3", hanzi: "气缸", pinyin: "qì gāng", name: "Cilindro Neumático", desc: "Actuador lineal impulsado por aire comprimido.", icon: "🗜️" },
+        { id: "c8", category: "world_4", hanzi: "机器人", pinyin: "jī qì rén", name: "Brazo Robot KUKA / Fanuc", desc: "Manipulador articulado para ensamble automático.", icon: "🤖" },
+        { id: "c9", category: "world_4", hanzi: "夹爪", pinyin: "jiā zhǎo", name: "Gripper / Pinza Neumática", desc: "Efector final para sujeción de tarjetas y piezas.", icon: "🦾" },
+        { id: "c10", category: "world_5", hanzi: "相机", pinyin: "xiàng jī", name: "Cámara AOI / Visión", desc: "Inspección de soldadura y componentes SMD.", icon: "📷" }
     ];
 
     window.renderLabComponents = function(filterCat = "all", searchTerm = "") {
@@ -623,7 +706,7 @@
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-weight:900; font-size:12px; color:${item.rank === 1 ? 'var(--gold)' : item.rank === 2 ? '#c0c0c0' : item.rank === 3 ? '#cd7f32' : 'var(--muted)'};">#0${item.rank}</span>
                     <div>
-                        <strong style="font-size:12px; color:${item.isMe ? 'var(--green)' : '#fff'}; display:block;">${item.name} ${item.isMe ? '(Tú)' : ''}</strong>
+                        <strong style="font-size:12px; color:${item.isMe ? 'var(--green)' : '#fff'}; display:block;">${item.isMe ? currentUserData.name : item.name} ${item.isMe ? '(Tú)' : ''}</strong>
                         <small style="font-size:9.5px; color:var(--muted);">${item.badge}</small>
                     </div>
                 </div>
@@ -903,7 +986,11 @@
                 updateProfile();
             }
             window.showCyberAlert("NIVEL CONQUISTADO", `¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado "${act.hanzi}" (${act.meaning}).`, "🌟");
-            if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
+            if (world) {
+                openWorldDetails(world);
+            } else if (typeof window.navigateTo === "function") {
+                window.navigateTo("worldDetailsView");
+            }
         };
 
         renderPhase1();
@@ -1160,10 +1247,16 @@ window.startVsRound = function() {
     grid.replaceChildren();
 
     if (window.selectedVsDiffKey === "EASY") {
+        grid.style.display = "grid";
+        grid.style.gridTemplateColumns = "1fr 1fr";
         window.loadVsLevel1SingleHanzi();
     } else if (window.selectedVsDiffKey === "MEDIUM") {
+        grid.style.display = "grid";
+        grid.style.gridTemplateColumns = "1fr 1fr";
         window.loadVsLevel2CompoundWord();
     } else if (window.selectedVsDiffKey === "HARD") {
+        grid.style.display = "flex";
+        grid.style.flexDirection = "column";
         window.loadVsLevel3OrderHanzi();
     }
 };
@@ -1246,8 +1339,8 @@ window.loadVsLevel3OrderHanzi = function() {
     const correct = window.vsRandomItem(window.VS_WORD_DATA);
     window.vsCurrentQuestion = correct;
 
-    if (display) display.textContent = correct.hanzi;
-    if (instruction) instruction.textContent = `Ensambla los caracteres para: "${correct.meaning}"`;
+    if (display) display.textContent = "🧩 ???";
+    if (instruction) instruction.textContent = `Ordena los bloques Hanzi (${correctChars.length} caracteres):`;
 
     const correctChars = correct.hanzi.split("");
     const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自"];
@@ -1483,14 +1576,20 @@ window.stopVsSession = function() {
     }
 };
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function initZidongApp() {
         updateProfile();
         renderCareerPlanetsMenu();
         renderLeaderboard();
         if (typeof window.renderLabComponents === "function") {
-            window.renderLabComponents();
+            window.renderLabComponents("all", "");
         }
-    });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initZidongApp);
+    } else {
+        initZidongApp();
+    }
 
 })();
 

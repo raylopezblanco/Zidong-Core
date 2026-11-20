@@ -10,6 +10,9 @@ window.navigateTo = function(pageId, pushHistory = true) {
     
     const target = document.getElementById(pageId);
     if (target) {
+        if (window.ZidongAudio && typeof window.ZidongAudio.syncTrackWithPage === 'function') {
+            window.ZidongAudio.syncTrackWithPage(pageId);
+        }
         target.classList.add('active');
         window.scrollTo(0, 0);
 

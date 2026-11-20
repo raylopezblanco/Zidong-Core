@@ -745,13 +745,16 @@
     ];
 
     window.interactWithCompanion = function() {
-        triggerHaptic("success");
+        if (navigator.vibrate) navigator.vibrate(35);
+        if (window.ZidongAudio && typeof window.ZidongAudio.playBark === "function") {
+            window.ZidongAudio.playBark();
+        }
         const bubble = document.getElementById("companionBubble");
         const textEl = document.getElementById("companionText");
         if (!bubble || !textEl) return;
 
         const randomPhrase = COMPANION_PHRASES[Math.floor(Math.random() * COMPANION_PHRASES.length)];
-        textEl.textContent = randomPhrase;
+        textEl.textContent = `🐶 ¡Guau! ${randomPhrase}`;
         bubble.classList.add("bounce-pop");
         setTimeout(() => bubble.classList.remove("bounce-pop"), 400);
     };
@@ -1903,6 +1906,17 @@ window.finishVsBattle = function() {
         if (typeof window.renderLabComponents === "function") {
             window.renderLabComponents();
         }
+        const unlockAudioOnce = () => {
+            const activeSec = document.querySelector(".page.active");
+            const pageId = activeSec ? activeSec.id : "dashboard";
+            if (window.ZidongAudio && typeof window.ZidongAudio.syncTrackWithPage === "function") {
+                window.ZidongAudio.syncTrackWithPage(pageId);
+            }
+            document.removeEventListener("pointerdown", unlockAudioOnce);
+            document.removeEventListener("keydown", unlockAudioOnce);
+        };
+        document.addEventListener("pointerdown", unlockAudioOnce, { once: false });
+        document.addEventListener("keydown", unlockAudioOnce, { once: false });
     });
 
 })();

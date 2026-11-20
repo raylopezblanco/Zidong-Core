@@ -170,8 +170,10 @@
 
     function switchTrack(trackName) {
         if (!trackName) return;
-        // Siempre corta primero lo que estaba sonando antes de iniciar el nuevo track
-        if (activeTrack === trackName && loopTimer) return;
+        const ctx = getCtx();
+        if (ctx && ctx.state === "suspended") {
+            ctx.resume().catch(() => {});
+        }
         stopAllMusic();
         activeTrack = trackName;
 

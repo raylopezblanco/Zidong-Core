@@ -770,3 +770,175 @@ html, body {
         margin-top: 8px !important;
     }
 }
+
+
+/* ==========================================================================
+   RECOMPENSA DIARIA FLOTANTE JUNTO AL CYBERDOG + MINIJUEGO HANZI-SWAP (V45)
+   ========================================================================== */
+.companion-tube-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.daily-float-badge {
+    position: absolute;
+    right: -18px;
+    top: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: linear-gradient(145deg, rgba(255, 200, 87, 0.24), rgba(17, 31, 53, 0.96));
+    border: 1.5px solid var(--gold);
+    border-radius: 14px;
+    padding: 7px 9px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(255, 200, 87, 0.35);
+    animation: floatPulse 2.2s ease-in-out infinite;
+    z-index: 10;
+}
+
+.daily-float-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.daily-float-txt {
+    font-size: 8.5px;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.4px;
+}
+
+@keyframes floatPulse {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-4px); }
+}
+
+.swap-mode-card {
+    background: linear-gradient(145deg, #102a43, #0b1424) !important;
+    border: 1.5px solid rgba(39, 216, 232, 0.55) !important;
+}
+
+.swap-mode-card .sub-card-tag {
+    color: var(--cyan) !important;
+}
+
+.swap-arena-card {
+    width: 100%;
+    background: rgba(17, 31, 53, 0.96);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.swap-hud-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.swap-hud-pill {
+    flex: 1;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.swap-hud-pill span {
+    font-size: 9px;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.swap-hud-pill strong {
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 900;
+}
+
+.swap-target-box {
+    background: rgba(5, 11, 20, 0.85);
+    border: 1px solid rgba(39, 216, 232, 0.35);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.swap-target-box small {
+    font-size: 8.5px;
+    color: var(--cyan);
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    display: block;
+}
+
+.swap-target-meaning {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 900;
+    margin: 3px 0;
+}
+
+.swap-target-hint {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.swap-grid-4x4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.swap-tile-btn {
+    height: 56px;
+    background: var(--surface-light);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 24px;
+    font-family: "Noto Sans SC", sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.14s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.swap-tile-btn.is-selected {
+    border-color: var(--gold);
+    background: rgba(255, 200, 87, 0.2);
+    transform: scale(1.05);
+}
+
+.swap-tile-btn.is-matched {
+    border-color: var(--green);
+    background: rgba(0, 245, 155, 0.28);
+    color: var(--green);
+}
+
+.swap-actions-bar {
+    display: flex;
+    gap: 8px;
+}
+
+.swap-mini-btn {
+    flex: 1;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 10px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}

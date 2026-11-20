@@ -297,8 +297,19 @@
         renderAchievementsList();
         renderWorldsProgressInProfile();
         renderRanksLadder();
+        if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
     }
     window.updateProfile = updateProfile;
+
+    window.refreshDailyRewardFloat = function() {
+        const badge = document.getElementById("dailyFloatNotification");
+        if (!badge) return;
+        const today = new Date().toISOString().slice(0, 10);
+        const lastClaim = localStorage.getItem("zidong_last_claim_date");
+        const alreadyClaimed = (lastClaim === today);
+        badge.style.display = alreadyClaimed ? "none" : "flex";
+    };
+
 
     function renderBadgesGrid() {
         const container = document.getElementById("badgesContainer");
@@ -562,6 +573,7 @@
         }
         currentUserData.xp += 100;
         localStorage.setItem("zidong_last_claim_date", today);
+        if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
         updateProfile();
         window.toggleDailyRewardModal();
     };
@@ -754,7 +766,7 @@
         if (!bubble || !textEl) return;
 
         const randomPhrase = COMPANION_PHRASES[Math.floor(Math.random() * COMPANION_PHRASES.length)];
-        textEl.textContent = `🐶 ¡Guau! ${randomPhrase}`;
+        textEl.textContent = randomPhrase;
         bubble.classList.add("bounce-pop");
         setTimeout(() => bubble.classList.remove("bounce-pop"), 400);
     };
@@ -1905,6 +1917,9 @@ window.finishVsBattle = function() {
         renderLeaderboard();
         if (typeof window.renderLabComponents === "function") {
             window.renderLabComponents();
+        }
+        if (typeof window.refreshDailyRewardFloat === "function") {
+            window.refreshDailyRewardFloat();
         }
         const unlockAudioOnce = () => {
             const activeSec = document.querySelector(".page.active");

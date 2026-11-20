@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=44.0">
+    <link rel="stylesheet" href="style.css?v=45.0">
 </head>
 <body>
 
@@ -100,30 +100,36 @@
                 </div>
             </div>
 
-            <!-- CYBERDOG EN CÁPSULA DE ESTASIS -->
+            <!-- CYBERDOG EN CÁPSULA DE ESTASIS + RECOMPENSA DIARIA FLOTANTE -->
             <div class="companion-stage home-companion-stage">
                 <div class="speech-bubble dialog-balloon" id="companionBubble">
                     <span id="companionText">¡Terminal OBERON lista! Tócame para recibir curiosidades del idioma chino. ⚡</span>
                 </div>
-                <div class="stasis-tube" onclick="window.interactWithCompanion()">
-                    <div class="tube-ring top-ring"></div>
-                    <div class="tube-chamber">
-                        <div class="energy-beam"></div>
-                        <img src="cyberdog.gif" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                <div class="companion-tube-wrap">
+                    <div class="stasis-tube" onclick="window.interactWithCompanion()">
+                        <div class="tube-ring top-ring"></div>
+                        <div class="tube-chamber">
+                            <div class="energy-beam"></div>
+                            <img src="cyberdog.gif" alt="Cyberdog Companion" id="companionVisual" class="companion-img">
+                        </div>
+                        <div class="tube-ring bottom-ring"></div>
                     </div>
-                    <div class="tube-ring bottom-ring"></div>
+                    <button type="button" id="dailyFloatNotification" class="daily-float-badge" onclick="event.stopPropagation(); window.claimDailyReward();" title="Recompensa diaria disponible">
+                        <span class="daily-float-icon">🎁</span>
+                        <span class="daily-float-txt">+100 XP</span>
+                    </button>
                 </div>
             </div>
 
             <!-- TARJETAS SECUNDARIAS UNIFICADAS -->
             <div class="secondary-modes-grid home-secondary-grid">
-                <div class="sub-mode-card daily-card" onclick="window.claimDailyReward()">
+                <div class="sub-mode-card swap-mode-card" onclick="window.openHanziSwap()">
                     <div class="sub-card-header">
-                        <span class="sub-card-icon">🎁</span>
-                        <strong class="sub-card-tag gold">DAILY</strong>
+                        <span class="sub-card-icon">🧩</span>
+                        <strong class="sub-card-tag">HANZI-SWAP</strong>
                     </div>
-                    <h4>RECOMPENSA DIARIA</h4>
-                    <p>Bono de 100 XP</p>
+                    <h4>PUZZLE GRAVEDAD</h4>
+                    <p>Arma palabras y combos</p>
                 </div>
                 <div class="sub-mode-card vs-card" onclick="window.openVsMode()">
                     <div class="sub-card-header">
@@ -523,10 +529,11 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="audio.js?v=44.0"></script>
-    <script src="industrial-ranks.js?v=44.0"></script>
-    <script src="critical-fail.js?v=44.0"></script>
-    <script src="navigation.js?v=44.0"></script>
-    <script src="app.js?v=44.0"></script>
+    <script src="audio.js?v=45.0"></script>
+    <script src="industrial-ranks.js?v=45.0"></script>
+    <script src="critical-fail.js?v=45.0"></script>
+    <script src="navigation.js?v=45.0"></script>
+    <script src="hanzi-swap.js?v=45.0"></script>
+    <script src="app.js?v=45.0"></script>
 </body>
 </html>

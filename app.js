@@ -65,7 +65,9 @@
         unlockedBadges: ["badge_starter", "badge_volt", "badge_sensor"],
         selectedAvatar: "⚡",
         phaseStars: {},
-        completedReviews: []
+        completedReviews: [],
+        swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
+        swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0)
     };
 
     const WORLDS_CONFIG = [
@@ -218,7 +220,8 @@
         { id: "b_mechanic", icon: "⚙️", name: "Manos a la Máquina", desc: "Supera el checkpoint del Mundo Mecánico.", isUnlocked: () => currentUserData.completedActivities.includes("w2_a4") },
         { id: "b_ai_slayer", icon: "⚔️", name: "Derrotador de IA", desc: "Vence a la IA en el duelo 1v1 Battle", isUnlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 },
         { id: "b_survivor", icon: "⚠️", name: "Defensor del Núcleo", desc: "Retira con éxito al menos 5 alarmas en Survivor Mode.", isUnlocked: () => Number(localStorage.getItem("zidong_survivor_cleared") || 0) >= 5 },
-        { id: "b_polyglot", icon: "🧠", name: "Soporte Bilingüe", desc: "Alcanza el Nivel 3 de rango o superior.", isUnlocked: () => calculateUserRank(currentUserData.xp).level >= 3 }
+        { id: "b_polyglot", icon: "🧠", name: "Soporte Bilingüe", desc: "Alcanza el Nivel 3 de rango o superior.", isUnlocked: () => calculateUserRank(currentUserData.xp).level >= 3 },
+        { id: "b_swap_combo", icon: "🧩", name: "Pulso de Rejilla x2", desc: "Alcanza al menos un combo x2 o superior en Hanzi-Swap.", isUnlocked: () => Number(localStorage.getItem("zidong_swap_max_combo") || 0) >= 2 }
     ];
 
     function calculateUserRank(xp) {
@@ -358,7 +361,37 @@
             container.appendChild(badgeEl);
         });
 
-        if (countLabel) countLabel.textContent = `${unlockedCount} / ${WORLDS_CONFIG.length} Desbloqueadas`;
+        const swapUnlocked = Number(localStorage.getItem("zidong_swap_max_combo") || 0) >= 2 || Number(localStorage.getItem("zidong_swap_cleared") || 0) >= 3;
+        if (swapUnlocked) unlockedCount++;
+        const swapEquipped = currentUserData.selectedAvatar === "🧩";
+        const swapBadge = document.createElement("div");
+        swapBadge.className = `profile-badge-item ${swapUnlocked ? "unlocked" : "locked"}`;
+        swapBadge.style.background = "var(--surface-light)";
+        swapBadge.style.border = swapEquipped ? "1px solid var(--gold)" : "1px solid var(--border)";
+        if (swapEquipped) swapBadge.style.background = "rgba(255, 200, 87, 0.15)";
+        swapBadge.style.borderRadius = "10px";
+        swapBadge.style.padding = "10px 6px";
+        swapBadge.style.textAlign = "center";
+        swapBadge.style.cursor = swapUnlocked ? "pointer" : "default";
+        swapBadge.innerHTML = `
+            <div style="font-size:24px; display:block; margin-bottom:4px; filter:${swapUnlocked ? 'none' : 'grayscale(100%) opacity(0.4)'};">${swapUnlocked ? "🧩" : "🔒"}</div>
+            <span style="font-size:8px; color:#fff; font-weight:700; display:block; line-height:1.2;">Arquitecto del Puzzle</span>
+            ${swapEquipped ? '<small style="color:var(--gold); font-size:7px; font-weight:900; display:block; margin-top:2px;">EN USO ⚡</small>' : ''}
+        `;
+        swapBadge.onclick = () => {
+            if (swapUnlocked) {
+                currentUserData.selectedAvatar = "🧩";
+                if (typeof triggerHaptic === "function") triggerHaptic("win");
+                updateProfile();
+                window.showCyberAlert("MEDALLA EQUIPADA", "¡Has equipado la medalla 🧩 (Arquitecto del Puzzle)!", "✨");
+            } else {
+                if (typeof triggerHaptic === "function") triggerHaptic("error");
+                window.showCyberAlert("MEDALLA BLOQUEADA", "Logra un combo x2+ o purga 3 palabras en Hanzi-Swap para desbloquearla.", "🔒");
+            }
+        };
+        container.appendChild(swapBadge);
+
+        if (countLabel) countLabel.textContent = `${unlockedCount} / ${WORLDS_CONFIG.length + 1} Desbloqueadas`;
     }
 
     window.toggleProfileMenu = function(contentId, arrowId) {

@@ -119,6 +119,59 @@
         });
     }
 
+    // SFX casuales para Hanzi-Swap
+    function playSwapSelect() {
+        if (isMuted || document.hidden) return;
+        playTone(520, 0.06, "sine", 0.075, 0, 680);
+    }
+
+    function playSwapMove() {
+        if (isMuted || document.hidden) return;
+        playTone(340, 0.08, "triangle", 0.085, 0, 490);
+    }
+
+    // Sonido casual tipo papelera / purga suave al limpiar palabra (sin fanfarrias)
+    function playSwapClear() {
+        if (isMuted || document.hidden) return;
+        const ctx = getCtx();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(420, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.16);
+
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(920, now);
+        filter.frequency.exponentialRampToValueAtTime(320, now + 0.16);
+        filter.Q.setValueAtTime(1.8, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.11, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.17);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.18);
+    }
+
+    // 5. HANZI-SWAP BGM: Ritmo puzzle ciber-técnico ligero
+    const SWAP_MELODY = [329.63, 440.00, 493.88, 587.33, 493.88, 440.00];
+    function tickSwapPuzzle() {
+        const note = SWAP_MELODY[stepIndex % SWAP_MELODY.length];
+        stepIndex++;
+        playTone(note, 0.22, "triangle", 0.028, 0);
+        if (stepIndex % 2 === 0) {
+            playTone(note * 0.5, 0.28, "sine", 0.02, 0.04);
+        }
+    }
+
     // 1. HOME: Espacial suave y relajante (pad + arpegio ligero)
     const HOME_PADS = [
         [220, 277.18, 329.63],
@@ -191,6 +244,9 @@
         } else if (trackName === "vs") {
             tickVsSuspense();
             loopTimer = setInterval(tickVsSuspense, 620);
+        } else if (trackName === "swap") {
+            tickSwapPuzzle();
+            loopTimer = setInterval(tickSwapPuzzle, 360);
         }
     }
 
@@ -201,6 +257,8 @@
             switchTrack("endless");
         } else if (pageId === "vsBattle") {
             switchTrack("vs");
+        } else if (pageId === "hanziSwapPage") {
+            switchTrack("swap");
         } else {
             switchTrack("home");
         }
@@ -239,6 +297,9 @@
         playError,
         playVictory,
         playBark,
+        playSwapSelect,
+        playSwapMove,
+        playSwapClear,
         switchTrack,
         syncTrackWithPage,
         stopAllMusic,

@@ -1689,7 +1689,7 @@ window.loadVsLevel3OrderHanzi = function() {
     const containerBox = document.createElement("div");
     containerBox.style.display = "flex";
     containerBox.style.flexDirection = "column";
-    containerBox.style.gap = "12px";
+    containerBox.style.gap = "8px";
     containerBox.style.width = "100%";
 
     const targetCard = document.createElement("div");
@@ -1724,7 +1724,7 @@ window.loadVsLevel3OrderHanzi = function() {
     const chipsGrid = document.createElement("div");
     chipsGrid.style.display = "grid";
     chipsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
-    chipsGrid.style.gap = "10px";
+    chipsGrid.style.gap = "7px";
     chipsGrid.style.width = "100%";
 
     shuffledChars.forEach(char => {

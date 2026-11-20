@@ -39,8 +39,7 @@
         if (modal) modal.style.display = "none";
     };
 
-
-    const DEFAULT_USER_DATA = {
+    let currentUserData = {
         name: "New user",
         xp: 1850,
         streak: 5,
@@ -49,22 +48,6 @@
         unlockedBadges: ["badge_starter", "badge_volt", "badge_sensor"],
         selectedAvatar: "⚡"
     };
-
-    let currentUserData = (() => {
-        try {
-            const saved = localStorage.getItem("zidong_user_data_v1");
-            if (saved) {
-                return Object.assign({}, DEFAULT_USER_DATA, JSON.parse(saved));
-            }
-        } catch (e) {}
-        return Object.assign({}, DEFAULT_USER_DATA);
-    })();
-
-    function saveUserData() {
-        try {
-            localStorage.setItem("zidong_user_data_v1", JSON.stringify(currentUserData));
-        } catch (e) {}
-    }
 
     const WORLDS_CONFIG = [
         {
@@ -228,7 +211,6 @@
     function updateProfile() {
         const rank = calculateUserRank(currentUserData.xp);
         currentUserData.level = rank.level;
-        saveUserData();
 
         const topUser = document.getElementById("topUsername");
         const topAvatar = document.getElementById("topAvatar");
@@ -238,14 +220,6 @@
         const batteryRank = document.getElementById("homeBatteryRank");
         const batteryPct = document.getElementById("homeBatteryPercent");
 
-        const profileName = document.getElementById("profileName");
-        const profileAvatar = document.getElementById("profileAvatar");
-        const profileRankBadge = document.getElementById("profileRankBadge");
-        const profileLevel = document.getElementById("profileLevel");
-        const profileStreak = document.getElementById("profileStreak");
-        const profileCompleted = document.getElementById("profileCompleted");
-        const profileRankPos = document.getElementById("profileRankPos");
-
         if (topUser) topUser.textContent = currentUserData.name;
         if (topAvatar) {
             if (currentUserData.selectedAvatar) {
@@ -254,15 +228,6 @@
             } else {
                 topAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
                 topAvatar.style.fontSize = "11px";
-            }
-        }
-        if (profileAvatar) {
-            if (currentUserData.selectedAvatar) {
-                profileAvatar.textContent = currentUserData.selectedAvatar;
-                profileAvatar.style.fontSize = "32px";
-            } else {
-                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
-                profileAvatar.style.fontSize = "24px";
             }
         }
         if (topRank) topRank.textContent = `⚡ ${rank.name}`;
@@ -276,45 +241,41 @@
             const prevXp = rank.minXp;
             const span = nextRank.minXp - prevXp;
             const cur = currentUserData.xp - prevXp;
-            pct = Math.min(100, Math.max(5, Math.round((cur / span) * 100)));
+            pct = Math.min(100, Math.max(0, Math.round((cur / span) * 100)));
         }
         if (batteryFill) {
-            batteryFill.style.setProperty("width", `${pct}%`, "important");
-            batteryFill.style.setProperty("background", "linear-gradient(90deg, #00f59b, #27d8e8)", "important");
-            batteryFill.style.setProperty("height", "100%", "important");
-            batteryFill.style.setProperty("display", "block", "important");
+            batteryFill.style.width = `${pct}%`;
+            batteryFill.style.background = "var(--green, #00f59b)";
+            batteryFill.style.height = "100%";
         }
         if (batteryPct) batteryPct.textContent = `${pct}% carga`;
 
+        const profileName = document.getElementById("profileName");
+        const profileAvatar = document.getElementById("profileAvatar");
+        const profileRankBadge = document.getElementById("profileRankBadge");
+        const profileLevel = document.getElementById("profileLevel");
+        const profileStreak = document.getElementById("profileStreak");
+        const profileCompleted = document.getElementById("profileCompleted");
+
         if (profileName) profileName.textContent = currentUserData.name;
+        if (profileAvatar) {
+            if (currentUserData.selectedAvatar) {
+                profileAvatar.textContent = currentUserData.selectedAvatar;
+                profileAvatar.style.fontSize = "32px";
+            } else {
+                profileAvatar.textContent = currentUserData.name.slice(0, 2).toUpperCase();
+                profileAvatar.style.fontSize = "24px";
+            }
+        }
         if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
         if (profileLevel) profileLevel.textContent = `0${rank.level}`;
         if (profileStreak) profileStreak.textContent = `${currentUserData.streak} Días`;
         if (profileCompleted) profileCompleted.textContent = currentUserData.completedActivities.length;
 
-        // Sync leaderboard entry with current user name & XP
-        if (typeof MOCK_LEADERBOARD !== "undefined" && Array.isArray(MOCK_LEADERBOARD)) {
-            MOCK_LEADERBOARD.forEach(item => {
-                if (item.isMe) {
-                    item.name = currentUserData.name;
-                    item.xp = currentUserData.xp;
-                    item.badge = `⚡ Nivel ${rank.level}`;
-                }
-            });
-            MOCK_LEADERBOARD.sort((a, b) => b.xp - a.xp);
-            MOCK_LEADERBOARD.forEach((item, idx) => {
-                item.rank = idx + 1;
-                if (item.isMe && profileRankPos) {
-                    profileRankPos.textContent = `#0${item.rank}`;
-                }
-            });
-        }
-
         renderBadgesGrid();
         renderAchievementsList();
         renderWorldsProgressInProfile();
         renderRanksLadder();
-        if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
     }
     window.updateProfile = updateProfile;
 
@@ -472,67 +433,45 @@
         });
     }
 
-    let pendingNewUserName = "";
-
     window.editUserNameOnce = function() {
-        const modal = document.getElementById("editNameModal");
-        const step1 = document.getElementById("editNameStep1");
-        const step2 = document.getElementById("editNameStep2");
         const input = document.getElementById("editNameInput");
-        if (step1) step1.style.display = "block";
-        if (step2) step2.style.display = "none";
-        if (input) {
-            input.value = currentUserData.name;
-        }
+        if (input) input.value = currentUserData.name;
+        window.toggleEditNameModal();
+    };
+
+    window.toggleEditNameModal = function() {
+        const modal = document.getElementById("editNameModal");
         if (modal) {
-            modal.style.display = "flex";
-            if (input) setTimeout(() => input.focus(), 50);
+            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+            if (modal.style.display === "flex") {
+                const input = document.getElementById("editNameInput");
+                if (input) {
+                    input.value = currentUserData.name;
+                    input.focus();
+                }
+            }
         }
     };
 
-    window.closeEditNameModal = function() {
-        const modal = document.getElementById("editNameModal");
-        const step1 = document.getElementById("editNameStep1");
-        const step2 = document.getElementById("editNameStep2");
-        if (modal) modal.style.display = "none";
-        if (step1) step1.style.display = "block";
-        if (step2) step2.style.display = "none";
-        pendingNewUserName = "";
-    };
-
-    window.toggleEditNameModal = window.closeEditNameModal;
-
-    window.askConfirmUserName = function() {
+    window.saveNewUserName = function() {
         const input = document.getElementById("editNameInput");
-        const val = input ? input.value.trim().slice(0, 20) : "";
-        if (!val) {
-            if (typeof triggerHaptic === "function") triggerHaptic("error");
+        if (input && input.value.trim().length > 0) {
+            currentUserData.name = input.value.trim().slice(0, 20);
+            // Update Mock Leaderboard 'isMe' name
+            MOCK_LEADERBOARD.forEach(item => {
+                if (item.isMe) {
+                    item.name = currentUserData.name + " (Tú)";
+                }
+            });
+            updateProfile();
+            if (typeof renderLeaderboard === "function") renderLeaderboard();
+            window.toggleEditNameModal();
+            if (typeof triggerHaptic === "function") triggerHaptic("win");
+            window.showCyberAlert("SISTEMA ACTUALIZADO", "¡Identificador actualizado correctamente!", "✏️");
+        } else {
             window.showCyberAlert("ADVERTENCIA DE PLANTA", "Por favor ingresa un nombre válido.", "⚠️");
-            return;
         }
-        pendingNewUserName = val;
-        const step1 = document.getElementById("editNameStep1");
-        const step2 = document.getElementById("editNameStep2");
-        const preview = document.getElementById("confirmPreviewName");
-        if (preview) preview.textContent = pendingNewUserName;
-        if (step1) step1.style.display = "none";
-        if (step2) step2.style.display = "block";
-        if (typeof triggerHaptic === "function") triggerHaptic("success");
     };
-
-    window.confirmSaveNewUserName = function() {
-        if (!pendingNewUserName) {
-            window.closeEditNameModal();
-            return;
-        }
-        currentUserData.name = pendingNewUserName;
-        updateProfile();
-        window.closeEditNameModal();
-        if (typeof triggerHaptic === "function") triggerHaptic("win");
-        window.showCyberAlert("SISTEMA ACTUALIZADO", `¡Identificador cambiado a "${currentUserData.name}" correctamente!`, "✏️");
-    };
-
-    window.saveNewUserName = window.askConfirmUserName;
 
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") {
@@ -605,14 +544,11 @@
     const LAB_COMPONENTS = [
         { id: "c1", category: "world_1", hanzi: "变频器", pinyin: "biàn pín qì", name: "VFD / Inversor de Frecuencia", desc: "Controla velocidad y torque de motores asíncronos.", icon: "⚡" },
         { id: "c2", category: "world_1", hanzi: "接触器", pinyin: "jiē chù qì", name: "Contactor Eléctrico", desc: "Dispositivo electromecánico para abrir/cerrar potencia.", icon: "🔌" },
-        { id: "c3", category: "world_1", hanzi: "电源", pinyin: "diàn yuán", name: "Fuente Conmutada 24VDC", desc: "Suministra voltaje estabilizado para control PLC y sensores.", icon: "🔋" },
-        { id: "c4", category: "world_2", hanzi: "伺服电机", pinyin: "sì fú diàn jī", name: "Servomotor de Eje", desc: "Actuador de precisión con encoder para posicionamiento.", icon: "⚙️" },
-        { id: "c5", category: "world_2", hanzi: "传感器", pinyin: "chuán gǎn qì", name: "Sensor Inductivo / Fotoeléctrico", desc: "Detecta presencia de piezas metálicas u ópticas.", icon: "📡" },
-        { id: "c6", category: "world_3", hanzi: "电磁阀", pinyin: "diàn cí fá", name: "Electroválvula SMC", desc: "Gobierna el flujo de aire hacia los actuadores.", icon: "💨" },
-        { id: "c7", category: "world_3", hanzi: "气缸", pinyin: "qì gāng", name: "Cilindro Neumático", desc: "Actuador lineal impulsado por aire comprimido.", icon: "🗜️" },
-        { id: "c8", category: "world_4", hanzi: "机器人", pinyin: "jī qì rén", name: "Brazo Robot KUKA / Fanuc", desc: "Manipulador articulado para ensamble automático.", icon: "🤖" },
-        { id: "c9", category: "world_4", hanzi: "夹爪", pinyin: "jiā zhǎo", name: "Gripper / Pinza Neumática", desc: "Efector final para sujeción de tarjetas y piezas.", icon: "🦾" },
-        { id: "c10", category: "world_5", hanzi: "相机", pinyin: "xiàng jī", name: "Cámara AOI / Visión", desc: "Inspección de soldadura y componentes SMD.", icon: "📷" }
+        { id: "c3", category: "world_2", hanzi: "气缸", pinyin: "qì gāng", name: "Cilindro Neumático", desc: "Actuador lineal impulsado por aire comprimido.", icon: "⚙️" },
+        { id: "c4", category: "world_2", hanzi: "传感器", pinyin: "chuán gǎn qì", name: "Sensor Inductivo / Fotoeléctrico", desc: "Detecta presencia de piezas metálicas u ópticas.", icon: "📡" },
+        { id: "c5", category: "world_3", hanzi: "电磁阀", pinyin: "diàn cí fá", name: "Electroválvula SMC", desc: "Gobierna el flujo de aire hacia los actuadores.", icon: "💨" },
+        { id: "c6", category: "world_4", hanzi: "机器人", pinyin: "jī qì rén", name: "Brazo Robot KUKA / Fanuc", desc: "Manipulador articulado para ensamble automático.", icon: "🤖" },
+        { id: "c7", category: "world_5", hanzi: "相机", pinyin: "xiàng jī", name: "Cámara AOI / Visión", desc: "Inspección de soldadura y componentes SMD.", icon: "📷" }
     ];
 
     window.renderLabComponents = function(filterCat = "all", searchTerm = "") {
@@ -706,7 +642,7 @@
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-weight:900; font-size:12px; color:${item.rank === 1 ? 'var(--gold)' : item.rank === 2 ? '#c0c0c0' : item.rank === 3 ? '#cd7f32' : 'var(--muted)'};">#0${item.rank}</span>
                     <div>
-                        <strong style="font-size:12px; color:${item.isMe ? 'var(--green)' : '#fff'}; display:block;">${item.isMe ? currentUserData.name : item.name} ${item.isMe ? '(Tú)' : ''}</strong>
+                        <strong style="font-size:12px; color:${item.isMe ? 'var(--green)' : '#fff'}; display:block;">${item.name} ${item.isMe ? '(Tú)' : ''}</strong>
                         <small style="font-size:9.5px; color:var(--muted);">${item.badge}</small>
                     </div>
                 </div>
@@ -986,11 +922,7 @@
                 updateProfile();
             }
             window.showCyberAlert("NIVEL CONQUISTADO", `¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado "${act.hanzi}" (${act.meaning}).`, "🌟");
-            if (world) {
-                openWorldDetails(world);
-            } else if (typeof window.navigateTo === "function") {
-                window.navigateTo("worldDetailsView");
-            }
+            if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
         };
 
         renderPhase1();
@@ -1087,7 +1019,6 @@ window.VS_DIFFICULTIES = {
         points: 100,
         winBonus: 100
     },
-
     MEDIUM: {
         name: "Servocontrolador Overclock",
         badge: "NIVEL 2 · PALABRAS INDUSTRIALES",
@@ -1095,7 +1026,6 @@ window.VS_DIFFICULTIES = {
         points: 100,
         winBonus: 150
     },
-
     HARD: {
         name: "Protocolo Centinela IA",
         badge: "NIVEL 3 · ORDENAR PALABRAS",
@@ -1121,19 +1051,23 @@ window.VS_HANZI_DATA = [
     { hanzi: "模", pinyin: "mó", meaning: "Molde / Módulo" },
     { hanzi: "组", pinyin: "zǔ", meaning: "Grupo / Ensamble" },
     { hanzi: "机", pinyin: "jī", meaning: "Máquina" },
-    { hanzi: "动", pinyin: "dòng", meaning: "Movimiento / Automático" }
+    { hanzi: "动", pinyin: "dòng", meaning: "Movimiento / Automático" },
+    { hanzi: "停", pinyin: "tíng", meaning: "Parada / Detener" },
+    { hanzi: "气", pinyin: "qì", meaning: "Aire / Neumática" }
 ];
 
 window.VS_WORD_DATA = [
     { hanzi: "急停", pinyin: "jí tíng", meaning: "Paro de emergencia" },
-    { hanzi: "自动", pinyin: "zì dòng", meaning: "Automático" },
+    { hanzi: "自动", pinyin: "zì dòng", meaning: "Modo automático" },
     { hanzi: "机器人", pinyin: "jī qì rén", meaning: "Robot industrial" },
-    { hanzi: "PLC", pinyin: "kě lù", meaning: "Controlador PLC" },
-    { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor" }
+    { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor de detección" },
+    { hanzi: "电源", pinyin: "diàn yuán", meaning: "Fuente de alimentación" },
+    { hanzi: "气缸", pinyin: "qì gāng", meaning: "Cilindro neumático" },
+    { hanzi: "安全门", pinyin: "ān quán mén", meaning: "Puerta de seguridad" }
 ];
 
 window.vsShuffle = function(array) {
-    let arr = [...array];
+    const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -1162,13 +1096,26 @@ window.vsGetInstruction = function() {
         instruction.style.fontSize = "11px";
         instruction.style.color = "var(--muted)";
         instruction.style.marginBottom = "8px";
-        stage.insertBefore(instruction, document.getElementById("vsHanziDisplay"));
+        const hanziEl = document.getElementById("vsHanziDisplay");
+        if (hanziEl) {
+            stage.insertBefore(instruction, hanziEl);
+        } else {
+            stage.appendChild(instruction);
+        }
     }
     return instruction;
 };
 
+window.stopVsSession = function() {
+    window.vsSessionActive = false;
+    if (window.vsTimer) {
+        clearInterval(window.vsTimer);
+        window.vsTimer = null;
+    }
+};
+
 window.openVsMode = function() {
-    if (typeof stopVsSession === "function") stopVsSession();
+    window.stopVsSession();
 
     if (typeof triggerHaptic === "function") {
         triggerHaptic("success");
@@ -1188,15 +1135,15 @@ window.openVsMode = function() {
 };
 
 window.start1v1WithDifficulty = function(diffKey) {
-    if (!window.VS_DIFFICULTIES[diffKey]) {
+    const diff = window.VS_DIFFICULTIES[diffKey];
+    if (!diff) {
         console.error("Dificultad 1v1 desconocida:", diffKey);
         return;
     }
 
-    if (typeof stopVsSession === "function") stopVsSession();
+    window.stopVsSession();
 
     window.selectedVsDiffKey = diffKey;
-    const diff = window.VS_DIFFICULTIES[diffKey];
 
     const selector = document.getElementById("vsDifficultySelector");
     const arena = document.getElementById("vsBattleArenaContainer");
@@ -1230,8 +1177,8 @@ window.start1v1WithDifficulty = function(diffKey) {
     const timerBar = document.getElementById("vsTimerBar");
     if (timerBar) timerBar.style.width = "100%";
 
-    if (typeof startVsRound === "function") startVsRound();
-    if (typeof startVsTimer === "function") startVsTimer();
+    window.startVsRound();
+    window.startVsTimer();
 };
 
 window.startVsRound = function() {
@@ -1241,9 +1188,8 @@ window.startVsRound = function() {
 
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
-    const instruction = window.vsGetInstruction();
-
     if (!display || !grid) return;
+
     grid.replaceChildren();
 
     if (window.selectedVsDiffKey === "EASY") {
@@ -1265,6 +1211,7 @@ window.loadVsLevel1SingleHanzi = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
     const instruction = window.vsGetInstruction();
+    if (!display || !grid) return;
 
     const correct = window.vsRandomItem(window.VS_HANZI_DATA);
     const wrongOptions = window.vsShuffle(
@@ -1274,24 +1221,27 @@ window.loadVsLevel1SingleHanzi = function() {
     const options = window.vsShuffle([correct, ...wrongOptions]);
     window.vsCurrentQuestion = correct;
 
-    if (display) display.textContent = correct.hanzi;
-    if (instruction) instruction.textContent = `Identifica el significado: "${correct.meaning}"`;
+    display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `¿Qué significa este Hanzi? (${correct.pinyin})`;
 
     options.forEach(option => {
         const button = document.createElement("button");
+        button.type = "button";
         button.className = "reveal-button";
         button.style.background = "var(--surface-light)";
         button.style.color = "#fff";
         button.style.border = "1px solid var(--border)";
-        button.style.padding = "10px";
+        button.style.padding = "12px 8px";
         button.style.fontWeight = "800";
-        button.style.fontSize = "12px";
-        button.textContent = option.pinyin ? `${option.pinyin} - ${option.meaning}` : option.meaning;
+        button.style.fontSize = "11.5px";
+        button.style.lineHeight = "1.25";
+        button.textContent = option.meaning;
 
-        button.onclick = () => {
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
             if (window.vsRoundLocked || !window.vsSessionActive) return;
             window.submitVsAnswer(option.hanzi === correct.hanzi, button);
-        };
+        });
         grid.appendChild(button);
     });
 };
@@ -1300,6 +1250,7 @@ window.loadVsLevel2CompoundWord = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
     const instruction = window.vsGetInstruction();
+    if (!display || !grid) return;
 
     const correct = window.vsRandomItem(window.VS_WORD_DATA);
     const wrongOptions = window.vsShuffle(
@@ -1309,24 +1260,27 @@ window.loadVsLevel2CompoundWord = function() {
     const options = window.vsShuffle([correct, ...wrongOptions]);
     window.vsCurrentQuestion = correct;
 
-    if (display) display.textContent = correct.hanzi;
-    if (instruction) instruction.textContent = `Selecciona la planta/término correcto para: "${correct.meaning}"`;
+    display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Selecciona el significado de la palabra (${correct.pinyin}):`;
 
     options.forEach(option => {
         const button = document.createElement("button");
+        button.type = "button";
         button.className = "reveal-button";
         button.style.background = "var(--surface-light)";
         button.style.color = "#fff";
         button.style.border = "1px solid var(--border)";
-        button.style.padding = "10px";
+        button.style.padding = "12px 8px";
         button.style.fontWeight = "800";
-        button.style.fontSize = "12px";
+        button.style.fontSize = "11.5px";
+        button.style.lineHeight = "1.25";
         button.textContent = option.meaning;
 
-        button.onclick = () => {
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
             if (window.vsRoundLocked || !window.vsSessionActive) return;
             window.submitVsAnswer(option.hanzi === correct.hanzi, button);
-        };
+        });
         grid.appendChild(button);
     });
 };
@@ -1335,32 +1289,30 @@ window.loadVsLevel3OrderHanzi = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
     const instruction = window.vsGetInstruction();
+    if (!display || !grid) return;
 
     const correct = window.vsRandomItem(window.VS_WORD_DATA);
     window.vsCurrentQuestion = correct;
 
-    if (display) display.textContent = "🧩 ???";
-    if (instruction) instruction.textContent = `Ordena los bloques Hanzi (${correctChars.length} caracteres):`;
-
     const correctChars = correct.hanzi.split("");
-    const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自"];
-    const availableChars = [
+    display.textContent = "🧩";
+    if (instruction) instruction.textContent = `Ordena los ${correctChars.length} caracteres para armar la palabra:`;
+
+    const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自", "气", "门"];
+    const pool = [
         ...correctChars,
-        ...window.vsShuffle(extraChars).filter(char => !correctChars.includes(char)).slice(0, Math.max(2, 6 - correctChars.length))
+        ...window.vsShuffle(extraChars).filter(ch => !correctChars.includes(ch)).slice(0, Math.max(2, 6 - correctChars.length))
     ];
-    const shuffledChars = window.vsShuffle(availableChars);
+    const shuffledChars = window.vsShuffle(pool);
 
     grid.replaceChildren();
 
-    // Contenedor principal de Nivel 3 con diseño Cyber-Industrial
     const containerBox = document.createElement("div");
     containerBox.style.display = "flex";
     containerBox.style.flexDirection = "column";
-    containerBox.style.gap = "14px";
+    containerBox.style.gap = "12px";
     containerBox.style.width = "100%";
-    containerBox.style.gridColumn = "1 / -1"; // Ocupar todo el ancho si el padre es grid
 
-    // Tarjeta de objetivo / significado
     const targetCard = document.createElement("div");
     targetCard.style.background = "rgba(39, 216, 232, 0.08)";
     targetCard.style.border = "1px solid rgba(39, 216, 232, 0.3)";
@@ -1373,26 +1325,23 @@ window.loadVsLevel3OrderHanzi = function() {
     `;
     containerBox.appendChild(targetCard);
 
-    // Pantalla / Dock de respuesta armada
     const answerBox = document.createElement("div");
     answerBox.id = "vsBuildAnswer";
     answerBox.style.background = "rgba(5, 11, 20, 0.85)";
     answerBox.style.border = "2px solid var(--cyan)";
     answerBox.style.borderRadius = "12px";
-    answerBox.style.padding = "14px";
+    answerBox.style.padding = "12px";
     answerBox.style.fontSize = "28px";
     answerBox.style.fontFamily = "'Noto Sans SC'";
     answerBox.style.letterSpacing = "8px";
     answerBox.style.color = "var(--green)";
-    answerBox.style.minHeight = "64px";
+    answerBox.style.minHeight = "60px";
     answerBox.style.display = "flex";
     answerBox.style.alignItems = "center";
     answerBox.style.justifyContent = "center";
-    answerBox.style.boxShadow = "inset 0 0 15px rgba(39, 216, 232, 0.2)";
-    answerBox.textContent = "";
+    answerBox.textContent = "—";
     containerBox.appendChild(answerBox);
 
-    // Grid de fichas / tokens táctiles
     const chipsGrid = document.createElement("div");
     chipsGrid.style.display = "grid";
     chipsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
@@ -1401,46 +1350,49 @@ window.loadVsLevel3OrderHanzi = function() {
 
     shuffledChars.forEach(char => {
         const chip = document.createElement("button");
+        chip.type = "button";
         chip.className = "reveal-button";
         chip.style.background = "var(--surface-light)";
         chip.style.color = "#fff";
         chip.style.border = "1px solid var(--border)";
         chip.style.borderRadius = "12px";
-        chip.style.padding = "14px 10px";
+        chip.style.padding = "14px 8px";
         chip.style.fontSize = "22px";
         chip.style.fontFamily = "'Noto Sans SC'";
         chip.style.fontWeight = "900";
         chip.style.cursor = "pointer";
-        chip.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
         chip.textContent = char;
 
-        const handleTokenClick = (e) => {
+        chip.addEventListener("click", (e) => {
             e.preventDefault();
             if (window.vsRoundLocked || !window.vsSessionActive) return;
-            
+
             if (typeof triggerHaptic === "function") triggerHaptic("success");
             window.vsSelectedChars.push(char);
             answerBox.textContent = window.vsSelectedChars.join("");
 
-            // Deshabilitar temporalmente la ficha usada para evitar abusos visuales
             chip.style.opacity = "0.3";
             chip.style.pointerEvents = "none";
 
             if (window.vsSelectedChars.length === correctChars.length) {
                 const assembled = window.vsSelectedChars.join("");
-                window.submitVsAnswer(assembled === correct.hanzi);
+                const ok = assembled === correct.hanzi;
+                if (ok) {
+                    answerBox.style.borderColor = "var(--green)";
+                } else {
+                    answerBox.style.borderColor = "var(--red)";
+                    answerBox.style.color = "var(--red)";
+                }
+                window.submitVsAnswer(ok);
             }
-        };
-
-        chip.onclick = handleTokenClick;
-        chip.ontouchend = handleTokenClick;
+        });
 
         chipsGrid.appendChild(chip);
     });
     containerBox.appendChild(chipsGrid);
 
-    // Botón de reinicio / borrar selección
     const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
     clearBtn.className = "back-button";
     clearBtn.style.fontSize = "11px";
     clearBtn.style.padding = "10px";
@@ -1448,24 +1400,22 @@ window.loadVsLevel3OrderHanzi = function() {
     clearBtn.style.color = "#ff4444";
     clearBtn.style.fontWeight = "800";
     clearBtn.style.borderRadius = "10px";
-    clearBtn.textContent = "🔄 Borrar selección y reintentar";
-    
-    const handleClear = (e) => {
+    clearBtn.textContent = "🔄 Borrar selección";
+
+    clearBtn.addEventListener("click", (e) => {
         e.preventDefault();
         if (window.vsRoundLocked || !window.vsSessionActive) return;
         if (typeof triggerHaptic === "function") triggerHaptic("error");
         window.vsSelectedChars = [];
-        answerBox.textContent = "";
-        // Restaurar fichas
+        answerBox.textContent = "—";
+        answerBox.style.borderColor = "var(--cyan)";
+        answerBox.style.color = "var(--green)";
         Array.from(chipsGrid.children).forEach(ch => {
             ch.style.opacity = "1";
             ch.style.pointerEvents = "auto";
         });
-    };
+    });
 
-    clearBtn.onclick = handleClear;
-    clearBtn.ontouchend = handleClear;
-    
     containerBox.appendChild(clearBtn);
     grid.appendChild(containerBox);
 };
@@ -1501,7 +1451,10 @@ window.submitVsAnswer = function(isCorrect, selectedButton = null) {
 };
 
 window.startVsTimer = function() {
-    if (typeof stopVsSession === "function") stopVsSession();
+    if (window.vsTimer) {
+        clearInterval(window.vsTimer);
+        window.vsTimer = null;
+    }
     window.vsTimer = setInterval(() => {
         if (!window.vsSessionActive) return;
         window.vsTimeLeft--;
@@ -1509,7 +1462,7 @@ window.startVsTimer = function() {
         const seconds = document.getElementById("vsSeconds");
         const timerBar = document.getElementById("vsTimerBar");
 
-        if (seconds) seconds.textContent = window.vsTimeLeft;
+        if (seconds) seconds.textContent = Math.max(0, window.vsTimeLeft);
         if (timerBar) {
             timerBar.style.width = `${Math.max(0, (window.vsTimeLeft / 20) * 100)}%`;
         }
@@ -1521,14 +1474,14 @@ window.startVsTimer = function() {
         }
 
         if (window.vsTimeLeft <= 0) {
-            if (typeof finishVsBattle === "function") finishVsBattle();
+            window.finishVsBattle();
         }
     }, 1000);
 };
 
 window.finishVsBattle = function() {
     if (!window.vsSessionActive) return;
-    if (typeof stopVsSession === "function") stopVsSession();
+    window.stopVsSession();
 
     const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];
     const win = window.myVsPoints >= window.rivalVsPoints;
@@ -1536,7 +1489,7 @@ window.finishVsBattle = function() {
     if (win) {
         if (typeof triggerHaptic === "function") triggerHaptic("win");
         const earnedXp = diff.winBonus;
-        
+
         if (typeof currentUserData !== "undefined" && currentUserData) {
             currentUserData.xp = (currentUserData.xp || 0) + earnedXp;
             if (typeof updateProfile === "function") updateProfile();
@@ -1545,7 +1498,11 @@ window.finishVsBattle = function() {
         const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
         localStorage.setItem("zidong_vs_wins", currentWins);
 
-        window.showCyberAlert("VICTORIA EN DUELO", `¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`, "⚔️");
+        window.showCyberAlert(
+            "VICTORIA EN DUELO",
+            `¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`,
+            "⚔️"
+        );
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
     } else {
         if (typeof triggerHaptic === "function") triggerHaptic("error");
@@ -1557,39 +1514,20 @@ window.finishVsBattle = function() {
         if (arena) arena.style.setProperty("display", "none", "important");
         if (defeat) defeat.style.setProperty("display", "block", "important");
 
-        const avatar = document.getElementById("vsDefeatRivalAvatar");
-        if (avatar) {
-            avatar.textContent = window.selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
-        }
-
         if (scores) {
             scores.textContent = `Tú: ${window.myVsPoints} PTS vs ${diff.name}: ${window.rivalVsPoints} PTS`;
         }
     }
 };
 
-window.stopVsSession = function() {
-    window.vsSessionActive = false;
-    if (window.vsTimer) {
-        clearInterval(window.vsTimer);
-        window.vsTimer = null;
-    }
-};
-
-    function initZidongApp() {
+    document.addEventListener("DOMContentLoaded", () => {
         updateProfile();
         renderCareerPlanetsMenu();
         renderLeaderboard();
         if (typeof window.renderLabComponents === "function") {
-            window.renderLabComponents("all", "");
+            window.renderLabComponents();
         }
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initZidongApp);
-    } else {
-        initZidongApp();
-    }
+    });
 
 })();
 

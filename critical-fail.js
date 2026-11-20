@@ -139,8 +139,15 @@
 
     window.exitCriticalFail = function() {
         stopSurvivorSession();
+        if (typeof window.triggerHaptic === "function") window.triggerHaptic("error");
         if (typeof window.navigateTo === "function") {
             window.navigateTo("dashboard");
+        }
+        const msg = alarmsCleared > 0
+            ? `¿Te rajaste tras purgar ${alarmsCleared} alarma(s)? Sigue preparándote, renacuajo. 🐸⚠️`
+            : "¿Me has tenido miedo antes de purgar una sola alarma? Sigue preparándote, renacuajo. 🐸🔥";
+        if (typeof window.showCyberAlert === "function") {
+            window.showCyberAlert("INTERVENCIÓN ABANDONADA", msg, "🐸");
         }
     };
 })();

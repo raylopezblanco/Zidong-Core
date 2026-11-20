@@ -454,45 +454,76 @@
         });
     }
 
-    window.editUserNameOnce = function() {
-        const input = document.getElementById("editNameInput");
-        if (input) input.value = currentUserData.name;
-        window.toggleEditNameModal();
-    };
+    let pendingNameValue = "";
 
-    window.toggleEditNameModal = function() {
+    window.editUserNameOnce = function(e) {
+        if (e && e.stopPropagation) e.stopPropagation();
         const modal = document.getElementById("editNameModal");
+        const step1 = document.getElementById("editNameStep1");
+        const step2 = document.getElementById("editNameStep2");
+        const input = document.getElementById("editNameInput");
+
+        pendingNameValue = "";
+        if (step1) step1.style.display = "block";
+        if (step2) step2.style.display = "none";
+        if (input) input.value = currentUserData.name === "New user" ? "" : currentUserData.name;
+
         if (modal) {
-            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-            if (modal.style.display === "flex") {
-                const input = document.getElementById("editNameInput");
-                if (input) {
-                    input.value = currentUserData.name;
-                    input.focus();
-                }
-            }
+            modal.style.display = "flex";
+            if (input) setTimeout(() => { try { input.focus(); } catch (err) {} }, 40);
         }
     };
 
-    window.saveNewUserName = function() {
-        const input = document.getElementById("editNameInput");
-        if (input && input.value.trim().length > 0) {
-            currentUserData.name = input.value.trim().slice(0, 20);
-            // Update Mock Leaderboard 'isMe' name
-            MOCK_LEADERBOARD.forEach(item => {
-                if (item.isMe) {
-                    item.name = currentUserData.name + " (Tú)";
-                }
-            });
-            updateProfile();
-            if (typeof renderLeaderboard === "function") renderLeaderboard();
-            window.toggleEditNameModal();
-            if (typeof triggerHaptic === "function") triggerHaptic("win");
-            window.showCyberAlert("SISTEMA ACTUALIZADO", "¡Identificador actualizado correctamente!", "✏️");
-        } else {
-            window.showCyberAlert("ADVERTENCIA DE PLANTA", "Por favor ingresa un nombre válido.", "⚠️");
-        }
+    window.closeEditNameModal = function() {
+        const modal = document.getElementById("editNameModal");
+        const step1 = document.getElementById("editNameStep1");
+        const step2 = document.getElementById("editNameStep2");
+        if (step1) step1.style.display = "block";
+        if (step2) step2.style.display = "none";
+        if (modal) modal.style.display = "none";
+        pendingNameValue = "";
     };
+
+    window.toggleEditNameModal = window.closeEditNameModal;
+
+    window.askConfirmUserName = function() {
+        const input = document.getElementById("editNameInput");
+        const typed = input ? input.value.trim().slice(0, 20) : "";
+        if (!typed) {
+            if (typeof triggerHaptic === "function") triggerHaptic("error");
+            window.showCyberAlert("ADVERTENCIA DE PLANTA", "Por favor escribe un nombre válido.", "⚠️");
+            return;
+        }
+        pendingNameValue = typed;
+        const step1 = document.getElementById("editNameStep1");
+        const step2 = document.getElementById("editNameStep2");
+        const preview = document.getElementById("confirmPreviewName");
+        if (preview) preview.textContent = pendingNameValue;
+        if (step1) step1.style.display = "none";
+        if (step2) step2.style.display = "block";
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+    };
+
+    window.confirmSaveNewUserName = function() {
+        const finalName = pendingNameValue || (document.getElementById("editNameInput")?.value || "").trim().slice(0, 20);
+        if (!finalName) {
+            window.closeEditNameModal();
+            return;
+        }
+        currentUserData.name = finalName;
+        MOCK_LEADERBOARD.forEach(item => {
+            if (item.isMe) {
+                item.name = currentUserData.name;
+            }
+        });
+        window.closeEditNameModal();
+        updateProfile();
+        if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
+        if (typeof triggerHaptic === "function") triggerHaptic("win");
+        window.showCyberAlert("SISTEMA ACTUALIZADO", `¡Tu nombre ahora es "${currentUserData.name}"!`, "✏️");
+    };
+
+    window.saveNewUserName = window.confirmSaveNewUserName;
 
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") {
@@ -649,7 +680,19 @@
         if (!container) return;
         container.replaceChildren();
 
-        MOCK_LEADERBOARD.forEach(item => {
+        const currentRankObj = calculateUserRank(currentUserData.xp);
+        const rowsData = MOCK_LEADERBOARD.map(item => {
+            if (item.isMe) {
+                return Object.assign({}, item, {
+                    name: currentUserData.name,
+                    xp: currentUserData.xp,
+                    badge: `⚡ Nivel ${currentRankObj.level}`
+                });
+            }
+            return Object.assign({}, item);
+        }).sort((a, b) => b.xp - a.xp).map((item, idx) => Object.assign({}, item, { rank: idx + 1 }));
+
+        rowsData.forEach(item => {
             const row = document.createElement("div");
             row.style.display = "flex";
             row.style.justifyContent = "space-between";
@@ -1089,7 +1132,7 @@
             });
         }
 
-        // FASE 3: Identificar el Hanzi en una oración (⭐ 3ª estrella)
+        // FASE 3: Identificar el Hanzi en una oración (⭐ 3ª estrella) - sin soplar el carácter
         function renderPhase3() {
             let locked = false;
             const rawChars = sentenceText.split("");
@@ -1098,7 +1141,7 @@
             card.innerHTML = `
                 ${renderPhaseBar(3)}
                 <span class="eyebrow" style="color:${accent};">FASE 3 DE 3 · ⭐ IDENTIFICAR EN ORACIÓN</span>
-                <h3 style="color:#fff; font-size:13.5px; margin:6px 0;">Toca el carácter <strong style="color:var(--green); font-family:'Noto Sans SC'; font-size:17px;">${act.hanzi}</strong> (${act.meaning}) en la oración</h3>
+                <h3 style="color:#fff; font-size:13.5px; margin:6px 0;">Identifica el Hanzi de <strong style="color:var(--green);">${act.meaning}</strong> dentro de la oración</h3>
                 <div class="career-quote-box">
                     <div class="career-quote-es">${sentenceEs}</div>
                     <div class="hmi-tokens-container" id="p3Tokens" style="margin-top:10px;"></div>
@@ -1430,6 +1473,22 @@ window.stopVsSession = function() {
         window.vsTimer = null;
     }
 };
+
+window.VS_ABANDON_MESSAGES = {
+    EASY: "¿Me has tenido miedo en Nivel 1? Sigue preparándote, renacuajo. 🐸⚡",
+    MEDIUM: "¿Ya te rajaste en Nivel 2? Hasta un relevador aguanta más presión, renacuajo. 🐸🤖",
+    HARD: "¿Huiste del Nivel 3? Sigue calibrando en la banca, renacuajo. 🐸🔥"
+};
+
+window.abandonVsBattle = function() {
+    const levelKey = window.selectedVsDiffKey || "MEDIUM";
+    window.stopVsSession();
+    if (typeof triggerHaptic === "function") triggerHaptic("error");
+    const msg = window.VS_ABANDON_MESSAGES[levelKey] || "¿Me has tenido miedo? Sigue preparándote, renacuajo. 🐸";
+    if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
+    window.showCyberAlert("DUELO ABANDONADO", msg, "🐸");
+};
+
 
 window.openVsMode = function() {
     window.stopVsSession();

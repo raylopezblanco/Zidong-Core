@@ -19,26 +19,6 @@
     }
     window.triggerHaptic = triggerHaptic;
 
-    window.showCyberAlert = function(title, message, icon = "⚡") {
-        const modal = document.getElementById("cyberAlertModal");
-        const titleEl = document.getElementById("cyberAlertTitle");
-        const msgEl = document.getElementById("cyberAlertMsg");
-        const iconEl = document.getElementById("cyberAlertIcon");
-        if (modal && titleEl && msgEl) {
-            if (iconEl) iconEl.textContent = icon;
-            titleEl.textContent = title;
-            msgEl.textContent = message;
-            modal.style.display = "flex";
-        } else {
-            alert(`${title}\n\n${message}`);
-        }
-    };
-
-    window.closeCyberAlert = function() {
-        const modal = document.getElementById("cyberAlertModal");
-        if (modal) modal.style.display = "none";
-    };
-
     let currentUserData = {
         name: "New user",
         xp: 1850,
@@ -46,7 +26,9 @@
         completedActivities: ["w1_a1", "w1_a2", "w1_a3", "w1_a4", "w2_a1", "w2_a2", "w2_a3", "w2_a4"],
         unlockedWorlds: ["world_1", "world_2", "world_3", "world_4", "world_5"],
         unlockedBadges: ["badge_starter", "badge_volt", "badge_sensor"],
-        selectedAvatar: "⚡"
+        selectedAvatar: "⚡",
+        phaseStars: {},
+        completedReviews: []
     };
 
     const WORLDS_CONFIG = [
@@ -59,10 +41,12 @@
             color: "#00f59b",
             planetClass: "planet-voltaria",
             activities: [
-                { id: "w1_a1", hanzi: "电", pinyin: "diàn", meaning: "Electricidad / Voltaje", reward: 50, audioNote: "diàn" },
-                { id: "w1_a2", hanzi: "线", pinyin: "xiàn", meaning: "Línea / Cableado", reward: 50, audioNote: "xiàn" },
-                { id: "w1_a3", hanzi: "模", pinyin: "mó", meaning: "Módulo de potencia", reward: 60, audioNote: "mó" },
-                { id: "w1_a4", hanzi: "组", pinyin: "zǔ", meaning: "Ensamble eléctrico", reward: 70, audioNote: "zǔ" }
+                { id: "w1_a1", hanzi: "电", pinyin: "diàn", meaning: "Electricidad / Voltaje", reward: 50, audioNote: "diàn", sentence: "主电源电箱电压正常", sentenceEs: "El voltaje en la caja de energía principal es normal" },
+                { id: "w1_a2", hanzi: "线", pinyin: "xiàn", meaning: "Línea / Cableado", reward: 50, audioNote: "xiàn", sentence: "3号工位控制线连接牢固", sentenceEs: "La línea de control de la estación 3 está bien conectada" },
+                { id: "w1_a3", hanzi: "模", pinyin: "mó", meaning: "Módulo de potencia", reward: 60, audioNote: "mó", sentence: "变频器功率模组温度偏高", sentenceEs: "La temperatura del módulo de potencia del VFD está alta" },
+                { id: "w1_a4", hanzi: "组", pinyin: "zǔ", meaning: "Ensamble eléctrico", reward: 70, audioNote: "zǔ", sentence: "线束组件已通过导通测试", sentenceEs: "El ensamble de arnés aprobó la prueba de continuidad" },
+                { id: "w1_a5", hanzi: "控", pinyin: "kòng", meaning: "Control / PLC", reward: 70, audioNote: "kòng", sentence: "主控柜与PLC通讯恢复正常", sentenceEs: "La comunicación entre el gabinete de control y el PLC volvió a la normalidad" },
+                { id: "w1_a6", hanzi: "路", pinyin: "lù", meaning: "Circuito / Rama", reward: 80, audioNote: "lù", sentence: "检测到24V控制回路断路", sentenceEs: "Se detectó circuito abierto en el lazo de control de 24V" }
             ],
             boss: {
                 id: "w1_boss",
@@ -729,6 +713,72 @@
         });
     }
 
+    function getHanziStarMask(actId) {
+        if (!currentUserData.phaseStars) currentUserData.phaseStars = {};
+        if (!currentUserData.phaseStars[actId]) {
+            if (currentUserData.completedActivities.includes(actId)) {
+                currentUserData.phaseStars[actId] = { p1: true, p2: true, p3: true };
+            } else {
+                currentUserData.phaseStars[actId] = { p1: false, p2: false, p3: false };
+            }
+        }
+        return currentUserData.phaseStars[actId];
+    }
+
+    function countHanziStars(actId) {
+        const m = getHanziStarMask(actId);
+        return (m.p1 ? 1 : 0) + (m.p2 ? 1 : 0) + (m.p3 ? 1 : 0);
+    }
+
+    function setHanziPhaseStar(actId, phaseNum) {
+        const m = getHanziStarMask(actId);
+        if (phaseNum === 1) m.p1 = true;
+        if (phaseNum === 2) m.p2 = true;
+        if (phaseNum === 3) m.p3 = true;
+        if (countHanziStars(actId) === 3 && !currentUserData.completedActivities.includes(actId)) {
+            currentUserData.completedActivities.push(actId);
+        }
+        saveUserData();
+    }
+
+    function renderStarRowHtml(starsCount) {
+        const s1 = starsCount >= 1 ? "⭐" : "☆";
+        const s2 = starsCount >= 2 ? "⭐" : "☆";
+        const s3 = starsCount >= 3 ? "⭐" : "☆";
+        return `<div class="zigzag-stars-row" aria-label="${starsCount} de 3 estrellas"><span>${s1}</span><span>${s2}</span><span>${s3}</span></div>`;
+    }
+
+    function buildWorldZigzagItems(world) {
+        const items = [];
+        const acts = world.activities || [];
+        let seenSoFar = [];
+
+        acts.forEach((act, idx) => {
+            items.push({
+                type: "hanzi",
+                act,
+                actIndex: idx
+            });
+            seenSoFar.push(act);
+
+            // Insert a review checkpoint every 5 Hanzi, or at the end of the world if >= 3 Hanzi seen
+            const isEveryFive = (idx + 1) % 5 === 0;
+            const isEndReview = (idx === acts.length - 1) && !isEveryFive && seenSoFar.length >= 3;
+            if (isEveryFive || isEndReview) {
+                items.push({
+                    type: "review",
+                    id: `${world.id}_rev_${idx + 1}`,
+                    title: `REPASO DE BLOQUE · ${seenSoFar.length} HANZI`,
+                    subtitle: `Evalúa caracteres vistos hasta ${act.hanzi} (${act.meaning})`,
+                    pool: [...seenSoFar],
+                    reward: 120
+                });
+            }
+        });
+
+        return items;
+    }
+
     function openWorldDetails(world) {
         if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
 
@@ -742,56 +792,120 @@
         if (iconEl) iconEl.textContent = world.icon;
         if (!stream) return;
 
+        stream.className = "career-zigzag-stream";
         stream.replaceChildren();
 
-        world.activities.forEach((act, idx) => {
-            const isCompleted = currentUserData.completedActivities.includes(act.id);
-            const isUnlocked = idx === 0 || currentUserData.completedActivities.includes(world.activities[idx - 1].id);
+        const zigzagItems = buildWorldZigzagItems(world);
 
-            const node = document.createElement("div");
-            node.className = `planet-node-item ${isCompleted ? 'completed' : isUnlocked ? 'unlocked' : 'locked'}`;
-            node.innerHTML = `
-                <div class="node-icon-circle" style="border-color:${world.color};">
-                    <span>${isCompleted ? '✓' : isUnlocked ? act.hanzi : '🔒'}</span>
-                </div>
-                <div class="node-meta">
-                    <strong style="color:#fff; font-size:13px; font-family:'Noto Sans SC';">${act.hanzi} · ${act.meaning}</strong>
-                    <small style="color:var(--muted); font-size:10px;">Pinyin: ${act.pinyin} · Recompensa: +${act.reward} XP</small>
-                </div>
-                <span class="node-arrow">${isCompleted ? 'COMPLETADO' : isUnlocked ? 'INICIAR →' : 'BLOQUEADO'}</span>
-            `;
+        // Determine unlocked progress along zigzag items
+        let prevCompleted = true;
+        let visualStepIndex = 0;
 
-            if (isUnlocked) {
-                node.onclick = () => {
-                    triggerHaptic("success");
-                    openActivity(act, world);
-                };
+        zigzagItems.forEach((entry) => {
+            const alignClass = entry.type === "review"
+                ? "align-center"
+                : (visualStepIndex % 2 === 0 ? "align-left" : "align-right");
+            visualStepIndex++;
+
+            if (entry.type === "hanzi") {
+                const act = entry.act;
+                const stars = countHanziStars(act.id);
+                const isMastered = stars === 3;
+                const isUnlocked = prevCompleted || stars > 0;
+
+                const node = document.createElement("div");
+                node.className = `zigzag-node-row ${alignClass} ${isMastered ? "state-mastered" : isUnlocked ? "state-unlocked" : "state-locked"}`;
+                node.style.setProperty("--node-color", world.color);
+
+                const statusText = isMastered ? "3/3 ★" : isUnlocked ? `${stars}/3 ★ · INICIAR` : "BLOQUEADO 🔒";
+
+                node.innerHTML = `
+                    <div class="zigzag-hanzi-orb" style="border-color:${world.color};">${isUnlocked ? act.hanzi : "🔒"}</div>
+                    <div class="zigzag-node-meta">
+                        <span class="zigzag-step-tag" style="color:${world.color};">HANZI 0${entry.actIndex + 1} · +${act.reward} XP</span>
+                        <strong>${act.meaning}</strong>
+                        <small>Pinyin: ${act.pinyin}</small>
+                        ${renderStarRowHtml(stars)}
+                    </div>
+                    <span class="zigzag-status-pill">${statusText}</span>
+                `;
+
+                if (isUnlocked) {
+                    node.onclick = () => {
+                        triggerHaptic("success");
+                        window.speakMandarin(act.hanzi);
+                        openActivity(act, world);
+                    };
+                }
+                stream.appendChild(node);
+
+                // Next node unlocks once this Hanzi has at least 1 star (or is mastered)
+                prevCompleted = stars >= 1;
+            } else if (entry.type === "review") {
+                if (!currentUserData.completedReviews) currentUserData.completedReviews = [];
+                const revDone = currentUserData.completedReviews.includes(entry.id);
+                const revUnlocked = prevCompleted;
+
+                const revNode = document.createElement("div");
+                revNode.className = `zigzag-node-row review-node ${alignClass} ${revDone ? "state-mastered" : revUnlocked ? "state-unlocked" : "state-locked"}`;
+                revNode.style.setProperty("--node-color", "var(--amber)");
+
+                revNode.innerHTML = `
+                    <div class="zigzag-hanzi-orb" style="border-color:var(--amber); color:var(--amber);">${revUnlocked ? "🔁" : "🔒"}</div>
+                    <div class="zigzag-node-meta">
+                        <span class="zigzag-step-tag" style="color:var(--amber);">ETAPA DE REPASO · +${entry.reward} XP</span>
+                        <strong>${entry.title}</strong>
+                        <small>${entry.subtitle}</small>
+                    </div>
+                    <span class="zigzag-status-pill">${revDone ? "REPASADO ✓" : revUnlocked ? "REPASAR →" : "BLOQUEADO 🔒"}</span>
+                `;
+
+                if (revUnlocked) {
+                    revNode.onclick = () => {
+                        triggerHaptic("success");
+                        startReviewCheckpoint(entry, world);
+                    };
+                }
+                stream.appendChild(revNode);
+                prevCompleted = revDone || prevCompleted;
             }
-            stream.appendChild(node);
         });
 
-        // BOSS CHECKPOINT NODE
-        const bossUnlocked = world.activities.every(a => currentUserData.completedActivities.includes(a.id));
+        // FINAL BOSS CHECKPOINT: Requires ALL Hanzi in the world to have 3 stars
+        const allActsThreeStars = world.activities.every(a => countHanziStars(a.id) === 3);
         const bossCompleted = currentUserData.completedActivities.includes(world.boss.id);
+        const totalWorldStars = world.activities.reduce((acc, a) => acc + countHanziStars(a.id), 0);
+        const maxWorldStars = world.activities.length * 3;
 
         const bossNode = document.createElement("div");
-        bossNode.className = `planet-node-item boss-node ${bossCompleted ? 'completed' : bossUnlocked ? 'unlocked' : 'locked'}`;
-        bossNode.style.borderColor = world.color;
+        bossNode.className = `zigzag-node-row boss-node align-center ${bossCompleted ? "state-mastered" : allActsThreeStars ? "state-unlocked" : "state-locked"}`;
+        bossNode.style.setProperty("--node-color", world.color);
+
         bossNode.innerHTML = `
-            <div class="node-icon-circle" style="background:${world.color}; color:#0b1424; border-color:#fff;">
-                <span>👑</span>
+            <div class="zigzag-hanzi-orb" style="background:${world.color}; color:#0b1424; border-color:#fff;">👑</div>
+            <div class="zigzag-node-meta">
+                <span class="zigzag-step-tag" style="color:${world.color};">FINAL BOSS · +${world.boss.reward} XP</span>
+                <strong>${world.boss.title}</strong>
+                <small>Estrellas del mundo: ${totalWorldStars}/${maxWorldStars} ★ · Medalla: "${world.boss.badgeName}"</small>
             </div>
-            <div class="node-meta">
-                <strong style="color:${world.color}; font-size:13.5px;">CHECKPOINT FINAL: ${world.boss.title}</strong>
-                <small style="color:#fff; font-size:10px;">Desbloquea Medalla: "${world.boss.badgeName}" (+${world.boss.reward} XP)</small>
-            </div>
-            <span class="node-arrow" style="color:${world.color};">${bossCompleted ? 'CONQUISTADO' : bossUnlocked ? 'ENFRENTAR JEFE ⚡' : 'REQUIERE MUNDO 100%'}</span>
+            <span class="zigzag-status-pill">${bossCompleted ? "CONQUISTADO ✓" : allActsThreeStars ? "RETOS DE JEFE ⚡" : `REQUIERE ${maxWorldStars}★`}</span>
         `;
 
-        if (bossUnlocked) {
+        if (allActsThreeStars) {
             bossNode.onclick = () => {
                 triggerHaptic("success");
                 startBossCheckpoint(world);
+            };
+        } else {
+            bossNode.onclick = () => {
+                triggerHaptic("error");
+                window.showCyberAlert(
+                    "FINAL BOSS BLOQUEADO",
+                    `Necesitas las 3 estrellas (⭐⭐⭐) en cada Hanzi del mundo para enfrentar al Final Boss.
+
+Progreso actual: ${totalWorldStars} / ${maxWorldStars} estrellas.`,
+                    "🔒"
+                );
             };
         }
         stream.appendChild(bossNode);
@@ -799,133 +913,323 @@
 
     function openActivity(act, world) {
         if (typeof window.navigateTo === "function") window.navigateTo("level01");
-        startHanzi4Phases(act, world);
+        startHanzi3Phases(act, world);
     }
 
-    // 4 FASES PEDAGÓGICAS PARA APRENDIZAJE DE HANZI
-    function startHanzi4Phases(act, world) {
+    // 3 FASES POR HANZI = 3 ESTRELLAS (1 por fase)
+    // - Bloqueo de selección múltiple durante la evaluación
+    // - Si fallas en una fase, se reinicia ÚNICAMENTE esa fase
+    function startHanzi3Phases(act, world) {
         const card = document.querySelector("#level01 .recognition-card");
         if (!card) return;
 
-        let currentPhase = 1;
+        const accent = world?.color || "var(--cyan)";
+        const mask = getHanziStarMask(act.id);
 
-        function renderPhase1() {
-            card.innerHTML = `
-                <span class="eyebrow" style="color:${world?.color || 'var(--cyan)'};">FASE 1 DE 4 · RECONOCIMIENTO</span>
-                <h3 style="color:#fff; font-size:14px; margin:8px 0;">Identifica el componente industrial</h3>
-                <div style="font-size:64px; font-family:'Noto Sans SC'; color:#fff; margin:14px 0; text-shadow:0 0 20px rgba(0,245,155,0.4);">${act.hanzi}</div>
-                <p style="font-size:12px; color:var(--muted); margin-bottom:16px;">Pinyin: <strong>${act.pinyin}</strong></p>
-                <button class="reveal-button" style="background:${world?.color || 'var(--cyan)'}; color:#0b1424; font-weight:900; padding:14px; width:100%;" onclick="window.nextPhaseCb()">ESCUCHAR & CONTINUAR →</button>
+        const sentenceText = act.sentence || `1号站${act.hanzi}信号检测正常`;
+        const sentenceEs = act.sentenceEs || `Señal de ${act.meaning} en estación 1 verificada`;
+
+        function getStarsNow() {
+            return countHanziStars(act.id);
+        }
+
+        function renderHeaderSteps(activePhase) {
+            const m = getHanziStarMask(act.id);
+            return `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:10px; background:var(--surface-light); padding:8px 10px; border-radius:10px; border:1px solid var(--border);">
+                    <span style="font-size:9.5px; font-weight:800; color:${activePhase===1 ? accent : (m.p1 ? 'var(--green)' : 'var(--muted)')};">${m.p1 ? '⭐' : '☆'} 1. El Hanzi</span>
+                    <span style="font-size:9.5px; font-weight:800; color:${activePhase===2 ? accent : (m.p2 ? 'var(--green)' : 'var(--muted)')};">${m.p2 ? '⭐' : '☆'} 2. Cómo se dice</span>
+                    <span style="font-size:9.5px; font-weight:800; color:${activePhase===3 ? accent : (m.p3 ? 'var(--green)' : 'var(--muted)')};">${m.p3 ? '⭐' : '☆'} 3. En oración</span>
+                </div>
             `;
         }
 
-        function renderPhase2() {
+        function lockAllButtons(container) {
+            if (!container) return;
+            container.querySelectorAll("button").forEach(b => {
+                b.disabled = true;
+            });
+        }
+
+        // FASE 1 (1ª Estrella): El Hanzi cómo es (forma + función/significado + audio)
+        function renderPhase1() {
+            let locked = false;
+            const distractors = vsShuffle([
+                "Válvula solenoide de purga neumática",
+                "Sensor óptico de presencia de PCB",
+                "Indicador lumínico de paro de torre",
+                "Banda transportadora de retorno"
+            ].filter(d => d !== act.meaning)).slice(0, 3);
+            const options = vsShuffle([act.meaning, ...distractors]);
+
             card.innerHTML = `
-                <span class="eyebrow" style="color:${world?.color || 'var(--cyan)'};">FASE 2 DE 4 · SIGNIFICADO TÉCNICO</span>
-                <h3 style="color:#fff; font-size:14px; margin:8px 0;">¿Qué función cumple "${act.hanzi}"?</h3>
-                <div style="font-size:42px; font-family:'Noto Sans SC'; color:#fff; margin:10px 0;">${act.hanzi}</div>
-                <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;" id="phase2Options"></div>
+                ${renderHeaderSteps(1)}
+                <span class="eyebrow" style="color:${accent};">FASE 1 DE 3 · ⭐ 1ª ESTRELLA · EL HANZI CÓMO ES</span>
+                <h3 style="color:#fff; font-size:13.5px; margin:6px 0;">Observa el carácter y elige qué representa</h3>
+                <div style="font-size:64px; font-family:'Noto Sans SC'; color:#fff; margin:10px 0; text-shadow:0 0 20px rgba(39,216,232,0.35);">${act.hanzi}</div>
+                <button type="button" id="btnAudioPhase1" style="background:rgba(39,216,232,0.14); border:1px solid var(--cyan); color:var(--cyan); border-radius:20px; padding:6px 14px; font-size:11px; font-weight:800; cursor:pointer; margin-bottom:10px;">🔊 Escuchar pronunciación</button>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;" id="p1Opts"></div>
             `;
 
-            const optsBox = document.getElementById("phase2Options");
-            const wrongOpts = [
-                "Válvula de purga neumática",
-                "Sensor óptico de presencia",
-                "Indicador lumínico de estado"
-            ];
-            const allOpts = vsShuffle([act.meaning, ...wrongOpts.slice(0, 3)]);
+            const audioBtn = document.getElementById("btnAudioPhase1");
+            if (audioBtn) {
+                audioBtn.onclick = () => {
+                    triggerHaptic("success");
+                    window.speakMandarin(act.hanzi);
+                };
+            }
 
-            allOpts.forEach(opt => {
+            const box = document.getElementById("p1Opts");
+            options.forEach(opt => {
                 const btn = document.createElement("button");
-                btn.className = "reveal-button";
-                btn.style.background = "var(--surface-light)";
-                btn.style.color = "#fff";
-                btn.style.border = "1px solid var(--border)";
-                btn.style.padding = "12px";
-                btn.style.fontWeight = "800";
+                btn.type = "button";
+                btn.className = "career-opt-btn";
                 btn.textContent = opt;
-
                 btn.onclick = () => {
+                    if (locked) return;
+                    locked = true;
+                    lockAllButtons(box);
+
                     if (opt === act.meaning) {
                         triggerHaptic("success");
+                        window.speakMandarin(act.hanzi);
                         btn.style.background = "var(--green)";
                         btn.style.color = "#0b1424";
-                        setTimeout(renderPhase3, 500);
+                        btn.style.borderColor = "var(--green)";
+                        setHanziPhaseStar(act.id, 1);
+                        setTimeout(renderPhase2, 550);
                     } else {
                         triggerHaptic("error");
                         btn.style.background = "var(--red)";
                         btn.style.color = "#fff";
+                        btn.style.borderColor = "var(--red)";
+                        card.classList.add("phase-shake-err");
+                        setTimeout(() => {
+                            card.classList.remove("phase-shake-err");
+                            renderPhase1();
+                        }, 650);
                     }
                 };
-                optsBox.appendChild(btn);
+                box.appendChild(btn);
             });
         }
 
-        function renderPhase3() {
+        // FASE 2 (2ª Estrella): El Hanzi cómo se dice (pronunciación / pinyin)
+        function renderPhase2() {
+            let locked = false;
+            const distractors = vsShuffle([
+                "bō qì", "gāng yā", "zhǎo qì", "wù cè", "fá lù", "cè guāng"
+            ].filter(p => p !== act.pinyin)).slice(0, 3);
+            const options = vsShuffle([act.pinyin, ...distractors]);
+
             card.innerHTML = `
-                <span class="eyebrow" style="color:${world?.color || 'var(--cyan)'};">FASE 3 DE 4 · ASOCIACIÓN DE PINYIN</span>
-                <h3 style="color:#fff; font-size:14px; margin:8px 0;">Selecciona la pronunciación correcta</h3>
-                <div style="font-size:52px; font-family:'Noto Sans SC'; color:#fff; margin:12px 0;">${act.hanzi}</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;" id="phase3Options"></div>
+                ${renderHeaderSteps(2)}
+                <span class="eyebrow" style="color:${accent};">FASE 2 DE 3 · ⭐ 2ª ESTRELLA · EL HANZI CÓMO SE DICE</span>
+                <h3 style="color:#fff; font-size:13.5px; margin:6px 0;">¿Cómo se pronuncia "${act.hanzi}" (${act.meaning})?</h3>
+                <div style="font-size:56px; font-family:'Noto Sans SC'; color:#fff; margin:10px 0;">${act.hanzi}</div>
+                <button type="button" id="btnAudioPhase2" style="background:rgba(39,216,232,0.14); border:1px solid var(--cyan); color:var(--cyan); border-radius:20px; padding:6px 14px; font-size:11px; font-weight:800; cursor:pointer; margin-bottom:10px;">🔊 Escuchar audio</button>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;" id="p2Opts"></div>
             `;
 
-            const optsBox = document.getElementById("phase3Options");
-            const wrongPinyin = ["bō qì", "gāng yā", "zhǎo qì"];
-            const allPinyin = vsShuffle([act.pinyin, ...wrongPinyin.slice(0, 3)]);
+            const audioBtn = document.getElementById("btnAudioPhase2");
+            if (audioBtn) {
+                audioBtn.onclick = () => {
+                    triggerHaptic("success");
+                    window.speakMandarin(act.hanzi);
+                };
+            }
 
-            allPinyin.forEach(pin => {
+            const box = document.getElementById("p2Opts");
+            options.forEach(pin => {
                 const btn = document.createElement("button");
-                btn.className = "reveal-button";
-                btn.style.background = "var(--surface-light)";
-                btn.style.color = "#fff";
-                btn.style.border = "1px solid var(--border)";
-                btn.style.padding = "12px";
-                btn.style.fontWeight = "800";
+                btn.type = "button";
+                btn.className = "career-opt-btn";
+                btn.style.textAlign = "center";
                 btn.textContent = pin;
-
                 btn.onclick = () => {
+                    if (locked) return;
+                    locked = true;
+                    lockAllButtons(box);
+
                     if (pin === act.pinyin) {
+                        triggerHaptic("success");
+                        window.speakMandarin(act.hanzi);
+                        btn.style.background = "var(--green)";
+                        btn.style.color = "#0b1424";
+                        btn.style.borderColor = "var(--green)";
+                        setHanziPhaseStar(act.id, 2);
+                        setTimeout(renderPhase3, 550);
+                    } else {
+                        triggerHaptic("error");
+                        btn.style.background = "var(--red)";
+                        btn.style.color = "#fff";
+                        btn.style.borderColor = "var(--red)";
+                        card.classList.add("phase-shake-err");
+                        setTimeout(() => {
+                            card.classList.remove("phase-shake-err");
+                            renderPhase2();
+                        }, 650);
+                    }
+                };
+                box.appendChild(btn);
+            });
+        }
+
+        // FASE 3 (3ª Estrella): Identificar el Hanzi en una oración
+        function renderPhase3() {
+            let locked = false;
+            const chars = sentenceText.split("");
+            const hasTarget = chars.includes(act.hanzi);
+            const displayChars = hasTarget ? chars : [...chars, act.hanzi];
+
+            card.innerHTML = `
+                ${renderHeaderSteps(3)}
+                <span class="eyebrow" style="color:${accent};">FASE 3 DE 3 · ⭐ 3ª ESTRELLA · HANZI EN ORACIÓN</span>
+                <h3 style="color:#fff; font-size:13.5px; margin:6px 0;">Toca el carácter <strong style="color:var(--green); font-family:'Noto Sans SC'; font-size:17px;">${act.hanzi}</strong> (${act.meaning}) dentro de la oración</h3>
+                <div class="career-sentence-box">
+                    <div class="career-sentence-es">${sentenceEs}</div>
+                    <div class="hmi-tokens-container" id="p3SentenceTokens" style="margin-top:10px;"></div>
+                </div>
+                <button type="button" id="btnAudioPhase3" style="background:rgba(39,216,232,0.14); border:1px solid var(--cyan); color:var(--cyan); border-radius:20px; padding:6px 14px; font-size:11px; font-weight:800; cursor:pointer;">🔊 Leer oración</button>
+            `;
+
+            const audioBtn = document.getElementById("btnAudioPhase3");
+            if (audioBtn) {
+                audioBtn.onclick = () => {
+                    triggerHaptic("success");
+                    window.speakMandarin(sentenceText);
+                };
+            }
+
+            const tokenBox = document.getElementById("p3SentenceTokens");
+            displayChars.forEach(ch => {
+                const tok = document.createElement("button");
+                tok.type = "button";
+                tok.className = "hmi-char-token";
+                tok.textContent = ch;
+                tok.onclick = () => {
+                    if (locked) return;
+                    locked = true;
+                    lockAllButtons(tokenBox);
+
+                    if (ch === act.hanzi) {
+                        tok.classList.add("token-hit");
+                        setHanziPhaseStar(act.id, 3);
+                        if (!currentUserData._rewardedHanzi) currentUserData._rewardedHanzi = [];
+                        let earned = 0;
+                        if (!currentUserData._rewardedHanzi.includes(act.id)) {
+                            currentUserData._rewardedHanzi.push(act.id);
+                            currentUserData.xp += act.reward;
+                            earned = act.reward;
+                        }
+                        updateProfile();
+                        triggerHaptic("win");
+                        window.speakMandarin(act.hanzi);
+                        setTimeout(() => {
+                            window.showCyberAlert(
+                                "¡3 ESTRELLAS COMPLETADAS! ⭐⭐⭐",
+                                `Dominaste "${act.hanzi}" (${act.meaning}) en sus 3 fases${earned > 0 ? ` (+${earned} XP)` : ""}.`,
+                                "🌟"
+                            );
+                            if (world) openWorldDetails(world);
+                        }, 450);
+                    } else {
+                        tok.classList.add("token-miss");
+                        triggerHaptic("error");
+                        card.classList.add("phase-shake-err");
+                        setTimeout(() => {
+                            card.classList.remove("phase-shake-err");
+                            renderPhase3();
+                        }, 650);
+                    }
+                };
+                tokenBox.appendChild(tok);
+            });
+        }
+
+        renderPhase1();
+    }
+
+    // ETAPA DE REPASO CADA 5-6 HANZI
+    function startReviewCheckpoint(reviewItem, world) {
+        if (typeof window.navigateTo === "function") window.navigateTo("level01");
+        const card = document.querySelector("#level01 .recognition-card");
+        if (!card) return;
+
+        const pool = reviewItem.pool || [];
+        const questions = vsShuffle(pool).slice(0, Math.min(4, pool.length));
+        let qIdx = 0;
+
+        function renderReviewStep() {
+            const target = questions[qIdx];
+            if (!target) {
+                if (!currentUserData.completedReviews) currentUserData.completedReviews = [];
+                if (!currentUserData.completedReviews.includes(reviewItem.id)) {
+                    currentUserData.completedReviews.push(reviewItem.id);
+                    currentUserData.xp += reviewItem.reward;
+                    updateProfile();
+                }
+                triggerHaptic("win");
+                window.showCyberAlert(
+                    "REPASO SUPERADO",
+                    `¡Completaste ${reviewItem.title}! (+${reviewItem.reward} XP)`,
+                    "🔁"
+                );
+                if (world) openWorldDetails(world);
+                return;
+            }
+
+            let locked = false;
+            const otherMeanings = pool
+                .filter(p => p.id !== target.id)
+                .map(p => p.meaning);
+            const fallbackDistractors = [
+                "Sensor inductivo de proximidad",
+                "Válvula de escape rápido",
+                "Fuente de respaldo 24V"
+            ];
+            const options = vsShuffle([target.meaning, ...otherMeanings, ...fallbackDistractors]).slice(0, 4);
+
+            card.innerHTML = `
+                <span class="eyebrow" style="color:var(--amber);">🔁 ETAPA DE REPASO · PREGUNTA ${qIdx + 1} DE ${questions.length}</span>
+                <h3 style="color:#fff; font-size:13.5px; margin:6px 0;">¿Qué significa este Hanzi visto anteriormente?</h3>
+                <div style="font-size:60px; font-family:'Noto Sans SC'; color:var(--amber); margin:12px 0;">${target.hanzi}</div>
+                <div style="display:flex; flex-direction:column; gap:8px;" id="revOptsBox"></div>
+            `;
+
+            const optsBox = document.getElementById("revOptsBox");
+            options.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "career-opt-btn";
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (locked) return;
+                    locked = true;
+                    optsBox.querySelectorAll("button").forEach(b => b.disabled = true);
+
+                    if (opt === target.meaning) {
                         triggerHaptic("success");
                         btn.style.background = "var(--green)";
                         btn.style.color = "#0b1424";
-                        setTimeout(renderPhase4, 500);
+                        qIdx++;
+                        setTimeout(renderReviewStep, 450);
                     } else {
                         triggerHaptic("error");
                         btn.style.background = "var(--red)";
                         btn.style.color = "#fff";
+                        card.classList.add("phase-shake-err");
+                        setTimeout(() => {
+                            card.classList.remove("phase-shake-err");
+                            renderReviewStep();
+                        }, 650);
                     }
                 };
                 optsBox.appendChild(btn);
             });
         }
 
-        function renderPhase4() {
-            card.innerHTML = `
-                <span class="eyebrow" style="color:${world?.color || 'var(--cyan)'};">FASE 4 DE 4 · VALIDACIÓN DE ESCRITURA</span>
-                <h3 style="color:#fff; font-size:14px; margin:8px 0;">Confirma el carácter correcto</h3>
-                <div style="font-size:64px; font-family:'Noto Sans SC'; color:var(--green); margin:12px 0;">${act.hanzi}</div>
-                <p style="font-size:12px; color:#fff; margin-bottom:16px;">Significado: <strong>${act.meaning}</strong></p>
-                <button class="reveal-button" style="background:var(--green); color:#0b1424; font-weight:900; padding:14px; width:100%;" onclick="window.finishActivityCb()">¡CONQUISTAR NIVEL (+${act.reward} XP) ⚡</button>
-            `;
-        }
-
-        window.nextPhaseCb = () => {
-            triggerHaptic("success");
-            renderPhase2();
-        };
-
-        window.finishActivityCb = () => {
-            triggerHaptic("win");
-            if (!currentUserData.completedActivities.includes(act.id)) {
-                currentUserData.completedActivities.push(act.id);
-                currentUserData.xp += act.reward;
-                updateProfile();
-            }
-            window.showCyberAlert("NIVEL CONQUISTADO", `¡NIVEL APROBADO! (+${act.reward} XP)\nHas dominado "${act.hanzi}" (${act.meaning}).`, "🌟");
-            if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
-        };
-
-        renderPhase1();
+        renderReviewStep();
     }
 
     function startBossCheckpoint(world) {
@@ -959,9 +1263,11 @@
 
             const tokensGrid = document.getElementById("bossTokensGrid");
             const allChars = vsShuffle(sequence.map(s => s.char).concat(["动", "机", "线", "电"]));
+            let locked = false;
 
             allChars.forEach(char => {
                 const b = document.createElement("button");
+                b.type = "button";
                 b.className = "reveal-button";
                 b.style.background = "var(--surface-light)";
                 b.style.color = "#fff";
@@ -972,8 +1278,13 @@
                 b.textContent = char;
 
                 b.onclick = () => {
+                    if (locked) return;
+                    locked = true;
+                    tokensGrid.querySelectorAll("button").forEach(btn => btn.disabled = true);
+
                     if (char === currentTarget.char) {
                         triggerHaptic("success");
+                        window.speakMandarin(char);
                         b.style.background = "var(--green)";
                         b.style.color = "#0b1424";
                         currentStepIndex++;
@@ -986,7 +1297,8 @@
                                 updateProfile();
                             }
                             setTimeout(() => {
-                                window.showCyberAlert("CHECKPOINT DE LÍNEA", `¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`, "🏆");
+                                window.showCyberAlert("CHECKPOINT DE LÍNEA", `¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)
+Has desbloqueado la medalla "${boss.badgeName}".`, "🏆");
                                 renderBadgesGrid();
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 400);
@@ -997,7 +1309,11 @@
                         triggerHaptic("error");
                         b.style.background = "var(--red)";
                         b.style.color = "#fff";
-                        setTimeout(() => b.style.background = "var(--surface-light)", 300);
+                        card.classList.add("phase-shake-err");
+                        setTimeout(() => {
+                            card.classList.remove("phase-shake-err");
+                            renderBossSequenceView();
+                        }, 600);
                     }
                 };
                 tokensGrid.appendChild(b);
@@ -1019,6 +1335,7 @@ window.VS_DIFFICULTIES = {
         points: 100,
         winBonus: 100
     },
+
     MEDIUM: {
         name: "Servocontrolador Overclock",
         badge: "NIVEL 2 · PALABRAS INDUSTRIALES",
@@ -1026,6 +1343,7 @@ window.VS_DIFFICULTIES = {
         points: 100,
         winBonus: 150
     },
+
     HARD: {
         name: "Protocolo Centinela IA",
         badge: "NIVEL 3 · ORDENAR PALABRAS",
@@ -1051,23 +1369,19 @@ window.VS_HANZI_DATA = [
     { hanzi: "模", pinyin: "mó", meaning: "Molde / Módulo" },
     { hanzi: "组", pinyin: "zǔ", meaning: "Grupo / Ensamble" },
     { hanzi: "机", pinyin: "jī", meaning: "Máquina" },
-    { hanzi: "动", pinyin: "dòng", meaning: "Movimiento / Automático" },
-    { hanzi: "停", pinyin: "tíng", meaning: "Parada / Detener" },
-    { hanzi: "气", pinyin: "qì", meaning: "Aire / Neumática" }
+    { hanzi: "动", pinyin: "dòng", meaning: "Movimiento / Automático" }
 ];
 
 window.VS_WORD_DATA = [
     { hanzi: "急停", pinyin: "jí tíng", meaning: "Paro de emergencia" },
-    { hanzi: "自动", pinyin: "zì dòng", meaning: "Modo automático" },
+    { hanzi: "自动", pinyin: "zì dòng", meaning: "Automático" },
     { hanzi: "机器人", pinyin: "jī qì rén", meaning: "Robot industrial" },
-    { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor de detección" },
-    { hanzi: "电源", pinyin: "diàn yuán", meaning: "Fuente de alimentación" },
-    { hanzi: "气缸", pinyin: "qì gāng", meaning: "Cilindro neumático" },
-    { hanzi: "安全门", pinyin: "ān quán mén", meaning: "Puerta de seguridad" }
+    { hanzi: "PLC", pinyin: "kě lù", meaning: "Controlador PLC" },
+    { hanzi: "传感器", pinyin: "chuán gǎn qì", meaning: "Sensor" }
 ];
 
 window.vsShuffle = function(array) {
-    const arr = [...array];
+    let arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -1096,26 +1410,13 @@ window.vsGetInstruction = function() {
         instruction.style.fontSize = "11px";
         instruction.style.color = "var(--muted)";
         instruction.style.marginBottom = "8px";
-        const hanziEl = document.getElementById("vsHanziDisplay");
-        if (hanziEl) {
-            stage.insertBefore(instruction, hanziEl);
-        } else {
-            stage.appendChild(instruction);
-        }
+        stage.insertBefore(instruction, document.getElementById("vsHanziDisplay"));
     }
     return instruction;
 };
 
-window.stopVsSession = function() {
-    window.vsSessionActive = false;
-    if (window.vsTimer) {
-        clearInterval(window.vsTimer);
-        window.vsTimer = null;
-    }
-};
-
 window.openVsMode = function() {
-    window.stopVsSession();
+    if (typeof stopVsSession === "function") stopVsSession();
 
     if (typeof triggerHaptic === "function") {
         triggerHaptic("success");
@@ -1135,15 +1436,15 @@ window.openVsMode = function() {
 };
 
 window.start1v1WithDifficulty = function(diffKey) {
-    const diff = window.VS_DIFFICULTIES[diffKey];
-    if (!diff) {
+    if (!window.VS_DIFFICULTIES[diffKey]) {
         console.error("Dificultad 1v1 desconocida:", diffKey);
         return;
     }
 
-    window.stopVsSession();
+    if (typeof stopVsSession === "function") stopVsSession();
 
     window.selectedVsDiffKey = diffKey;
+    const diff = window.VS_DIFFICULTIES[diffKey];
 
     const selector = document.getElementById("vsDifficultySelector");
     const arena = document.getElementById("vsBattleArenaContainer");
@@ -1177,8 +1478,8 @@ window.start1v1WithDifficulty = function(diffKey) {
     const timerBar = document.getElementById("vsTimerBar");
     if (timerBar) timerBar.style.width = "100%";
 
-    window.startVsRound();
-    window.startVsTimer();
+    if (typeof startVsRound === "function") startVsRound();
+    if (typeof startVsTimer === "function") startVsTimer();
 };
 
 window.startVsRound = function() {
@@ -1188,21 +1489,16 @@ window.startVsRound = function() {
 
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
-    if (!display || !grid) return;
+    const instruction = window.vsGetInstruction();
 
+    if (!display || !grid) return;
     grid.replaceChildren();
 
     if (window.selectedVsDiffKey === "EASY") {
-        grid.style.display = "grid";
-        grid.style.gridTemplateColumns = "1fr 1fr";
         window.loadVsLevel1SingleHanzi();
     } else if (window.selectedVsDiffKey === "MEDIUM") {
-        grid.style.display = "grid";
-        grid.style.gridTemplateColumns = "1fr 1fr";
         window.loadVsLevel2CompoundWord();
     } else if (window.selectedVsDiffKey === "HARD") {
-        grid.style.display = "flex";
-        grid.style.flexDirection = "column";
         window.loadVsLevel3OrderHanzi();
     }
 };
@@ -1211,7 +1507,6 @@ window.loadVsLevel1SingleHanzi = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
     const instruction = window.vsGetInstruction();
-    if (!display || !grid) return;
 
     const correct = window.vsRandomItem(window.VS_HANZI_DATA);
     const wrongOptions = window.vsShuffle(
@@ -1221,27 +1516,24 @@ window.loadVsLevel1SingleHanzi = function() {
     const options = window.vsShuffle([correct, ...wrongOptions]);
     window.vsCurrentQuestion = correct;
 
-    display.textContent = correct.hanzi;
-    if (instruction) instruction.textContent = `¿Qué significa este Hanzi? (${correct.pinyin})`;
+    if (display) display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Identifica el significado: "${correct.meaning}"`;
 
     options.forEach(option => {
         const button = document.createElement("button");
-        button.type = "button";
         button.className = "reveal-button";
         button.style.background = "var(--surface-light)";
         button.style.color = "#fff";
         button.style.border = "1px solid var(--border)";
-        button.style.padding = "12px 8px";
+        button.style.padding = "10px";
         button.style.fontWeight = "800";
-        button.style.fontSize = "11.5px";
-        button.style.lineHeight = "1.25";
-        button.textContent = option.meaning;
+        button.style.fontSize = "12px";
+        button.textContent = option.pinyin ? `${option.pinyin} - ${option.meaning}` : option.meaning;
 
-        button.addEventListener("click", (e) => {
-            e.preventDefault();
+        button.onclick = () => {
             if (window.vsRoundLocked || !window.vsSessionActive) return;
             window.submitVsAnswer(option.hanzi === correct.hanzi, button);
-        });
+        };
         grid.appendChild(button);
     });
 };
@@ -1250,7 +1542,6 @@ window.loadVsLevel2CompoundWord = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
     const instruction = window.vsGetInstruction();
-    if (!display || !grid) return;
 
     const correct = window.vsRandomItem(window.VS_WORD_DATA);
     const wrongOptions = window.vsShuffle(
@@ -1260,27 +1551,24 @@ window.loadVsLevel2CompoundWord = function() {
     const options = window.vsShuffle([correct, ...wrongOptions]);
     window.vsCurrentQuestion = correct;
 
-    display.textContent = correct.hanzi;
-    if (instruction) instruction.textContent = `Selecciona el significado de la palabra (${correct.pinyin}):`;
+    if (display) display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Selecciona la planta/término correcto para: "${correct.meaning}"`;
 
     options.forEach(option => {
         const button = document.createElement("button");
-        button.type = "button";
         button.className = "reveal-button";
         button.style.background = "var(--surface-light)";
         button.style.color = "#fff";
         button.style.border = "1px solid var(--border)";
-        button.style.padding = "12px 8px";
+        button.style.padding = "10px";
         button.style.fontWeight = "800";
-        button.style.fontSize = "11.5px";
-        button.style.lineHeight = "1.25";
+        button.style.fontSize = "12px";
         button.textContent = option.meaning;
 
-        button.addEventListener("click", (e) => {
-            e.preventDefault();
+        button.onclick = () => {
             if (window.vsRoundLocked || !window.vsSessionActive) return;
             window.submitVsAnswer(option.hanzi === correct.hanzi, button);
-        });
+        };
         grid.appendChild(button);
     });
 };
@@ -1289,30 +1577,32 @@ window.loadVsLevel3OrderHanzi = function() {
     const display = document.getElementById("vsHanziDisplay");
     const grid = document.getElementById("vsOptionsGrid");
     const instruction = window.vsGetInstruction();
-    if (!display || !grid) return;
 
     const correct = window.vsRandomItem(window.VS_WORD_DATA);
     window.vsCurrentQuestion = correct;
 
-    const correctChars = correct.hanzi.split("");
-    display.textContent = "🧩";
-    if (instruction) instruction.textContent = `Ordena los ${correctChars.length} caracteres para armar la palabra:`;
+    if (display) display.textContent = correct.hanzi;
+    if (instruction) instruction.textContent = `Ensambla los caracteres para: "${correct.meaning}"`;
 
-    const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自", "气", "门"];
-    const pool = [
+    const correctChars = correct.hanzi.split("");
+    const extraChars = ["电", "线", "模", "组", "机", "动", "停", "自"];
+    const availableChars = [
         ...correctChars,
-        ...window.vsShuffle(extraChars).filter(ch => !correctChars.includes(ch)).slice(0, Math.max(2, 6 - correctChars.length))
+        ...window.vsShuffle(extraChars).filter(char => !correctChars.includes(char)).slice(0, Math.max(2, 6 - correctChars.length))
     ];
-    const shuffledChars = window.vsShuffle(pool);
+    const shuffledChars = window.vsShuffle(availableChars);
 
     grid.replaceChildren();
 
+    // Contenedor principal de Nivel 3 con diseño Cyber-Industrial
     const containerBox = document.createElement("div");
     containerBox.style.display = "flex";
     containerBox.style.flexDirection = "column";
-    containerBox.style.gap = "12px";
+    containerBox.style.gap = "14px";
     containerBox.style.width = "100%";
+    containerBox.style.gridColumn = "1 / -1"; // Ocupar todo el ancho si el padre es grid
 
+    // Tarjeta de objetivo / significado
     const targetCard = document.createElement("div");
     targetCard.style.background = "rgba(39, 216, 232, 0.08)";
     targetCard.style.border = "1px solid rgba(39, 216, 232, 0.3)";
@@ -1325,23 +1615,26 @@ window.loadVsLevel3OrderHanzi = function() {
     `;
     containerBox.appendChild(targetCard);
 
+    // Pantalla / Dock de respuesta armada
     const answerBox = document.createElement("div");
     answerBox.id = "vsBuildAnswer";
     answerBox.style.background = "rgba(5, 11, 20, 0.85)";
     answerBox.style.border = "2px solid var(--cyan)";
     answerBox.style.borderRadius = "12px";
-    answerBox.style.padding = "12px";
+    answerBox.style.padding = "14px";
     answerBox.style.fontSize = "28px";
     answerBox.style.fontFamily = "'Noto Sans SC'";
     answerBox.style.letterSpacing = "8px";
     answerBox.style.color = "var(--green)";
-    answerBox.style.minHeight = "60px";
+    answerBox.style.minHeight = "64px";
     answerBox.style.display = "flex";
     answerBox.style.alignItems = "center";
     answerBox.style.justifyContent = "center";
-    answerBox.textContent = "—";
+    answerBox.style.boxShadow = "inset 0 0 15px rgba(39, 216, 232, 0.2)";
+    answerBox.textContent = "";
     containerBox.appendChild(answerBox);
 
+    // Grid de fichas / tokens táctiles
     const chipsGrid = document.createElement("div");
     chipsGrid.style.display = "grid";
     chipsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
@@ -1350,49 +1643,46 @@ window.loadVsLevel3OrderHanzi = function() {
 
     shuffledChars.forEach(char => {
         const chip = document.createElement("button");
-        chip.type = "button";
         chip.className = "reveal-button";
         chip.style.background = "var(--surface-light)";
         chip.style.color = "#fff";
         chip.style.border = "1px solid var(--border)";
         chip.style.borderRadius = "12px";
-        chip.style.padding = "14px 8px";
+        chip.style.padding = "14px 10px";
         chip.style.fontSize = "22px";
         chip.style.fontFamily = "'Noto Sans SC'";
         chip.style.fontWeight = "900";
         chip.style.cursor = "pointer";
+        chip.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
         chip.textContent = char;
 
-        chip.addEventListener("click", (e) => {
+        const handleTokenClick = (e) => {
             e.preventDefault();
             if (window.vsRoundLocked || !window.vsSessionActive) return;
-
+            
             if (typeof triggerHaptic === "function") triggerHaptic("success");
             window.vsSelectedChars.push(char);
             answerBox.textContent = window.vsSelectedChars.join("");
 
+            // Deshabilitar temporalmente la ficha usada para evitar abusos visuales
             chip.style.opacity = "0.3";
             chip.style.pointerEvents = "none";
 
             if (window.vsSelectedChars.length === correctChars.length) {
                 const assembled = window.vsSelectedChars.join("");
-                const ok = assembled === correct.hanzi;
-                if (ok) {
-                    answerBox.style.borderColor = "var(--green)";
-                } else {
-                    answerBox.style.borderColor = "var(--red)";
-                    answerBox.style.color = "var(--red)";
-                }
-                window.submitVsAnswer(ok);
+                window.submitVsAnswer(assembled === correct.hanzi);
             }
-        });
+        };
+
+        chip.onclick = handleTokenClick;
+        chip.ontouchend = handleTokenClick;
 
         chipsGrid.appendChild(chip);
     });
     containerBox.appendChild(chipsGrid);
 
+    // Botón de reinicio / borrar selección
     const clearBtn = document.createElement("button");
-    clearBtn.type = "button";
     clearBtn.className = "back-button";
     clearBtn.style.fontSize = "11px";
     clearBtn.style.padding = "10px";
@@ -1400,22 +1690,24 @@ window.loadVsLevel3OrderHanzi = function() {
     clearBtn.style.color = "#ff4444";
     clearBtn.style.fontWeight = "800";
     clearBtn.style.borderRadius = "10px";
-    clearBtn.textContent = "🔄 Borrar selección";
-
-    clearBtn.addEventListener("click", (e) => {
+    clearBtn.textContent = "🔄 Borrar selección y reintentar";
+    
+    const handleClear = (e) => {
         e.preventDefault();
         if (window.vsRoundLocked || !window.vsSessionActive) return;
         if (typeof triggerHaptic === "function") triggerHaptic("error");
         window.vsSelectedChars = [];
-        answerBox.textContent = "—";
-        answerBox.style.borderColor = "var(--cyan)";
-        answerBox.style.color = "var(--green)";
+        answerBox.textContent = "";
+        // Restaurar fichas
         Array.from(chipsGrid.children).forEach(ch => {
             ch.style.opacity = "1";
             ch.style.pointerEvents = "auto";
         });
-    });
+    };
 
+    clearBtn.onclick = handleClear;
+    clearBtn.ontouchend = handleClear;
+    
     containerBox.appendChild(clearBtn);
     grid.appendChild(containerBox);
 };
@@ -1451,10 +1743,7 @@ window.submitVsAnswer = function(isCorrect, selectedButton = null) {
 };
 
 window.startVsTimer = function() {
-    if (window.vsTimer) {
-        clearInterval(window.vsTimer);
-        window.vsTimer = null;
-    }
+    if (typeof stopVsSession === "function") stopVsSession();
     window.vsTimer = setInterval(() => {
         if (!window.vsSessionActive) return;
         window.vsTimeLeft--;
@@ -1462,7 +1751,7 @@ window.startVsTimer = function() {
         const seconds = document.getElementById("vsSeconds");
         const timerBar = document.getElementById("vsTimerBar");
 
-        if (seconds) seconds.textContent = Math.max(0, window.vsTimeLeft);
+        if (seconds) seconds.textContent = window.vsTimeLeft;
         if (timerBar) {
             timerBar.style.width = `${Math.max(0, (window.vsTimeLeft / 20) * 100)}%`;
         }
@@ -1474,14 +1763,14 @@ window.startVsTimer = function() {
         }
 
         if (window.vsTimeLeft <= 0) {
-            window.finishVsBattle();
+            if (typeof finishVsBattle === "function") finishVsBattle();
         }
     }, 1000);
 };
 
 window.finishVsBattle = function() {
     if (!window.vsSessionActive) return;
-    window.stopVsSession();
+    if (typeof stopVsSession === "function") stopVsSession();
 
     const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];
     const win = window.myVsPoints >= window.rivalVsPoints;
@@ -1489,7 +1778,7 @@ window.finishVsBattle = function() {
     if (win) {
         if (typeof triggerHaptic === "function") triggerHaptic("win");
         const earnedXp = diff.winBonus;
-
+        
         if (typeof currentUserData !== "undefined" && currentUserData) {
             currentUserData.xp = (currentUserData.xp || 0) + earnedXp;
             if (typeof updateProfile === "function") updateProfile();
@@ -1498,11 +1787,7 @@ window.finishVsBattle = function() {
         const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
         localStorage.setItem("zidong_vs_wins", currentWins);
 
-        window.showCyberAlert(
-            "VICTORIA EN DUELO",
-            `¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`,
-            "⚔️"
-        );
+        window.showCyberAlert("VICTORIA EN DUELO", `¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`, "⚔️");
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
     } else {
         if (typeof triggerHaptic === "function") triggerHaptic("error");
@@ -1514,9 +1799,22 @@ window.finishVsBattle = function() {
         if (arena) arena.style.setProperty("display", "none", "important");
         if (defeat) defeat.style.setProperty("display", "block", "important");
 
+        const avatar = document.getElementById("vsDefeatRivalAvatar");
+        if (avatar) {
+            avatar.textContent = window.selectedVsDiffKey === "HARD" ? "⚡" : "🤖";
+        }
+
         if (scores) {
             scores.textContent = `Tú: ${window.myVsPoints} PTS vs ${diff.name}: ${window.rivalVsPoints} PTS`;
         }
+    }
+};
+
+window.stopVsSession = function() {
+    window.vsSessionActive = false;
+    if (window.vsTimer) {
+        clearInterval(window.vsTimer);
+        window.vsTimer = null;
     }
 };
 

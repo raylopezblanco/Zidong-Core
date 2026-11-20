@@ -506,3 +506,204 @@ html, body {
 }
 .planet-node-item.boss-node .node-arrow { background: rgba(255, 255, 255, 0.08); border-color: currentColor; }
 
+
+
+/* ==========================================================================
+   MODO CARRERA ZIGZAG, 3 ESTRELLAS POR HANZI Y REPASOS (V41)
+   ========================================================================== */
+.career-zigzag-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 6px 2px 14px 2px;
+}
+
+.career-zig-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 89%;
+    background: linear-gradient(145deg, rgba(17, 31, 53, 0.96), rgba(9, 18, 34, 0.98));
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    transition: transform 0.16s ease, border-color 0.2s ease;
+}
+
+.career-zig-card.zig-left {
+    align-self: flex-start;
+    flex-direction: row;
+    text-align: left;
+}
+
+.career-zig-card.zig-right {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.career-zig-card.zig-right .career-zig-meta {
+    align-items: flex-end;
+}
+
+.career-zig-card.zig-right .career-zig-stars {
+    justify-content: flex-end;
+}
+
+.career-zig-card.zig-center {
+    align-self: center;
+    width: 100%;
+    flex-direction: row;
+    text-align: left;
+}
+
+.career-zig-card.is-unlocked {
+    cursor: pointer;
+    border-color: var(--zig-accent, var(--cyan));
+    box-shadow: 0 0 16px rgba(39, 216, 232, 0.2);
+}
+
+.career-zig-card.is-unlocked:active {
+    transform: scale(0.98);
+}
+
+.career-zig-card.is-complete {
+    cursor: pointer;
+    border-color: rgba(0, 245, 155, 0.65);
+    background: linear-gradient(145deg, rgba(14, 44, 40, 0.94), rgba(9, 18, 34, 0.98));
+}
+
+.career-zig-card.is-locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(40%);
+}
+
+.career-zig-orb {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--surface-light);
+    border: 2.5px solid var(--zig-accent, var(--cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.career-zig-card.is-complete .career-zig-orb {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(0, 245, 155, 0.14);
+}
+
+.career-zig-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.career-zig-tag {
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: var(--zig-accent, var(--cyan));
+}
+
+.career-zig-meta strong {
+    font-size: 13px;
+    color: #fff;
+    line-height: 1.25;
+}
+
+.career-zig-meta small {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.2;
+}
+
+.career-zig-stars {
+    display: flex;
+    gap: 3px;
+    margin-top: 3px;
+    font-size: 13px;
+}
+
+.career-zig-badge {
+    font-size: 8.5px;
+    font-weight: 900;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    white-space: nowrap;
+}
+
+.career-zig-card.is-review {
+    border-style: dashed;
+    border-width: 2px;
+    border-color: var(--amber);
+    background: linear-gradient(145deg, rgba(45, 30, 10, 0.92), rgba(11, 20, 36, 0.98));
+}
+
+.career-zig-card.is-boss {
+    margin-top: 4px;
+    border-width: 2px;
+    border-color: var(--purple);
+    background: linear-gradient(145deg, rgba(32, 18, 56, 0.96), rgba(11, 20, 36, 0.98));
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.25);
+}
+
+.career-choice-btn {
+    background: var(--surface-light);
+    color: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.career-choice-btn:disabled {
+    cursor: default;
+}
+
+.career-quote-box {
+    background: #050b14;
+    border: 1.5px solid rgba(39, 216, 232, 0.35);
+    border-radius: 14px;
+    padding: 12px;
+    margin: 10px 0 12px 0;
+    text-align: center;
+}
+
+.career-quote-es {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+@keyframes careerShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+}
+
+.career-shake {
+    animation: careerShake 0.36s ease;
+}

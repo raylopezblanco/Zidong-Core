@@ -8,7 +8,7 @@
     let activeCareerContext = { act: null, world: null, isBoss: false };
 
     function getWorlds() {
-        return window.ZIDONG_WORLDS_CONFIG || [];
+        return window.ZIDONG_getWorlds() || [];
     }
 
     function getUserData() {
@@ -16,27 +16,27 @@
     }
 
     function haptic(type) {
-        if (typeof window.triggerHaptic === "function") window.triggerHaptic(type);
+        if (typeof window.haptic === "function") window.haptic(type);
     }
 
     function alertBox(title, msg, icon = "⚡") {
-        if (typeof window.showCyberAlert === "function") {
-            window.showCyberAlert(title, msg, icon);
+        if (typeof alertBox === "function") {
+            alertBox(title, msg, icon);
         } else {
             alert(`${title}\n\n${msg}`);
         }
     }
 
     function refreshProfile() {
-        if (typeof window.updateProfile === "function") window.updateProfile();
+        if (typeof window.updateProfile === "function") window.refreshProfile();
     }
 
     function refreshBadges() {
-        if (typeof window.renderBadgesGrid === "function") window.renderBadgesGrid();
+        if (typeof window.renderBadgesGrid === "function") window.refreshBadges();
     }
 
     function shuffleArr(arr) {
-        if (typeof window.vsShuffle === "function") return window.vsShuffle(arr);
+        if (typeof window.shuffleArr === "function") return window.shuffleArr(arr);
         const copy = [...arr];
         for (let i = copy.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -45,20 +45,33 @@
         return copy;
     }
 
+    function loadSavedStarsMap() {
+        try {
+            const raw = localStorage.getItem("zidong_career_phase_stars");
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    function saveStarsMap(mapObj) {
+        try {
+            localStorage.setItem("zidong_career_phase_stars", JSON.stringify(mapObj || {}));
+        } catch (e) {}
+    }
+
+    // CAREER PLANETS MENU RENDERING
     window.renderCareerPlanetsMenu = function renderCareerPlanetsMenu() {
         const container = document.getElementById("careerPlanetsGrid");
         if (!container) return;
         container.replaceChildren();
-
-        const userData = getUserData();
-        const completedList = (userData && Array.isArray(userData.completedActivities)) ? userData.completedActivities : [];
 
         getWorlds().forEach((world) => {
             const planetCard = document.createElement("div");
             planetCard.className = `planet-menu-item ${world.planetClass}`;
 
             const totalAct = world.activities.length;
-            const completedInWorld = world.activities.filter(a => completedList.includes(a.id)).length;
+            const completedInWorld = world.activities.filter(a => getUserData().completedActivities.includes(a.id)).length;
 
             planetCard.innerHTML = `
                 <div class="planet-sphere-wrapper">
@@ -82,17 +95,28 @@
             };
             container.appendChild(planetCard);
         });
-    };
+    }
 
     function getCareerStarState(actId) {
-        const userData = getUserData();
-        if (!userData) return { p1: false, p2: false, p3: false };
-        if (!userData.phaseStars) userData.phaseStars = {};
-        if (!userData.phaseStars[actId]) {
-            const done = Array.isArray(userData.completedActivities) && userData.completedActivities.includes(actId);
-            userData.phaseStars[actId] = { p1: done, p2: done, p3: done };
+        const ud = getUserData();
+        const savedMap = loadSavedStarsMap();
+        if (ud && !ud.phaseStars) ud.phaseStars = {};
+        if (savedMap[actId]) {
+            const merged = {
+                p1: Boolean(savedMap[actId].p1 || (ud && ud.phaseStars[actId] && ud.phaseStars[actId].p1)),
+                p2: Boolean(savedMap[actId].p2 || (ud && ud.phaseStars[actId] && ud.phaseStars[actId].p2)),
+                p3: Boolean(savedMap[actId].p3 || (ud && ud.phaseStars[actId] && ud.phaseStars[actId].p3))
+            };
+            if (ud) ud.phaseStars[actId] = merged;
+            return merged;
         }
-        return userData.phaseStars[actId];
+        if (ud && ud.phaseStars[actId]) {
+            return ud.phaseStars[actId];
+        }
+        const done = ud && Array.isArray(ud.completedActivities) && ud.completedActivities.includes(actId);
+        const initObj = { p1: done, p2: done, p3: done };
+        if (ud) ud.phaseStars[actId] = initObj;
+        return initObj;
     }
 
     function getCareerStarCount(actId) {
@@ -101,14 +125,21 @@
     }
 
     function grantCareerPhaseStar(actId, phaseNum) {
-        const userData = getUserData();
-        if (!userData) return;
-        const s = getCareerStarState(actId);
+        const ud = getUserData();
+        const s = Object.assign({}, getCareerStarState(actId));
         if (phaseNum === 1) s.p1 = true;
         if (phaseNum === 2) s.p2 = true;
         if (phaseNum === 3) s.p3 = true;
-        if (getCareerStarCount(actId) === 3 && !userData.completedActivities.includes(actId)) {
-            userData.completedActivities.push(actId);
+        if (ud) {
+            if (!ud.phaseStars) ud.phaseStars = {};
+            ud.phaseStars[actId] = s;
+        }
+        const savedMap = loadSavedStarsMap();
+        savedMap[actId] = s;
+        saveStarsMap(savedMap);
+
+        if (ud && getCareerStarCount(actId) === 3 && !ud.completedActivities.includes(actId)) {
+            ud.completedActivities.push(actId);
         }
     }
 
@@ -158,8 +189,6 @@
         stream.className = "career-zigzag-stream";
         stream.replaceChildren();
 
-        const userData = getUserData();
-        const completedList = (userData && Array.isArray(userData.completedActivities)) ? userData.completedActivities : [];
         const entries = buildCareerZigzagEntries(world);
         let canAdvance = true;
         let zigCounter = 0;
@@ -196,7 +225,7 @@
                 if (unlocked) {
                     card.onclick = () => {
                         haptic("success");
-                        if (typeof window.speakMandarin === "function") window.speakMandarin(act.hanzi);
+                        window.speakMandarin(act.hanzi);
                         openActivity(act, world);
                     };
                 }
@@ -204,8 +233,8 @@
 
                 canAdvance = stars >= 1;
             } else if (entry.type === "review") {
-                if (userData && !userData.completedReviews) userData.completedReviews = [];
-                const revDone = userData ? userData.completedReviews.includes(entry.id) : false;
+                if (!getUserData().completedReviews) getUserData().completedReviews = [];
+                const revDone = getUserData().completedReviews.includes(entry.id);
                 const revUnlocked = canAdvance;
 
                 const revCard = document.createElement("div");
@@ -234,7 +263,7 @@
         });
 
         const allThreeStars = world.activities.every(a => getCareerStarCount(a.id) === 3);
-        const bossDone = completedList.includes(world.boss.id);
+        const bossDone = getUserData().completedActivities.includes(world.boss.id);
         const earnedStars = world.activities.reduce((acc, a) => acc + getCareerStarCount(a.id), 0);
         const totalStars = world.activities.length * 3;
 
@@ -270,13 +299,15 @@
         stream.appendChild(bossCard);
     }
 
+    let activeCareerContext = { act: null, world: null, isBoss: false };
+
     window.abandonCareerLevel = function() {
         const label = activeCareerContext.isBoss
             ? "el Checkpoint de Jefe"
             : (activeCareerContext.act ? `el Hanzi "${activeCareerContext.act.hanzi}"` : "este nivel");
         activeCareerContext = { act: null, world: null, isBoss: false };
         if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
-        haptic("error");
+        if (typeof haptic === "function") haptic("error");
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         alertBox(
             "NIVEL ABANDONADO",
@@ -292,6 +323,12 @@
         startHanzi3Phases(act, world);
     }
 
+    // 3 FASES = 3 ESTRELLAS:
+    // 1) El Hanzi cómo es (1 estrella)
+    // 2) El Hanzi cómo se dice (1 estrella)
+    // 3) Identificar el Hanzi en una oración (1 estrella)
+    // - Bloquea selección múltiple al responder
+    // - Si fallas, reinicia ÚNICAMENTE esa fase
     function startHanzi3Phases(act, world) {
         const card = document.querySelector("#level01 .recognition-card");
         if (!card) return;
@@ -316,6 +353,7 @@
             container.querySelectorAll("button").forEach(b => { b.disabled = true; });
         }
 
+        // FASE 1: El Hanzi cómo es (⭐ 1ª estrella)
         function renderPhase1() {
             let locked = false;
             const distractors = shuffleArr([
@@ -339,7 +377,7 @@
             if (speakBtn) {
                 speakBtn.onclick = () => {
                     haptic("success");
-                    if (typeof window.speakMandarin === "function") window.speakMandarin(act.hanzi);
+                    window.speakMandarin(act.hanzi);
                 };
             }
 
@@ -356,7 +394,7 @@
 
                     if (opt === act.meaning) {
                         haptic("success");
-                        if (typeof window.speakMandarin === "function") window.speakMandarin(act.hanzi);
+                        window.speakMandarin(act.hanzi);
                         btn.style.background = "var(--green)";
                         btn.style.color = "#0b1424";
                         btn.style.borderColor = "var(--green)";
@@ -378,6 +416,7 @@
             });
         }
 
+        // FASE 2: El Hanzi cómo se dice (⭐ 2ª estrella)
         function renderPhase2() {
             let locked = false;
             const distractors = shuffleArr([
@@ -398,7 +437,7 @@
             if (speakBtn) {
                 speakBtn.onclick = () => {
                     haptic("success");
-                    if (typeof window.speakMandarin === "function") window.speakMandarin(act.hanzi);
+                    window.speakMandarin(act.hanzi);
                 };
             }
 
@@ -416,7 +455,7 @@
 
                     if (pin === act.pinyin) {
                         haptic("success");
-                        if (typeof window.speakMandarin === "function") window.speakMandarin(act.hanzi);
+                        window.speakMandarin(act.hanzi);
                         btn.style.background = "var(--green)";
                         btn.style.color = "#0b1424";
                         btn.style.borderColor = "var(--green)";
@@ -438,6 +477,7 @@
             });
         }
 
+        // FASE 3: Identificar el Hanzi en una oración (⭐ 3ª estrella) - sin soplar el carácter
         function renderPhase3() {
             let locked = false;
             const rawChars = sentenceText.split("");
@@ -458,7 +498,7 @@
             if (speakBtn) {
                 speakBtn.onclick = () => {
                     haptic("success");
-                    if (typeof window.speakMandarin === "function") window.speakMandarin(sentenceText);
+                    window.speakMandarin(sentenceText);
                 };
             }
 
@@ -476,25 +516,23 @@
                     if (ch === act.hanzi) {
                         tok.classList.add("token-hit");
                         grantCareerPhaseStar(act.id, 3);
-                        const userData = getUserData();
+                        if (!getUserData()._xpGranted) getUserData()._xpGranted = [];
                         let bonus = 0;
-                        if (userData) {
-                            if (!userData._xpGranted) userData._xpGranted = [];
-                            if (!userData._xpGranted.includes(act.id)) {
-                                userData._xpGranted.push(act.id);
-                                userData.xp += act.reward;
-                                bonus = act.reward;
-                            }
+                        if (!getUserData()._xpGranted.includes(act.id)) {
+                            getUserData()._xpGranted.push(act.id);
+                            getUserData().xp += act.reward;
+                            bonus = act.reward;
                         }
                         refreshProfile();
                         haptic("win");
-                        if (typeof window.speakMandarin === "function") window.speakMandarin(act.hanzi);
+                        window.speakMandarin(act.hanzi);
                         setTimeout(() => {
                             alertBox(
                                 "¡3 ESTRELLAS OBTENIDAS! ⭐⭐⭐",
                                 `Completaste las 3 fases de "${act.hanzi}" (${act.meaning})${bonus > 0 ? ` (+${bonus} XP)` : ""}.`,
                                 "🌟"
                             );
+                            if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                             if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                             if (world) openWorldDetails(world);
                         }, 450);
@@ -529,14 +567,11 @@
         function nextReviewQ() {
             const target = list[idx];
             if (!target) {
-                const userData = getUserData();
-                if (userData) {
-                    if (!userData.completedReviews) userData.completedReviews = [];
-                    if (!userData.completedReviews.includes(revItem.id)) {
-                        userData.completedReviews.push(revItem.id);
-                        userData.xp += revItem.reward;
-                        refreshProfile();
-                    }
+                if (!getUserData().completedReviews) getUserData().completedReviews = [];
+                if (!getUserData().completedReviews.includes(revItem.id)) {
+                    getUserData().completedReviews.push(revItem.id);
+                    getUserData().xp += revItem.reward;
+                    refreshProfile();
                 }
                 haptic("win");
                 alertBox("REPASO COMPLETADO", `¡Superaste ${revItem.title}! (+${revItem.reward} XP)`, "🔁");
@@ -646,22 +681,22 @@
 
                     if (char === currentTarget.char) {
                         haptic("success");
-                        if (typeof window.speakMandarin === "function") window.speakMandarin(char);
+                        window.speakMandarin(char);
                         b.style.background = "var(--green)";
                         b.style.color = "#0b1424";
                         currentStepIndex++;
 
                         if (currentStepIndex >= sequence.length) {
                             haptic("win");
-                            const userData = getUserData();
-                            if (userData && !userData.completedActivities.includes(boss.id)) {
-                                userData.completedActivities.push(boss.id);
-                                userData.xp += boss.reward;
+                            if (!getUserData().completedActivities.includes(boss.id)) {
+                                getUserData().completedActivities.push(boss.id);
+                                getUserData().xp += boss.reward;
                                 refreshProfile();
                             }
                             setTimeout(() => {
                                 alertBox("CHECKPOINT DE LÍNEA", `¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`, "🏆");
                                 refreshBadges();
+                                if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                                 if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 400);
@@ -685,4 +720,6 @@
 
         renderBossSequenceView();
     }
+
+
 })();

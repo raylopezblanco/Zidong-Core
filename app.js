@@ -67,6 +67,8 @@
         phaseStars: {},
         completedReviews: [],
         swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
+        swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0),
+        swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
         swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0)
     };
 
@@ -170,15 +172,6 @@
     window.updateProfile = updateProfile;
     window.getZidongUserData = function() { return currentUserData; };
     window.getWorldsCatalog = function() { return window.ZIDONG_WORLDS_CONFIG || []; };
-
-    window.grantExternalXp = function(xpAmount, winStorageKey = "") {
-        currentUserData.xp = (currentUserData.xp || 0) + Number(xpAmount || 0);
-        if (winStorageKey) {
-            const prev = Number(localStorage.getItem(winStorageKey) || 0) + 1;
-            localStorage.setItem(winStorageKey, String(prev));
-        }
-        updateProfile();
-    };
 
     window.refreshDailyRewardFloat = function() {
         const badge = document.getElementById("dailyFloatNotification");
@@ -473,20 +466,18 @@
     window.confirmClaimReward = function() {
         const today = new Date().toISOString().slice(0, 10);
         const lastClaim = localStorage.getItem("zidong_last_claim_date");
-        window.toggleDailyRewardModal();
         if (lastClaim === today) {
-            window.showCyberAlert("RECOMPENSA DIARIA", "Ya reclamaste tu bono de +100 XP el día de hoy. ¡Vuelve mañana!", "🎁");
+            window.toggleDailyRewardModal();
             return;
         }
         if (typeof triggerHaptic === "function") {
             triggerHaptic("win");
         }
-        currentUserData.xp = (currentUserData.xp || 0) + 100;
+        currentUserData.xp += 100;
         localStorage.setItem("zidong_last_claim_date", today);
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
         updateProfile();
-        if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
-        window.showCyberAlert("BONO RECLAMADO", "¡Sumaste +100 XP de recompensa diaria en la red OBERON!", "⚡");
+        window.toggleDailyRewardModal();
     };
 
     window.toggleDailyRewardModal = function() {
@@ -682,161 +673,54 @@
         setTimeout(() => bubble.classList.remove("bounce-pop"), 400);
     };
 
-    // CAREER PLANETS MENU RENDERING
-    window.renderCareerPlanetsMenu = function renderCareerPlanetsMenu() {
-        const container = document.getElementById("careerPlanetsGrid");
-        if (!container) return;
-        container.replaceChildren();
-
-        (window.ZIDONG_WORLDS_CONFIG || []).forEach((world) => {
-            const planetCard = document.createElement("div");
-            planetCard.className = `planet-menu-item ${world.planetClass}`;
-
-            const totalAct = world.activities.length;
-            const completedInWorld = world.activities.filter(a => currentUserData.completedActivities.includes(a.id)).length;
-
-            planetCard.innerHTML = `
-                <div class="planet-sphere-wrapper">
-                    <div class="planet-sphere"><span class="planet-core-icon">${world.icon}</span></div>
-                    <div class="planet-orbit-ring" style="border-color:${world.color}88;"></div>
-                </div>
-                <div class="planet-menu-meta">
-                    <span class="planet-tag" style="color:${world.color};">${world.title}</span>
-                    <h4>${world.planetName}</h4>
-                    <p>${world.subtitle}</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                        <span class="planet-enter-badge">EXPLORAR MUNDO →</span>
-                        <small style="color:${world.color}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
-                    </div>
-                </div>
-            `;
-
-            planetCard.onclick = () => {
-                triggerHaptic("success");
-                openWorldDetails(world);
-            };
-            container.appendChild(planetCard);
-        });
-    }
-
-    function getCareerStarState(actId) {
-        if (!currentUserData.phaseStars) currentUserData.phaseStars = {};
-        if (!currentUserData.phaseStars[actId]) {
-            const done = currentUserData.completedActivities.includes(actId);
-            currentUserData.phaseStars[actId] = { p1: done, p2: done, p3: done };
+    document.addEventListener("DOMContentLoaded", () => {
+        updateProfile();
+        if (typeof window.renderCareerPlanetsMenu === "function") window.renderCareerPlanetsMenu();
+        if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
+        renderLeaderboard();
+        if (typeof window.renderLabComponents === "function") {
+            window.renderLabComponents();
         }
-        return currentUserData.phaseStars[actId];
-    }
-
-    function getCareerStarCount(actId) {
-        const s = getCareerStarState(actId);
-        return (s.p1 ? 1 : 0) + (s.p2 ? 1 : 0) + (s.p3 ? 1 : 0);
-    }
-
-    function grantCareerPhaseStar(actId, phaseNum) {
-        const s = getCareerStarState(actId);
-        if (phaseNum === 1) s.p1 = true;
-        if (phaseNum === 2) s.p2 = true;
-        if (phaseNum === 3) s.p3 = true;
-        if (getCareerStarCount(actId) === 3 && !currentUserData.completedActivities.includes(actId)) {
-            currentUserData.completedActivities.push(actId);
+        if (typeof window.refreshDailyRewardFloat === "function") {
+            window.refreshDailyRewardFloat();
         }
-    }
-
-    function buildCareerStarsHtml(count) {
-        return `<div class="career-zig-stars">${count >= 1 ? "⭐" : "☆"}${count >= 2 ? "⭐" : "☆"}${count >= 3 ? "⭐" : "☆"}</div>`;
-    }
-
-    function buildCareerZigzagEntries(world) {
-        const list = [];
-        const acts = world.activities || [];
-        let seen = [];
-
-        acts.forEach((act, idx) => {
-            list.push({ type: "hanzi", act, idx });
-            seen.push(act);
-
-            const everyFive = (idx + 1) % 5 === 0;
-            const endReview = (idx === acts.length - 1) && !everyFive && seen.length >= 3;
-            if (everyFive || endReview) {
-                list.push({
-                    type: "review",
-                    id: `${world.id}_repaso_${idx + 1}`,
-                    title: `REPASO DE BLOQUE (${seen.length} HANZI)`,
-                    subtitle: `Evalúa caracteres vistos en este tramo`,
-                    pool: [...seen],
-                    reward: 120
-                });
+        const unlockAudioOnce = () => {
+            const activeSec = document.querySelector(".page.active");
+            const pageId = activeSec ? activeSec.id : "dashboard";
+            if (window.ZidongAudio && typeof window.ZidongAudio.syncTrackWithPage === "function") {
+                window.ZidongAudio.syncTrackWithPage(pageId);
             }
-        });
+            document.removeEventListener("pointerdown", unlockAudioOnce);
+            document.removeEventListener("keydown", unlockAudioOnce);
+        };
+        document.addEventListener("pointerdown", unlockAudioOnce, { once: false });
+        document.addEventListener("keydown", unlockAudioOnce, { once: false });
+    });
 
-        return list;
-    }
+})();
 
-    function openWorldDetails(world) {
-        if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
+    window.switchProfileTab = function(tabName) {
+        const btnAch = document.getElementById("tabBtnAchievements");
+        const btnMed = document.getElementById("tabBtnMedals");
+        const contentAch = document.getElementById("tabContentAchievements");
+        const contentMed = document.getElementById("tabContentMedals");
 
-        const titleEl = document.getElementById("selectedWorldTitle");
-        const subEl = document.getElementById("selectedWorldSubtitle");
-        const iconEl = document.getElementById("selectedWorldIcon");
-        const stream = document.getElementById("selectedWorldStream");
+        if (!btnAch || !btnMed || !contentAch || !contentMed) return;
 
-        if (titleEl) titleEl.textContent = world.title;
-        if (subEl) subEl.textContent = `${world.planetName} · ${world.subtitle}`;
-        if (iconEl) iconEl.textContent = world.icon;
-        if (!stream) return;
-
-        stream.className = "career-zigzag-stream";
-        stream.replaceChildren();
-
-        const entries = buildCareerZigzagEntries(world);
-        let canAdvance = true;
-        let zigCounter = 0;
-
-        entries.forEach((entry) => {
-            const zigClass = entry.type === "review"
-                ? "zig-center"
-                : (zigCounter % 2 === 0 ? "zig-left" : "zig-right");
-            zigCounter++;
-
-            if (entry.type === "hanzi") {
-                const act = entry.act;
-                const stars = getCareerStarCount(act.id);
-                const mastered = stars === 3;
-                const unlocked = canAdvance || stars > 0;
-
-                const card = document.createElement("div");
-                card.className = `career-zig-card ${zigClass} ${mastered ? "is-complete" : unlocked ? "is-unlocked" : "is-locked"}`;
-                card.style.setProperty("--zig-accent", world.color);
-
-                const badgeTxt = mastered ? "3/3 ★" : unlocked ? `${stars}/3 ★` : "BLOQUEADO";
-
-                card.innerHTML = `
-                    <div class="career-zig-orb" style="border-color:${world.color};">${unlocked ? act.hanzi : "🔒"}</div>
-                    <div class="career-zig-meta">
-                        <span class="career-zig-tag" style="color:${world.color};">HANZI 0${entry.idx + 1} · +${act.reward} XP</span>
-                        <strong>${act.meaning}</strong>
-                        <small>Pinyin: ${act.pinyin}</small>
-                        ${buildCareerStarsHtml(stars)}
-                    </div>
-                    <span class="career-zig-badge">${badgeTxt}</span>
-                `;
-
-                if (unlocked) {
-                    card.onclick = () => {
-                        triggerHaptic("success");
-                        window.speakMandarin(act.hanzi);
-                        openActivity(act, world);
-                    };
-                }
-                stream.appendChild(card);
-
-                canAdvance = stars >= 1;
-            } else if (entry.type === "review") {
-                if (!currentUserData.completedReviews) currentUserData.completedReviews = [];
-                const revDone = currentUserData.completedReviews.includes(entry.id);
-                const revUnlocked = canAdvance;
-
-                const revCard = document.createElement("div");
-                revCard.className = `career-zig-card is-review ${zigClass} ${revDone ? "is-complete" : revUnlocked ? "is-unlocked" : "is-locked"}`;
-                revCard.style.setProperty("--zig-accen
+        if (tabName === 'achievements') {
+            btnAch.style.borderColor = "var(--green)";
+            btnAch.style.color = "#fff";
+            btnMed.style.borderColor = "var(--border)";
+            btnMed.style.color = "var(--muted)";
+            contentAch.style.display = "flex";
+            contentMed.style.display = "none";
+        } else {
+            btnMed.style.borderColor = "var(--gold)";
+            btnMed.style.color = "#fff";
+            btnAch.style.borderColor = "var(--border)";
+            btnAch.style.color = "var(--muted)";
+            contentMed.style.display = "flex";
+            contentAch.style.display = "none";
+        }
+        if (typeof triggerHaptic === "function") triggerHaptic("success");
+    };

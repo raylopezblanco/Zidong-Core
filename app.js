@@ -473,18 +473,20 @@
     window.confirmClaimReward = function() {
         const today = new Date().toISOString().slice(0, 10);
         const lastClaim = localStorage.getItem("zidong_last_claim_date");
+        window.toggleDailyRewardModal();
         if (lastClaim === today) {
-            window.toggleDailyRewardModal();
+            window.showCyberAlert("RECOMPENSA DIARIA", "Ya reclamaste tu bono de +100 XP el día de hoy. ¡Vuelve mañana!", "🎁");
             return;
         }
         if (typeof triggerHaptic === "function") {
             triggerHaptic("win");
         }
-        currentUserData.xp += 100;
+        currentUserData.xp = (currentUserData.xp || 0) + 100;
         localStorage.setItem("zidong_last_claim_date", today);
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
         updateProfile();
-        window.toggleDailyRewardModal();
+        if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
+        window.showCyberAlert("BONO RECLAMADO", "¡Sumaste +100 XP de recompensa diaria en la red OBERON!", "⚡");
     };
 
     window.toggleDailyRewardModal = function() {

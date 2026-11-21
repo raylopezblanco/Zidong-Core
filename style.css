@@ -972,3 +972,28 @@ html, body {
     transform: scale(0.35) rotate(12deg);
     transition: opacity 0.35s ease, transform 0.35s ease;
 }
+
+
+/* ==========================================================================
+   OCULTAR BARRA INFERIOR EN MINIJUEGOS / NIVELES ACTIVOS (V47)
+   ========================================================================== */
+body.in-minigame-lock .bottom-nav {
+    display: none !important;
+}
+
+body.in-minigame-lock {
+    padding-bottom: 18px !important;
+}
+
+.level-abandon-btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    background: rgba(255, 68, 68, 0.14);
+    border: 1.5px solid rgba(255, 68, 68, 0.55);
+    color: #ff6b6b;
+}

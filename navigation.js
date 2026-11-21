@@ -1,5 +1,27 @@
 window.navigationHistory = ['dashboard'];
 
+window.MINIGAME_LOCK_PAGES = ['level01', 'hanziSwapPage', 'vsBattle', 'arcade'];
+window.minigameSessionLocked = false;
+
+window.setMinigameLock = function(locked) {
+    window.minigameSessionLocked = Boolean(locked);
+    if (window.minigameSessionLocked) {
+        document.body.classList.add('in-minigame-lock');
+    } else {
+        document.body.classList.remove('in-minigame-lock');
+    }
+};
+
+window.syncMinigameBarForPage = function(pageId) {
+    const isGameView = window.MINIGAME_LOCK_PAGES.includes(pageId);
+    if (isGameView) {
+        document.body.classList.add('in-minigame-lock');
+    } else if (!window.minigameSessionLocked) {
+        document.body.classList.remove('in-minigame-lock');
+    }
+};
+
+
 if (window.history && window.history.replaceState) {
     window.history.replaceState({ page: 'dashboard' }, '', '');
 }
@@ -8,8 +30,17 @@ window.navigateTo = function(pageId, pushHistory = true) {
     const pages = document.querySelectorAll('.page');
     pages.forEach(p => p.classList.remove('active'));
     
+    const currentActive = document.querySelector('.page.active');
+    const currentId = currentActive ? currentActive.id : 'dashboard';
+    if (window.minigameSessionLocked && pageId !== currentId && window.MINIGAME_LOCK_PAGES.includes(currentId)) {
+        return;
+    }
+
     const target = document.getElementById(pageId);
     if (target) {
+        if (typeof window.syncMinigameBarForPage === 'function') {
+            window.syncMinigameBarForPage(pageId);
+        }
         if (window.ZidongAudio && typeof window.ZidongAudio.syncTrackWithPage === 'function') {
             window.ZidongAudio.syncTrackWithPage(pageId);
         }
@@ -55,6 +86,14 @@ window.navigateTo = function(pageId, pushHistory = true) {
 };
 
 window.addEventListener('popstate', (event) => {
+    const currentActive = document.querySelector('.page.active');
+    const currentId = currentActive ? currentActive.id : 'dashboard';
+    if (window.minigameSessionLocked && window.MINIGAME_LOCK_PAGES.includes(currentId)) {
+        if (window.history && window.history.pushState) {
+            window.history.pushState({ page: currentId }, '', '');
+        }
+        return;
+    }
     if (window.navigationHistory.length > 1) {
         window.navigationHistory.pop();
         const previousPage = window.navigationHistory[window.navigationHistory.length - 1];

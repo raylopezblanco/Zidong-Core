@@ -154,7 +154,7 @@
                 <h2>Hanzi-Swap</h2>
             </div>
             <div id="swapArenaRoot" class="swap-arena-card"></div>
-            <button type="button" class="back-button" onclick="window.exitHanziSwap()" style="margin-top: 14px;">← REGRESAR AL DASHBOARD</button>
+            <button type="button" class="level-abandon-btn" onclick="window.abandonHanziSwap()">✕ ABANDONAR NIVEL</button>
         `;
         mainEl.appendChild(sec);
         return sec;
@@ -349,14 +349,25 @@
         loadSwapStats();
         ensureViewSection();
         if (typeof window.triggerHaptic === "function") window.triggerHaptic("success");
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(true);
         if (typeof window.navigateTo === "function") window.navigateTo("hanziSwapPage");
         resetFullGame("");
     };
 
-    window.exitHanziSwap = function() {
+    window.abandonHanziSwap = function() {
+        const cleared = wordsClearedCount;
         selected = null;
         roundBusy = false;
-        if (typeof window.triggerHaptic === "function") window.triggerHaptic("success");
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
+        if (typeof window.triggerHaptic === "function") window.triggerHaptic("error");
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
+        const msg = cleared > 0
+            ? `¿Te rajaste en Hanzi-Swap tras armar ${cleared} palabra(s)? Sigue preparándote, renacuajo. 🐸🧩`
+            : "¿Te rajaste en Hanzi-Swap sin armar ni una palabra? Sigue preparándote, renacuajo. 🐸🧩";
+        if (typeof window.showCyberAlert === "function") {
+            window.showCyberAlert("NIVEL ABANDONADO", msg, "🐸");
+        }
     };
+
+    window.exitHanziSwap = window.abandonHanziSwap;
 })();

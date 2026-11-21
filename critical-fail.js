@@ -30,6 +30,7 @@
     };
 
     window.startCriticalLevel = function() {
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(true);
         const sel = document.getElementById("cf-selector");
         const arena = document.getElementById("cf-game-arena");
         const collapse = document.getElementById("cf-collapse-screen");
@@ -116,6 +117,7 @@
 
     function triggerCollapse(reason) {
         stopSurvivorSession();
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
         const arena = document.getElementById("cf-game-arena");
         const collapse = document.getElementById("cf-collapse-screen");
         if (arena) arena.style.display = "none";
@@ -139,6 +141,7 @@
 
     window.exitCriticalFail = function() {
         stopSurvivorSession();
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
         if (typeof window.triggerHaptic === "function") window.triggerHaptic("error");
         if (typeof window.navigateTo === "function") {
             window.navigateTo("dashboard");

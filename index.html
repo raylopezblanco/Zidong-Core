@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=46.0">
+    <link rel="stylesheet" href="style.css?v=48.0">
 </head>
 <body>
 
@@ -198,7 +198,7 @@
         <!-- LEVEL 01 -->
         <section id="level01" class="page">
             <div class="recognition-card" style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; text-align:center;"></div>
-            <button class="back-button" onclick="window.navigateTo('worldDetailsView')" style="margin-top: 20px;">← ABANDONAR MISIÓN</button>
+            <button type="button" class="level-abandon-btn" onclick="window.abandonCareerLevel()">✕ ABANDONAR NIVEL</button>
         </section>
 
 <!-- 1V1 BATTLE -->
@@ -212,7 +212,7 @@
                     <button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); padding:12px;" onclick="window.start1v1WithDifficulty('MEDIUM')">🤖 Nivel 2 · Palabra de 2 Hanzi</button>
                     <button class="reveal-button" style="background:var(--surface-light); color:#fff; border:1px solid var(--border); padding:12px;" onclick="window.start1v1WithDifficulty('HARD')">🔥 Nivel 3 · Ordenar Bloques Hanzi</button>
                 </div>
-                <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 90px;">← REGRESAR AL DASHBOARD</button>
+                <button type="button" class="back-button" onclick="window.setMinigameLock(false); window.navigateTo('dashboard');" style="margin-top: 70px;">← REGRESAR A MENÚ PRINCIPAL</button>
             </div>
 
             <!-- 2. ARENA DE JUEGO (AISLADA Y LIMPIA) -->
@@ -247,7 +247,6 @@
                 
                 <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px; padding-bottom:20px;">
                     <button class="reveal-button" style="background:var(--cyan); color:#0b1424; padding:14px; font-weight:900;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
-                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="padding: 14px; border-color:var(--border); color:#fff; margin-top: 5px;">← REGRESAR AL DASHBOARD</button>
                 </div>
             </div>
         </section>
@@ -362,7 +361,7 @@
                         <span class="arrow" style="font-size:20px; color:#ff4444; margin-left:auto;">→</span>
                     </div>
 
-                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:12px;">← REGRESAR AL DASHBOARD</button>
+                    <button type="button" class="back-button" onclick="window.setMinigameLock(false); window.navigateTo('dashboard');" style="margin-top:12px;">← REGRESAR A MENÚ PRINCIPAL</button>
                 </div>
 
                 <!-- 2. ARENA DE JUEGO -->
@@ -376,7 +375,7 @@
                     </div>
                     <div class="cf-timer-track"><div id="cf-timer-bar" class="cf-timer-fill"></div></div>
                     <div id="cf-stage-content"></div>
-                    <button class="btn-secondary" style="margin-top:16px; width:100%;" onclick="window.exitCriticalFail()">✕ ABANDONAR INTERVENCIÓN</button>
+                    <button type="button" class="level-abandon-btn" onclick="window.exitCriticalFail()">✕ ABANDONAR NIVEL</button>
                 </div>
 
                 <!-- 3. PANTALLA DE COLAPSO -->
@@ -385,7 +384,6 @@
                     <p id="cf-collapse-reason" style="font-size:12px; color:#fff; margin-bottom:12px;"></p>
                     <div style="font-size:20px; font-weight:900; color:var(--green); margin-bottom:16px;" id="cf-collapse-score">+0 XP</div>
                     <button class="reveal-button" style="background:var(--cyan); color:#0b1424;" onclick="window.startCriticalLevel()">REINTENTAR INTERVENCIÓN ↺</button>
-                    <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:10px;">← REGRESAR AL DASHBOARD</button>
                 </div>
             </div>
         </section>
@@ -529,11 +527,11 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="audio.js?v=46.0"></script>
-    <script src="industrial-ranks.js?v=46.0"></script>
-    <script src="critical-fail.js?v=46.0"></script>
-    <script src="navigation.js?v=46.0"></script>
-    <script src="hanzi-swap.js?v=46.0"></script>
-    <script src="app.js?v=46.0"></script>
+    <script src="audio.js?v=48.0"></script>
+    <script src="industrial-ranks.js?v=48.0"></script>
+    <script src="critical-fail.js?v=48.0"></script>
+    <script src="navigation.js?v=48.0"></script>
+    <script src="hanzi-swap.js?v=48.0"></script>
+    <script src="app.js?v=48.0"></script>
 </body>
 </html>

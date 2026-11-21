@@ -1021,7 +1021,26 @@
         stream.appendChild(bossCard);
     }
 
+    let activeCareerContext = { act: null, world: null, isBoss: false };
+
+    window.abandonCareerLevel = function() {
+        const label = activeCareerContext.isBoss
+            ? "el Checkpoint de Jefe"
+            : (activeCareerContext.act ? `el Hanzi "${activeCareerContext.act.hanzi}"` : "este nivel");
+        activeCareerContext = { act: null, world: null, isBoss: false };
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
+        if (typeof triggerHaptic === "function") triggerHaptic("error");
+        if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
+        window.showCyberAlert(
+            "NIVEL ABANDONADO",
+            `¿Te rajaste en ${label}? Sigue preparándote, renacuajo. 🐸⚡`,
+            "🐸"
+        );
+    };
+
     function openActivity(act, world) {
+        activeCareerContext = { act, world, isBoss: false };
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(true);
         if (typeof window.navigateTo === "function") window.navigateTo("level01");
         startHanzi3Phases(act, world);
     }
@@ -1235,6 +1254,7 @@
                                 `Completaste las 3 fases de "${act.hanzi}" (${act.meaning})${bonus > 0 ? ` (+${bonus} XP)` : ""}.`,
                                 "🌟"
                             );
+                            if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                             if (world) openWorldDetails(world);
                         }, 450);
                     } else {
@@ -1255,6 +1275,8 @@
     }
 
     function startCareerReview(revItem, world) {
+        activeCareerContext = { act: { hanzi: revItem.title }, world, isBoss: false };
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(true);
         if (typeof window.navigateTo === "function") window.navigateTo("level01");
         const card = document.querySelector("#level01 .recognition-card");
         if (!card) return;
@@ -1274,6 +1296,7 @@
                 }
                 triggerHaptic("win");
                 window.showCyberAlert("REPASO COMPLETADO", `¡Superaste ${revItem.title}! (+${revItem.reward} XP)`, "🔁");
+                if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                 if (world) openWorldDetails(world);
                 return;
             }
@@ -1326,6 +1349,8 @@
     }
 
     function startBossCheckpoint(world) {
+        activeCareerContext = { act: null, world, isBoss: true };
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(true);
         if (typeof window.navigateTo === "function") window.navigateTo("level01");
         const card = document.querySelector("#level01 .recognition-card");
         if (!card || !world.boss) return;
@@ -1392,6 +1417,7 @@
                             setTimeout(() => {
                                 window.showCyberAlert("CHECKPOINT DE LÍNEA", `¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`, "🏆");
                                 renderBadgesGrid();
+                                if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 400);
                         } else {
@@ -1531,6 +1557,7 @@ window.VS_ABANDON_MESSAGES = {
 window.abandonVsBattle = function() {
     const levelKey = window.selectedVsDiffKey || "MEDIUM";
     window.stopVsSession();
+    if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
     if (typeof triggerHaptic === "function") triggerHaptic("error");
     const msg = window.VS_ABANDON_MESSAGES[levelKey] || "¿Me has tenido miedo? Sigue preparándote, renacuajo. 🐸";
     if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
@@ -1559,6 +1586,7 @@ window.openVsMode = function() {
 };
 
 window.start1v1WithDifficulty = function(diffKey) {
+    if (typeof window.setMinigameLock === "function") window.setMinigameLock(true);
     const diff = window.VS_DIFFICULTIES[diffKey];
     if (!diff) {
         console.error("Dificultad 1v1 desconocida:", diffKey);
@@ -1927,8 +1955,10 @@ window.finishVsBattle = function() {
             `¡VICTORIA EN DUELO 1V1!\nHas derrotado a ${diff.name}.\n\nPuntuación: Tú ${window.myVsPoints} PTS vs IA ${window.rivalVsPoints} PTS\nRecompensa: +${earnedXp} XP ⚡`,
             "⚔️"
         );
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
     } else {
+        if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
         if (typeof triggerHaptic === "function") triggerHaptic("error");
 
         const arena = document.getElementById("vsBattleArenaContainer");

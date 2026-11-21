@@ -675,7 +675,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         updateProfile();
-        if (typeof window.renderCareerPlanetsMenu === "function") window.renderCareerPlanetsMenu();
+        setTimeout(() => { if (typeof window.renderCareerPlanetsMenu === "function") window.renderCareerPlanetsMenu(); }, 0);
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
         renderLeaderboard();
         if (typeof window.renderLabComponents === "function") {

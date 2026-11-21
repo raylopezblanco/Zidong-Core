@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zidong-v57';
+const CACHE_NAME = 'zidong-v58';
 const STATIC_ASSETS = [
   './',
   './index.html',

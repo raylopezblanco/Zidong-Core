@@ -223,7 +223,9 @@
             planetCard.className = `planet-menu-item ${world.planetClass}`;
 
             const totalAct = world.activities.length;
-            const completedInWorld = world.activities.filter(a => getUserData().completedActivities.includes(a.id)).length;
+            const udNow = getUserData();
+            const doneArr = (udNow && Array.isArray(udNow.completedActivities)) ? udNow.completedActivities : [];
+            const completedInWorld = world.activities.filter(a => doneArr.includes(a.id)).length;
 
             planetCard.innerHTML = `
                 <div class="planet-sphere-wrapper">
@@ -886,7 +888,6 @@
 
     window.openCareerMode = function() {
         try { haptic("success"); } catch (e) {}
-        try { window.renderCareerPlanetsMenu(); } catch (e) {}
         if (typeof window.navigateTo === "function") {
             window.navigateTo("career");
         } else {
@@ -895,6 +896,7 @@
             if (sec) sec.classList.add("active");
         }
         try { window.renderCareerPlanetsMenu(); } catch (e) {}
+        setTimeout(() => { try { window.renderCareerPlanetsMenu(); } catch (e) {} }, 30);
     };
 
     if (document.readyState === "loading") {

@@ -167,12 +167,12 @@
     }
 
     function haptic(type) {
-        if (typeof window.triggerHaptic === "function") window.triggerHaptic(type);
+        if (typeof window.haptic === "function") window.haptic(type);
     }
 
     function alertBox(title, msg, icon = "⚡") {
-        if (typeof window.showCyberAlert === "function") {
-            window.showCyberAlert(title, msg, icon);
+        if (typeof alertBox === "function") {
+            alertBox(title, msg, icon);
         } else {
             alert(`${title}\n\n${msg}`);
         }

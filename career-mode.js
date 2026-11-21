@@ -8,7 +8,9 @@
     let activeCareerContext = { act: null, world: null, isBoss: false };
 
     function getWorlds() {
-        return window.ZIDONG_getWorlds() || [];
+        if (Array.isArray(window.ZIDONG_WORLDS_CONFIG)) return window.ZIDONG_WORLDS_CONFIG;
+        if (typeof window.getWorldsCatalog === "function") return window.getWorldsCatalog() || [];
+        return [];
     }
 
     function getUserData() {

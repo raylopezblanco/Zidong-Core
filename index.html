@@ -9,7 +9,7 @@
     
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="stylesheet" href="style.css?v=55.0">
+    <link rel="stylesheet" href="style.css?v=57.0">
 </head>
 <body>
 
@@ -82,7 +82,7 @@
 
             <!-- TARJETAS PRINCIPALES UNIFICADAS -->
             <div class="main-modes-grid home-top-grid">
-                <div class="sub-mode-card career-mode" onclick="window.openCareerMode()">
+                <div class="sub-mode-card career-mode" id="btnOpenCareerMode" role="button" tabindex="0" onclick="if(window.openCareerMode){window.openCareerMode();}else if(window.navigateTo){window.navigateTo('career');}">
                     <div class="sub-card-header">
                         <span class="sub-card-icon">🪐</span>
                         <strong class="sub-card-tag green">CAREER MODE</strong>
@@ -527,14 +527,14 @@
         }
         setTimeout(hideSplashInstantly, 2500);
     </script>
-    <script src="audio.js?v=55.0"></script>
-    <script src="industrial-ranks.js?v=55.0"></script>
-    <script src="critical-fail.js?v=55.0"></script>
-    <script src="navigation.js?v=55.0"></script>
-    <script src="worlds-data.js?v=55.0"></script>
-    <script src="career-mode.js?v=55.0"></script>
-    <script src="hanzi-swap.js?v=55.0"></script>
-    <script src="vs-battle.js?v=55.0"></script>
-    <script src="app.js?v=55.0"></script>
+    <script src="audio.js?v=57.0"></script>
+    <script src="industrial-ranks.js?v=57.0"></script>
+    <script src="critical-fail.js?v=57.0"></script>
+    <script src="navigation.js?v=57.0"></script>
+    <script src="worlds-data.js?v=57.0"></script>
+    <script src="career-mode.js?v=57.0"></script>
+    <script src="hanzi-swap.js?v=57.0"></script>
+    <script src="vs-battle.js?v=57.0"></script>
+    <script src="app.js?v=57.0"></script>
 </body>
 </html>

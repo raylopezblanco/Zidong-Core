@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zidong-v61';
+const CACHE_NAME = 'zidong-v63';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,8 @@ const STATIC_ASSETS = [
   './audio.js',
   './navigation.js',
   './mock-data.js',
+  './npc-dialogues.js',
+  './lab-components.js',
   './app.js',
   './hanzi-swap.js',
   './vs-battle.js',
@@ -15,7 +17,6 @@ const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
-  './npc-dialogues.js'
 ];
 
 self.addEventListener('install', (e) => {

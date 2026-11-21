@@ -215,6 +215,7 @@
     window.renderCareerPlanetsMenu = function renderCareerPlanetsMenu() {
         const container = document.getElementById("careerPlanetsGrid");
         if (!container) return;
+        try {
         container.replaceChildren();
 
         getWorlds().forEach((world) => {
@@ -246,6 +247,9 @@
             };
             container.appendChild(planetCard);
         });
+        } catch (err) {
+            container.innerHTML = `<div class="panel" style="padding:14px; color:#ff8080; font-size:12px;">Error al cargar mundos: ${err && err.message ? err.message : err}</div>`;
+        }
     }
 
     function getCareerStarState(actId) {

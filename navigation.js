@@ -27,9 +27,6 @@ if (window.history && window.history.replaceState) {
 }
 
 window.navigateTo = function(pageId, pushHistory = true) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
-    
     const currentActive = document.querySelector('.page.active');
     const currentId = currentActive ? currentActive.id : 'dashboard';
     if (window.minigameSessionLocked && pageId !== currentId && window.MINIGAME_LOCK_PAGES.includes(currentId)) {
@@ -38,6 +35,8 @@ window.navigateTo = function(pageId, pushHistory = true) {
 
     const target = document.getElementById(pageId);
     if (target) {
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(p => p.classList.remove('active'));
         if (typeof window.syncMinigameBarForPage === 'function') {
             window.syncMinigameBarForPage(pageId);
         }

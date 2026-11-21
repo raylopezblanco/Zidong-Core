@@ -15,6 +15,7 @@ const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
+  './npc-dialogues.js'
 ];
 
 self.addEventListener('install', (e) => {

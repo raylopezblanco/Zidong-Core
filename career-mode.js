@@ -886,6 +886,46 @@
     }
 
 
+
+    window.forceRenderCareerPlanets = function forceRenderCareerPlanets() {
+        const container = document.getElementById("careerPlanetsGrid");
+        if (!container) return;
+        container.replaceChildren();
+        const list = getWorlds();
+        const ud = getUserData();
+        const doneArr = (ud && Array.isArray(ud.completedActivities)) ? ud.completedActivities : [];
+        list.forEach((world) => {
+            const planetCard = document.createElement("div");
+            planetCard.className = `planet-menu-item ${world.planetClass || ""}`;
+            const totalAct = Array.isArray(world.activities) ? world.activities.length : 0;
+            const completedInWorld = Array.isArray(world.activities)
+                ? world.activities.filter(a => doneArr.includes(a.id)).length
+                : 0;
+            planetCard.innerHTML = `
+                <div class="planet-sphere-wrapper">
+                    <div class="planet-sphere"><span class="planet-core-icon">${world.icon || "🪐"}</span></div>
+                    <div class="planet-orbit-ring" style="border-color:${world.color || "#27d8e8"}88;"></div>
+                </div>
+                <div class="planet-menu-meta">
+                    <span class="planet-tag" style="color:${world.color || "#27d8e8"};">${world.title || ""}</span>
+                    <h4>${world.planetName || ""}</h4>
+                    <p>${world.subtitle || ""}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                        <span class="planet-enter-badge">EXPLORAR MUNDO →</span>
+                        <small style="color:${world.color || "#27d8e8"}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
+                    </div>
+                </div>
+            `;
+            planetCard.onclick = () => {
+                haptic("success");
+                openWorldDetails(world);
+            };
+            container.appendChild(planetCard);
+        });
+    };
+
+    window.renderCareerPlanetsMenu = window.forceRenderCareerPlanets;
+
     window.openCareerMode = function() {
         try { haptic("success"); } catch (e) {}
         if (typeof window.navigateTo === "function") {
@@ -895,8 +935,8 @@
             const sec = document.getElementById("career");
             if (sec) sec.classList.add("active");
         }
-        try { window.renderCareerPlanetsMenu(); } catch (e) {}
-        setTimeout(() => { try { window.renderCareerPlanetsMenu(); } catch (e) {} }, 30);
+        try { window.forceRenderCareerPlanets(); } catch (e) {}
+        setTimeout(() => { try { window.forceRenderCareerPlanets(); } catch (e) {} }, 30);
     };
 
     if (document.readyState === "loading") {

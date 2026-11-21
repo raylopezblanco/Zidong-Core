@@ -55,9 +55,12 @@
         }
     };
 
+    const SAVED_USER_NAME = localStorage.getItem("zidong_user_name") || "";
+    const NAME_LOCKED_FLAG = localStorage.getItem("zidong_name_locked") === "1";
 
     let currentUserData = {
-        name: "New user",
+        name: SAVED_USER_NAME || "New user",
+        nameLocked: NAME_LOCKED_FLAG || Boolean(SAVED_USER_NAME),
         xp: 1850,
         streak: 5,
         completedActivities: ["w1_a1", "w1_a2", "w1_a3", "w1_a4", "w2_a1", "w2_a2", "w2_a3", "w2_a4"],
@@ -66,8 +69,6 @@
         selectedAvatar: "⚡",
         phaseStars: {},
         completedReviews: [],
-        swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
-        swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0),
         swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
         swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0)
     };
@@ -125,7 +126,7 @@
 
         if (batteryXp) batteryXp.textContent = `${currentUserData.xp.toLocaleString()} XP`;
         if (batteryRank) batteryRank.textContent = `Rango 0${rank.level}: ${rank.name}`;
-        
+
         const nextRank = RANKS_LADDER.find(r => r.level === rank.level + 1);
         let pct = 100;
         if (nextRank) {
@@ -167,6 +168,16 @@
         renderAchievementsList();
         renderWorldsProgressInProfile();
         renderRanksLadder();
+
+        const noticeEl = document.getElementById("nameEditNotice");
+        if (noticeEl) {
+            const isLocked = currentUserData.nameLocked || localStorage.getItem("zidong_name_locked") === "1";
+            if (isLocked) {
+                noticeEl.innerHTML = `🔒 Nombre registrado permanentemente: <strong style="color:var(--green);">${currentUserData.name}</strong> (1 sola vez)`;
+            } else {
+                noticeEl.innerHTML = `✏️ Toca aquí para editar nombre <strong style="color:#ffaa00;">(1 sola vez)</strong>`;
+            }
+        }
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
     }
     window.updateProfile = updateProfile;
@@ -181,7 +192,6 @@
         const alreadyClaimed = (lastClaim === today);
         badge.style.display = alreadyClaimed ? "none" : "flex";
     };
-
 
     function renderBadgesGrid() {
         const container = document.getElementById("badgesContainer");
@@ -371,6 +381,16 @@
 
     window.editUserNameOnce = function(e) {
         if (e && e.stopPropagation) e.stopPropagation();
+        const isLocked = currentUserData.nameLocked || localStorage.getItem("zidong_name_locked") === "1";
+        if (isLocked) {
+            if (typeof triggerHaptic === "function") triggerHaptic("error");
+            window.showCyberAlert(
+                "NOMBRE BLOQUEADO",
+                `Tu identificador "${currentUserData.name}" ya fue guardado de forma permanente (1 sola edición permitida).`,
+                "🔒"
+            );
+            return;
+        }
         const modal = document.getElementById("editNameModal");
         const step1 = document.getElementById("editNameStep1");
         const step2 = document.getElementById("editNameStep2");
@@ -424,6 +444,11 @@
             return;
         }
         currentUserData.name = finalName;
+        currentUserData.nameLocked = true;
+        try {
+            localStorage.setItem("zidong_user_name", finalName);
+            localStorage.setItem("zidong_name_locked", "1");
+        } catch (e) {}
         MOCK_LEADERBOARD.forEach(item => {
             if (item.isMe) {
                 item.name = currentUserData.name;
@@ -446,7 +471,7 @@
         const lastClaim = localStorage.getItem("zidong_last_claim_date");
         const btn = document.getElementById("btnClaimRewardAction");
         const desc = document.getElementById("rewardModalDesc");
-        
+
         if (btn && desc) {
             if (lastClaim === today) {
                 btn.textContent = "YA RECLAMADO HOY ✓";
@@ -506,7 +531,6 @@
         }
     };
 
-    // LAB COMPONENTS DATA & FILTER
     const LAB_COMPONENTS = [
         { id: "c1", category: "world_1", hanzi: "变频器", pinyin: "biàn pín qì", name: "VFD / Inversor de Frecuencia", desc: "Controla velocidad y torque de motores asíncronos.", icon: "⚡" },
         { id: "c2", category: "world_1", hanzi: "接触器", pinyin: "jiē chù qì", name: "Contactor Eléctrico", desc: "Dispositivo electromecánico para abrir/cerrar potencia.", icon: "🔌" },
@@ -579,7 +603,6 @@
         window.renderLabComponents(cat, query);
     };
 
-    // LEADERBOARD MOCK DATA
     const MOCK_LEADERBOARD = [
         { rank: 1, name: "Chen Wei (Líder Planta)", xp: 3450, badge: "⚡ Nivel 6" },
         { rank: 2, name: "Ana Torres (CFT Calidad)", xp: 2980, badge: "🤖 Nivel 5" },
@@ -650,7 +673,6 @@
         });
     };
 
-    // COMPANION SPEECHES
     const COMPANION_PHRASES = [
         "¡Los VFDs Delta MS300 regulan la frecuencia de los motores en la línea de SMT! ⚡",
         "¿Sabías que 'diàn' (电) significa electricidad y se usa en casi todo término electrónico? 🔋",
@@ -696,31 +718,30 @@
         document.addEventListener("pointerdown", unlockAudioOnce, { once: false });
         document.addEventListener("keydown", unlockAudioOnce, { once: false });
     });
-
 })();
 
-    window.switchProfileTab = function(tabName) {
-        const btnAch = document.getElementById("tabBtnAchievements");
-        const btnMed = document.getElementById("tabBtnMedals");
-        const contentAch = document.getElementById("tabContentAchievements");
-        const contentMed = document.getElementById("tabContentMedals");
+window.switchProfileTab = function(tabName) {
+    const btnAch = document.getElementById("tabBtnAchievements");
+    const btnMed = document.getElementById("tabBtnMedals");
+    const contentAch = document.getElementById("tabContentAchievements");
+    const contentMed = document.getElementById("tabContentMedals");
 
-        if (!btnAch || !btnMed || !contentAch || !contentMed) return;
+    if (!btnAch || !btnMed || !contentAch || !contentMed) return;
 
-        if (tabName === 'achievements') {
-            btnAch.style.borderColor = "var(--green)";
-            btnAch.style.color = "#fff";
-            btnMed.style.borderColor = "var(--border)";
-            btnMed.style.color = "var(--muted)";
-            contentAch.style.display = "flex";
-            contentMed.style.display = "none";
-        } else {
-            btnMed.style.borderColor = "var(--gold)";
-            btnMed.style.color = "#fff";
-            btnAch.style.borderColor = "var(--border)";
-            btnAch.style.color = "var(--muted)";
-            contentMed.style.display = "flex";
-            contentAch.style.display = "none";
-        }
-        if (typeof triggerHaptic === "function") triggerHaptic("success");
-    };
+    if (tabName === 'achievements') {
+        btnAch.style.borderColor = "var(--green)";
+        btnAch.style.color = "#fff";
+        btnMed.style.borderColor = "var(--border)";
+        btnMed.style.color = "var(--muted)";
+        contentAch.style.display = "flex";
+        contentMed.style.display = "none";
+    } else {
+        btnMed.style.borderColor = "var(--gold)";
+        btnMed.style.color = "#fff";
+        btnAch.style.borderColor = "var(--border)";
+        btnAch.style.color = "var(--muted)";
+        contentMed.style.display = "flex";
+        contentAch.style.display = "none";
+    }
+    if (typeof triggerHaptic === "function") triggerHaptic("success");
+};

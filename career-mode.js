@@ -329,14 +329,7 @@
     }
 
     function openWorldDetails(world) {
-        if (!world) return;
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("worldDetailsView");
-        } else {
-            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-            const sec = document.getElementById("worldDetailsView");
-            if (sec) sec.classList.add("active");
-        }
+        if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
 
         const titleEl = document.getElementById("selectedWorldTitle");
         const subEl = document.getElementById("selectedWorldSubtitle");
@@ -885,16 +878,9 @@
 
 
     window.openCareerMode = function() {
-        try { haptic("success"); } catch (e) {}
-        try { window.renderCareerPlanetsMenu(); } catch (e) {}
-        if (typeof window.navigateTo === "function") {
-            window.navigateTo("career");
-        } else {
-            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-            const sec = document.getElementById("career");
-            if (sec) sec.classList.add("active");
-        }
-        try { window.renderCareerPlanetsMenu(); } catch (e) {}
+        haptic("success");
+        if (typeof window.navigateTo === "function") window.navigateTo("career");
+        window.renderCareerPlanetsMenu();
     };
 
     if (document.readyState === "loading") {

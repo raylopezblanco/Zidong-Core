@@ -673,12 +673,39 @@
         });
     };
 
-    const COMPANION_PHRASES = [
+    const FALLBACK_COMPANION_PHRASES = [
         "¡Los VFDs Delta MS300 regulan la frecuencia de los motores en la línea de SMT! ⚡",
         "¿Sabías que 'diàn' (电) significa electricidad y se usa en casi todo término electrónico? 🔋",
         "El mantenimiento autónomo previene paros imprevistos en las máquinas Ersa Versaflow. ⚙️",
         "¡Revisa las electroválvulas SMC si notas caída de presión en los pistones neumáticos! 💨"
     ];
+
+    function getCompanionPhrasesList() {
+        if (typeof window.getCompanionPhrases === "function") {
+            const list = window.getCompanionPhrases(currentUserData?.name || "");
+            if (Array.isArray(list) && list.length > 0) return list;
+        }
+        if (Array.isArray(window.ZIDONG_NPC_DIALOGUES?.companion) && window.ZIDONG_NPC_DIALOGUES.companion.length > 0) {
+            return window.ZIDONG_NPC_DIALOGUES.companion;
+        }
+        return FALLBACK_COMPANION_PHRASES;
+    }
+
+    window.interactWithCompanion = function() {
+        if (navigator.vibrate) navigator.vibrate(35);
+        if (window.ZidongAudio && typeof window.ZidongAudio.playBark === "function") {
+            window.ZidongAudio.playBark();
+        }
+        const bubble = document.getElementById("companionBubble");
+        const textEl = document.getElementById("companionText");
+        if (!bubble || !textEl) return;
+
+        const phrases = getCompanionPhrasesList();
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        textEl.textContent = randomPhrase;
+        bubble.classList.add("bounce-pop");
+        setTimeout(() => bubble.classList.remove("bounce-pop"), 400);
+    };
 
     window.interactWithCompanion = function() {
         if (navigator.vibrate) navigator.vibrate(35);

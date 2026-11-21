@@ -179,15 +179,19 @@
     }
 
     function refreshProfile() {
-        if (typeof window.updateProfile === "function") window.refreshProfile();
+        if (typeof window.updateProfile === "function") window.updateProfile();
     }
 
     function refreshBadges() {
-        if (typeof window.renderBadgesGrid === "function") window.refreshBadges();
+        if (typeof window.renderBadgesGrid === "function") window.renderBadgesGrid();
+    }
+
+    function speakText(txt) {
+        if (typeof window.speakMandarin === "function") window.speakMandarin(txt);
     }
 
     function shuffleArr(arr) {
-        if (typeof window.shuffleArr === "function") return window.shuffleArr(arr);
+        if (typeof window.vsShuffle === "function") return window.vsShuffle(arr);
         const copy = [...arr];
         for (let i = copy.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -211,49 +215,6 @@
         } catch (e) {}
     }
 
-    // CAREER PLANETS MENU RENDERING
-    window.renderCareerPlanetsMenu = function renderCareerPlanetsMenu() {
-        const container = document.getElementById("careerPlanetsGrid");
-        if (!container) return;
-        try {
-        container.replaceChildren();
-
-        getWorlds().forEach((world) => {
-            const planetCard = document.createElement("div");
-            planetCard.className = `planet-menu-item ${world.planetClass}`;
-
-            const totalAct = world.activities.length;
-            const udNow = getUserData();
-            const doneArr = (udNow && Array.isArray(udNow.completedActivities)) ? udNow.completedActivities : [];
-            const completedInWorld = world.activities.filter(a => doneArr.includes(a.id)).length;
-
-            planetCard.innerHTML = `
-                <div class="planet-sphere-wrapper">
-                    <div class="planet-sphere"><span class="planet-core-icon">${world.icon}</span></div>
-                    <div class="planet-orbit-ring" style="border-color:${world.color}88;"></div>
-                </div>
-                <div class="planet-menu-meta">
-                    <span class="planet-tag" style="color:${world.color};">${world.title}</span>
-                    <h4>${world.planetName}</h4>
-                    <p>${world.subtitle}</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                        <span class="planet-enter-badge">EXPLORAR MUNDO →</span>
-                        <small style="color:${world.color}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
-                    </div>
-                </div>
-            `;
-
-            planetCard.onclick = () => {
-                haptic("success");
-                openWorldDetails(world);
-            };
-            container.appendChild(planetCard);
-        });
-        } catch (err) {
-            container.innerHTML = `<div class="panel" style="padding:14px; color:#ff8080; font-size:12px;">Error al cargar mundos: ${err && err.message ? err.message : err}</div>`;
-        }
-    }
-
     function getCareerStarState(actId) {
         const ud = getUserData();
         const savedMap = loadSavedStarsMap();
@@ -267,7 +228,7 @@
             if (ud) ud.phaseStars[actId] = merged;
             return merged;
         }
-        if (ud && ud.phaseStars[actId]) {
+        if (ud && ud.phaseStars && ud.phaseStars[actId]) {
             return ud.phaseStars[actId];
         }
         const done = ud && Array.isArray(ud.completedActivities) && ud.completedActivities.includes(actId);
@@ -320,7 +281,7 @@
                     type: "review",
                     id: `${world.id}_repaso_${idx + 1}`,
                     title: `REPASO DE BLOQUE (${seen.length} HANZI)`,
-                    subtitle: `Evalúa caracteres vistos en este tramo`,
+                    subtitle: "Evalúa caracteres vistos en este tramo",
                     pool: [...seen],
                     reward: 120
                 });
@@ -329,6 +290,50 @@
 
         return list;
     }
+
+    window.renderCareerPlanetsMenu = function renderCareerPlanetsMenu() {
+        const container = document.getElementById("careerPlanetsGrid");
+        if (!container) return;
+        container.replaceChildren();
+
+        const ud = getUserData();
+        const doneArr = (ud && Array.isArray(ud.completedActivities)) ? ud.completedActivities : [];
+
+        getWorlds().forEach((world) => {
+            const planetCard = document.createElement("div");
+            planetCard.className = `planet-menu-item ${world.planetClass || ""}`;
+            planetCard.style.borderColor = `${world.color}55`;
+
+            const totalAct = Array.isArray(world.activities) ? world.activities.length : 0;
+            const completedInWorld = Array.isArray(world.activities)
+                ? world.activities.filter(a => doneArr.includes(a.id)).length
+                : 0;
+
+            planetCard.innerHTML = `
+                <div class="planet-sphere-wrapper">
+                    <div class="planet-sphere" style="border-color:${world.color}; box-shadow:0 0 14px ${world.color}33;"><span class="planet-core-icon">${world.icon}</span></div>
+                    <div class="planet-orbit-ring" style="border-color:${world.color}88;"></div>
+                </div>
+                <div class="planet-menu-meta">
+                    <span class="planet-tag" style="color:${world.color};">${world.title}</span>
+                    <h4>${world.planetName}</h4>
+                    <p>${world.subtitle}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <span class="planet-enter-badge" style="color:${world.color};">EXPLORAR MUNDO →</span>
+                        <small style="color:${world.color}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
+                    </div>
+                </div>
+            `;
+
+            planetCard.onclick = () => {
+                haptic("success");
+                openWorldDetails(world);
+            };
+            container.appendChild(planetCard);
+        });
+    };
+
+    window.forceRenderCareerPlanets = window.renderCareerPlanetsMenu;
 
     function openWorldDetails(world) {
         if (!world) return;
@@ -353,6 +358,8 @@
         stream.className = "career-zigzag-stream";
         stream.replaceChildren();
 
+        const ud = getUserData();
+        const completedList = (ud && Array.isArray(ud.completedActivities)) ? ud.completedActivities : [];
         const entries = buildCareerZigzagEntries(world);
         let canAdvance = true;
         let zigCounter = 0;
@@ -389,7 +396,7 @@
                 if (unlocked) {
                     card.onclick = () => {
                         haptic("success");
-                        window.speakMandarin(act.hanzi);
+                        speakText(act.hanzi);
                         openActivity(act, world);
                     };
                 }
@@ -397,8 +404,8 @@
 
                 canAdvance = stars >= 1;
             } else if (entry.type === "review") {
-                if (!getUserData().completedReviews) getUserData().completedReviews = [];
-                const revDone = getUserData().completedReviews.includes(entry.id);
+                if (ud && !Array.isArray(ud.completedReviews)) ud.completedReviews = [];
+                const revDone = ud ? ud.completedReviews.includes(entry.id) : false;
                 const revUnlocked = canAdvance;
 
                 const revCard = document.createElement("div");
@@ -426,10 +433,10 @@
             }
         });
 
-        const allThreeStars = world.activities.every(a => getCareerStarCount(a.id) === 3);
-        const bossDone = getUserData().completedActivities.includes(world.boss.id);
-        const earnedStars = world.activities.reduce((acc, a) => acc + getCareerStarCount(a.id), 0);
-        const totalStars = world.activities.length * 3;
+        const allThreeStars = (world.activities || []).every(a => getCareerStarCount(a.id) === 3);
+        const bossDone = completedList.includes(world.boss.id);
+        const earnedStars = (world.activities || []).reduce((acc, a) => acc + getCareerStarCount(a.id), 0);
+        const totalStars = (world.activities || []).length * 3;
 
         const bossCard = document.createElement("div");
         bossCard.className = `career-zig-card is-boss zig-center ${bossDone ? "is-complete" : allThreeStars ? "is-unlocked" : "is-locked"}`;
@@ -463,15 +470,13 @@
         stream.appendChild(bossCard);
     }
 
-    let activeCareerContext = { act: null, world: null, isBoss: false };
-
     window.abandonCareerLevel = function() {
         const label = activeCareerContext.isBoss
             ? "el Checkpoint de Jefe"
             : (activeCareerContext.act ? `el Hanzi "${activeCareerContext.act.hanzi}"` : "este nivel");
         activeCareerContext = { act: null, world: null, isBoss: false };
         if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
-        if (typeof haptic === "function") haptic("error");
+        haptic("error");
         if (typeof window.navigateTo === "function") window.navigateTo("dashboard");
         alertBox(
             "NIVEL ABANDONADO",
@@ -487,12 +492,6 @@
         startHanzi3Phases(act, world);
     }
 
-    // 3 FASES = 3 ESTRELLAS:
-    // 1) El Hanzi cómo es (1 estrella)
-    // 2) El Hanzi cómo se dice (1 estrella)
-    // 3) Identificar el Hanzi en una oración (1 estrella)
-    // - Bloquea selección múltiple al responder
-    // - Si fallas, reinicia ÚNICAMENTE esa fase
     function startHanzi3Phases(act, world) {
         const card = document.querySelector("#level01 .recognition-card");
         if (!card) return;
@@ -517,7 +516,6 @@
             container.querySelectorAll("button").forEach(b => { b.disabled = true; });
         }
 
-        // FASE 1: El Hanzi cómo es (⭐ 1ª estrella)
         function renderPhase1() {
             let locked = false;
             const distractors = shuffleArr([
@@ -541,7 +539,7 @@
             if (speakBtn) {
                 speakBtn.onclick = () => {
                     haptic("success");
-                    window.speakMandarin(act.hanzi);
+                    speakText(act.hanzi);
                 };
             }
 
@@ -558,7 +556,7 @@
 
                     if (opt === act.meaning) {
                         haptic("success");
-                        window.speakMandarin(act.hanzi);
+                        speakText(act.hanzi);
                         btn.style.background = "var(--green)";
                         btn.style.color = "#0b1424";
                         btn.style.borderColor = "var(--green)";
@@ -580,7 +578,6 @@
             });
         }
 
-        // FASE 2: El Hanzi cómo se dice (⭐ 2ª estrella)
         function renderPhase2() {
             let locked = false;
             const distractors = shuffleArr([
@@ -601,7 +598,7 @@
             if (speakBtn) {
                 speakBtn.onclick = () => {
                     haptic("success");
-                    window.speakMandarin(act.hanzi);
+                    speakText(act.hanzi);
                 };
             }
 
@@ -619,7 +616,7 @@
 
                     if (pin === act.pinyin) {
                         haptic("success");
-                        window.speakMandarin(act.hanzi);
+                        speakText(act.hanzi);
                         btn.style.background = "var(--green)";
                         btn.style.color = "#0b1424";
                         btn.style.borderColor = "var(--green)";
@@ -641,7 +638,6 @@
             });
         }
 
-        // FASE 3: Identificar el Hanzi en una oración (⭐ 3ª estrella) - sin soplar el carácter
         function renderPhase3() {
             let locked = false;
             const rawChars = sentenceText.split("");
@@ -662,7 +658,7 @@
             if (speakBtn) {
                 speakBtn.onclick = () => {
                     haptic("success");
-                    window.speakMandarin(sentenceText);
+                    speakText(sentenceText);
                 };
             }
 
@@ -680,23 +676,25 @@
                     if (ch === act.hanzi) {
                         tok.classList.add("token-hit");
                         grantCareerPhaseStar(act.id, 3);
-                        if (!getUserData()._xpGranted) getUserData()._xpGranted = [];
+                        const ud = getUserData();
                         let bonus = 0;
-                        if (!getUserData()._xpGranted.includes(act.id)) {
-                            getUserData()._xpGranted.push(act.id);
-                            getUserData().xp += act.reward;
-                            bonus = act.reward;
+                        if (ud) {
+                            if (!Array.isArray(ud._xpGranted)) ud._xpGranted = [];
+                            if (!ud._xpGranted.includes(act.id)) {
+                                ud._xpGranted.push(act.id);
+                                ud.xp = (ud.xp || 0) + act.reward;
+                                bonus = act.reward;
+                            }
                         }
                         refreshProfile();
                         haptic("win");
-                        window.speakMandarin(act.hanzi);
+                        speakText(act.hanzi);
                         setTimeout(() => {
                             alertBox(
                                 "¡3 ESTRELLAS OBTENIDAS! ⭐⭐⭐",
                                 `Completaste las 3 fases de "${act.hanzi}" (${act.meaning})${bonus > 0 ? ` (+${bonus} XP)` : ""}.`,
                                 "🌟"
                             );
-                            if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                             if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                             if (world) openWorldDetails(world);
                         }, 450);
@@ -731,11 +729,14 @@
         function nextReviewQ() {
             const target = list[idx];
             if (!target) {
-                if (!getUserData().completedReviews) getUserData().completedReviews = [];
-                if (!getUserData().completedReviews.includes(revItem.id)) {
-                    getUserData().completedReviews.push(revItem.id);
-                    getUserData().xp += revItem.reward;
-                    refreshProfile();
+                const ud = getUserData();
+                if (ud) {
+                    if (!Array.isArray(ud.completedReviews)) ud.completedReviews = [];
+                    if (!ud.completedReviews.includes(revItem.id)) {
+                        ud.completedReviews.push(revItem.id);
+                        ud.xp = (ud.xp || 0) + revItem.reward;
+                        refreshProfile();
+                    }
                 }
                 haptic("win");
                 alertBox("REPASO COMPLETADO", `¡Superaste ${revItem.title}! (+${revItem.reward} XP)`, "🔁");
@@ -845,22 +846,22 @@
 
                     if (char === currentTarget.char) {
                         haptic("success");
-                        window.speakMandarin(char);
+                        speakText(char);
                         b.style.background = "var(--green)";
                         b.style.color = "#0b1424";
                         currentStepIndex++;
 
                         if (currentStepIndex >= sequence.length) {
                             haptic("win");
-                            if (!getUserData().completedActivities.includes(boss.id)) {
-                                getUserData().completedActivities.push(boss.id);
-                                getUserData().xp += boss.reward;
+                            const ud = getUserData();
+                            if (ud && !ud.completedActivities.includes(boss.id)) {
+                                ud.completedActivities.push(boss.id);
+                                ud.xp = (ud.xp || 0) + boss.reward;
                                 refreshProfile();
                             }
                             setTimeout(() => {
                                 alertBox("CHECKPOINT DE LÍNEA", `¡CHECKPOINT CONQUISTADO! (+${boss.reward} XP)\nHas desbloqueado la medalla "${boss.badgeName}".`, "🏆");
                                 refreshBadges();
-                                if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                                 if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
                                 if (typeof window.navigateTo === "function") window.navigateTo("career");
                             }, 400);
@@ -885,82 +886,18 @@
         renderBossSequenceView();
     }
 
-
-
-    window.forceRenderCareerPlanets = function forceRenderCareerPlanets() {
-        const container = document.getElementById("careerPlanetsGrid");
-        if (!container) return;
-        container.replaceChildren();
-        const list = getWorlds();
-        const ud = getUserData();
-        const doneArr = (ud && Array.isArray(ud.completedActivities)) ? ud.completedActivities : [];
-        list.forEach((world) => {
-            const planetCard = document.createElement("div");
-            planetCard.className = `planet-menu-item ${world.planetClass || ""}`;
-            const totalAct = Array.isArray(world.activities) ? world.activities.length : 0;
-            const completedInWorld = Array.isArray(world.activities)
-                ? world.activities.filter(a => doneArr.includes(a.id)).length
-                : 0;
-            planetCard.innerHTML = `
-                <div class="planet-sphere-wrapper">
-                    <div class="planet-sphere"><span class="planet-core-icon">${world.icon || "🪐"}</span></div>
-                    <div class="planet-orbit-ring" style="border-color:${world.color || "#27d8e8"}88;"></div>
-                </div>
-                <div class="planet-menu-meta">
-                    <span class="planet-tag" style="color:${world.color || "#27d8e8"};">${world.title || ""}</span>
-                    <h4>${world.planetName || ""}</h4>
-                    <p>${world.subtitle || ""}</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                        <span class="planet-enter-badge">EXPLORAR MUNDO →</span>
-                        <small style="color:${world.color || "#27d8e8"}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
-                    </div>
-                </div>
-            `;
-            planetCard.onclick = () => {
-                haptic("success");
-                openWorldDetails(world);
-            };
-            container.appendChild(planetCard);
-        });
+    window.openCareerMode = function() {
+        try { haptic("success"); } catch (e) {}
+        if (typeof window.navigateTo === "function") {
+            window.navigateTo("career");
+        } else {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            const sec = document.getElementById("career");
+            if (sec) sec.classList.add("active");
+        }
+        try { window.renderCareerPlanetsMenu(); } catch (e) {}
+        setTimeout(() => { try { window.renderCareerPlanetsMenu(); } catch (e) {} }, 30);
     };
-
-window.forceRenderCareerPlanets = function forceRenderCareerPlanets() {
-    const container = document.getElementById("careerPlanetsGrid");
-    if (!container) return;
-    container.replaceChildren();
-    const list = Array.isArray(window.ZIDONG_WORLDS_CONFIG) ? window.ZIDONG_WORLDS_CONFIG : [];
-    const ud = typeof window.getZidongUserData === "function" ? window.getZidongUserData() : null;
-    const doneArr = (ud && Array.isArray(ud.completedActivities)) ? ud.completedActivities : [];
-    list.forEach((world) => {
-        const planetCard = document.createElement("div");
-        planetCard.className = `planet-menu-item ${world.planetClass || ""}`;
-        const totalAct = Array.isArray(world.activities) ? world.activities.length : 0;
-        const completedInWorld = Array.isArray(world.activities)
-            ? world.activities.filter(a => doneArr.includes(a.id)).length
-            : 0;
-        planetCard.innerHTML = `
-            <div class="planet-sphere-wrapper">
-                <div class="planet-sphere"><span class="planet-core-icon">${world.icon || "🪐"}</span></div>
-                <div class="planet-orbit-ring" style="border-color:${world.color || "#27d8e8"}88;"></div>
-            </div>
-            <div class="planet-menu-meta">
-                <span class="planet-tag" style="color:${world.color || "#27d8e8"};">${world.title || ""}</span>
-                <h4>${world.planetName || ""}</h4>
-                <p>${world.subtitle || ""}</p>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
-                    <span class="planet-enter-badge">EXPLORAR MUNDO →</span>
-                    <small style="color:${world.color || "#27d8e8"}; font-weight:800; font-size:10px;">${completedInWorld}/${totalAct} NIVELES</small>
-                </div>
-            </div>
-        `;
-        planetCard.onclick = () => {
-            if (typeof window.triggerHaptic === "function") window.triggerHaptic("success");
-            if (typeof window.navigateTo === "function") window.navigateTo("worldDetailsView");
-        };
-        container.appendChild(planetCard);
-    });
-};
-window.renderCareerPlanetsMenu = window.forceRenderCareerPlanets;
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => window.renderCareerPlanetsMenu());

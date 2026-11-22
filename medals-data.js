@@ -75,3 +75,41 @@ window.ZidongMedals = [
         isUnlocked: (progress) => true
     }
 ];
+
+(() => {
+    "use strict";
+
+    window.getProfileMedals = function(userData) {
+        const ud = userData || {};
+        const completed = Array.isArray(ud.completedActivities) ? ud.completedActivities : [];
+        const worlds = Array.isArray(window.ZIDONG_WORLDS_CONFIG) ? window.ZIDONG_WORLDS_CONFIG : [];
+        const list = [];
+
+        worlds.forEach(w => {
+            const lastAct = Array.isArray(w.activities) && w.activities.length > 0
+                ? w.activities[w.activities.length - 1]
+                : null;
+            const unlocked = lastAct ? completed.includes(lastAct.id) : false;
+            list.push({
+                id: w.id,
+                icon: w.icon,
+                name: w.boss?.badgeName || w.title,
+                unlocked,
+                lockedMsg: "Esta medalla aún está bloqueada. ¡Supera el checkpoint del mundo para desbloquearla!"
+            });
+        });
+
+        const swapUnlocked = Number(localStorage.getItem("zidong_swap_max_combo") || 0) >= 2
+            || Number(localStorage.getItem("zidong_swap_cleared") || 0) >= 3;
+
+        list.push({
+            id: "medal_swap_architect",
+            icon: "🧩",
+            name: "Arquitecto del Puzzle",
+            unlocked: swapUnlocked,
+            lockedMsg: "Logra un combo x2+ o purga 3 palabras en Hanzi-Swap para desbloquearla."
+        });
+
+        return list;
+    };
+})();

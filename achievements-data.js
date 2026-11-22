@@ -77,3 +77,67 @@ window.ZidongAchievements = [
         unlocked: (data) => (data.xp || 0) >= 7000
     }
 ];
+
+(() => {
+    "use strict";
+
+    window.getPlantAchievements = function(userData, rankCalcFn) {
+        const ud = userData || {};
+        const completed = Array.isArray(ud.completedActivities) ? ud.completedActivities : [];
+        const worlds = Array.isArray(window.ZIDONG_WORLDS_CONFIG) ? window.ZIDONG_WORLDS_CONFIG : [];
+        const w1Acts = (worlds[0] && Array.isArray(worlds[0].activities)) ? worlds[0].activities : [];
+        const rankLevel = typeof rankCalcFn === "function" ? rankCalcFn(ud.xp || 0).level : (ud.level || 1);
+
+        return [
+            {
+                id: "b_first_step",
+                icon: "🚀",
+                name: "Primeros Pasos",
+                desc: "Completa tu primera lección en cualquier mundo.",
+                isUnlocked: () => completed.length >= 1
+            },
+            {
+                id: "b_volt_master",
+                icon: "⚡",
+                name: "Electricista Oberon",
+                desc: "Domina todas las lecciones del Mundo Eléctrico.",
+                isUnlocked: () => w1Acts.length > 0 && w1Acts.every(a => completed.includes(a.id))
+            },
+            {
+                id: "b_mechanic",
+                icon: "⚙️",
+                name: "Manos a la Máquina",
+                desc: "Supera el checkpoint del Mundo Mecánico.",
+                isUnlocked: () => completed.includes("w2_a4")
+            },
+            {
+                id: "b_ai_slayer",
+                icon: "⚔️",
+                name: "Derrotador de IA",
+                desc: "Vence a la IA en el duelo 1v1 Battle",
+                isUnlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1
+            },
+            {
+                id: "b_survivor",
+                icon: "⚠️",
+                name: "Defensor del Núcleo",
+                desc: "Retira con éxito al menos 5 alarmas en Survivor Mode.",
+                isUnlocked: () => Number(localStorage.getItem("zidong_survivor_cleared") || 0) >= 5
+            },
+            {
+                id: "b_polyglot",
+                icon: "🧠",
+                name: "Soporte Bilingüe",
+                desc: "Alcanza el Nivel 3 de rango o superior.",
+                isUnlocked: () => rankLevel >= 3
+            },
+            {
+                id: "b_swap_combo",
+                icon: "🧩",
+                name: "Pulso de Rejilla x2",
+                desc: "Alcanza al menos un combo x2 o superior en Hanzi-Swap.",
+                isUnlocked: () => Number(localStorage.getItem("zidong_swap_max_combo") || 0) >= 2
+            }
+        ];
+    };
+})();

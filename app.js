@@ -171,7 +171,7 @@
             }
         });
         window.closeEditNameModal();
-        updateProfile();
+        if (typeof window.updateProfile === "function") window.updateProfile();
         if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
         if (typeof triggerHaptic === "function") triggerHaptic("win");
         window.showCyberAlert("SISTEMA ACTUALIZADO", `¡Tu nombre ahora es "${currentUserData.name}"!`, "✏️");
@@ -215,7 +215,7 @@
         currentUserData.xp += 100;
         localStorage.setItem("zidong_last_claim_date", today);
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
-        updateProfile();
+        if (typeof window.updateProfile === "function") window.updateProfile();
         window.toggleDailyRewardModal();
     };
 
@@ -430,7 +430,7 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-        updateProfile();
+        if (typeof window.updateProfile === "function") window.updateProfile();
         setTimeout(() => { if (typeof window.renderCareerPlanetsMenu === "function") window.renderCareerPlanetsMenu(); }, 0);
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
         renderLeaderboard();

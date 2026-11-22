@@ -273,35 +273,28 @@
         <!-- ACADEMY -->
         <section id="academy" class="page">
             <div class="welcome">
-                <span class="eyebrow">MANDARÍN TÉCNICO EN PLANTA</span>
-                <h2>Academy · Chino para Soporte</h2>
+                <span class="eyebrow">GRAMÁTICA CHINA · ESCRITO, LEÍDO Y HABLADO</span>
+                <h2>Academy · Fundamentos y Hanzi</h2>
             </div>
-            
+
             <!-- GUÍA CYBER CAT -->
             <div class="panel" style="background:var(--surface); border:1.5px solid var(--cyan); border-radius:14px; padding:12px; margin-bottom:12px; display:flex; align-items:center; gap:12px;">
                 <img src="cyber_cat.gif" alt="Cyber Cat" style="width:54px; height:54px; border-radius:12px; object-fit:cover; border:1px solid var(--cyan);">
                 <div>
                     <strong style="color:var(--cyan); font-size:12px; display:block;">Neko-Bot 9000 (Guía Academy)</strong>
-                    <p style="font-size:10px; color:#fff; margin-top:2px;">"¡Miaul saludo, ingeniero! Estoy aquí para auditar tus módulos de mandarín. ¡Elige una lección!" 🐾⚡</p>
+                    <p id="academyTrackSubtitle" style="font-size:10px; color:#fff; margin-top:2px;">Estructura de Hanzi, radicales y orden de trazos.</p>
                 </div>
             </div>
 
-            <div class="academy-modules-list" style="display:flex; flex-direction:column; gap:12px;">
-                <div class="panel academy-module-card" onclick="openAcademyLesson(1)" style="background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--cyan); border-radius:14px; padding:16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span class="tag" style="color:var(--cyan); border-color:var(--cyan); font-size:8px;">MÓDULO 01</span>
-                        <h3 style="color:#fff; font-size:13.5px; margin-top:4px;">Saludos y Presentación en Turno</h3>
-                    </div>
-                    <span style="color:var(--cyan); font-size:18px;">→</span>
-                </div>
-                <div class="panel academy-module-card" onclick="openAcademyLesson(2)" style="background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--green); border-radius:14px; padding:16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span class="tag" style="color:var(--green); border-color:var(--green); font-size:8px;">MÓDULO 02</span>
-                        <h3 style="color:#fff; font-size:13.5px; margin-top:4px;">Reporte de Fallas y Emergencias</h3>
-                    </div>
-                    <span style="color:var(--green); font-size:18px;">→</span>
-                </div>
+            <!-- 3 ENFOQUES: ESCRITO, LEÍDO Y HABLADO -->
+            <div id="academyTracksBar" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; width:100%;">
+                <button type="button" class="ac-track-btn active" data-track="written" onclick="window.switchAcademyTrack('written')" style="background:var(--surface-light); border:1.5px solid var(--cyan); border-radius:10px; padding:9px 6px; color:#fff; font-size:10.5px; font-weight:900; cursor:pointer; text-align:center;">✍️ ESCRITO</button>
+                <button type="button" class="ac-track-btn" data-track="reading" onclick="window.switchAcademyTrack('reading')" style="background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:9px 6px; color:var(--muted); font-size:10.5px; font-weight:900; cursor:pointer; text-align:center;">📖 LEÍDO</button>
+                <button type="button" class="ac-track-btn" data-track="spoken" onclick="window.switchAcademyTrack('spoken')" style="background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:9px 6px; color:var(--muted); font-size:10.5px; font-weight:900; cursor:pointer; text-align:center;">🗣️ HABLADO</button>
             </div>
+
+            <div id="academyModulesContainer" class="academy-modules-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <div id="academyLessonDetailContainer"></div>
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 24px;">← REGRESAR AL DASHBOARD</button>
         </section>
 
@@ -541,6 +534,7 @@
     <script src="vs-battle.js?v=63.0"></script>
     <script src="npc-dialogues.js?v=63.0"></script>
     <script src="lab-components.js?v=63.0"></script>
+    <script src="academy-module.js?v=63.0"></script>
     <script src="daily-rewards.js?v=63.0"></script>
     <script src="achievements-data.js?v=63.0"></script>
     <script src="medals-data.js?v=63.0"></script>

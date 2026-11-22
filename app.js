@@ -91,6 +91,7 @@
         }
         return current;
     }
+    window.calculateUserRank = calculateUserRank;
 
     let pendingNameValue = "";
 

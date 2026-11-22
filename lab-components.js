@@ -1,6 +1,6 @@
 /* ==========================================================================
    ZIDONG CORE - LAB COMPONENTS MODULE
-   Catálogo de componentes industriales para la vista Laboratorio (hanziLab).
+   Catálogo de componentes industriales y renderizado/filtrado para hanziLab.
    ========================================================================== */
 
 (() => {
@@ -24,4 +24,82 @@
         }
         return DEFAULT_LAB_COMPONENTS;
     };
+
+    window.renderLabComponents = function(filterCat = "all", searchTerm = "") {
+        const container = document.getElementById("labComponentsContainer");
+        if (!container) return;
+        container.replaceChildren();
+
+        const catalog = window.getLabComponentsCatalog();
+        const q = String(searchTerm || "").toLowerCase();
+        const filtered = catalog.filter(item => {
+            const matchesCat = filterCat === "all" || item.category === filterCat;
+            const matchesSearch =
+                item.name.toLowerCase().includes(q) ||
+                item.hanzi.includes(searchTerm || "") ||
+                item.pinyin.toLowerCase().includes(q) ||
+                (item.desc && item.desc.toLowerCase().includes(q));
+            return matchesCat && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted); font-size:12px;">No se encontraron componentes en el laboratorio.</div>`;
+            return;
+        }
+
+        filtered.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "panel";
+            card.style.background = "var(--surface)";
+            card.style.border = "1px solid var(--border)";
+            card.style.borderRadius = "14px";
+            card.style.padding = "14px";
+            card.style.display = "flex";
+            card.style.alignItems = "center";
+            card.style.gap = "12px";
+
+            card.innerHTML = `
+                <div style="font-size:28px; background:var(--surface-light); width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border);">${item.icon}</div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong style="color:var(--cyan); font-size:13.5px; font-family:'Noto Sans SC';">${item.hanzi}</strong>
+                        <small style="color:var(--muted); font-size:9.5px;">${item.pinyin}</small>
+                    </div>
+                    <h4 style="color:#fff; font-size:12px; margin-top:2px;">${item.name}</h4>
+                    <p style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.3;">${item.desc}</p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    };
+
+    window.filterLabCategory = function(cat, btn) {
+        document.querySelectorAll(".lab-tab-btn").forEach(b => b.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+        const searchVal = document.getElementById("labSearchInput")?.value || "";
+        window.renderLabComponents(cat, searchVal);
+    };
+
+    window.filterLabComponents = function(query) {
+        const activeTab = document.querySelector(".lab-tab-btn.active");
+        let cat = "all";
+        if (activeTab) {
+            const text = activeTab.textContent;
+            if (text.includes("Eléctrico")) cat = "world_1";
+            else if (text.includes("Mecánico")) cat = "world_2";
+            else if (text.includes("Neumático")) cat = "world_3";
+            else if (text.includes("Robótica")) cat = "world_4";
+        }
+        window.renderLabComponents(cat, query);
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof window.renderLabComponents === "function") window.renderLabComponents();
+        });
+    } else {
+        setTimeout(() => {
+            if (typeof window.renderLabComponents === "function") window.renderLabComponents();
+        }, 0);
+    }
 })();

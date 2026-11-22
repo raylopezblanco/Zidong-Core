@@ -14,7 +14,7 @@
             if (window.ZidongAudio && window.ZidongAudio.playError) window.ZidongAudio.playError();
         } else if (type === "win") {
             if (navigator.vibrate) navigator.vibrate([40, 60, 40, 80]);
-            if (window.ZidongAudio && window.ZidongAudio.playWinFanfare) window.ZidongAudio.playWinFanfare();
+            if (window.ZidongAudio && window.ZidongAudio.playVictory) window.ZidongAudio.playVictory();
         }
     }
     window.triggerHaptic = triggerHaptic;
@@ -71,7 +71,7 @@
         phaseStars: {},
         completedReviews: [],
         swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
-        swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0)
+        swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0),
     };
 
     const RANKS_LADDER = [
@@ -274,19 +274,6 @@
         if (countLabel) countLabel.textContent = `${unlockedCount} / ${(window.ZIDONG_WORLDS_CONFIG || []).length + 1} Desbloqueadas`;
     }
 
-    window.toggleProfileMenu = function(contentId, arrowId) {
-        const content = document.getElementById(contentId);
-        const arrow = document.getElementById(arrowId);
-        if (content) {
-            const isHidden = content.style.display === "none" || content.style.display === "";
-            content.style.display = isHidden ? "block" : "none";
-            if (arrow) {
-                arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
-            }
-            if (typeof triggerHaptic === "function") triggerHaptic("success");
-        }
-    };
-
     function renderAchievementsList() {
         const container = document.getElementById("profileAchievementsList");
         const countLabel = document.getElementById("achievementsCountLabel");
@@ -462,8 +449,6 @@
         window.showCyberAlert("SISTEMA ACTUALIZADO", `¡Tu nombre ahora es "${currentUserData.name}"!`, "✏️");
     };
 
-    window.saveNewUserName = window.confirmSaveNewUserName;
-
     window.claimDailyReward = function() {
         if (typeof triggerHaptic === "function") {
             triggerHaptic("success");
@@ -533,27 +518,17 @@
     };
 
     // LAB COMPONENTS DATA & FILTER
-    const FALLBACK_LAB_COMPONENTS = [
-        { id: "c1", category: "world_1", hanzi: "变频器", pinyin: "biàn pín qì", name: "VFD / Inversor de Frecuencia", desc: "Controla velocidad y torque de motores asíncronos.", icon: "⚡" },
-        { id: "c2", category: "world_1", hanzi: "接触器", pinyin: "jiē chù qì", name: "Contactor Eléctrico", desc: "Dispositivo electromecánico para abrir/cerrar potencia.", icon: "🔌" },
-        { id: "c3", category: "world_2", hanzi: "气缸", pinyin: "qì gāng", name: "Cilindro Neumático", desc: "Actuador lineal impulsado por aire comprimido.", icon: "⚙️" },
-        { id: "c4", category: "world_2", hanzi: "传感器", pinyin: "chuán gǎn qì", name: "Sensor Inductivo / Fotoeléctrico", desc: "Detecta presencia de piezas metálicas u ópticas.", icon: "📡" },
-        { id: "c5", category: "world_3", hanzi: "电磁阀", pinyin: "diàn cí fá", name: "Electroválvula SMC", desc: "Gobierna el flujo de aire hacia los actuadores.", icon: "💨" },
-        { id: "c6", category: "world_4", hanzi: "机器人", pinyin: "jī qì rén", name: "Brazo Robot KUKA / Fanuc", desc: "Manipulador articulado para ensamble automático.", icon: "🤖" },
-        { id: "c7", category: "world_5", hanzi: "相机", pinyin: "xiàng jī", name: "Cámara AOI / Visión", desc: "Inspección de soldadura y componentes SMD.", icon: "📷" }
-    ];
-
     function getLabCatalog() {
         try {
             if (typeof window.getLabComponentsCatalog === "function") {
                 const list = window.getLabComponentsCatalog();
-                if (Array.isArray(list) && list.length > 0) return list;
+                if (Array.isArray(list)) return list;
             }
-            if (Array.isArray(window.ZIDONG_LAB_COMPONENTS) && window.ZIDONG_LAB_COMPONENTS.length > 0) {
+            if (Array.isArray(window.ZIDONG_LAB_COMPONENTS)) {
                 return window.ZIDONG_LAB_COMPONENTS;
             }
         } catch (e) {}
-        return FALLBACK_LAB_COMPONENTS;
+        return [];
     }
 
     window.renderLabComponents = function(filterCat = "all", searchTerm = "") {
@@ -691,13 +666,6 @@
     };
 
     // COMPANION SPEECHES
-    const FALLBACK_COMPANION_PHRASES = [
-        "¡Los VFDs Delta MS300 regulan la frecuencia de los motores en la línea de SMT! ⚡",
-        "¿Sabías que 'diàn' (电) significa electricidad y se usa en casi todo término electrónico? 🔋",
-        "El mantenimiento autónomo previene paros imprevistos en las máquinas Ersa Versaflow. ⚙️",
-        "¡Revisa las electroválvulas SMC si notas caída de presión en los pistones neumáticos! 💨"
-    ];
-
     function getCompanionPhrasesList() {
         try {
             if (typeof window.getCompanionPhrases === "function") {
@@ -708,7 +676,7 @@
                 return window.ZIDONG_NPC_DIALOGUES.companion;
             }
         } catch (e) {}
-        return FALLBACK_COMPANION_PHRASES;
+        return ["¡Terminal OBERON en línea! ⚡"];
     }
 
     window.interactWithCompanion = function() {

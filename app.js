@@ -71,8 +71,6 @@
         phaseStars: {},
         completedReviews: [],
         swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
-        swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0),
-        swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
         swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0)
     };
 

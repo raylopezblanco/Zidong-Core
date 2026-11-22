@@ -77,6 +77,19 @@ window.vsRandomItem = function(array) {
     return array[Math.floor(Math.random() * array.length)];
 };
 
+
+window.syncVsLevel3BestScore = function() {
+    if (window.selectedVsDiffKey === "HARD") {
+        const prevBest = Number(localStorage.getItem("zidong_vs_lvl3_max_score") || 0);
+        if (window.myVsPoints > prevBest) {
+            localStorage.setItem("zidong_vs_lvl3_max_score", String(window.myVsPoints));
+        }
+        if (typeof window.renderLeaderboard === "function") {
+            window.renderLeaderboard();
+        }
+    }
+};
+
 window.vsUpdateScores = function() {
     const myScoreEl = document.getElementById("vsMyScore");
     const rivalScoreEl = document.getElementById("vsRivalScore");
@@ -186,6 +199,7 @@ window.start1v1WithDifficulty = function(diffKey) {
     window.vsRoundLocked = false;
 
     window.vsUpdateScores();
+    if (typeof window.syncVsLevel3BestScore === 'function') window.syncVsLevel3BestScore();
 
     const seconds = document.getElementById("vsSeconds");
     if (seconds) seconds.textContent = window.vsTimeLeft;
@@ -459,6 +473,7 @@ window.submitVsAnswer = function(isCorrect, selectedButton = null) {
     }
 
     window.vsUpdateScores();
+    if (typeof window.syncVsLevel3BestScore === 'function') window.syncVsLevel3BestScore();
 
     setTimeout(() => {
         if (!window.vsSessionActive || window.vsTimeLeft <= 0) return;
@@ -487,6 +502,7 @@ window.startVsTimer = function() {
             const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];
             window.rivalVsPoints += Math.round(diff.points * 0.8);
             window.vsUpdateScores();
+    if (typeof window.syncVsLevel3BestScore === 'function') window.syncVsLevel3BestScore();
         }
 
         if (window.vsTimeLeft <= 0) {
@@ -497,6 +513,7 @@ window.startVsTimer = function() {
 
 window.finishVsBattle = function() {
     if (!window.vsSessionActive) return;
+    if (typeof window.syncVsLevel3BestScore === 'function') window.syncVsLevel3BestScore();
     window.stopVsSession();
 
     const diff = window.VS_DIFFICULTIES[window.selectedVsDiffKey];

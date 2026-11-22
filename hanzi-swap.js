@@ -44,6 +44,10 @@
         maxComboAchieved = best;
         localStorage.setItem("zidong_swap_max_combo", String(best));
         localStorage.setItem("zidong_swap_cleared", String(wordsClearedCount));
+        const prevMaxScore = Number(localStorage.getItem("zidong_swap_max_score") || 0);
+        if (swapScore > prevMaxScore) {
+            localStorage.setItem("zidong_swap_max_score", String(swapScore));
+        }
         if (window.currentUserData) {
             window.currentUserData.swapMaxCombo = best;
             window.currentUserData.swapCleared = wordsClearedCount;

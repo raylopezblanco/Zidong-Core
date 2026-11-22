@@ -18,6 +18,7 @@
 
     window.openCriticalMode = function() {
         stopSurvivorSession();
+        syncSurvivorBestAlarms();
         if (typeof window.navigateTo === "function") {
             window.navigateTo("arcade");
         }
@@ -115,8 +116,24 @@
         }
     };
 
+
+    function syncSurvivorBestAlarms() {
+        const prevMax = Number(localStorage.getItem("zidong_survivor_max_alarms") || 0);
+        if (alarmsCleared > prevMax) {
+            localStorage.setItem("zidong_survivor_max_alarms", String(alarmsCleared));
+        }
+        const prevCleared = Number(localStorage.getItem("zidong_survivor_cleared") || 0);
+        if (alarmsCleared > prevCleared) {
+            localStorage.setItem("zidong_survivor_cleared", String(alarmsCleared));
+        }
+        if (typeof window.renderLeaderboard === "function") {
+            window.renderLeaderboard();
+        }
+    }
+
     function triggerCollapse(reason) {
         stopSurvivorSession();
+        syncSurvivorBestAlarms();
         if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
         const arena = document.getElementById("cf-game-arena");
         const collapse = document.getElementById("cf-collapse-screen");
@@ -141,6 +158,7 @@
 
     window.exitCriticalFail = function() {
         stopSurvivorSession();
+        syncSurvivorBestAlarms();
         if (typeof window.setMinigameLock === "function") window.setMinigameLock(false);
         if (typeof window.triggerHaptic === "function") window.triggerHaptic("error");
         if (typeof window.navigateTo === "function") {

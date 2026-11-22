@@ -7,7 +7,8 @@
     "use strict";
 
     function getUser() {
-        return typeof window.getZidongUserData === "function" ? window.getZidongUserData() : null;
+        if (typeof window.getZidongUserData === "function") return window.getZidongUserData();
+        return null;
     }
 
     function getRank(xp) {
@@ -283,4 +284,13 @@
         }
         if (typeof window.triggerHaptic === "function") window.triggerHaptic("success");
     };
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof window.updateProfile === "function") window.updateProfile();
+        });
+    } else {
+        setTimeout(() => {
+            if (typeof window.updateProfile === "function") window.updateProfile();
+        }, 0);
+    }
 })();

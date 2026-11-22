@@ -1,22 +1,117 @@
 /* ==========================================================================
-   ZIDONG CORE - PROFILE UI MODULE
+   ZIDONG CORE - PROFILE UI MODULE (RESILIENT)
    Renderizado de perfil, medallas, logros, progreso de mundos y escalafón.
    ========================================================================== */
 
 (() => {
     "use strict";
 
-    function getUser() {
-        return typeof window.getZidongUserData === "function" ? window.getZidongUserData() : null;
-    }
+    const DEFAULT_RANKS = [
+        { level: 1, name: "Becario de Planta", minXp: 0 },
+        { level: 2, name: "Operador Junior", minXp: 300 },
+        { level: 3, name: "Técnico de Ensamble", minXp: 750 },
+        { level: 4, name: "Técnico Especialista", minXp: 1400 },
+        { level: 5, name: "Ingeniero de Automatización", minXp: 2200 },
+        { level: 6, name: "Líder Técnico CFT", minXp: 3200 }
+    ];
 
-    function getRank(xp) {
-        if (typeof window.calculateUserRank === "function") return window.calculateUserRank(xp);
-        return { level: 1, name: "Becario de Planta", minXp: 0 };
+    const DEFAULT_WORLDS = [
+        { id: "world_1", title: "MUNDO ELÉCTRICO", icon: "⚡", color: "#00f59b", boss: { badgeName: "Maestro VFD Delta" }, activities: [{ id: "w1_a1" }, { id: "w1_a2" }, { id: "w1_a3" }, { id: "w1_a4" }, { id: "w1_a5" }, { id: "w1_a6" }] },
+        { id: "world_2", title: "MUNDO MECÁNICO", icon: "⚙️", color: "#00e5ff", boss: { badgeName: "Especialista Versaflow" }, activities: [{ id: "w2_a1" }, { id: "w2_a2" }, { id: "w2_a3" }, { id: "w2_a4" }] },
+        { id: "world_3", title: "MUNDO NEUMÁTICO", icon: "💨", color: "#ffaa00", boss: { badgeName: "Ingeniero Neumático SMC" }, activities: [{ id: "w3_a1" }, { id: "w3_a2" }, { id: "w3_a3" }, { id: "w3_a4" }] },
+        { id: "world_4", title: "MUNDO ROBÓTICA", icon: "🤖", color: "#ff4444", boss: { badgeName: "Maestro Kuka-Fanuc" }, activities: [{ id: "w4_a1" }, { id: "w4_a2" }, { id: "w4_a3" }, { id: "w4_a4" }] },
+        { id: "world_5", title: "MUNDO CALIDAD", icon: "📊", color: "#a855f7", boss: { badgeName: "Auditor Six Sigma" }, activities: [{ id: "w5_a1" }, { id: "w5_a2" }, { id: "w5_a3" }, { id: "w5_a4" }] }
+    ];
+
+    function getUser() {
+        if (typeof window.getZidongUserData === "function") {
+            const u = window.getZidongUserData();
+            if (u) return u;
+        }
+        return {
+            name: localStorage.getItem("zidong_user_name") || "New user",
+            nameLocked: localStorage.getItem("zidong_name_locked") === "1",
+            xp: 1850,
+            streak: 5,
+            completedActivities: ["w1_a1", "w1_a2", "w1_a3", "w1_a4", "w2_a1", "w2_a2", "w2_a3", "w2_a4"],
+            selectedAvatar: "⚡"
+        };
     }
 
     function getLadder() {
-        return Array.isArray(window.ZIDONG_RANKS_LADDER) ? window.ZIDONG_RANKS_LADDER : [];
+        if (Array.isArray(window.ZIDONG_RANKS_LADDER) && window.ZIDONG_RANKS_LADDER.length > 0) {
+            return window.ZIDONG_RANKS_LADDER;
+        }
+        return DEFAULT_RANKS;
+    }
+
+    function getRank(xp) {
+        if (typeof window.calculateUserRank === "function") {
+            return window.calculateUserRank(xp);
+        }
+        const ladder = getLadder();
+        let current = ladder[0];
+        for (const r of ladder) {
+            if ((xp || 0) >= r.minXp) current = r;
+        }
+        return current;
+    }
+
+    function getWorldsList() {
+        if (Array.isArray(window.ZIDONG_WORLDS_CONFIG) && window.ZIDONG_WORLDS_CONFIG.length > 0) {
+            return window.ZIDONG_WORLDS_CONFIG;
+        }
+        return DEFAULT_WORLDS;
+    }
+
+    function buildMedals(ud) {
+        if (typeof window.getProfileMedals === "function") {
+            const m = window.getProfileMedals(ud);
+            if (Array.isArray(m) && m.length > 0) return m;
+        }
+        const completed = Array.isArray(ud.completedActivities) ? ud.completedActivities : [];
+        const worlds = getWorldsList();
+        const list = worlds.map(w => {
+            const acts = Array.isArray(w.activities) ? w.activities : [];
+            const lastAct = acts.length > 0 ? acts[acts.length - 1] : null;
+            return {
+                id: w.id,
+                icon: w.icon,
+                name: w.boss?.badgeName || w.title,
+                unlocked: lastAct ? completed.includes(lastAct.id) : false,
+                lockedMsg: "Esta medalla aún está bloqueada. ¡Supera el checkpoint del mundo para desbloquearla!"
+            };
+        });
+        const swapUnlocked = Number(localStorage.getItem("zidong_swap_max_combo") || 0) >= 2
+            || Number(localStorage.getItem("zidong_swap_cleared") || 0) >= 3;
+        list.push({
+            id: "medal_swap_architect",
+            icon: "🧩",
+            name: "Arquitecto del Puzzle",
+            unlocked: swapUnlocked,
+            lockedMsg: "Logra un combo x2+ o purga 3 palabras en Hanzi-Swap para desbloquearla."
+        });
+        return list;
+    }
+
+    function buildAchievements(ud) {
+        if (typeof window.getPlantAchievements === "function") {
+            const a = window.getPlantAchievements(ud, getRank);
+            if (Array.isArray(a) && a.length > 0) return a;
+        }
+        const completed = Array.isArray(ud.completedActivities) ? ud.completedActivities : [];
+        const worlds = getWorldsList();
+        const w1Acts = (worlds[0] && Array.isArray(worlds[0].activities)) ? worlds[0].activities : [];
+        const rankLevel = getRank(ud.xp || 0).level;
+        return [
+            { id: "b_first_step", icon: "🚀", name: "Primeros Pasos", desc: "Completa tu primera lección en cualquier mundo.", isUnlocked: () => completed.length >= 1 },
+            { id: "b_volt_master", icon: "⚡", name: "Electricista Oberon", desc: "Domina todas las lecciones del Mundo Eléctrico.", isUnlocked: () => w1Acts.length > 0 && w1Acts.every(a => completed.includes(a.id)) },
+            { id: "b_mechanic", icon: "⚙️", name: "Manos a la Máquina", desc: "Supera el checkpoint del Mundo Mecánico.", isUnlocked: () => completed.includes("w2_a4") },
+            { id: "b_ai_slayer", icon: "⚔️", name: "Derrotador de IA", desc: "Vence a la IA en el duelo 1v1 Battle", isUnlocked: () => Number(localStorage.getItem("zidong_vs_wins") || 0) >= 1 },
+            { id: "b_survivor", icon: "⚠️", name: "Defensor del Núcleo", desc: "Retira con éxito al menos 5 alarmas en Survivor Mode.", isUnlocked: () => Number(localStorage.getItem("zidong_survivor_cleared") || 0) >= 5 },
+            { id: "b_polyglot", icon: "🧠", name: "Soporte Bilingüe", desc: "Alcanza el Nivel 3 de rango o superior.", isUnlocked: () => rankLevel >= 3 },
+            { id: "b_swap_combo", icon: "🧩", name: "Pulso de Rejilla x2", desc: "Alcanza al menos un combo x2 o superior en Hanzi-Swap.", isUnlocked: () => Number(localStorage.getItem("zidong_swap_max_combo") || 0) >= 2 }
+        ];
     }
 
     function renderBadgesGrid() {
@@ -26,7 +121,7 @@
         if (!container || !ud) return;
         container.replaceChildren();
 
-        const medals = typeof window.getProfileMedals === "function" ? window.getProfileMedals(ud) : [];
+        const medals = buildMedals(ud);
         let unlockedCount = 0;
 
         medals.forEach(m => {
@@ -35,9 +130,8 @@
 
             const badgeEl = document.createElement("div");
             badgeEl.className = `profile-badge-item ${m.unlocked ? "unlocked" : "locked"}`;
-            badgeEl.style.background = "var(--surface-light)";
+            badgeEl.style.background = isEquipped ? "rgba(255, 200, 87, 0.15)" : "var(--surface-light)";
             badgeEl.style.border = isEquipped ? "1px solid var(--gold)" : "1px solid var(--border)";
-            if (isEquipped) badgeEl.style.background = "rgba(255, 200, 87, 0.15)";
             badgeEl.style.borderRadius = "10px";
             badgeEl.style.padding = "10px 6px";
             badgeEl.style.textAlign = "center";
@@ -78,13 +172,11 @@
         if (!container || !ud) return;
         container.replaceChildren();
 
-        const achievements = typeof window.getPlantAchievements === "function"
-            ? window.getPlantAchievements(ud, getRank)
-            : [];
-
+        const achievements = buildAchievements(ud);
         let unlockedCount = 0;
+
         achievements.forEach(ach => {
-            const ok = ach.isUnlocked();
+            const ok = Boolean(ach.isUnlocked && ach.isUnlocked());
             if (ok) unlockedCount++;
 
             const item = document.createElement("div");
@@ -117,9 +209,10 @@
         container.replaceChildren();
 
         const completed = Array.isArray(ud.completedActivities) ? ud.completedActivities : [];
-        (window.ZIDONG_WORLDS_CONFIG || []).forEach(w => {
-            const total = w.activities.length;
-            const done = w.activities.filter(a => completed.includes(a.id)).length;
+        getWorldsList().forEach(w => {
+            const acts = Array.isArray(w.activities) ? w.activities : [];
+            const total = acts.length;
+            const done = acts.filter(a => completed.includes(a.id)).length;
             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
             const row = document.createElement("div");

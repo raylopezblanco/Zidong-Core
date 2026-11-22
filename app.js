@@ -73,6 +73,7 @@
         swapMaxCombo: Number(localStorage.getItem("zidong_swap_max_combo") || 0),
         swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0),
     };
+    window.currentUserData = currentUserData;
 
     const RANKS_LADDER = [
         { level: 1, name: "Becario de Planta", minXp: 0 },
@@ -177,74 +178,6 @@
         window.showCyberAlert("SISTEMA ACTUALIZADO", `¡Tu nombre ahora es "${currentUserData.name}"!`, "✏️");
     };
 
-    window.claimDailyReward = function() {
-        if (typeof triggerHaptic === "function") {
-            triggerHaptic("success");
-        }
-        const today = new Date().toISOString().slice(0, 10);
-        const lastClaim = localStorage.getItem("zidong_last_claim_date");
-        const btn = document.getElementById("btnClaimRewardAction");
-        const desc = document.getElementById("rewardModalDesc");
-        
-        if (btn && desc) {
-            if (lastClaim === today) {
-                btn.textContent = "YA RECLAMADO HOY ✓";
-                btn.style.opacity = "0.85";
-                btn.style.pointerEvents = "auto";
-                desc.textContent = "Ya has obtenido tu bono de energía de hoy. ¡Vuelve mañana!";
-            } else {
-                btn.textContent = "RECLAMAR +100 XP ⚡";
-                btn.style.opacity = "1";
-                btn.style.pointerEvents = "auto";
-                desc.textContent = "¡Reclama tu energía diaria de turno y mantén tu racha!";
-            }
-        }
-        window.toggleDailyRewardModal();
-    };
-
-    window.confirmClaimReward = function() {
-        const today = new Date().toISOString().slice(0, 10);
-        const lastClaim = localStorage.getItem("zidong_last_claim_date");
-        if (lastClaim === today) {
-            window.toggleDailyRewardModal();
-            return;
-        }
-        if (typeof triggerHaptic === "function") {
-            triggerHaptic("win");
-        }
-        currentUserData.xp += 100;
-        localStorage.setItem("zidong_last_claim_date", today);
-        if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
-        if (typeof window.updateProfile === "function") window.updateProfile();
-        window.toggleDailyRewardModal();
-    };
-
-    window.toggleDailyRewardModal = function() {
-        const modal = document.getElementById("dailyRewardModal");
-        if (modal) {
-            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-        }
-    };
-
-    window.closeRewardModal = function(e) {
-        if (e.target.id === "dailyRewardModal" || e.target.classList.contains("modal-overlay")) {
-            window.toggleDailyRewardModal();
-        }
-    };
-
-    window.toggleDailyMissionsModal = function() {
-        const modal = document.getElementById("dailyMissionsModal");
-        if (modal) {
-            modal.style.display = modal.style.display === "flex" ? "none" : "flex";
-        }
-    };
-
-    window.closeMissionsModal = function(e) {
-        if (e.target.id === "dailyMissionsModal") {
-            window.toggleDailyMissionsModal();
-        }
-    };
-
     // COMPANION SPEECHES
     function getCompanionPhrasesList() {
         try {
@@ -285,7 +218,7 @@
         if (typeof window.updateProfile === "function") window.updateProfile();
         setTimeout(() => { if (typeof window.renderCareerPlanetsMenu === "function") window.renderCareerPlanetsMenu(); }, 0);
         if (typeof window.refreshDailyRewardFloat === "function") window.refreshDailyRewardFloat();
-        renderLeaderboard();
+        if (typeof window.renderLeaderboard === "function") window.renderLeaderboard();
         if (typeof window.renderLabComponents === "function") {
             window.renderLabComponents();
         }

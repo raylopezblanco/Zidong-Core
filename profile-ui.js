@@ -7,8 +7,7 @@
     "use strict";
 
     function getUser() {
-        if (typeof window.getZidongUserData === "function") return window.getZidongUserData();
-        return null;
+        return typeof window.getZidongUserData === "function" ? window.getZidongUserData() : null;
     }
 
     function getRank(xp) {
@@ -172,6 +171,15 @@
         });
     }
 
+    function renderProfileSections() {
+        renderBadgesGrid();
+        renderAchievementsList();
+        renderWorldsProgressInProfile();
+        renderRanksLadder();
+    }
+
+    window.renderProfileSections = renderProfileSections;
+
     window.updateProfile = function() {
         const ud = getUser();
         if (!ud) return;
@@ -240,10 +248,7 @@
         if (profileStreak) profileStreak.textContent = `${ud.streak || 0} Días`;
         if (profileCompleted) profileCompleted.textContent = (ud.completedActivities || []).length;
 
-        renderBadgesGrid();
-        renderAchievementsList();
-        renderWorldsProgressInProfile();
-        renderRanksLadder();
+        renderProfileSections();
 
         const noticeEl = document.getElementById("nameEditNotice");
         if (noticeEl) {
@@ -284,6 +289,7 @@
         }
         if (typeof window.triggerHaptic === "function") window.triggerHaptic("success");
     };
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
             if (typeof window.updateProfile === "function") window.updateProfile();

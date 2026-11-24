@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zidong-v63';
+const CACHE_NAME = 'zidong-v64';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,10 @@ const STATIC_ASSETS = [
   './npc-dialogues.js',
   './lab-components.js',
   './app.js',
+  './academy-module.js',
+  './academy-curriculum.js',
+  './academy-engine.js',
+  './academy-progress.js',
   './hanzi-swap.js',
   './vs-battle.js',
   './career-mode.js',

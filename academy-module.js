@@ -12,6 +12,10 @@
   const css=`
   #academy .academy-legacy-hidden{display:none!important}
   #academy .academy-redesign{width:100%;color:var(--text)}
+  #oberon-academy-overlay .ac-shifu-mentor{display:flex;align-items:center;gap:10px;margin:10px 0 14px;padding:9px 11px;border:1px solid rgba(39,216,232,.25);border-radius:14px;background:linear-gradient(110deg,rgba(39,216,232,.10),rgba(0,245,155,.07))}
+  #oberon-academy-overlay .ac-shifu-mentor img{width:58px;height:58px;object-fit:contain;border-radius:12px;background:rgba(255,255,255,.06)}
+  #oberon-academy-overlay .ac-shifu-mentor strong{display:block;color:#fff;font-size:12px;margin-bottom:3px}
+  #oberon-academy-overlay .ac-shifu-mentor span{display:block;color:#c6d4e5;font-size:11px;line-height:1.4}
   #academy .ac-hero{position:relative;overflow:hidden;padding:19px 16px;border:1px solid rgba(39,216,232,.38);border-radius:19px;background:radial-gradient(circle at 88% 10%,rgba(39,216,232,.2),transparent 38%),linear-gradient(145deg,#142b45,#0d192b 72%);box-shadow:0 12px 28px #0003}
   #academy .ac-kicker{color:var(--cyan);font-size:9px;font-weight:900;letter-spacing:1.5px}
   #academy .ac-hero h2{margin:8px 0 5px;color:#fff;font-size:23px;line-height:1.12}
@@ -191,7 +195,7 @@
   }
   function renderLesson(l, startAt=0){
     const slides=lessonSlides(l);let current=Math.max(0,Math.min(startAt,slides.length-1));
-    const box=openScreen(`LECCIÓN ${l.id.slice(-2)}`,`<article class="ac-lesson ac-lesson-paged"><div class="ac-lesson-row"><span class="ac-pill">UNIDAD ${l.unitNumber} · LECCIÓN ${l.id.slice(-2)}</span><button class="ac-back" id="acBack">← RUTA</button></div><h2 class="ac-course-title">${esc(l.title)}</h2><p class="ac-course-objective">${esc(l.objective)}</p><div class="ac-slide-progress"><span id="acSlideProgress"></span></div><div class="ac-slide-counter" id="acSlideCounter"></div><section class="ac-slide-content" id="acSlideContent"></section><div class="ac-slide-nav"><button class="ac-secondary" id="acPrev">← ANTERIOR</button><button class="ac-primary" id="acNext">SIGUIENTE →</button></div></article>`);
+    const box=openScreen(`LECCIÓN ${l.id.slice(-2)}`,`<article class="ac-lesson ac-lesson-paged"><div class="ac-lesson-row"><span class="ac-pill">UNIDAD ${l.unitNumber} · LECCIÓN ${l.id.slice(-2)}</span><button class="ac-back" id="acBack">← RUTA</button></div><h2 class="ac-course-title">${esc(l.title)}</h2><p class="ac-course-objective">${esc(l.objective)}</p><div class="ac-shifu-mentor"><img src="Panda%20Shifu.gif" alt="Panda Shifu, mentor de Academy"><div><strong>PANDA SHIFU · MENTOR</strong><span>“La paciencia convierte cada sonido en conocimiento. ¡Vamos paso a paso!”</span></div></div><div class="ac-slide-progress"><span id="acSlideProgress"></span></div><div class="ac-slide-counter" id="acSlideCounter"></div><section class="ac-slide-content" id="acSlideContent"></section><div class="ac-slide-nav"><button class="ac-secondary" id="acPrev">← ANTERIOR</button><button class="ac-primary" id="acNext">SIGUIENTE →</button></div></article>`);
     const show=()=>{
       const s=slides[current];$('#acSlideContent',box).innerHTML=`<div class="ac-slide-kicker">${esc(s.kicker)}</div><h3 class="ac-slide-title">${esc(s.title)}</h3>${s.body}`;
       $('#acSlideCounter',box).textContent=`PANTALLA ${current+1} DE ${slides.length}`;

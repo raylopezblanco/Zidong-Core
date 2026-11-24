@@ -9,11 +9,9 @@
     if(p.status==='mastered')return 'mastered';
     if(p.status==='needs_review')return 'needs_review';
     if(p.status==='in_progress')return 'in_progress';
-    const unit=curriculum().units.find(u=>u.id===l.unitId);
-    const index=unit.lessons.findIndex(x=>x.id===l.id);
-    if(index===0){return l.status==='ready'?'available':'locked';}
-    const prev=unit.lessons[index-1];
-    return prev && progress().lesson(prev.id).status==='mastered' && l.status==='ready' ? 'available' : 'locked';
+    // Modo exploración: todas las lecciones con contenido listo se pueden abrir.
+    // No modifica el progreso ni marca lecciones como dominadas.
+    return l.status==='ready' ? 'available' : 'locked';
   }
   function nextRecommended(){
     for(const u of curriculum().units){

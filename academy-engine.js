@@ -25,11 +25,10 @@
   function evaluate(l,answers){
     let correct=0;const failedTags=[];
     l.practice.exercises.forEach(q=>{if(answers[q.id]===q.answer)correct++;else failedTags.push(q.tag||'fundamentals');});
-    const score=Math.round(correct/l.practice.exercises.length*100),passed=score>=75;
-    const result={score,passed,correct,total:l.practice.exercises.length,failedTags};
-    progress().record(l.id,result);
-    if(passed){const unit=curriculum().units.find(u=>u.id===l.unitId),i=unit.lessons.findIndex(x=>x.id===l.id),next=unit.lessons[i+1];if(next&&next.status==='ready')progress().unlock(next.id);}
-    return result;
+    const score=Math.round(correct/l.practice.exercises.length*100),passed=score>=80;
+    const errorCounts={};failedTags.forEach(tag=>errorCounts[tag]=(errorCounts[tag]||0)+1);
+    progress().recordAttempt(l.id,score,errorCounts);
+    return {score,passed,correct,total:l.practice.exercises.length,failedTags};
   }
   function allMastered(){return allLessons().filter(l=>progress().lesson(l.id).status==='mastered').length;}
   window.OBERON_ACADEMY_ENGINE={allLessons,status,nextRecommended,unitProgress,evaluate,allMastered};

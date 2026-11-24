@@ -61,6 +61,21 @@
   #academy .ac-secondary{border:1px solid var(--border);background:#ffffff08;color:var(--cyan)}
   #academy .ac-result{margin-top:12px;padding:11px;border-radius:10px;background:#00f59b12;color:#b9f7dd;font-size:10px;line-height:1.5}
   #academy .ac-back{border:0;background:none;color:var(--cyan);font-size:9px;font-weight:900}
+  /* Pantallas flotantes independientes para unidad y lección */
+  #oberon-academy-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:0;background:rgba(2,8,18,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:acFadeIn .18s ease both}
+  #oberon-academy-overlay .ac-screen{position:relative;width:100%;height:100%;max-width:900px;overflow:hidden;display:flex;flex-direction:column;background:radial-gradient(circle at 90% 0%,rgba(39,216,232,.12),transparent 34%),linear-gradient(160deg,#10223a,#071321 70%);border:1px solid rgba(39,216,232,.35);box-shadow:0 24px 90px #000b;animation:acScreenIn .24s cubic-bezier(.2,.8,.2,1) both}
+  #oberon-academy-overlay .ac-screen-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(39,216,232,.2);background:#071321eF}
+  #oberon-academy-overlay .ac-screen-head strong{color:#fff;font-size:11px;letter-spacing:1px}
+  #oberon-academy-overlay .ac-screen-close{width:34px;height:34px;border:1px solid #27d8e255;border-radius:10px;background:#27d8e214;color:var(--cyan);font-size:17px;cursor:pointer}
+  #oberon-academy-overlay .ac-screen-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:15px 14px 28px}
+  #oberon-academy-overlay .ac-screen-body>.ac-detail,#oberon-academy-overlay .ac-screen-body>.ac-lesson{max-width:760px;margin:0 auto;padding:0;border:0;background:transparent}
+  #oberon-academy-overlay .ac-screen-body .ac-card{background:rgba(4,15,29,.78)}
+  #oberon-academy-overlay .ac-screen-body .ac-lesson-row{margin-bottom:10px}
+  #oberon-academy-overlay .ac-screen-body .ac-primary{cursor:pointer}
+  @keyframes acFadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes acScreenIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @media(min-width:700px){#oberon-academy-overlay{padding:24px}#oberon-academy-overlay .ac-screen{height:min(92vh,900px);border-radius:22px}#oberon-academy-overlay .ac-screen-body{padding:22px 26px 34px}}
+  @media(max-width:380px){#oberon-academy-overlay .ac-screen-head{padding:11px 12px}#oberon-academy-overlay .ac-screen-body{padding:12px 10px 24px}}
   @media(min-width:420px){#academy .ac-unit-list{display:grid;grid-template-columns:1fr 1fr}#academy .ac-unit{align-items:flex-start;min-height:130px}}
   `;
   function styles(){if($('#academy-redesign-styles'))return;const s=document.createElement('style');s.id='academy-redesign-styles';s.textContent=css;document.head.appendChild(s);}
@@ -84,23 +99,38 @@
       <div class="ac-unit-list">${units.map(u=>{const p=engine().unitProgress(u),open=u.number==='01'||units[Number(u.number)-2]?.lessons.every(l=>progress().lesson(l.id).status==='mastered');return `<button class="ac-unit ${activeLesson?.unitId===u.id?'selected':''}" data-unit="${u.id}" ${open?'':'disabled'}><span class="ac-unit-icon">${u.icon}</span><span class="ac-unit-copy"><span class="ac-unit-top"><span class="ac-unit-num">${u.number}</span><span class="ac-unit-status">${open?'RUTA DISPONIBLE':'🔒 BLOQUEADO'}</span></span><h4>${esc(u.title)}</h4><p>${esc(u.description)}</p><div class="ac-progress"><span style="width:${p.percent}%"></span></div><small class="ac-muted">${p.mastered}/${p.total} dominadas</small></span><span>${open?'›':'🔒'}</span></button>`}).join('')}</div>
       <div id="acContent"></div>`;
     $('#acContinue',root)?.addEventListener('click',()=>{if(next)openLesson(next.id);});
-    root.querySelectorAll('[data-unit]').forEach(b=>b.addEventListener('click',()=>{activeLesson={unitId:b.dataset.unit};render();}));
-    if(activeLesson?.unitId)renderUnit(activeLesson.unitId);
+    root.querySelectorAll('[data-unit]').forEach(b=>b.addEventListener('click',()=>{activeLesson={unitId:b.dataset.unit};renderUnit(b.dataset.unit);}));
+
+  }
+  function openScreen(title, content, onClose){
+    closeScreen(false);
+    const overlay=document.createElement('div');overlay.id='oberon-academy-overlay';
+    overlay.innerHTML=`<section class="ac-screen" role="dialog" aria-modal="true" aria-label="${esc(title)}"><header class="ac-screen-head"><strong>OBERON ACADEMY <span style="color:var(--cyan)">/ ${esc(title)}</span></strong><button class="ac-screen-close" type="button" aria-label="Cerrar">×</button></header><div class="ac-screen-body">${content}</div></section>`;
+    ($('#academy')||document.body).appendChild(overlay);document.body.dataset.academyScroll=document.body.style.overflow||'';document.body.style.overflow='hidden';
+    const close=()=>{closeScreen();if(onClose)onClose();};
+    overlay.querySelector('.ac-screen-close').addEventListener('click',close);
+    overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+    window.__oberonAcademyEscape= e=>{if(e.key==='Escape'){close();}};
+    document.addEventListener('keydown',window.__oberonAcademyEscape);
+    return overlay.querySelector('.ac-screen-body');
+  }
+  function closeScreen(restore=true){
+    const old=$('#oberon-academy-overlay');if(old)old.remove();
+    document.body.style.overflow=document.body.dataset.academyScroll||'';delete document.body.dataset.academyScroll;
+    if(window.__oberonAcademyEscape){document.removeEventListener('keydown',window.__oberonAcademyEscape);delete window.__oberonAcademyEscape;}
   }
   function renderUnit(unitId){
-    const u=curriculum().units.find(x=>x.id===unitId), box=$('#acContent',root);if(!u||!box)return;
-    box.innerHTML=`<section class="ac-detail"><div class="ac-lesson-row"><h3>${u.icon} ${esc(u.title)}</h3><button class="ac-back" id="acCloseUnit">CERRAR ✕</button></div><p class="ac-muted">${esc(u.description)}</p><div class="ac-lesson-list">${u.lessons.map(l=>{const st=engine().status(l),ready=l.status==='ready',enabled=st!=='locked'&&ready;const label=st==='mastered'?'DOMINADA':st==='needs_review'?'REPASO':st==='in_progress'?'EN CURSO':st==='locked'?'BLOQUEADA':ready?'DISPONIBLE':'EN PREPARACIÓN';return `<button class="ac-lesson-item" data-lesson="${l.id}" ${enabled?'':'disabled'}><span>${st==='mastered'?'✓':st==='locked'?'🔒':'◈'}</span><span style="flex:1"><strong>${esc(l.title)}</strong><small>${esc(l.objective)}</small></span><span class="ac-pill">${label}</span></button>`}).join('')}</div><p class="ac-muted" style="margin-top:10px">Las lecciones restantes ya tienen su lugar en la ruta; su contenido se incorporará y verificará antes de habilitarlas.</p></section>`;
-    $('#acCloseUnit',box).addEventListener('click',()=>{activeLesson=null;render();});
-    box.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>openLesson(b.dataset.lesson)));
+    const u=curriculum().units.find(x=>x.id===unitId);if(!u)return;
+    const body=openScreen(`UNIDAD ${u.number}`,`<section class="ac-detail"><div class="ac-lesson-row"><h3>${u.icon} ${esc(u.title)}</h3><span class="ac-pill">RUTA DE APRENDIZAJE</span></div><p class="ac-muted">${esc(u.description)}</p><div class="ac-lesson-list">${u.lessons.map(l=>{const st=engine().status(l),ready=l.status==='ready',enabled=st!=='locked'&&ready;const label=st==='mastered'?'DOMINADA':st==='needs_review'?'REPASO':st==='in_progress'?'EN CURSO':st==='locked'?'BLOQUEADA':ready?'DISPONIBLE':'EN PREPARACIÓN';return `<button class="ac-lesson-item" data-lesson="${l.id}" ${enabled?'':'disabled'}><span>${st==='mastered'?'✓':st==='locked'?'🔒':'◈'}</span><span style="flex:1"><strong>${esc(l.title)}</strong><small>${esc(l.objective)}</small></span><span class="ac-pill">${label}</span></button>`}).join('')}</div><p class="ac-muted" style="margin-top:14px">Las lecciones restantes se habilitarán cuando su contenido educativo esté completo y verificado.</p></section>`);
+    body.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>openLesson(b.dataset.lesson)));
   }
   function openLesson(id){
     const lesson=engine().allLessons().find(l=>l.id===id);if(!lesson||lesson.status!=='ready'||engine().status(lesson)==='locked')return;
     progress().start(id);activeLesson={unitId:lesson.unitId,lessonId:id};renderLesson(lesson);
   }
   function renderLesson(l){
-    const box=$('#acContent',root);if(!box)return;
     const p=l.phases, exercises=l.practice.exercises;
-    box.innerHTML=`<article class="ac-lesson"><div class="ac-lesson-row"><span class="ac-pill">UNIDAD ${l.unitNumber} · LECCIÓN ${l.id.slice(-2)}</span><button class="ac-back" id="acBack">← RUTA</button></div><h3 style="margin-top:9px">${esc(l.title)}</h3><p class="ac-muted">${esc(l.objective)}</p>
+    const box=openScreen(`LECCIÓN ${l.id.slice(-2)}`,`<article class="ac-lesson"><div class="ac-lesson-row"><span class="ac-pill">UNIDAD ${l.unitNumber} · LECCIÓN ${l.id.slice(-2)}</span><button class="ac-back" id="acBack">← RUTA</button></div><h3 style="margin-top:9px">${esc(l.title)}</h3><p class="ac-muted">${esc(l.objective)}</p>
       <div class="ac-card"><h4>01 · ${esc(p.discovery.title)}</h4><p>${esc(p.discovery.text)}</p><p style="margin-top:7px;color:var(--cyan)">${esc(p.discovery.key)}</p></div>
       <div class="ac-card"><h4>02 · ${esc(p.anatomy.title)}</h4>${p.anatomy.items.map(x=>`<p><strong>${esc(x.label)}:</strong> ${esc(x.detail)}</p>`).join('')}</div>
       <div class="ac-card"><h4>🧠 ${esc(p.memory.title)}</h4><p>${esc(p.memory.text)}</p></div>
@@ -108,21 +138,21 @@
       <div class="ac-card"><h4>03 · ${esc(p.pronunciation.title)}</h4>${p.pronunciation.examples.map(x=>`<div class="ac-example"><div><strong>${esc(x.hanzi)}</strong><span>${esc(x.pinyin)} · tono ${x.tone}</span><small class="ac-muted">${esc(x.meaning)}</small></div><button class="ac-audio" data-say="${esc(x.pinyin)}">▶ Escuchar</button></div>`).join('')}<p class="ac-muted">${esc(p.pronunciation.note)}</p></div>
       <div class="ac-card"><h4>04 · Ejemplos</h4>${p.examples.map(x=>`<div class="ac-example"><div><strong>${esc(x.hanzi)}</strong><span>${esc(x.pinyin)}</span><small class="ac-muted">${esc(x.meaning)}</small></div><button class="ac-audio" data-say="${esc(x.pinyin)}">▶ Escuchar</button></div>`).join('')}</div>
       <div class="ac-card"><h4>05 · Mini-práctica</h4><p>${esc(l.practice.instructions)}</p>${exercises.map((q,i)=>`<div class="ac-question" data-q="${q.id}"><p>${i+1}. ${esc(q.question)}</p>${q.options.map((o,j)=>`<button class="ac-option" data-answer="${j}">${esc(o)}</button>`).join('')}</div>`).join('')}<button class="ac-primary" id="acSubmit">COMPROBAR RESPUESTAS</button><div id="acFeedback"></div></div>
-      </article>`;
-    $('#acBack',box).addEventListener('click',()=>{activeLesson={unitId:l.unitId};render();});
+      </article>`);
+    $('#acBack',box).addEventListener('click',()=>{activeLesson={unitId:l.unitId};renderUnit(l.unitId);});
     box.querySelectorAll('[data-say]').forEach(b=>b.addEventListener('click',()=>{if('speechSynthesis'in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(b.dataset.say);u.lang='zh-CN';speechSynthesis.speak(u);}else alert('Este navegador no tiene síntesis de voz disponible.');}));
     box.querySelectorAll('.ac-question').forEach(q=>q.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{q.querySelectorAll('[data-answer]').forEach(x=>x.classList.remove('chosen'));b.classList.add('chosen');q.dataset.selected=b.dataset.answer;})));
     $('#acSubmit',box).addEventListener('click',()=>submit(l));
   }
   function submit(l){
-    const box=$('#acContent',root),answers={};
+    const box=$('#oberon-academy-overlay .ac-screen-body'),answers={};
     l.practice.exercises.forEach(q=>{const selected=$(`[data-q="${q.id}"]`,box)?.dataset.selected;if(selected!==undefined)answers[q.id]=Number(selected);});
     if(Object.keys(answers).length!==l.practice.exercises.length){$('#acFeedback',box).innerHTML='<div class="ac-result">Completa todas las preguntas antes de comprobar tus respuestas.</div>';return;}
     const result=engine().evaluate(l,answers);
     const explanations=l.practice.exercises.map(q=>`<p>${answers[q.id]===q.answer?'✓':'✕'} ${esc(q.explanation)}</p>`).join('');
     $('#acFeedback',box).innerHTML=`<div class="ac-result"><strong>${result.score}% · ${result.passed?'¡Lección dominada!':'Necesitas un pequeño refuerzo.'}</strong>${explanations}<p style="margin-top:8px">${result.passed?'Tu avance quedó guardado. La siguiente lección se habilitará cuando su contenido esté listo.':'Tu progreso no se borra. Puedes volver a intentarlo y reforzar el punto que falló.'}</p><button class="ac-primary" id="acFinish">${result.passed?'VOLVER A LA RUTA':'VOLVER A INTENTAR'}</button></div>`;
     $('#acSubmit',box).disabled=true;
-    $('#acFinish',box).addEventListener('click',()=>{if(result.passed){activeLesson={unitId:l.unitId};render();}else renderLesson(l);});
+    $('#acFinish',box).addEventListener('click',()=>{if(result.passed){activeLesson={unitId:l.unitId};renderUnit(l.unitId);}else renderLesson(l);});
   }
   window.ZIDONG_ACADEMY_TRACKS=window.ZIDONG_ACADEMY_TRACKS||{};
   window.switchAcademyTrack=()=>render();

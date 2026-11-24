@@ -13,7 +13,7 @@
     const index=unit.lessons.findIndex(x=>x.id===l.id);
     if(index===0){return l.status==='ready'?'available':'locked';}
     const prev=unit.lessons[index-1];
-    return progress().lesson(prev.id).status==='mastered'?(l.status==='ready'?'available':'locked'):'locked';
+    return prev && progress().lesson(prev.id).status==='mastered' && l.status==='ready' ? 'available' : 'locked';
   }
   function nextRecommended(){
     for(const u of curriculum().units){

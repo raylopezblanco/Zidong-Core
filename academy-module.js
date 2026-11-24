@@ -121,11 +121,28 @@
   }
   function renderUnit(unitId){
     const u=curriculum().units.find(x=>x.id===unitId);if(!u)return;
-    const body=openScreen(`UNIDAD ${u.number}`,`<section class="ac-detail"><div class="ac-lesson-row"><h3>${u.icon} ${esc(u.title)}</h3><span class="ac-pill">RUTA DE APRENDIZAJE</span></div><p class="ac-muted">${esc(u.description)}</p><div class="ac-lesson-list">${u.lessons.map(l=>{const st=engine().status(l),ready=l.status==='ready',enabled=st!=='locked'&&ready;const label=st==='mastered'?'DOMINADA':st==='needs_review'?'REPASO':st==='in_progress'?'EN CURSO':st==='locked'?'BLOQUEADA':ready?'DISPONIBLE':'EN PREPARACIÓN';return `<button class="ac-lesson-item" data-lesson="${l.id}" ${enabled?'':'disabled'}><span>${st==='mastered'?'✓':st==='locked'?'🔒':'◈'}</span><span style="flex:1"><strong>${esc(l.title)}</strong><small>${esc(l.objective)}</small></span><span class="ac-pill">${label}</span></button>`}).join('')}</div><p class="ac-muted" style="margin-top:14px">Las lecciones restantes se habilitarán cuando su contenido educativo esté completo y verificado.</p></section>`);
-    body.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>openLesson(b.dataset.lesson)));
+    const lessonRows=u.lessons.map((l,index)=>{
+      const st=engine().status(l);
+      // Regla visible y explícita: solo se abre la primera lección o la siguiente
+      // después de dominar la anterior. Las lecciones sin contenido nunca se abren.
+      const previousMastered=index===0||progress().lesson(u.lessons[index-1].id).status==='mastered';
+      const enabled= l.status==='ready' && previousMastered;
+      const label=st==='mastered'?'DOMINADA':st==='needs_review'?'REPASO':st==='in_progress'?'EN CURSO':enabled?'DISPONIBLE':l.status==='ready'?'BLOQUEADA':'EN PREPARACIÓN';
+      const icon=st==='mastered'?'✓':enabled?'▶':'🔒';
+      return `<button type="button" class="ac-lesson-item" data-lesson="${l.id}" ${enabled?'':'disabled'} aria-label="${esc(l.title)} · ${label}"><span>${icon}</span><span style="flex:1"><strong>${esc(l.title)}</strong><small>${esc(l.objective)}</small></span><span class="ac-pill">${label}</span></button>`;
+    }).join('');
+    const first=u.lessons.find((l,i)=>i===0&&l.status==='ready');
+    const body=openScreen(`UNIDAD ${u.number}`,`<section class="ac-detail"><div class="ac-lesson-row"><h3>${u.icon} ${esc(u.title)}</h3><span class="ac-pill">RUTA DE APRENDIZAJE</span></div><p class="ac-muted">${esc(u.description)}</p><div class="ac-lesson-list">${lessonRows}</div>${first&&progress().lesson(first.id).status!=='mastered'?`<button type="button" class="ac-primary" id="acStartFirst">▶ COMENZAR LECCIÓN 01</button>`:''}<p class="ac-muted" style="margin-top:14px">Completa y domina cada lección para desbloquear la siguiente. Las lecciones futuras permanecen bloqueadas hasta que llegue su turno.</p></section>`);
+    body.querySelectorAll('[data-lesson]:not(:disabled)').forEach(b=>b.addEventListener('click',()=>openLesson(b.dataset.lesson)));
+    $('#acStartFirst',body)?.addEventListener('click',()=>openLesson(first.id));
   }
   function openLesson(id){
-    const lesson=engine().allLessons().find(l=>l.id===id);if(!lesson||lesson.status!=='ready'||engine().status(lesson)==='locked')return;
+    const lesson=engine().allLessons().find(l=>l.id===id);if(!lesson||lesson.status!=='ready')return;
+    if(engine().status(lesson)==='locked'){
+      const unit=curriculum().units.find(u=>u.id===lesson.unitId);
+      const index=unit?.lessons.findIndex(x=>x.id===id)??-1;
+      if(index!==0 && (index<0||progress().lesson(unit.lessons[index-1].id).status!=='mastered'))return;
+    }
     progress().start(id);activeLesson={unitId:lesson.unitId,lessonId:id};renderLesson(lesson);
   }
   function renderLesson(l){

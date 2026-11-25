@@ -245,7 +245,7 @@
                 </p>
                 <p id="vsDefeatScores" style="font-size:11px; color:var(--muted); margin-bottom:15px;"></p>
                 
-                <div style="display:flex; flex-direction:column; gap:12px; margin-top:38px; padding:18px 0 28px;">
+                <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px; padding-bottom:20px;">
                     <button class="reveal-button" style="background:var(--cyan); color:#0b1424; padding:14px; font-weight:900;" onclick="window.openVsMode()">VOLVER A CALIBRAR ↺</button>
                 </div>
             </div>
@@ -380,16 +380,11 @@
                 </div>
 
                 <!-- 3. PANTALLA DE COLAPSO -->
-                <div id="cf-collapse-screen" class="cf-view-container" style="display:none; text-align:center; padding:30px 10px 42px;">
+                <div id="cf-collapse-screen" class="cf-view-container" style="display:none; text-align:center; padding:30px 10px;">
                     <h2 style="color:#ff4444; margin-bottom:8px;">💥 COLAPSO DE LÍNEA</h2>
                     <p id="cf-collapse-reason" style="font-size:12px; color:#fff; margin-bottom:12px;"></p>
                     <div style="font-size:20px; font-weight:900; color:var(--green); margin-bottom:16px;" id="cf-collapse-score">+0 XP</div>
-                    <div class="panel" style="max-width:290px; margin:18px auto 0; padding:16px; display:flex; flex-direction:column; align-items:center; gap:9px; background:linear-gradient(145deg, rgba(42,8,12,.96), rgba(17,31,53,.98)); border:1.5px solid rgba(255,204,0,.55); border-radius:16px;">
-                        <img src="Dr.%20Bot.gif" alt="Dr. Bot" style="width:104px; height:104px; object-fit:cover; border-radius:50%; border:3px solid #ffcc00; box-shadow:0 0 18px rgba(255,204,0,.35);">
-                        <strong style="color:#ffcc00; font-size:12px; letter-spacing:.8px;">DR. BOT · REPORTE DE FALLO</strong>
-                        <p id="cf-collapse-doctor-line" style="font-size:12px; line-height:1.5; color:#fff; margin:0;">Un error no define tu nivel, ingeniero. Analiza la alarma y vuelve a intentarlo. 🤖</p>
-                    </div>
-                    <button class="reveal-button" style="display:block; width:100%; max-width:280px; margin:34px auto 0; background:var(--cyan); color:#0b1424; padding:14px; font-weight:900;" onclick="window.startCriticalLevel()">REINTENTAR INTERVENCIÓN ↺</button>
+                    <button class="reveal-button" style="background:var(--cyan); color:#0b1424;" onclick="window.startCriticalLevel()">REINTENTAR INTERVENCIÓN ↺</button>
                 </div>
             </div>
         </section>
@@ -451,8 +446,9 @@
         <!-- RANKS LADDER PAGE -->
         <section id="ranksLadderPage" class="page">
             <div class="welcome">
-                <span class="eyebrow">ESCALAFÓN INDUSTRIAL OBERON</span>
-                <h2>Rutas de Carrera y XP</h2>
+                <span class="eyebrow">CERTIFICACIÓN DE COMPETENCIAS · OBERON</span>
+                <h2>Tu conocimiento te da rango</h2>
+                <p style="color:var(--muted);font-size:11px;line-height:1.5;">El XP refleja tu esfuerzo. El rango se obtiene demostrando lo que sabes: actividades técnicas, Academy, mundos y retos superados.</p>
             </div>
             <div class="ranks-ladder-list" id="ranksLadderContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
             <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top: 20px;">← REGRESAR AL DASHBOARD</button>
@@ -531,13 +527,14 @@
     </script>
     <script src="audio.js?v=63.0"></script>
     <script src="industrial-ranks.js?v=63.0"></script>
-    <script src="critical-fail.js?v=75.0"></script>
+    <script src="oberon-progression.js?v=1.0"></script>
+    <script src="critical-fail.js?v=63.0"></script>
     <script src="navigation.js?v=63.0"></script>
     <script src="worlds-data.js?v=63.0"></script>
     <script src="career-mode.js?v=63.0"></script>
     <script src="hanzi-swap.js?v=63.0"></script>
     <script src="vs-battle.js?v=63.0"></script>
-    <script src="npc-dialogues.js?v=75.0"></script>
+    <script src="npc-dialogues.js?v=64.0"></script>
     <script src="lab-components.js?v=64.0"></script>
     <script src="academy-curriculum.js?v=71.070.0"></script>
     <script src="academy-progress.js?v=71.067.0"></script>
@@ -546,8 +543,8 @@
     <script src="daily-rewards.js?v=63.0"></script>
     <script src="achievements-data.js?v=63.0"></script>
     <script src="medals-data.js?v=63.0"></script>
-    <script src="profile-ui.js?v=63.0"></script>
+    <script src="profile-ui.js?v=64.0"></script>
     <script src="leaderboard-ui.js?v=63.0"></script>
-    <script src="app.js?v=63.0"></script>
+    <script src="app.js?v=64.0"></script>
 </body>
 </html>

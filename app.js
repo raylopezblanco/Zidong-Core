@@ -74,23 +74,17 @@
         swapCleared: Number(localStorage.getItem("zidong_swap_cleared") || 0),
     };
     window.currentUserData = currentUserData;
+    if (window.OBERON_PROGRESSION) window.OBERON_PROGRESSION.hydrate(currentUserData);
+    window.getZidongUserData = () => currentUserData;
 
-    const RANKS_LADDER = [
-        { level: 1, name: "Becario de Planta", minXp: 0 },
-        { level: 2, name: "Operador Junior", minXp: 300 },
-        { level: 3, name: "Técnico de Ensamble", minXp: 750 },
-        { level: 4, name: "Técnico Especialista", minXp: 1400 },
-        { level: 5, name: "Ingeniero de Automatización", minXp: 2200 },
-        { level: 6, name: "Líder Técnico CFT", minXp: 3200 }
-    ];
+    const RANKS_LADDER = window.OBERON_PROGRESSION
+        ? window.OBERON_PROGRESSION.ranks
+        : [{ level: 1, name: "Cadete", minXp: 0 }];
     window.ZIDONG_RANKS_LADDER = RANKS_LADDER;
 
     function calculateUserRank(xp) {
-        let current = RANKS_LADDER[0];
-        for (let r of RANKS_LADDER) {
-            if (xp >= r.minXp) current = r;
-        }
-        return current;
+        if (window.OBERON_PROGRESSION) return window.OBERON_PROGRESSION.getRank({ ...currentUserData, xp: Number(xp) || 0 });
+        return RANKS_LADDER[0];
     }
     window.calculateUserRank = calculateUserRank;
 

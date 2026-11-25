@@ -241,7 +241,11 @@
 
         ladder.forEach(r => {
             const isCurrent = r.level === currentRank.level;
-            const isPassed = (ud.xp || 0) >= r.minXp;
+            const requirements = window.OBERON_PROGRESSION
+                ? window.OBERON_PROGRESSION.getRequirements(ud, r)
+                : [{ label: "XP", have: ud.xp || 0, need: r.minXp, ok: (ud.xp || 0) >= r.minXp }];
+            const isPassed = requirements.every(item => item.ok);
+            const missing = requirements.filter(item => !item.ok);
 
             const card = document.createElement("div");
             card.style.background = isCurrent ? "rgba(0,245,155,0.12)" : "var(--surface)";
@@ -252,13 +256,19 @@
             card.style.justifyContent = "space-between";
             card.style.alignItems = "center";
 
+            const requirementHtml = requirements.map(item => `
+                <div style="display:flex;justify-content:space-between;gap:8px;font-size:9px;color:${item.ok ? 'var(--green)' : 'var(--muted)'};margin-top:4px;">
+                    <span>${item.ok ? '✓' : '○'} ${item.label}</span><strong>${item.have}${item.unit ? ' ' + item.unit : ''} / ${item.need}</strong>
+                </div>`).join("");
             card.innerHTML = `
-                <div>
-                    <span style="font-size:9px; color:${isCurrent ? "var(--green)" : "var(--muted)"}; font-weight:800; display:block;">NIVEL 0${r.level}</span>
+                <div style="flex:1;min-width:0;">
+                    <span style="font-size:9px; color:${isCurrent ? "var(--green)" : "var(--muted)"}; font-weight:800; display:block;">${r.icon || '🛰️'} RANGO 0${r.level}</span>
                     <h4 style="color:#fff; font-size:13px; margin-top:2px;">${r.name}</h4>
-                    <small style="font-size:10px; color:var(--muted);">${r.minXp.toLocaleString()} XP requeridos</small>
+                    <small style="font-size:10px; color:var(--muted);">${r.desc || ''}</small>
+                    <div style="margin-top:7px;padding-top:5px;border-top:1px solid var(--border);">${requirementHtml}</div>
+                    ${isCurrent ? '<small style="display:block;color:var(--green);font-weight:800;margin-top:7px;">RANGO ACTUAL · CERTIFICADO</small>' : ''}
                 </div>
-                <span style="font-size:14px; font-weight:800; color:${isPassed ? "var(--green)" : "var(--muted)"};">${isPassed ? "✓ ALCANZADO" : "🔒 BLOQUEADO"}</span>
+                <span style="font-size:10px;white-space:nowrap;font-weight:800;color:${isPassed ? "var(--green)" : "var(--muted)"};">${isPassed ? "✓ CERTIFICADO" : "🔒 PENDIENTE"}</span>
             `;
             container.appendChild(card);
         });
@@ -276,6 +286,7 @@
     window.updateProfile = function() {
         const ud = getUser();
         if (!ud) return;
+        if (window.OBERON_PROGRESSION) window.OBERON_PROGRESSION.save(ud);
 
         const ladder = getLadder();
         const rank = getRank(ud.xp || 0);
@@ -306,18 +317,20 @@
 
         const nextRank = ladder.find(r => r.level === rank.level + 1);
         let pct = 100;
-        if (nextRank) {
-            const prevXp = rank.minXp;
-            const span = nextRank.minXp - prevXp;
-            const cur = (ud.xp || 0) - prevXp;
-            pct = Math.min(100, Math.max(0, Math.round((cur / span) * 100)));
+        if (nextRank && window.OBERON_PROGRESSION) {
+            const checks = window.OBERON_PROGRESSION.getRequirements(ud, nextRank);
+            const ratios = checks.map(item => item.need > 0 ? Math.min(1, item.have / item.need) : 1);
+            pct = Math.round((ratios.reduce((sum, value) => sum + value, 0) / Math.max(1, ratios.length)) * 100);
+        } else if (nextRank) {
+            const span = nextRank.minXp - rank.minXp;
+            pct = Math.min(100, Math.max(0, Math.round((((ud.xp || 0) - rank.minXp) / Math.max(1, span)) * 100)));
         }
         if (batteryFill) {
             batteryFill.style.width = `${pct}%`;
             batteryFill.style.background = "var(--green, #00f59b)";
             batteryFill.style.height = "100%";
         }
-        if (batteryPct) batteryPct.textContent = `${pct}% carga`;
+        if (batteryPct) batteryPct.textContent = nextRank ? `${pct}% preparación` : "Rango máximo";
 
         const profileName = document.getElementById("profileName");
         const profileAvatar = document.getElementById("profileAvatar");

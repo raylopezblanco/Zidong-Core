@@ -997,3 +997,67 @@ body.in-minigame-lock {
     border: 1.5px solid rgba(255, 68, 68, 0.55);
     color: #ff6b6b;
 }
+
+/* ==========================================================
+   OBERON VISUAL SYSTEM v2 — unified worlds / mobile-first
+   Cosmetic layer only: preserves existing DOM and game logic.
+   ========================================================== */
+:root{
+  --bg:#07111f;--surface:#101e32;--surface-light:#172b45;
+  --border:rgba(104,190,218,.24);--cyan:#65d9ed;--gold:#f4c76a;
+  --green:#65e0b1;--red:#ff737d;--amber:#f4b85f;--purple:#b6a0f5;
+  --text:#edf4fb;--muted:#9aadc2;
+  --panel-glass:rgba(14,29,48,.94);
+  --radius-card:18px;
+}
+html,body{background-color:var(--bg);color:var(--text);font-size:15px;line-height:1.45}
+body{background-image:radial-gradient(ellipse at 50% -15%,rgba(38,103,143,.22),transparent 55%),linear-gradient(180deg,#07111f 0%,#091729 55%,#07111f 100%);background-attachment:scroll}
+button,input,select{font:inherit}
+button{touch-action:manipulation}
+:focus-visible{outline:2px solid var(--cyan)!important;outline-offset:3px}
+.topbar{padding:12px 16px;background:rgba(7,17,31,.94);border-bottom:1px solid rgba(101,217,237,.18);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.brand-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#1c7186,#173e61);box-shadow:inset 0 1px rgba(255,255,255,.18)}
+.brand h1{font-size:14px;letter-spacing:1px}.brand small{font-size:9px;letter-spacing:1.1px;color:var(--cyan)}
+.user-chip,.audio-btn{background:rgba(20,39,62,.9);border-color:var(--border)}
+.app-shell{max-width:560px;padding:14px 15px 30px}
+.welcome{padding:8px 2px 12px}.welcome h2{font-size:clamp(19px,5vw,23px);letter-spacing:-.35px}.welcome p{font-size:12px;line-height:1.5;margin-top:3px}
+.home-energy-battery,.tight-mission,.profile-card,.planet-menu-item,.path-step,.rank-ladder-card,.lb-my-card,.comp-card,.swap-arena-card,.swap-mode-card,.career-zig-card,.career-quote-box,.hmi-alarm-scanner-box,.cf-view-container,.modal-box{
+ background:linear-gradient(150deg,rgba(20,39,62,.98),rgba(11,25,43,.98));border:1px solid rgba(112,183,211,.25);border-radius:var(--radius-card);box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035)
+}
+.home-energy-battery{padding:14px 16px;gap:14px;border-color:rgba(101,224,177,.35)}
+.battery-label,.battery-pct-tag{font-size:11px}.battery-xp-val{font-size:16px}.battery-sub-row small{font-size:10px}
+.home-top-grid,.home-secondary-grid{gap:10px!important;margin:10px 0!important}
+.sub-mode-card{height:auto!important;min-height:88px!important;max-height:none!important;padding:13px!important;border-radius:16px!important;justify-content:center!important;gap:4px;border:1px solid rgba(112,183,211,.24)!important;box-shadow:0 7px 18px rgba(0,0,0,.16)}
+.sub-mode-card h4{font-size:13px!important;white-space:normal!important;line-height:1.25!important}.sub-mode-card p{font-size:10px!important;white-space:normal!important;line-height:1.35!important}
+.sub-card-header{gap:7px;margin-bottom:3px}.sub-card-tag{font-size:9px!important;letter-spacing:.8px}.sub-card-icon{font-size:16px}
+.career-mode{background:linear-gradient(145deg,rgba(20,77,70,.92),rgba(12,39,48,.98))!important;border-color:rgba(101,224,177,.42)!important}
+.arcade-mode{background:linear-gradient(145deg,rgba(83,37,48,.9),rgba(35,19,34,.98))!important;border-color:rgba(255,115,125,.38)!important}
+.daily-card{border-color:rgba(244,199,106,.38)!important}.vs-card{border-color:rgba(182,160,245,.38)!important}
+.companion-stage{padding:10px 0 6px}.dialog-balloon{max-width:390px;min-height:54px;padding:12px 16px;border-radius:16px;background:rgba(18,39,61,.96);border-color:rgba(101,217,237,.45)}.dialog-balloon span{font-size:12px;line-height:1.45}
+.tube-chamber{width:190px;height:190px;border-radius:30px;background:linear-gradient(180deg,rgba(101,217,237,.14),rgba(101,217,237,.025));box-shadow:inset 0 0 26px rgba(101,217,237,.16),0 0 24px rgba(101,217,237,.12)}
+.companion-img{max-width:100%;max-height:100%;object-fit:contain}
+.tight-mission{padding:14px 16px!important;margin-top:12px!important}.mission-header h4{font-size:13px}.mission-reward{font-size:12px}.mission-footer{font-size:10px}
+.build-stamp-bar{font-size:9px;padding:8px 11px;border-radius:10px}
+.bottom-nav{height:70px;padding-bottom:env(safe-area-inset-bottom);background:rgba(7,17,31,.97);border-top:1px solid rgba(101,217,237,.2);box-shadow:0 -8px 24px rgba(0,0,0,.2)}
+.nav-item{font-size:10px;gap:4px;padding:9px 3px}.nav-icon{font-size:21px}.nav-item.active{color:var(--cyan)}
+.profile-card{padding:20px 16px}.profile-stats-grid{gap:8px!important}.p-stat{padding:11px 5px;border-radius:12px;background:rgba(24,45,70,.85)}.p-stat span{font-size:14px}.p-stat small{font-size:8px;line-height:1.25}
+.planets-menu-grid{gap:12px}.planet-menu-item{padding:14px;gap:14px;min-height:82px}.planet-sphere-wrapper{width:56px;height:56px}.planet-sphere{width:50px;height:50px}.planet-menu-meta h4{font-size:14px}.planet-menu-meta p{font-size:10.5px;line-height:1.4}.planet-tag{font-size:9px}.planet-enter-badge{font-size:10px}
+.planet-path-stream{gap:12px}.path-step{padding:14px;gap:14px;border-radius:15px}.path-node{width:44px;height:44px;flex:0 0 44px}.node-meta h4{font-size:13px}.node-meta p,.path-label{font-size:10px;line-height:1.4}
+.back-button,.reveal-button{min-height:44px;padding:12px 14px;border-radius:13px;font-size:13px;letter-spacing:.2px}.back-button{background:rgba(20,39,62,.65);color:#c0cfdd}.reveal-button{background:linear-gradient(135deg,#73e6bd,#55c9d9);color:#071a25;box-shadow:0 6px 16px rgba(101,224,177,.15)}
+.career-choice-btn,.cf-btn-option,.cf-part-btn,.swap-tile-btn,.swap-mini-btn,.lb-tab-btn,.lab-tab-btn,.lab-category-tabs button{border-radius:12px;min-height:44px}
+.career-choice-btn,.cf-btn-option,.cf-part-btn{padding:12px;border:1px solid rgba(112,183,211,.24);background:rgba(20,39,62,.9);color:var(--text);transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.career-choice-btn:active,.cf-btn-option:active,.cf-part-btn:active,.swap-tile-btn:active{transform:scale(.98)}
+.comp-card{padding:14px;border-radius:16px}.comp-header{gap:8px}.comp-hanzi{font-size:clamp(25px,7vw,34px)}.comp-pinyin{font-size:13px;color:var(--cyan)}
+.lab-search-box,.lab-category-tabs,.career-quote-box{border-radius:14px}.lab-search-box{padding:12px;background:rgba(17,34,54,.96);border:1px solid var(--border)}
+.lab-search-box input{font-size:16px;min-height:44px;color:var(--text)}
+.hmi-screen-header{border-radius:14px 14px 0 0}.hmi-tokens-container{gap:8px}.hmi-char-token{border-radius:10px;padding:9px 11px}
+.cf-hud-bar{border-radius:14px;padding:10px}.cf-hud-box{border-radius:12px}.cf-slots-dock{border-radius:14px;padding:10px}.cf-slot{border-radius:10px}
+.swap-arena-card,.swap-mode-card{padding:14px;border-radius:16px}.swap-grid-4x4{gap:7px}.swap-tile-btn{border-radius:11px}
+.rank-ladder-card{padding:14px;border-radius:15px}.rank-info-box,.rank-xp-req{border-radius:12px}
+.badges-grid{gap:10px}.badge-item{border-radius:14px;background:rgba(18,36,58,.92);border:1px solid var(--border);padding:12px}
+.modal-overlay{padding:18px!important}.modal-box{max-width:420px!important;width:min(100%,420px)!important;padding:22px!important;border-radius:20px!important}
+/* Legibility for dense game panels and long labels */
+.page h2,.page h3{line-height:1.25}.page p{line-height:1.5}.page button{font-weight:700}
+@media(min-width:600px){.app-shell{padding-left:22px;padding-right:22px}.home-top-grid,.home-secondary-grid{gap:12px!important}.sub-mode-card{min-height:100px!important;padding:16px!important}.sub-mode-card h4{font-size:14px!important}.sub-mode-card p{font-size:11px!important}}
+@media(max-width:360px){.app-shell{padding-left:11px;padding-right:11px}.sub-mode-card{padding:10px!important;min-height:84px!important}.sub-mode-card h4{font-size:12px!important}.sub-mode-card p{font-size:9px!important}.profile-stats-grid{grid-template-columns:repeat(2,1fr)!important}}
+@media(prefers-reduced-motion:no-preference){.sub-mode-card,.planet-menu-item,.path-step,.career-choice-btn,.cf-btn-option,.comp-card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.sub-mode-card:active,.planet-menu-item:active,.path-step:active{transform:translateY(1px)}}

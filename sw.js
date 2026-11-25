@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zidong-v74';
+const CACHE_NAME = 'zidong-v75';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -19,6 +19,7 @@ const STATIC_ASSETS = [
   './career-mode.js',
   './worlds-data.js',
   './critical-fail.js',
+  './Dr.%20Bot.gif',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'

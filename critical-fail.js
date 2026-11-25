@@ -146,6 +146,12 @@
             if (cCount) cCount.textContent = alarmsCleared;
             if (cReason) cReason.textContent = reason;
             if (cScore) cScore.textContent = "+" + score + " XP";
+            const doctorLine = document.getElementById("cf-collapse-doctor-line");
+            if (doctorLine) {
+                doctorLine.textContent = reason.includes("tiempo")
+                    ? "¡Se agotó el tiempo! Prioriza leer el código HMI y localizar la causa antes de elegir la contramedida. Cada segundo cuenta, ingeniero. ⏱️"
+                    : "¡Contramedida incorrecta! Identifica primero qué indica la alarma y después relaciona el síntoma con el componente. La seguridad va antes que el reset. 🤖";
+            }
         }
     }
 

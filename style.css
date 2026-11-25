@@ -1061,3 +1061,50 @@ button{touch-action:manipulation}
 @media(min-width:600px){.app-shell{padding-left:22px;padding-right:22px}.home-top-grid,.home-secondary-grid{gap:12px!important}.sub-mode-card{min-height:100px!important;padding:16px!important}.sub-mode-card h4{font-size:14px!important}.sub-mode-card p{font-size:11px!important}}
 @media(max-width:360px){.app-shell{padding-left:11px;padding-right:11px}.sub-mode-card{padding:10px!important;min-height:84px!important}.sub-mode-card h4{font-size:12px!important}.sub-mode-card p{font-size:9px!important}.profile-stats-grid{grid-template-columns:repeat(2,1fr)!important}}
 @media(prefers-reduced-motion:no-preference){.sub-mode-card,.planet-menu-item,.path-step,.career-choice-btn,.cf-btn-option,.comp-card{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.sub-mode-card:active,.planet-menu-item:active,.path-step:active{transform:translateY(1px)}}
+
+
+/* OBERON LAB · Hanzi inspection cards */
+#hanziLab .welcome{padding-bottom:10px}
+#hanziLab .welcome .eyebrow{color:var(--cyan);letter-spacing:1.5px}
+#hanziLab .welcome h2{font-size:clamp(20px,5.4vw,25px)}
+#hanziLab .lab-category-tabs{display:flex;gap:7px;overflow-x:auto;padding:3px 1px 9px;margin:5px 0 9px;scrollbar-width:none}
+#hanziLab .lab-category-tabs::-webkit-scrollbar{display:none}
+#hanziLab .lab-tab-btn{flex:0 0 auto;padding:9px 12px;background:rgba(17,34,54,.9);border:1px solid var(--border);color:var(--muted);font-size:10px;white-space:nowrap}
+#hanziLab .lab-tab-btn.active{color:#061722;background:linear-gradient(135deg,#79e5ee,#65e0b1);border-color:transparent;box-shadow:0 5px 16px rgba(101,217,237,.16)}
+#hanziLab .lab-search-box{display:flex;align-items:center;gap:8px;margin-bottom:13px}
+#hanziLab .lab-search-box input{width:100%;background:transparent;border:0;outline:0}
+#hanziLab .components-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.lab-component-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-width:0;min-height:188px;padding:13px 12px 12px;text-align:left;color:var(--text);background:linear-gradient(155deg,rgba(24,48,73,.98),rgba(10,25,43,.98));border:1px solid rgba(101,217,237,.23);border-radius:17px;overflow:hidden;box-shadow:0 9px 22px rgba(0,0,0,.17);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.lab-component-card:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.65}
+.lab-component-card:active{transform:scale(.975);border-color:var(--cyan);box-shadow:0 0 20px rgba(101,217,237,.13)}
+.lab-card-index{position:absolute;top:11px;right:11px;font-size:8px;letter-spacing:1px;color:rgba(154,173,194,.65)}
+.lab-card-icon{display:grid;place-items:center;width:36px;height:36px;margin-bottom:8px;border-radius:11px;background:rgba(101,217,237,.09);border:1px solid rgba(101,217,237,.16);font-size:19px}
+.lab-card-hanzi{font-family:'Noto Sans SC',sans-serif;font-size:clamp(27px,8vw,35px);font-weight:800;line-height:1.12;color:#8ce9f2;text-shadow:0 0 17px rgba(101,217,237,.2)}
+.lab-card-pinyin{margin-top:4px;color:var(--gold);font-size:10px;letter-spacing:.25px}
+.lab-card-name{margin-top:8px;font-size:11px;font-weight:800;line-height:1.3;color:#f1f6fb}
+.lab-card-open{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:auto;padding-top:11px;color:#8ba8bd;font-size:8px;font-weight:900;letter-spacing:1px}
+.lab-card-open b{color:var(--cyan);font-size:14px}
+.lab-empty-state{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:30px 15px;border:1px dashed var(--border);border-radius:16px;color:var(--muted);text-align:center}
+.lab-empty-state span{font-size:28px;color:var(--cyan)}.lab-empty-state strong{font-size:13px;color:var(--text)}.lab-empty-state small{font-size:10px}
+.lab-detail-overlay{position:fixed;z-index:3000;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(2,8,16,.78);backdrop-filter:blur(9px);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s ease}
+.lab-detail-overlay.is-open{opacity:1;visibility:visible}
+.lab-detail-card{position:relative;width:min(100%,430px);max-height:min(86dvh,720px);overflow:auto;padding:20px 19px 16px;border:1px solid rgba(101,217,237,.42);border-radius:23px;background:radial-gradient(ellipse at 50% 0%,rgba(45,126,153,.2),transparent 45%),linear-gradient(155deg,#142b43,#091827 72%);box-shadow:0 25px 80px rgba(0,0,0,.55),0 0 35px rgba(101,217,237,.12);transform:translateY(18px) scale(.97);transition:transform .22s ease}
+.lab-detail-overlay.is-open .lab-detail-card{transform:translateY(0) scale(1)}
+.lab-detail-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border:1px solid var(--border);border-radius:11px;background:rgba(8,20,34,.8);color:var(--text);font-size:15px}
+.lab-detail-topline{display:flex;justify-content:space-between;gap:8px;padding-right:42px;color:#8aa9be;font-size:8px;font-weight:900;letter-spacing:1.25px}
+.lab-detail-status{color:var(--green);white-space:nowrap}.lab-detail-status i{display:inline-block;width:6px;height:6px;margin-right:4px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.lab-detail-hero{display:flex;align-items:center;gap:17px;margin:25px 0 17px;padding:18px;border:1px solid rgba(101,217,237,.2);border-radius:17px;background:linear-gradient(120deg,rgba(101,217,237,.1),rgba(101,217,237,.025))}
+.lab-detail-icon{display:grid;place-items:center;flex:0 0 62px;width:62px;height:62px;border-radius:17px;background:rgba(101,217,237,.1);border:1px solid rgba(101,217,237,.24);font-size:30px}
+.lab-detail-hanzi{font-family:'Noto Sans SC',sans-serif;font-size:clamp(42px,12vw,56px);font-weight:900;line-height:1;color:#9af0f4;text-shadow:0 0 22px rgba(101,217,237,.28)}
+.lab-detail-pinyin{margin-top:7px;color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.3px}
+.lab-detail-category{color:var(--cyan);font-size:9px;font-weight:900;letter-spacing:1.3px}
+.lab-detail-card h3{margin:6px 0 8px;color:#f4f8fc;font-size:19px;line-height:1.25}
+.lab-detail-description{color:#b3c4d4;font-size:12px;line-height:1.6}
+.lab-detail-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0}
+.lab-detail-info{display:flex;flex-direction:column;gap:5px;padding:11px;border:1px solid rgba(112,183,211,.18);border-radius:12px;background:rgba(8,22,37,.6)}
+.lab-detail-info span{color:#819bb0;font-size:8px;font-weight:900;letter-spacing:1px}.lab-detail-info strong{color:#eaf5fb;font-size:10px;line-height:1.35}
+.lab-detail-audio{width:100%;min-height:47px;border:1px solid rgba(101,217,237,.4);border-radius:13px;background:linear-gradient(110deg,rgba(101,217,237,.17),rgba(101,224,177,.1));color:#bdf5f3;font-size:10px;font-weight:900;letter-spacing:.8px}
+.lab-detail-footnote{margin-top:15px;text-align:center;color:#607b91;font-size:7px;letter-spacing:1.2px}
+body.lab-detail-open{overflow:hidden}
+@media(max-width:350px){#hanziLab .components-grid{gap:8px}.lab-component-card{padding:11px 10px;min-height:178px}.lab-detail-card{padding:17px 14px}}
+@media(prefers-reduced-motion:reduce){.lab-component-card,.lab-detail-overlay,.lab-detail-card{transition:none}}

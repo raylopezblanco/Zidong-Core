@@ -25,6 +25,95 @@
         return DEFAULT_LAB_COMPONENTS;
     };
 
+    const LAB_CATEGORY_NAMES = {
+        world_1: "SISTEMAS ELÉCTRICOS",
+        world_2: "MECÁNICA Y ACTUADORES",
+        world_3: "NEUMÁTICA Y CONTROL",
+        world_4: "ROBÓTICA Y AUTOMATIZACIÓN",
+        world_5: "VISIÓN ARTIFICIAL"
+    };
+
+    function escapeHTML(value = "") {
+        return String(value).replace(/[&<>"']/g, char => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[char]));
+    }
+
+    function ensureLabDetailModal() {
+        let modal = document.getElementById("labDetailModal");
+        if (modal) return modal;
+        modal = document.createElement("div");
+        modal.id = "labDetailModal";
+        modal.className = "lab-detail-overlay";
+        modal.setAttribute("aria-hidden", "true");
+        modal.innerHTML = `
+            <section class="lab-detail-card" role="dialog" aria-modal="true" aria-labelledby="labDetailName">
+                <button class="lab-detail-close" type="button" aria-label="Cerrar ficha">✕</button>
+                <div class="lab-detail-topline"><span>OBERON LABORATORY</span><span class="lab-detail-status"><i></i> REGISTRO ACTIVO</span></div>
+                <div class="lab-detail-hero">
+                    <div class="lab-detail-icon" id="labDetailIcon"></div>
+                    <div class="lab-detail-hanzi-wrap"><div class="lab-detail-hanzi" id="labDetailHanzi"></div><div class="lab-detail-pinyin" id="labDetailPinyin"></div></div>
+                </div>
+                <div class="lab-detail-category" id="labDetailCategory"></div>
+                <h3 id="labDetailName"></h3>
+                <p class="lab-detail-description" id="labDetailDescription"></p>
+                <div class="lab-detail-info-grid">
+                    <div class="lab-detail-info"><span>CARÁCTER</span><strong id="labDetailCharacterCount"></strong></div>
+                    <div class="lab-detail-info"><span>ÁREA TÉCNICA</span><strong id="labDetailArea"></strong></div>
+                </div>
+                <button class="lab-detail-audio" id="labDetailAudio" type="button">🔊 ESCUCHAR PRONUNCIACIÓN</button>
+                <div class="lab-detail-footnote">BASE DE DATOS TÉCNICA · ZÌDÒNG CORE</div>
+            </section>`;
+        document.body.appendChild(modal);
+        modal.addEventListener("click", event => {
+            if (event.target === modal || event.target.closest(".lab-detail-close")) window.closeLabDetail();
+        });
+        modal.querySelector("#labDetailAudio").addEventListener("click", () => {
+            const pinyin = modal.dataset.pinyin || "";
+            if (!pinyin || !("speechSynthesis" in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(modal.dataset.hanzi || "");
+            utterance.lang = "zh-CN";
+            utterance.rate = 0.78;
+            window.speechSynthesis.speak(utterance);
+        });
+        return modal;
+    }
+
+    window.openLabDetail = function(id) {
+        const item = window.getLabComponentsCatalog().find(entry => entry.id === id);
+        if (!item) return;
+        const modal = ensureLabDetailModal();
+        const area = LAB_CATEGORY_NAMES[item.category] || "REPOSITORIO INDUSTRIAL";
+        modal.dataset.pinyin = item.pinyin || "";
+        modal.dataset.hanzi = item.hanzi || "";
+        modal.querySelector("#labDetailIcon").textContent = item.icon || "🔧";
+        modal.querySelector("#labDetailHanzi").textContent = item.hanzi || "";
+        modal.querySelector("#labDetailPinyin").textContent = item.pinyin || "";
+        modal.querySelector("#labDetailCategory").textContent = area;
+        modal.querySelector("#labDetailName").textContent = item.name || "Componente";
+        modal.querySelector("#labDetailDescription").textContent = item.desc || "Sin descripción disponible.";
+        modal.querySelector("#labDetailCharacterCount").textContent = `${Array.from(item.hanzi || "").length} ${Array.from(item.hanzi || "").length === 1 ? "Hanzi" : "Hanzi"}`;
+        modal.querySelector("#labDetailArea").textContent = area;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("lab-detail-open");
+        modal.querySelector(".lab-detail-close").focus();
+    };
+
+    window.closeLabDetail = function() {
+        const modal = document.getElementById("labDetailModal");
+        if (!modal) return;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("lab-detail-open");
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+    };
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") window.closeLabDetail();
+    });
+
     window.renderLabComponents = function(filterCat = "all", searchTerm = "") {
         const container = document.getElementById("labComponentsContainer");
         if (!container) return;
@@ -43,32 +132,23 @@
         });
 
         if (filtered.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted); font-size:12px;">No se encontraron componentes en el laboratorio.</div>`;
+            container.innerHTML = `<div class="lab-empty-state"><span>⌕</span><strong>Sin resultados</strong><small>No encontramos componentes con ese criterio.</small></div>`;
             return;
         }
 
         filtered.forEach(item => {
-            const card = document.createElement("div");
-            card.className = "panel";
-            card.style.background = "var(--surface)";
-            card.style.border = "1px solid var(--border)";
-            card.style.borderRadius = "14px";
-            card.style.padding = "14px";
-            card.style.display = "flex";
-            card.style.alignItems = "center";
-            card.style.gap = "12px";
-
+            const card = document.createElement("button");
+            card.type = "button";
+            card.className = "lab-component-card";
+            card.setAttribute("aria-label", `Abrir ficha de ${item.name}`);
             card.innerHTML = `
-                <div style="font-size:28px; background:var(--surface-light); width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border);">${item.icon}</div>
-                <div style="flex:1;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <strong style="color:var(--cyan); font-size:13.5px; font-family:'Noto Sans SC';">${item.hanzi}</strong>
-                        <small style="color:var(--muted); font-size:9.5px;">${item.pinyin}</small>
-                    </div>
-                    <h4 style="color:#fff; font-size:12px; margin-top:2px;">${item.name}</h4>
-                    <p style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.3;">${item.desc}</p>
-                </div>
-            `;
+                <span class="lab-card-index">${escapeHTML(item.id.toUpperCase())}</span>
+                <span class="lab-card-icon">${escapeHTML(item.icon || "🔧")}</span>
+                <span class="lab-card-hanzi">${escapeHTML(item.hanzi)}</span>
+                <span class="lab-card-pinyin">${escapeHTML(item.pinyin)}</span>
+                <span class="lab-card-name">${escapeHTML(item.name)}</span>
+                <span class="lab-card-open">INSPECCIONAR <b>↗</b></span>`;
+            card.addEventListener("click", () => window.openLabDetail(item.id));
             container.appendChild(card);
         });
     };

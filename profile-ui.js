@@ -296,7 +296,7 @@
                 const acts = Array.isArray(w.activities) ? w.activities : [];
                 const done = acts.filter(a => (ud.completedActivities || []).includes(a.id)).length;
                 const percent = acts.length ? Math.round(done / acts.length * 100) : 0;
-                const card = document.createElement('div'); card.className = 'profile-specialty-card';
+                const card = document.createElement('div'); card.className = 'profile-specialty-card'; card.style.cssText = 'min-width:0;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-light);';
                 card.innerHTML = `<div class="profile-specialty-top"><span>${w.icon || '🌐'} ${w.title || w.name || 'Especialidad'}</span><b>${percent}%</b></div><div class="profile-mini-track"><i style="width:${percent}%;background:${w.color || 'var(--cyan)'}"></i></div><small>${done} de ${acts.length} actividades</small>`;
                 specialties.appendChild(card);
             });
@@ -311,12 +311,12 @@
             certRanks.filter(r => r.level > 1).forEach(r => {
                 const rec = records[String(r.level)]; if (!rec || rec.passed !== true) return;
                 count++;
-                const row = document.createElement('div'); row.className = 'profile-record-row';
+                const row = document.createElement('div'); row.className = 'profile-record-row'; row.style.cssText = 'display:flex;align-items:center;gap:9px;padding:9px;border:1px solid var(--border);border-radius:10px;background:var(--surface-light);';
                 const date = rec.date ? new Date(rec.date).toLocaleDateString('es-MX') : 'Fecha no disponible';
                 row.innerHTML = `<span class="profile-record-icon">${r.icon || '🏅'}</span><div><b>${r.name}</b><small>Certificación aprobada · ${date}</small></div><strong>${rec.score ?? '—'}%</strong>`;
                 certList.appendChild(row);
             });
-            if (!count) certList.innerHTML = '<div class="profile-empty-state">Aún no hay certificaciones obtenidas. Tu primer ascenso certificado aparecerá aquí.</div>';
+            if (!count) certList.innerHTML = '<div style="padding:10px;border:1px dashed var(--border);border-radius:10px;color:var(--muted);font-size:10px;line-height:1.5;text-align:center;">Aún no hay certificaciones obtenidas. Tu primer ascenso certificado aparecerá aquí.</div>'; 
             set('profileRankPos', String(count));
         }
 
@@ -328,8 +328,8 @@
             const claimed = all.filter(m => m.claimed);
             set('profileMissionsClaimed', String(claimed.length));
             set('profileMissionXp', `${claimed.reduce((sum,m) => sum + (Number(m.xp)||0),0)} XP`);
-            if (!claimed.length) missionList.innerHTML = '<div class="profile-empty-state">Todavía no has reclamado misiones en este ciclo. ¡Tus próximas operaciones aparecerán aquí!</div>';
-            else claimed.slice(0,4).forEach(m => { const row=document.createElement('div'); row.className='profile-record-row'; row.innerHTML=`<span class="profile-record-icon">${m.icon || '🎯'}</span><div><b>${m.title}</b><small>Misión recompensada</small></div><strong>+${m.xp} XP</strong>`; missionList.appendChild(row); });
+            if (!claimed.length) missionList.innerHTML = '<div style="padding:10px;border:1px dashed var(--border);border-radius:10px;color:var(--muted);font-size:10px;line-height:1.5;text-align:center;">Todavía no has reclamado misiones en este ciclo. ¡Tus próximas operaciones aparecerán aquí!</div>'; 
+            else claimed.slice(0,4).forEach(m => { const row=document.createElement('div'); row.className='profile-record-row'; row.style.cssText='display:flex;align-items:center;gap:9px;padding:9px;border:1px solid var(--border);border-radius:10px;background:var(--surface-light);'; row.innerHTML=`<span class="profile-record-icon">${m.icon || '🎯'}</span><div><b>${m.title}</b><small>Misión recompensada</small></div><strong>+${m.xp} XP</strong>`; missionList.appendChild(row); });
         }
     }
 

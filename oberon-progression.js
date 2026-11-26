@@ -44,9 +44,20 @@
     ];
   }
   function isQualified(user, rank) { return getRequirements(user, rank).every(r => r.ok); }
-  function getRank(user) {
+  function isCertified(level) {
+    try { return level === 1 || window.OBERON_CERTIFICATION_ENGINE?.isCertified?.(level) === true; }
+    catch (_) { return level === 1; }
+  }
+  function getEligibleRank(user) {
     let current = ranks[0];
     for (const rank of ranks) if (isQualified(user, rank)) current = rank;
+    return current;
+  }
+  function getRank(user) {
+    let current = ranks[0];
+    for (const rank of ranks) {
+      if (isQualified(user, rank) && isCertified(rank.level)) current = rank;
+    }
     return current;
   }
   function getNextRank(user) {
@@ -70,5 +81,5 @@
       }));
     } catch (_) {}
   }
-  window.OBERON_PROGRESSION = { ranks, getEvidence, getRequirements, getRank, getNextRank, hydrate, save };
+  window.OBERON_PROGRESSION = { ranks, getEvidence, getRequirements, isQualified, isCertified, getEligibleRank, getRank, getNextRank, hydrate, save };
 })();

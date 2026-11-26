@@ -293,11 +293,10 @@
         if (specialties) {
             specialties.replaceChildren();
             getWorldsList().forEach(w => {
-                const acts = Array.isArray(w.activities) ? w.activities : [];
-                const done = acts.filter(a => (ud.completedActivities || []).includes(a.id)).length;
-                const percent = acts.length ? Math.round(done / acts.length * 100) : 0;
-                const card = document.createElement('div'); card.className = 'profile-specialty-card'; card.style.cssText = 'min-width:0;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-light);';
-                card.innerHTML = `<div class="profile-specialty-top"><span>${w.icon || '🌐'} ${w.title || w.name || 'Especialidad'}</span><b>${percent}%</b></div><div class="profile-mini-track"><i style="width:${percent}%;background:${w.color || 'var(--cyan)'}"></i></div><small>${done} de ${acts.length} actividades</small>`;
+                const card = document.createElement('div');
+                card.className = 'profile-specialty-card pending';
+                const title = w.title || w.name || 'Especialidad';
+                card.innerHTML = `<div class="profile-specialty-top"><span>${w.icon || '🌐'} ${title}</span><b>EN EVALUACIÓN</b></div><div class="profile-mini-track"><i style="width:0%"></i></div><small>Dominio pendiente de una evaluación específica. El avance del mundo se consulta en la sección Mundos.</small>`;
                 specialties.appendChild(card);
             });
         }
@@ -332,6 +331,18 @@
             else claimed.slice(0,4).forEach(m => { const row=document.createElement('div'); row.className='profile-record-row'; row.style.cssText='display:flex;align-items:center;gap:9px;padding:9px;border:1px solid var(--border);border-radius:10px;background:var(--surface-light);'; row.innerHTML=`<span class="profile-record-icon">${m.icon || '🎯'}</span><div><b>${m.title}</b><small>Misión recompensada</small></div><strong>+${m.xp} XP</strong>`; missionList.appendChild(row); });
         }
     }
+
+    window.switchProfileSection = function(section) {
+        document.querySelectorAll('[data-profile-section]').forEach(panel => {
+            panel.hidden = panel.getAttribute('data-profile-section') !== section;
+        });
+        document.querySelectorAll('[data-profile-tab]').forEach(button => {
+            const active = button.getAttribute('data-profile-tab') === section;
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        if (typeof window.triggerHaptic === 'function') window.triggerHaptic('light');
+    };
 
     function renderProfileSections() {
         renderBadgesGrid();

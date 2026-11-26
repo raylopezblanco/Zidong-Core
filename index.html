@@ -389,16 +389,12 @@
             </div>
         </section>
 
-        <!-- PROFILE -->
-        <section id="profile" class="page">
-            <div class="welcome">
-                <span class="eyebrow">TECHNICAL PROFILE</span>
-                <h2>Perfil de Especialista</h2>
-            </div>
-            <article class="profile-card">
-                <div class="avatar-large" id="profileAvatar">NU</div>
-                <h3 id="profileName">New user</h3>
-                <span id="profileRankBadge" class="tag" style="border-color:#00f59b; color:#00f59b; margin-top:6px;">⚡ Técnico Jr</span>
+        <!-- PROFILE OBERON v3 -->
+        <section id="profile" class="page profile-v3">
+            <div class="profile-heading"><span class="eyebrow">OBERON PERSONNEL FILE</span><h2>Ficha del tripulante</h2><p>Tu trayectoria dentro del sistema OBERON</p></div>
+            <article class="profile-hero">
+                <div class="profile-hero-orbit"><div class="avatar-large" id="profileAvatar">NU</div></div>
+                <div class="profile-identity"><span class="profile-kicker">IDENTIDAD REGISTRADA</span><h3 id="profileName">New user</h3><span id="profileRankBadge" class="tag">⚡ Cadete</span></div>
                 <div class="profile-stats-grid">
                     <div class="p-stat"><span id="profileLevel">01</span><small>RANGO</small></div>
                     <div class="p-stat"><span id="profileStreak">0 Días</span><small>RACHA</small></div>
@@ -406,69 +402,35 @@
                     <div class="p-stat"><span id="profileRankPos">0</span><small>CERTIFICACIONES</small></div>
                 </div>
             </article>
-
-            <!-- PROGRESO DE RANGO: conserva tarjetas y colores originales -->
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px;">
-                    <h3 style="font-size:12px;color:var(--cyan);">⚡ PROGRESO DE RANGO</h3>
-                    <strong id="profileXpValue" style="font-size:11px;color:var(--gold);">0 XP</strong>
-                </div>
-                <div style="font-size:10px;color:var(--muted);margin-bottom:7px;" id="profileNextRankLabel">Siguiente rango: —</div>
-                <div style="height:8px;background:var(--surface-light);border-radius:20px;overflow:hidden;"><div id="profileRankProgressFill" style="height:100%;width:0%;background:var(--green);border-radius:20px;"></div></div>
-                <div style="display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:9px;color:var(--muted);"><span id="profileRankProgressText">0% de preparación</span><span id="profileXpRemaining">—</span></div>
+            <div class="profile-panel profile-rank-panel">
+                <div class="profile-panel-title"><h3>⚡ PROGRESO DE RANGO</h3><strong id="profileXpValue">0 XP</strong></div>
+                <div id="profileNextRankLabel" class="profile-muted">Siguiente rango: —</div>
+                <div class="profile-track"><div id="profileRankProgressFill"></div></div>
+                <div class="profile-progress-foot"><span id="profileRankProgressText">0% de preparación</span><span id="profileXpRemaining">—</span></div>
             </div>
-
-            <!-- DOMINIO POR ESPECIALIDAD -->
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
-                <h3 style="font-size:12px;color:var(--cyan);margin-bottom:9px;">🧠 DOMINIO POR ESPECIALIDAD</h3>
-                <div id="profileSpecialtiesList" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;"></div>
+            <nav class="profile-nav" aria-label="Secciones del perfil">
+                <button class="active" data-profile-tab="competencies" onclick="window.switchProfileSection('competencies')">🧠 Competencias</button>
+                <button data-profile-tab="worlds" onclick="window.switchProfileSection('worlds')">🪐 Mundos</button>
+                <button data-profile-tab="awards" onclick="window.switchProfileSection('awards')">🏆 Reconocimientos</button>
+                <button data-profile-tab="history" onclick="window.switchProfileSection('history')">📜 Historial</button>
+            </nav>
+            <div class="profile-section" data-profile-section="competencies">
+                <div class="profile-panel"><h3>🧠 DOMINIO POR ESPECIALIDAD</h3><p class="profile-muted">El dominio se obtiene demostrando conocimientos, no solo completando actividades.</p><div id="profileSpecialtiesList" class="profile-specialties"></div></div>
+                <div class="profile-panel"><h3>🎖️ CERTIFICACIONES OBTENIDAS</h3><div id="profileCertificationsList" class="profile-record-list"></div></div>
             </div>
-
-            <!-- CERTIFICACIONES -->
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
-                <h3 style="font-size:12px;color:var(--gold);margin-bottom:9px;">🏅 CERTIFICACIONES OBTENIDAS</h3>
-                <div id="profileCertificationsList" style="display:flex;flex-direction:column;gap:7px;"></div>
+            <div class="profile-section" data-profile-section="worlds" hidden>
+                <div class="profile-panel"><h3>🪐 EXPLORACIÓN DEL SISTEMA</h3><p class="profile-muted">Avance basado en actividades completadas de cada mundo.</p><div id="profileWorldsProgressList" class="profile-world-list"></div></div>
             </div>
-
-            <!-- MISIONES -->
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px;">
-                    <h3 style="font-size:12px;color:var(--cyan);">🎯 MISIONES RECOMPENSADAS</h3>
-                    <strong id="profileMissionsClaimed" style="font-size:11px;color:var(--green);">0</strong>
-                </div>
-                <div style="font-size:10px;color:var(--gold);margin-bottom:8px;" id="profileMissionXp">0 XP</div>
-                <div id="profileMissionRecent" style="display:flex;flex-direction:column;gap:7px;"></div>
+            <div class="profile-section" data-profile-section="awards" hidden>
+                <div class="profile-panel"><div class="profile-panel-title"><h3>🏆 LOGROS DE PLANTA</h3><small id="achievementsCountLabel"></small></div><div id="profileAchievementsList" class="profile-record-list"></div></div>
+                <div class="profile-panel"><div class="profile-panel-title"><h3>🏅 VITRINA DE MEDALLAS</h3><small id="medalsCountLabel"></small></div><p class="profile-muted">Toca una medalla desbloqueada para equiparla.</p><div class="badges-grid" id="badgesContainer"></div></div>
             </div>
-
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
-                <h3 style="font-size:12px;color:var(--cyan);margin-bottom:8px;">PROGRESO EN LOS 5 MUNDOS</h3>
-                <div id="profileWorldsProgressList" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <div class="profile-section" data-profile-section="history" hidden>
+                <div class="profile-panel"><div class="profile-panel-title"><h3>🎯 MISIONES RECOMPENSADAS</h3><strong id="profileMissionsClaimed">0</strong></div><div id="profileMissionXp" class="profile-xp-note">0 XP</div><div id="profileMissionRecent" class="profile-record-list"></div></div>
+                <div class="profile-panel"><h3>📈 TRAYECTORIA DE RANGOS</h3><div id="ranksLadderContainer" class="profile-record-list"></div></div>
             </div>
-
-            <div style="display:flex;gap:8px;margin-bottom:10px;width:100%;">
-                <button id="tabBtnAchievements" onclick="window.switchProfileTab('achievements')" style="flex:1;background:var(--surface);border:1.5px solid var(--green);border-radius:12px;padding:10px;color:#fff;font-size:11px;font-weight:900;cursor:pointer;text-align:center;">🏆 LOGROS</button>
-                <button id="tabBtnMedals" onclick="window.switchProfileTab('medals')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:10px;color:var(--muted);font-size:11px;font-weight:900;cursor:pointer;text-align:center;">🏅 MEDALLAS</button>
-            </div>
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;">
-                <div id="tabContentAchievements" style="display:flex;flex-direction:column;gap:6px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <h3 style="font-size:12px;color:var(--green);">🏆 LOGROS DE PLANTA</h3>
-                        <small id="achievementsCountLabel" style="color:var(--muted);font-size:9px;"></small>
-                    </div>
-                    <div id="profileAchievementsList" style="display:flex;flex-direction:column;gap:6px;"></div>
-                </div>
-                <div id="tabContentMedals" style="display:none;flex-direction:column;gap:6px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <h3 style="font-size:12px;color:var(--gold);">🏅 VITRINA DE MEDALLAS <small style="color:var(--cyan);font-size:8px;">(Toca para equipar)</small></h3>
-                        <small id="medalsCountLabel" style="color:var(--muted);font-size:9px;"></small>
-                    </div>
-                    <div class="badges-grid" id="badgesContainer" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
-                </div>
-            </div>
-            <div class="panel" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;" onclick="window.editUserNameOnce()">
-                <small id="nameEditNotice" style="color:var(--muted);cursor:pointer;">✏️ Toca aquí para editar nombre <strong style="color:#ffaa00;">(1 sola vez)</strong></small>
-            </div>
-            <button class="back-button" onclick="window.navigateTo('dashboard')" style="margin-top:10px;">← REGRESAR AL INICIO</button>
+            <div class="profile-name-edit" onclick="window.editUserNameOnce()"><small id="nameEditNotice">✏️ Toca aquí para editar nombre (1 sola vez)</small></div>
+            <button class="back-button" onclick="window.navigateTo('dashboard')">← REGRESAR AL INICIO</button>
         </section>
 
         <!-- RANKS LADDER PAGE -->

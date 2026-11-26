@@ -46,6 +46,8 @@
     }
 
     function getRank(xp) {
+        const liveUser = (typeof window.getZidongUserData === "function" && window.getZidongUserData()) || window.currentUserData;
+        if (window.OBERON_PROGRESSION && liveUser) return window.OBERON_PROGRESSION.getRank(liveUser);
         if (typeof window.calculateUserRank === "function") {
             return window.calculateUserRank(xp);
         }
@@ -274,6 +276,63 @@
         });
     }
 
+    function renderProfileDossier(ud, rank) {
+        const xp = Number(ud.xp) || 0;
+        const next = (window.OBERON_PROGRESSION?.ranks || getLadder()).find(r => r.level === rank.level + 1);
+        const checks = next && window.OBERON_PROGRESSION ? window.OBERON_PROGRESSION.getRequirements(ud, next) : [];
+        const pct = next && checks.length ? Math.round(checks.reduce((sum, item) => sum + (item.need > 0 ? Math.min(1, item.have / item.need) : 1), 0) / checks.length * 100) : 100;
+        const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+        set('profileXpValue', `${xp.toLocaleString()} XP`);
+        set('profileNextRankLabel', next ? `Siguiente rango: ${next.name}` : 'Rango máximo alcanzado');
+        set('profileRankProgressText', next ? `${pct}% de preparación` : '100% · Trayectoria completa');
+        set('profileXpRemaining', next ? `${Math.max(0, next.minXp - xp).toLocaleString()} XP para requisito` : 'Sin siguiente rango');
+        set('profileIdCode', `ID-${String((ud.id || ud.userId || 1)).replace(/[^0-9]/g,'').slice(-6).padStart(6,'0')}`);
+        const fill = document.getElementById('profileRankProgressFill'); if (fill) fill.style.width = `${pct}%`;
+
+        const specialties = document.getElementById('profileSpecialtiesList');
+        if (specialties) {
+            specialties.replaceChildren();
+            getWorldsList().forEach(w => {
+                const acts = Array.isArray(w.activities) ? w.activities : [];
+                const done = acts.filter(a => (ud.completedActivities || []).includes(a.id)).length;
+                const percent = acts.length ? Math.round(done / acts.length * 100) : 0;
+                const card = document.createElement('div'); card.className = 'profile-specialty-card';
+                card.innerHTML = `<div class="profile-specialty-top"><span>${w.icon || '🌐'} ${w.title || w.name || 'Especialidad'}</span><b>${percent}%</b></div><div class="profile-mini-track"><i style="width:${percent}%;background:${w.color || 'var(--cyan)'}"></i></div><small>${done} de ${acts.length} actividades</small>`;
+                specialties.appendChild(card);
+            });
+        }
+
+        const certList = document.getElementById('profileCertificationsList');
+        if (certList) {
+            certList.replaceChildren();
+            const records = window.OBERON_CERTIFICATION_ENGINE?.getAll?.() || {};
+            const certRanks = window.OBERON_CERTIFICATION_DATA?.ranks || [];
+            let count = 0;
+            certRanks.filter(r => r.level > 1).forEach(r => {
+                const rec = records[String(r.level)]; if (!rec || rec.passed !== true) return;
+                count++;
+                const row = document.createElement('div'); row.className = 'profile-record-row';
+                const date = rec.date ? new Date(rec.date).toLocaleDateString('es-MX') : 'Fecha no disponible';
+                row.innerHTML = `<span class="profile-record-icon">${r.icon || '🏅'}</span><div><b>${r.name}</b><small>Certificación aprobada · ${date}</small></div><strong>${rec.score ?? '—'}%</strong>`;
+                certList.appendChild(row);
+            });
+            if (!count) certList.innerHTML = '<div class="profile-empty-state">Aún no hay certificaciones obtenidas. Tu primer ascenso certificado aparecerá aquí.</div>';
+            set('profileRankPos', String(count));
+        }
+
+        const missionList = document.getElementById('profileMissionRecent');
+        if (missionList) {
+            missionList.replaceChildren();
+            const snap = window.OBERON_MISSIONS?.getSnapshot?.();
+            const all = snap ? [...snap.daily, ...snap.academy, ...snap.weekly] : [];
+            const claimed = all.filter(m => m.claimed);
+            set('profileMissionsClaimed', String(claimed.length));
+            set('profileMissionXp', `${claimed.reduce((sum,m) => sum + (Number(m.xp)||0),0)} XP`);
+            if (!claimed.length) missionList.innerHTML = '<div class="profile-empty-state">Todavía no has reclamado misiones en este ciclo. ¡Tus próximas operaciones aparecerán aquí!</div>';
+            else claimed.slice(0,4).forEach(m => { const row=document.createElement('div'); row.className='profile-record-row'; row.innerHTML=`<span class="profile-record-icon">${m.icon || '🎯'}</span><div><b>${m.title}</b><small>Misión recompensada</small></div><strong>+${m.xp} XP</strong>`; missionList.appendChild(row); });
+        }
+    }
+
     function renderProfileSections() {
         renderBadgesGrid();
         renderAchievementsList();
@@ -289,7 +348,7 @@
         if (window.OBERON_PROGRESSION) window.OBERON_PROGRESSION.save(ud);
 
         const ladder = getLadder();
-        const rank = getRank(ud.xp || 0);
+        const rank = window.OBERON_PROGRESSION ? window.OBERON_PROGRESSION.getRank(ud) : getRank(ud.xp || 0);
         ud.level = rank.level;
 
         const topUser = document.getElementById("topUsername");
@@ -349,11 +408,12 @@
                 profileAvatar.style.fontSize = "24px";
             }
         }
-        if (profileRankBadge) profileRankBadge.textContent = `⚡ ${rank.name}`;
+        if (profileRankBadge) profileRankBadge.textContent = `${rank.icon || '⚡'} ${rank.name}`;
         if (profileLevel) profileLevel.textContent = `0${rank.level}`;
         if (profileStreak) profileStreak.textContent = `${ud.streak || 0} Días`;
         if (profileCompleted) profileCompleted.textContent = (ud.completedActivities || []).length;
 
+        renderProfileDossier(ud, rank);
         renderProfileSections();
 
         const noticeEl = document.getElementById("nameEditNotice");

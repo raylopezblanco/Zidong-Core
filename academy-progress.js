@@ -15,6 +15,7 @@
     const old=lesson(id), merged={...old.errors};
     Object.entries(errors||{}).forEach(([tag,count])=>merged[tag]=(merged[tag]||0)+count);
     const mastered=score>=80;
+    if(mastered && old.status!=='mastered') window.OBERON_MISSIONS?.record('academy_mastery');
     setLesson(id,{status:mastered?'mastered':'needs_review',score,attempts:(old.attempts||0)+1,errors:merged,lastReview:new Date().toISOString(),nextReview:new Date(Date.now()+(mastered?86400000:2*3600000)).toISOString()});
     state.lastLessonId=id; save();
   }

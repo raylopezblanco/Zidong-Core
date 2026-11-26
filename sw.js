@@ -1,9 +1,17 @@
-const CACHE_NAME = 'zidong-v76';
+const CACHE_NAME = 'zidong-v77';
 const STATIC_ASSETS = [
   './',
   './index.html',
   './style.css',
   './audio.js',
+  './oberon-progression.js',
+  './certification-data.js',
+  './certification-bank.js',
+  './certification-engine.js',
+  './certification-ui.js',
+  './missions-data.js',
+  './missions-engine.js',
+  './missions-ui.js',
   './navigation.js',
   './mock-data.js',
   './npc-dialogues.js',

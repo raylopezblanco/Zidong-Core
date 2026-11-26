@@ -118,6 +118,7 @@
 
 
     function syncSurvivorBestAlarms() {
+        if (alarmsCleared > 0) window.OBERON_MISSIONS?.record("survival_clear", alarmsCleared);
         const prevMax = Number(localStorage.getItem("zidong_survivor_max_alarms") || 0);
         if (alarmsCleared > prevMax) {
             localStorage.setItem("zidong_survivor_max_alarms", String(alarmsCleared));

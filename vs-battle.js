@@ -528,6 +528,7 @@ window.finishVsBattle = function() {
             if (typeof updateProfile === "function") updateProfile();
         }
 
+        window.OBERON_MISSIONS?.record("duel_win");
         const currentWins = Number(localStorage.getItem("zidong_vs_wins") || 0) + 1;
         localStorage.setItem("zidong_vs_wins", currentWins);
 

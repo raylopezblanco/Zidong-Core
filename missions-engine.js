@@ -1,0 +1,16 @@
+/* OBERON MISSIONS · MOTOR DE PROGRESO, RECOMPENSAS Y PERSISTENCIA */
+(() => {
+  'use strict';
+  const KEY='oberon_missions_v1';
+  const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  const week=()=>{const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(_){return {};}}
+  function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){console.warn('OBERON Missions: no se pudo guardar',e);}}
+  function ensure(){const s=load(),t=today(),w=week();if(s.day!==t){s.day=t;s.daily={};s.eventsToday={};}if(s.week!==w){s.week=w;s.weekly={};s.eventsWeek={};}s.eventsToday=s.eventsToday||{};s.eventsWeek=s.eventsWeek||{};s.daily=s.daily||{};s.weekly=s.weekly||{};s.academy=s.academy||{};save(s);return s;}
+  function record(event,amount=1){const s=ensure(),n=Math.max(1,Number(amount)||1);s.eventsToday[event]=(s.eventsToday[event]||0)+n;s.eventsWeek[event]=(s.eventsWeek[event]||0)+n;save(s);refresh();return getSnapshot();}
+  function getSnapshot(){const s=ensure(),data=window.OBERON_MISSIONS_DATA||{};const map=(list,scope,counts)=>list.map(m=>{const progress=Math.min(m.goal,Number(counts[m.event]||0));const claimed=!!s[scope][m.id];return {...m,progress,claimed,complete:progress>=m.goal};});return {daily:map(data.daily||[],'daily',s.eventsToday),academy:map(data.academy||[],'academy',s.eventsToday),weekly:map(data.weekly||[],'weekly',s.eventsWeek)};}
+  function claim(id,scope){const snap=getSnapshot(),mission=(snap[scope]||[]).find(m=>m.id===id);if(!mission||!mission.complete||mission.claimed)return false;const s=ensure();s[scope][id]=true;save(s);const user=window.getZidongUserData?.()||window.currentUserData;if(user){user.xp=(Number(user.xp)||0)+mission.xp;window.OBERON_PROGRESSION?.save?.(user);}if(typeof window.updateProfile==='function')window.updateProfile();if(typeof window.showCyberAlert==='function')window.showCyberAlert('MISIÓN COMPLETADA',`${mission.title}\n+${mission.xp} XP\n\n¡Buen trabajo, cadete!`,'🏅');refresh();return true;}
+  function refresh(){if(typeof window.renderDailyMissionsList==='function')window.renderDailyMissionsList();const card=document.querySelector('.tight-mission');if(card){const snap=getSnapshot(),all=[...snap.daily,...snap.academy],done=all.filter(m=>m.claimed).length;const total=all.length;const fill=card.querySelector('.progress-fill'),footer=card.querySelector('.mission-footer small'),reward=card.querySelector('.mission-reward'),title=card.querySelector('.mission-header h4');if(fill)fill.style.width=`${total?Math.round(done/total*100):0}%`;if(footer)footer.textContent=`${done} / ${total} RECOMPENSADAS`;if(reward)reward.textContent=`+${all.reduce((a,m)=>a+m.xp,0)} XP`;if(title)title.innerHTML='MISIONES ACTIVAS <small style="color:var(--cyan);">(Ver lista 📋)</small>';}}
+  window.OBERON_MISSIONS={record,getSnapshot,claim,refresh};
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(refresh,0));
+})();

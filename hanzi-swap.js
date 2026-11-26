@@ -279,6 +279,7 @@
             roundBusy = true;
             comboCount++;
             wordsClearedCount++;
+            window.OBERON_MISSIONS?.record("puzzle_clear");
             const gained = targetWord.xp + (comboCount - 1) * 15;
             swapScore += gained;
 

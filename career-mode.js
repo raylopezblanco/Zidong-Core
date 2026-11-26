@@ -122,6 +122,7 @@
 
         if (ud && getCareerStarCount(actId) === 3 && !ud.completedActivities.includes(actId)) {
             ud.completedActivities.push(actId);
+            window.OBERON_MISSIONS?.record("world_activity");
         }
     }
 
@@ -720,6 +721,7 @@
                             const ud = getUserData();
                             if (ud && !ud.completedActivities.includes(boss.id)) {
                                 ud.completedActivities.push(boss.id);
+                                window.OBERON_MISSIONS?.record("world_activity");
                                 ud.xp = (ud.xp || 0) + boss.reward;
                                 refreshProfile();
                             }
